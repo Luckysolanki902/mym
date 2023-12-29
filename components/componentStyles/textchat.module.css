@@ -1,0 +1,50 @@
+/* textchat.module.css */
+
+/* Main container */
+.textChatContainer {
+  display: flex;
+  height: 100vh;
+}
+
+/* Messages container */
+.messagesContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Empty space for messages */
+.messages {
+  flex: 1;
+  /* Add styles for message area */
+}
+
+/* Input container */
+.inputContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* New button */
+.newButton {
+  flex: 0;
+  margin-right: 1rem;
+  padding: 1rem;
+  /* Add button styles */
+}
+
+/* Textbox */
+.textBox {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+/* Send button */
+.sendButton {
+  flex: 0;
+  padding: 1rem;
+  /* Add button styles */
+}
