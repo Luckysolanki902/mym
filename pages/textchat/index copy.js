@@ -2,9 +2,8 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import io from 'socket.io-client';
 import { useRouter } from 'next/router';
 import { useSession } from "next-auth/react";
-import styles from '@/components/componentStyles/textchat.module.css';
+import styles from '@/components/componentStyles/videochat.module.css';
 import FilterOptions from '@/components/FilterOptions';
-import TextChat from '@/components/TextChat';
 const useSendMessage = (socket, sender, receiver) => {
   const sendMessage = useCallback((message) => {
     socket.emit('sendMessage', { sender, receiver, message });
@@ -50,12 +49,12 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (userEmail) {
-
-      try {
-        fetchUserDetails(userEmail);
-      } catch (error) {
-        console.log('error:', error)
-      }
+      
+     try {
+       fetchUserDetails(userEmail);
+     } catch (error) {
+      console.log('error:', error)
+     }
     }
   }, [userEmail]);
   useEffect(() => {
@@ -90,8 +89,9 @@ const ChatPage = () => {
 
   useEffect(() => {
     socket.current = io('http://localhost:3001');
+
     if (userEmail) {
-      socket.current.emit('user connected', { displayName: userEmail, strangerGender: filters.strangerGender, strangerCollege: filters.college });
+      socket.current.emit('user connected', { displayName: userEmail, strangerGender: filters.strangerGender, strangerCollege : filters.college });
     }
 
     socket.current.on('paired', ({ displayName, receiver }) => {
@@ -100,15 +100,15 @@ const ChatPage = () => {
         console.log('paired')
       }
     });
+
     socket.current.on('receiveMessage', ({ sender, message }) => {
       setMessages((prevMessages) => [...prevMessages, { sender, message }]);
     });
 
-
     return () => {
       socket.current.disconnect();
     };
-  }, [userEmail, filters]);
+  }, [userEmail]);
 
   useEffect(() => {
     if (receiver) {
@@ -121,7 +121,6 @@ const ChatPage = () => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
-    console.log('messages:', messages)
   }, [messages]);
 
   if (status === "loading") {
@@ -132,9 +131,11 @@ const ChatPage = () => {
     router.replace("/signin");
     return null;
   }
+
   return (
-    <div>
-      <div className={styles.textChatContainer}>
+    <div className={styles.videoChatContainer}>
+      <h1>{session.user.email}</h1>
+      <div className={styles.messagesContainer} ref={messagesContainerRef}>
         <FilterOptions
           filters={filters}
           setFilters={setFilters}
@@ -142,23 +143,18 @@ const ChatPage = () => {
           userGender={userGender}
           setUserGender={setUserGender} // Add this prop
         />
-        <div className={styles.messagesContainer} ref={messagesContainerRef}>
-          <div className={styles.messages}>
-
-          {messages.map((msg, index) => (
+        {messages.map((msg, index) => (
           <div key={index} className={`${styles.message} ${msg.sender === userEmail ? styles.left : styles.right}`}>
             {msg.sender === userEmail ? 'Me' : 'Stranger'}: {msg.message}
           </div>
         ))}
+      </div>
+      <div className={styles.inputContainer}>
+        <div style={{ width: '100%', display: 'flex', marginTop: '2rem', alignItems: 'center', justifyContent: 'center', height: '2rem' }}>
+          <div className={styles.messageBox}>
+            <textarea name="messageBox" id="messageBox" value={textValue} rows={3} onChange={handleChange} style={{ width: '100%' }}></textarea>
           </div>
-          <div className={styles.inputContainer}>
-            <button className={styles.newButton}>new</button>
-            <div className={styles.textBox}>
-              <textarea name="messageBox" id="messageBox" value={textValue} rows={3} onChange={handleChange} style={{ width: '100%' }}></textarea>
-            </div>
-            <button className={styles.sendButton} onClick={handleSend}>Send</button>
-          </div>
-
+          <button className={styles.sendButton} onClick={handleSend}>Send</button>
         </div>
       </div>
     </div>

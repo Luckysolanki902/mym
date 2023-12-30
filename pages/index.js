@@ -15,7 +15,7 @@ export default function Home() {
 <main>
   <div>  <a href="/signin">Login</a></div>
   <div>  <a href="/signup">Create Account</a></div>
-  <div style={{margin:'3rem'}}>  <a href="/chat">Chat</a></div>
+  <div style={{margin:'3rem'}}>  <a href="/textchat">Chat</a></div>
 
 
 </main>

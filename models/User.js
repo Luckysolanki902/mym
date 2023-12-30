@@ -22,9 +22,22 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  isActive: {
+    type: Boolean,
+    default: false, // Set the default value to false
+  },
 }, { timestamps: true }); // Adding timestamps for createdAt and updatedAt
 
-mongoose.models = {};
-const User = mongoose.model('User', UserSchema);
+// Adding a method to toggle user activity
+UserSchema.methods.toggleActivity = async function (isActive) {
+  this.isActive = isActive;
+  await this.save();
+};
+UserSchema.methods.togglePairedStatus = async function (isPaired) {
+  this.isPaired = isPaired;
+  await this.save();
+};
 
-export default User;
+mongoose.models = {};
+
+export default  mongoose.model('User', UserSchema);;
