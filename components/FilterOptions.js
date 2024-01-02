@@ -35,7 +35,7 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender }) => {
     <div>
       <label>
         College Preference:
-        <select value={filters.college} onChange={handleCollegeChange}>
+        <select value={'any'} onChange={handleCollegeChange}>
           <option value="any">Any</option>
           <option value={userCollege}>Same College</option>
           {/* Add other college options if needed */}

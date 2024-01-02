@@ -1,33 +1,3 @@
-/* textchat.module.css */
-
-/* Main container */
-.textChatContainer {
-  display: flex;
-  height: 100vh;
-}
-
-/* Messages container */
-.messagesContainer {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Empty space for messages */
-.messages {
-  flex: 1;
-  /* Add styles for message area */
-}
-
-/* Input container */
-.inputContainer {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  box-sizing: border-box;
-}
-
 /* New button */
 .newButton {
   flex: 0;
@@ -50,6 +20,141 @@
 }
 
 
-.message{
-  color: black;
+
+
+/* Add this CSS to your styles or CSS file */
+.messagesContainer {
+  display: flex;
+  flex-direction: column-reverse;
+  /* Reverse the flex direction */
+  overflow-y: auto;
+  /* Enable vertical scrolling */
+  height: 400px;
+  /* Set a fixed height or max-height for the chat container */
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  /* Display messages in a column */
+  padding: 1rem 0;
+  justify-content: left;
+
+}
+
+/* Rest of your existing styles... */
+
+/* Add this CSS to your styles or CSS file */
+.textChatContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  /* Set the container to take the full viewport height */
+}
+
+.messagesContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: auto;
+  margin-bottom: 5rem;
+  /* Adjust this value as needed for space between messages and input */
+}
+
+.inputContainer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  /* Change this to your desired background color */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.text {
+  padding: 0.5rem 1.4rem;
+}
+
+.maleMsg {
+  display: inline-block;
+  color: #3B3B3B;
+  text-align: center;
+  font-family: Inter;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  border-radius: 2.625rem;
+  background: linear-gradient(180deg, #ADF0FF 0%, #90B3F6 99.99%);
+  width: auto;
+}
+
+.femaleMsg {
+  display: inline-block;
+
+  color: #3B3B3B;
+  text-align: center;
+  font-family: Inter;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  border-radius: 2.625rem;
+  background: linear-gradient(180deg, #EFADFF 0%, #ED70EF 99.99%);
+}
+
+.message {
+  display: flex;
+  /* Use block instead of inline-block */
+  width: auto;
+  word-wrap: break-word;
+  /* Allow long words to break */
+  margin-bottom: 0.5rem;
+  /* Optional: Add margin between messages */
+  padding: 0rem 1rem;
+  /* Add padding to messages */
+  border-radius: 10px;
+  /* Optional: Add border-radius */
+}
+
+.mainmessage {
+  display: block;
+  /* width: auto; */
+}
+
+.sMsg {
+  display: inline-block;
+  color: #3B3B3B;
+  text-align: center;
+  font-family: Inter;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  border-radius: 2.625rem;
+  background: linear-gradient(180deg, #6AE9D9 0%, #B4EEFF 100%);
+  width: auto;
+}
+
+@media (width<650px) {
+  .left {
+    justify-content: left;
+
+  }
+
+  .right {
+    justify-content: right;
+
+  }
+
+}
+
+@media (width<600px) {
+  .svg {
+    display: inline-block;
+    position: relative;
+    top: 1rem;
+    left: 1rem;
+    color: #e3368d;
+  }
 }
