@@ -4,6 +4,7 @@ import User from '@/models/User';
 async function handler(req, res) {
     const { userEmail } = req.query;
     try {
+        console.log(userEmail)
         const userDetails = await User.findOne({ email: userEmail });
 
         if (!userDetails) {

@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import io from 'socket.io-client';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import FilterOptions from '@/components/FilterOptions';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import styles from '@/components/componentStyles/textchat.module.css';
-import FilterOptions from '@/components/FilterOptions';
-import { io } from 'socket.io-client';
 
 const ChatPage = () => {
   const { data: session, status } = useSession();
@@ -18,157 +18,15 @@ const ChatPage = () => {
   const [userGender, setUserGender] = useState('');
   const [isFindingPair, setIsFindingPair] = useState(false);
   const [strangerDisconnectedMessageDiv, setStrangerDisconnectedMessageDiv] = useState(false);
-  const [preferredGender, setPreferredGender] = useState('any');
-  const [preferredCollege, setPreferredCollege] = useState('any')
+  const [preferredGender, setPreferredGender] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarColor, setSnackbarColor] = useState('');
-  const [room, setRoom] = useState('');
+  const [room, setRoom] = useState('')
 
   const messagesContainerRef = useRef(null);
   const router = useRouter();
-
-
-  // Function to fetch user details
-  useEffect(() => {
-    if (userEmail) {
-      fetchUserDetails(userEmail);
-    }
-  }, [userEmail]);
-
-  const fetchUserDetails = async (email) => {
-    try {
-      const response = await fetch(`/api/getuserdetails?userEmail=${email}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok.');
-      }
-      const userData = await response.json();
-      setUserCollege(userData.college || 'Not Available');
-      setUserGender(userData.gender || 'Not Available');
-    } catch (error) {
-      console.error('Error fetching user details:', error);
-    }
-  };
-
-
-  const [filters, setFilters] = useState({
-    college: userCollege,
-    strangerGender: userGender === 'male' ? 'female' : 'male',
-  });
-
-  useEffect(() => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      college: userCollege || 'any',
-      preferredGender: userGender === 'male' ? 'female' : 'male',
-    }));
-  }, [userCollege, userGender]);
-
-  useEffect(() => {
-    setPreferredCollege(filters.college)
-    setPreferredGender(filters.strangerGender)
-  }, [filters])
-
-  // findnew function___________________________
-  useEffect(() => {
-    const newSocket = io('http://localhost:8080'); // Establish socket connection
-    setSocket(newSocket);
-    return () => {
-      newSocket.disconnect(); // Disconnect socket on unmount
-    };
-
-  }, []);
-  const handleFindNew = useCallback(() => {
-    console.log('started findnew()', userEmail, userGender, userCollege, preferredGender, preferredCollege)
-    setIsFindingPair(true);
-
-    socket.emit('findNewPair', {
-      userEmail,
-      userGender,
-      userCollege,
-      preferredGender,
-      preferredCollege,
-    });
-
-    socket.on('pairingSuccess', (data) => {
-      const { roomId, strangerGender } = data;
-      setRoom(roomId);
-      setSnackbarColor(strangerGender === 'male' ? '#0094d4' : '#e3368d');
-      setSnackbarMessage(`A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`);
-      setSnackbarOpen(true);
-      setIsFindingPair(false);
-    });
-
-    socket.on('pairDisconnected', () => {
-      setStrangerDisconnectedMessageDiv(true);
-    });
-  }, [socket, userEmail, userGender, userCollege, preferredGender]);
-
-  useEffect(() => {
-    if (socket) {
-      socket.emit('identify', {
-        userEmail,
-        userGender,
-        userCollege,
-        preferredGender,
-      });
-
-      handleFindNew();
-
-      socket.on('message', (data) => {
-        const { content, sender } = data;
-        setMessages((prevMessages) => [...prevMessages, { sender, message: content }]);
-      });
-
-      return () => {
-        socket.off('identify');
-        socket.off('message');
-        socket.off('pairingSuccess');
-        socket.off('pairDisconnected');
-      };
-    }
-  }, [socket, userEmail, userGender, userCollege, preferredGender, handleFindNew]);
-
-
-
-  const handleReceivedMessage = useCallback((data) => {
-    const { content, sender } = data;
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { sender: sender, message: content },
-    ]);
-  }, []);
-
-  const sendMessage = useCallback((message) => {
-    if (message.trim() !== '') {
-      socket.emit('message', { type: 'message', content: message });
-    }
-  }, [socket]);
-
-  const handleSend = useCallback(() => {
-    if (textValue.trim() !== '') {
-      sendMessage(textValue.trim());
-      setTextValue('');
-    }
-  }, [textValue, sendMessage]);
-
-  useEffect(() => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const handleSnackbarClose = useCallback((event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarOpen(false);
-  }, []);
-
-  useEffect(() => {
-    // Logic to handle snackbar messages for stranger connections
-  }, []);
-
+// Session related_________________________
   useEffect(() => {
     if (session?.user?.email) {
       setUserEmail(session.user.email);
@@ -183,8 +41,95 @@ const ChatPage = () => {
     router.replace('/signin');
     return null;
   }
+// Session related ends here_________________________
 
-  // Other functions related to typing, stopped, typing
+// Filters related and fetching userdetails for sending to server___________________________
+  const fetchUserDetails = async (email) => {
+    try {
+      const response = await fetch(`/api/getuserdetails?userEmail=${email}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+      const userData = await response.json();
+      setUserCollege(userData.college || 'Not Available');
+      setUserGender(userData.gender || 'Not Available');
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  };
+
+  const [filters, setFilters] = useState({
+    college: userCollege,
+    preferredGender: userGender === 'male' ? 'female' : 'male',
+  });
+
+  useEffect(() => {
+    if (userEmail) {
+      fetchUserDetails(userEmail);
+    }
+  }, [userEmail]);
+
+  useEffect(() => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      college: userCollege || 'any',
+      preferredGender: userGender === 'male' ? 'female' : 'male',
+    }));
+  }, [userCollege, userGender]);
+// Filters related and fetching userdetails for sending to server ends here___________________________
+
+
+
+  const handleFindNew = useCallback(() => {
+// logic here
+  }, [
+    // dependencies here if any
+  ]);
+  
+  
+
+
+  const sendMessage = useCallback((message) => {
+
+  }, [
+
+  ]);
+
+  const handleSend = useCallback(() => {
+    if (textValue.trim() !== '') {
+      sendMessage(textValue.trim());
+      setTextValue('');
+    }
+  }, [
+  ]);
+
+// scrolling to bottom on new message
+  useEffect(() => {
+    // Auto scroll to bottom when new message arrives
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSnackbarClose = useCallback((event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+  }, []);
+  
+
+  useEffect(() => {
+    // logic to decide the message and color for snackbar when a stranger connects #0094d4 for male and message A boy connected and #e3368d for girl and a girl got connected 
+
+  }, [
+    // dependencies if any
+  ]);
+
+
+
+
+  // Other functions related to typing, new pair, etc.
 
   return (
     <div>
