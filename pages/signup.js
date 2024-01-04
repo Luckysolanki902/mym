@@ -38,7 +38,7 @@ const Signup = () => {
       });
       console.log('success')
       // Redirect to the signin page after successful signup
-      // router.push('/signin');
+      router.push('/textchat')
     } catch (error) {
       console.error("Error signing up:", error);
       setError(error.message);

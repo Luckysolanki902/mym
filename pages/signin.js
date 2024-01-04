@@ -31,7 +31,7 @@ export default function Signin() {
       }
 
       // Redirect the user after successful authentication
-      router.push('/chat'); // Replace '/' with the desired redirect path
+      router.push('/textchat'); // Replace '/' with the desired redirect path
     } catch (error) {
       console.error("Error signing in:", error);
       setSignInError(error.message); // Set the sign-in error message
