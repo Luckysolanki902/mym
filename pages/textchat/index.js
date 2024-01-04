@@ -24,6 +24,8 @@ const ChatPage = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarColor, setSnackbarColor] = useState('');
   const [room, setRoom] = useState('');
+  const [receiver, setReceiver] = useState('')
+  const [strangerGender, setStrangerGender] = useState('')
 
   const messagesContainerRef = useRef(null);
   const router = useRouter();
@@ -71,68 +73,81 @@ const ChatPage = () => {
 
   // findnew function___________________________
   useEffect(() => {
-    const newSocket = io('http://localhost:8080'); // Establish socket connection
-    setSocket(newSocket);
+    const newSocket = io('http://localhost:8080'); // Replace with your server URL if different
+
+    newSocket.on('connect', () => {
+      console.log('Connected to server:', newSocket.id);
+      if (userEmail && userGender && userCollege && preferredCollege && preferredGender) {
+        // Identify user and send preferences to the server
+        newSocket.emit('identify', {
+          userEmail: userEmail,
+          userGender: userGender,
+          userCollege: userCollege,
+          preferredGender: preferredGender,
+          preferredCollege: preferredCollege,
+        });
+
+      }
+
+      // Handling the successful pairing event
+      newSocket.on('pairingSuccess', (data) => {
+        console.log('Pairing Success:', data);
+        setIsFindingPair(false);
+        const { roomId, strangerGender, stranger } = data;
+      
+        setRoom(roomId);
+        setReceiver(stranger);
+        setStrangerGender(strangerGender); 
+      });
+
+      // Handle received messages from the server
+      newSocket.on('message', (data) => {
+        handleReceivedMessage(data);
+        console.log('message event')
+      });
+
+      // Handle user disconnection event
+      newSocket.on('pairDisconnected', () => {
+        console.log('Pair disconnected, my socket id is:', socket);
+        // Handle pair disconnection as needed
+      });
+
+      setSocket(newSocket);
+    });
+
+    // Clear socket on unmount
     return () => {
-      newSocket.disconnect(); // Disconnect socket on unmount
+      if (newSocket) {
+        newSocket.disconnect();
+      }
     };
+  }, [userEmail, userGender, userCollege, preferredCollege, preferredGender]);
 
-  }, []);
+
   const handleFindNew = useCallback(() => {
-    console.log('started findnew()', userEmail, userGender, userCollege, preferredGender, preferredCollege)
-    setIsFindingPair(true);
 
-    socket.emit('findNewPair', {
-      userEmail,
-      userGender,
-      userCollege,
-      preferredGender,
-      preferredCollege,
-    });
-
-    socket.on('pairingSuccess', (data) => {
-      const { roomId, strangerGender } = data;
-      setRoom(roomId);
-      setSnackbarColor(strangerGender === 'male' ? '#0094d4' : '#e3368d');
-      setSnackbarMessage(`A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`);
-      setSnackbarOpen(true);
-      setIsFindingPair(false);
-    });
-
-    socket.on('pairDisconnected', () => {
-      setStrangerDisconnectedMessageDiv(true);
-    });
-  }, [socket, userEmail, userGender, userCollege, preferredGender]);
-
-  useEffect(() => {
     if (socket) {
-      socket.emit('identify', {
-        userEmail,
-        userGender,
-        userCollege,
-        preferredGender,
-      });
+      setIsFindingPair(true); // Set finding pair state to true
 
-      handleFindNew();
+      socket.emit('findNewPair', {
+        userEmail: userEmail,
+        userGender: userGender,
+        userCollege: userCollege,
+        preferredGender: preferredGender,
+        preferredCollege: preferredCollege,
+      }); // Send request to find a new pair with all details variables
+      console.log('finding new pair as:', userEmail, userGender, userCollege, preferredGender, preferredCollege)
 
-      socket.on('message', (data) => {
-        const { content, sender } = data;
-        setMessages((prevMessages) => [...prevMessages, { sender, message: content }]);
-      });
-
-      return () => {
-        socket.off('identify');
-        socket.off('message');
-        socket.off('pairingSuccess');
-        socket.off('pairDisconnected');
-      };
+      // Set a timeout to simulate pairing process (Remove this in actual implementation)
+      setTimeout(() => {
+        setIsFindingPair(false); // Set finding pair state to false after the timeout (Remove this in actual implementation)
+      }, 10000); // Replace 3000 with your desired duration or remove it in actual implementation
     }
-  }, [socket, userEmail, userGender, userCollege, preferredGender, handleFindNew]);
-
+  }, [socket, userEmail, userGender, userCollege, preferredGender, preferredCollege]);
 
 
   const handleReceivedMessage = useCallback((data) => {
-    const { content, sender } = data;
+    const { sender, content } = data;
     setMessages((prevMessages) => [
       ...prevMessages,
       { sender: sender, message: content },
@@ -150,6 +165,10 @@ const ChatPage = () => {
       sendMessage(textValue.trim());
       setTextValue('');
     }
+    setMessages(prevMessages => [
+      ...prevMessages,
+      { sender: userEmail, message: textValue.trim() },
+    ]);
   }, [textValue, sendMessage]);
 
   useEffect(() => {
