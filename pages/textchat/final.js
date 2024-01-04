@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import io from 'socket.io-client';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import FilterOptions from '@/components/FilterOptions';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import styles from '@/components/componentStyles/textchat.module.css';
+import FilterOptions from '@/components/FilterOptions';
+import { io } from 'socket.io-client';
 
 const ChatPage = () => {
   const { data: session, status } = useSession();
@@ -18,32 +18,26 @@ const ChatPage = () => {
   const [userGender, setUserGender] = useState('');
   const [isFindingPair, setIsFindingPair] = useState(false);
   const [strangerDisconnectedMessageDiv, setStrangerDisconnectedMessageDiv] = useState(false);
-  const [preferredGender, setPreferredGender] = useState('');
+  const [preferredGender, setPreferredGender] = useState('any');
+  const [preferredCollege, setPreferredCollege] = useState('any')
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarColor, setSnackbarColor] = useState('');
-  const [room, setRoom] = useState('')
+  const [room, setRoom] = useState('');
+  const [receiver, setReceiver] = useState('')
+  const [strangerGender, setStrangerGender] = useState('')
 
   const messagesContainerRef = useRef(null);
   const router = useRouter();
-// Session related_________________________
+
+
+  // Function to fetch user details
   useEffect(() => {
-    if (session?.user?.email) {
-      setUserEmail(session.user.email);
+    if (userEmail) {
+      fetchUserDetails(userEmail);
     }
-  }, [session]);
+  }, [userEmail]);
 
-  if (status === 'loading') {
-    return <p>Loading...</p>;
-  }
-
-  if (!session) {
-    router.replace('/signin');
-    return null;
-  }
-// Session related ends here_________________________
-
-// Filters related and fetching userdetails for sending to server___________________________
   const fetchUserDetails = async (email) => {
     try {
       const response = await fetch(`/api/getuserdetails?userEmail=${email}`);
@@ -58,16 +52,11 @@ const ChatPage = () => {
     }
   };
 
+
   const [filters, setFilters] = useState({
     college: userCollege,
-    preferredGender: userGender === 'male' ? 'female' : 'male',
+    strangerGender: userGender === 'male' ? 'female' : 'male',
   });
-
-  useEffect(() => {
-    if (userEmail) {
-      fetchUserDetails(userEmail);
-    }
-  }, [userEmail]);
 
   useEffect(() => {
     setFilters((prevFilters) => ({
@@ -76,36 +65,126 @@ const ChatPage = () => {
       preferredGender: userGender === 'male' ? 'female' : 'male',
     }));
   }, [userCollege, userGender]);
-// Filters related and fetching userdetails for sending to server ends here___________________________
 
+  useEffect(() => {
+    setPreferredCollege(filters.college)
+    setPreferredGender(filters.strangerGender)
+  }, [filters])
+
+  // findnew function___________________________
+  useEffect(() => {
+    const newSocket = io('http://localhost:8080'); // Replace with your server URL if different
+
+    newSocket.on('connect', () => {
+      console.log('Connected to server:', newSocket.id);
+      if (userEmail && userGender && userCollege && preferredCollege && preferredGender) {
+        // Identify user and send preferences to the server
+        newSocket.emit('identify', {
+          userEmail: userEmail,
+          userGender: userGender,
+          userCollege: userCollege,
+          preferredGender: preferredGender,
+          preferredCollege: preferredCollege,
+        });
+
+      }
+
+      // Handling the successful pairing event
+      newSocket.on('pairingSuccess', (data) => {
+        console.log('Pairing Success:', data);
+        setIsFindingPair(false);
+        const { roomId, strangerGender, stranger } = data;
+
+        setRoom(roomId);
+        setReceiver(stranger);
+        setStrangerGender(strangerGender);
+
+        // Show Snackbar based on stranger's gender
+        if (strangerGender === 'male') {
+          setSnackbarColor('#0094d4'); // Set Snackbar color for a boy
+          setSnackbarMessage('A boy connected');
+        } else if (strangerGender === 'female') {
+          setSnackbarColor('#e3368d'); // Set Snackbar color for a girl
+          setSnackbarMessage('A girl connected');
+        }
+        setSnackbarOpen(true); // Show the Snackbar
+      });
+
+      // Handle received messages from the server
+      newSocket.on('message', (data) => {
+        handleReceivedMessage(data);
+        console.log('message event')
+      });
+
+      // Handle user disconnection event
+      newSocket.on('pairDisconnected', () => {
+        console.log('Pair disconnected, my socket id is:', socket);
+        setStrangerDisconnectedMessageDiv(true)
+        // Handle pair disconnection as needed
+      });
+
+      setSocket(newSocket);
+    });
+
+    // Clear socket on unmount
+    return () => {
+      if (newSocket) {
+        newSocket.disconnect();
+      }
+    };
+  }, [userEmail, userGender, userCollege, preferredCollege, preferredGender]);
 
 
   const handleFindNew = useCallback(() => {
-// logic here
-  }, [
-    // dependencies here if any
-  ]);
-  
-  
 
+    if (socket) {
+      setIsFindingPair(true); // Set finding pair state to true
+      setStrangerDisconnectedMessageDiv(false)
+      setMessages([])
+
+      socket.emit('findNewPair', {
+        userEmail: userEmail,
+        userGender: userGender,
+        userCollege: userCollege,
+        preferredGender: preferredGender,
+        preferredCollege: preferredCollege,
+      }); // Send request to find a new pair with all details variables
+      console.log('finding new pair as:', userEmail, userGender, userCollege, preferredGender, preferredCollege)
+
+      // Set a timeout to simulate pairing process (Remove this in actual implementation)
+      setTimeout(() => {
+        setIsFindingPair(false); // Set finding pair state to false after the timeout (Remove this in actual implementation)
+      }, 10000); // Replace 3000 with your desired duration or remove it in actual implementation
+    }
+  }, [socket, userEmail, userGender, userCollege, preferredGender, preferredCollege]);
+
+
+  const handleReceivedMessage = useCallback((data) => {
+    const { sender, content } = data;
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { sender: sender, message: content },
+    ]);
+  }, []);
 
   const sendMessage = useCallback((message) => {
-
-  }, [
-
-  ]);
+    if (message.trim() !== '') {
+      socket.emit('message', { type: 'message', content: message });
+    }
+  }, [socket]);
 
   const handleSend = useCallback(() => {
     if (textValue.trim() !== '') {
       sendMessage(textValue.trim());
       setTextValue('');
     }
-  }, [
-  ]);
+    setMessages(prevMessages => [
+      ...prevMessages,
+      { sender: userEmail, message: textValue.trim() },
+    ]);
+  }, [textValue, sendMessage]);
 
-// scrolling to bottom on new message
   useEffect(() => {
-    // Auto scroll to bottom when new message arrives
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
@@ -117,19 +196,27 @@ const ChatPage = () => {
     }
     setSnackbarOpen(false);
   }, []);
-  
 
   useEffect(() => {
-    // logic to decide the message and color for snackbar when a stranger connects #0094d4 for male and message A boy connected and #e3368d for girl and a girl got connected 
+    // Logic to handle snackbar messages for stranger connections
+  }, []);
 
-  }, [
-    // dependencies if any
-  ]);
+  useEffect(() => {
+    if (session?.user?.email) {
+      setUserEmail(session.user.email);
+    }
+  }, [session]);
 
+  if (status === 'loading') {
+    return <p>Loading...</p>;
+  }
 
+  if (!session) {
+    router.replace('/signin');
+    return null;
+  }
 
-
-  // Other functions related to typing, new pair, etc.
+  // Other functions related to typing, stopped, typing
 
   return (
     <div>
