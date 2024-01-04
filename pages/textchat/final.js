@@ -27,7 +27,7 @@ const ChatPage = () => {
   const [receiver, setReceiver] = useState('')
   const [strangerGender, setStrangerGender] = useState('')
 
-  const messagesContainerRef = useRef(null);
+  const messagesScrollRef = useRef(null);
   const router = useRouter();
 
 
@@ -165,15 +165,19 @@ const ChatPage = () => {
       ...prevMessages,
       { sender: sender, message: content },
     ]);
+    scrollToBottom()
   }, []);
 
   const sendMessage = useCallback((message) => {
     if (message.trim() !== '') {
       socket.emit('message', { type: 'message', content: message });
     }
+    scrollToBottom()
   }, [socket]);
 
   const handleSend = useCallback(() => {
+    scrollToBottom();
+
     if (textValue.trim() !== '') {
       sendMessage(textValue.trim());
       setTextValue('');
@@ -182,13 +186,9 @@ const ChatPage = () => {
       ...prevMessages,
       { sender: userEmail, message: textValue.trim() },
     ]);
+    scrollToBottom()
   }, [textValue, sendMessage]);
 
-  useEffect(() => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
 
   const handleSnackbarClose = useCallback((event, reason) => {
     if (reason === 'clickaway') {
@@ -216,6 +216,17 @@ const ChatPage = () => {
     return null;
   }
 
+  const scrollToBottom = () => {
+    console.log('entering here')
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  };
+  
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   // Other functions related to typing, stopped, typing
 
   return (
@@ -228,8 +239,8 @@ const ChatPage = () => {
           userGender={userGender}
           setUserGender={setUserGender}
         />
-        <div className={styles.messagesContainer} ref={messagesContainerRef}>
-          <div className={styles.messages}>
+        <div className={styles.messagesContainer} >
+          <div className={styles.messages} ref={messagesScrollRef}>
             {messages.map((msg, index) => (
               <div className={styles.mainmessage} key={index}>
                 <div

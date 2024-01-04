@@ -1,14 +1,24 @@
 body,
-html, :root {
+html,
+:root {
   margin: 0;
   padding: 0;
   height: 100%;
+  width: 100%;
 }
 
 * {
   box-sizing: border-box;
 }
 
-.chatContainer{
+.chatContainer {
   height: 100%;
+}
+
+.sidebarwidth {
+  width: 6vw;
+}
+
+.leftwidth {
+  width: 94vw;
 }

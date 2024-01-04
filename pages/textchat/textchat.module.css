@@ -1,0 +1,130 @@
+.textChatContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+/* Add this CSS to your styles or CSS file */
+.messagesContainer {
+  display: flex;
+  flex-direction: column-reverse;
+  flex: 1;
+  border: 1px solid red;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  justify-content: left;
+  overflow-y: auto;
+  height: calc(90vh - 6rem);
+}
+
+
+
+
+
+
+
+
+
+/* inputbox and buttons main divs_____________________________ */
+
+.inputContainer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  flex: 0;
+  width: 94vw;
+  background-color: #fff;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  align-items: center;
+}
+
+/* New button */
+.newButton {
+  flex: 0;
+  margin-right: 1rem;
+  padding: 1rem;
+  height: 3rem;
+}
+
+/* Textbox */
+.textBox {
+  flex: 1;
+  margin-right: 1rem;
+  height: 3rem;
+}
+
+/* Send button */
+.sendButton {
+  flex: 0;
+  padding: 1rem;
+  height: 3rem;
+}
+
+
+
+
+
+/* Rest of your existing styles... */
+
+/* Add this CSS to your styles or CSS file */
+
+
+
+
+/* one message styling___________________________________________________ */
+.text {
+  padding: 0.5rem 1.4rem;
+}
+
+.maleMsg {
+  border-radius: 2.625rem;
+
+  background: linear-gradient(180deg, #ADF0FF 0%, #90B3F6 99.99%);
+}
+
+.femaleMsg {
+  border-radius: 2.625rem;
+
+  background: linear-gradient(180deg, #EFADFF 0%, #ED70EF 99.99%);
+}
+
+.sMsg {
+  border-radius: 2.625rem;
+  background: linear-gradient(180deg, #6AE9D9 0%, #B4EEFF 100%);
+}
+
+.message {
+  display: inline-block;
+  text-align: center;
+  font-family: Inter;
+  font-size: 1rem;
+  color: #3B3B3B;
+  width: auto;
+  word-wrap: break-word;
+  margin-bottom: 0.5rem;
+  padding: 0rem 1rem;
+}
+
+/* one message styling ends_______________________________________________ */
+
+
+@media (width<650px) {
+  .left {
+    justify-content: left;
+
+  }
+
+  .right {
+    justify-content: right;
+
+  }
+
+}

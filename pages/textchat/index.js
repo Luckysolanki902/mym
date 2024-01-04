@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import styles from '@/components/componentStyles/textchat.module.css';
+import styles from './textchat.module.css';
 import FilterOptions from '@/components/FilterOptions';
 import { io } from 'socket.io-client';
 
@@ -28,6 +28,18 @@ const ChatPage = () => {
   const [strangerGender, setStrangerGender] = useState('')
 
   const messagesContainerRef = useRef(null);
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      const messagesContainer = messagesContainerRef.current;
+      const lastMessage = messagesContainer.lastElementChild;
+      if (lastMessage) {
+        lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', inlineSize: 1 });
+      }
+    }
+  };
+  
+  
+
   const router = useRouter();
 
 
@@ -73,7 +85,7 @@ const ChatPage = () => {
 
   // findnew function___________________________
   useEffect(() => {
-    const newSocket = io('http://localhost:8080'); // Replace with your server URL if different
+    const newSocket = io('https://hostedmymserver.onrender.com'); // Replace with your server URL if different
 
     newSocket.on('connect', () => {
       console.log('Connected to server:', newSocket.id);
@@ -88,6 +100,8 @@ const ChatPage = () => {
         });
 
       }
+
+      
 
       // Handling the successful pairing event
       newSocket.on('pairingSuccess', (data) => {
@@ -165,6 +179,7 @@ const ChatPage = () => {
       ...prevMessages,
       { sender: sender, message: content },
     ]);
+    scrollToBottom()
   }, []);
 
   const sendMessage = useCallback((message) => {
@@ -182,13 +197,9 @@ const ChatPage = () => {
       ...prevMessages,
       { sender: userEmail, message: textValue.trim() },
     ]);
+    scrollToBottom()
   }, [textValue, sendMessage]);
 
-  useEffect(() => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
 
   const handleSnackbarClose = useCallback((event, reason) => {
     if (reason === 'clickaway') {
@@ -216,6 +227,10 @@ const ChatPage = () => {
     return null;
   }
 
+  
+
+
+  
   // Other functions related to typing, stopped, typing
 
   return (
@@ -228,10 +243,11 @@ const ChatPage = () => {
           userGender={userGender}
           setUserGender={setUserGender}
         />
-        <div className={styles.messagesContainer} ref={messagesContainerRef}>
-          <div className={styles.messages}>
+
+        <div className={styles.messagesContainer} >
+          <div className={styles.messages} ref={messagesContainerRef}>
             {messages.map((msg, index) => (
-              <div className={styles.mainmessage} key={index}>
+              <div key={index}>
                 <div
                   className={`${styles.message} ${msg.sender === userEmail ? styles.right : styles.left}`}
                 >
@@ -248,41 +264,42 @@ const ChatPage = () => {
                 </div>
               </div>
             ))}
+            {strangerDisconnectedMessageDiv && (
+              <div>strangerDisconnectedMessageDiv</div>
+            )}
           </div>
 
-          {strangerDisconnectedMessageDiv && (
-            <div>strangerDisconnectedMessageDiv</div>
-          )}
-          <div className={styles.inputContainer}>
-            <button className={styles.newButton} disabled={isFindingPair} onClick={handleFindNew}>
-              {isFindingPair ? (
-                <CircularProgress size={24} />
-              ) : (
-                'New'
-              )}
-            </button>
-            <div className={styles.textBox}>
-              <form onSubmit={handleSend}>
-                <textarea
-                  name="messageBox"
-                  id="messageBox"
-                  value={textValue}
-                  rows={3}
-                  onChange={(e) => setTextValue(e.target.value)}
-                  style={{ width: '100%' }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && e.target.value.trim() !== '') {
-                      e.preventDefault();
-                      handleSend();
-                    }
-                  }}
-                ></textarea>
-              </form>
-            </div>
-            <button className={styles.sendButton} onClick={handleSend}>
-              Send
-            </button>
+        </div>
+        <div className={styles.inputContainer}>
+          <button className={styles.newButton} disabled={isFindingPair} onClick={handleFindNew}>
+            {isFindingPair ? (
+              <CircularProgress size={24} />
+            ) : (
+              'New'
+            )}
+          </button>
+          <div className={styles.textBox}>
+            <form onSubmit={handleSend} className={styles.textBox}>
+              <textarea
+                className={styles.textBox}
+                name="messageBox"
+                id="messageBox"
+                value={textValue}
+                rows={3}
+                onChange={(e) => setTextValue(e.target.value)}
+                style={{ width: '100%' }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+              ></textarea>
+            </form>
           </div>
+          <button className={styles.sendButton} onClick={handleSend}>
+            Send
+          </button>
         </div>
       </div>
       <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
