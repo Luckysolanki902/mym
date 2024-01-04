@@ -94,10 +94,20 @@ const ChatPage = () => {
         console.log('Pairing Success:', data);
         setIsFindingPair(false);
         const { roomId, strangerGender, stranger } = data;
-      
+
         setRoom(roomId);
         setReceiver(stranger);
-        setStrangerGender(strangerGender); 
+        setStrangerGender(strangerGender);
+
+        // Show Snackbar based on stranger's gender
+        if (strangerGender === 'male') {
+          setSnackbarColor('#0094d4'); // Set Snackbar color for a boy
+          setSnackbarMessage('A boy connected');
+        } else if (strangerGender === 'female') {
+          setSnackbarColor('#e3368d'); // Set Snackbar color for a girl
+          setSnackbarMessage('A girl connected');
+        }
+        setSnackbarOpen(true); // Show the Snackbar
       });
 
       // Handle received messages from the server
@@ -109,6 +119,7 @@ const ChatPage = () => {
       // Handle user disconnection event
       newSocket.on('pairDisconnected', () => {
         console.log('Pair disconnected, my socket id is:', socket);
+        setStrangerDisconnectedMessageDiv(true)
         // Handle pair disconnection as needed
       });
 
@@ -128,6 +139,8 @@ const ChatPage = () => {
 
     if (socket) {
       setIsFindingPair(true); // Set finding pair state to true
+      setStrangerDisconnectedMessageDiv(false)
+      setMessages([])
 
       socket.emit('findNewPair', {
         userEmail: userEmail,
