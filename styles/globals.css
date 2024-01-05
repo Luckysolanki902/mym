@@ -1,3 +1,10 @@
+:root {
+  --sidebarwidth: 6vw;
+  --topbarheight:9vh;
+  --inputboxheight:3rem;
+  --remwidth:calc(100vw - var(--sidebarwidth));
+  --remheight:calc(100vh - var(--topbarheight));
+}
 body,
 html,
 :root {
@@ -15,10 +22,53 @@ html,
   height: 100%;
 }
 
-.sidebarwidth {
-  width: 6vw;
+
+
+.topbarheight{
+  height: var(--topbarheight);
 }
 
-.leftwidth {
-  width: 94vw;
+.sidebardim {
+  width: var(--sidebarwidth);
+  height: var(--remheight);
+}
+
+.remcomponents {
+  width: var(--remwidth);
+  height: var(--remheight);
+}
+
+@media (width < 1400px){
+  :root {
+    --sidebarwidth: 6vw;
+    --topbarheight:8vh;
+  }
+}
+
+@media (width < 1300px){
+  :root {
+    --sidebarwidth: 8vw;
+    --topbarheight:8vh;
+  }
+}
+@media (width < 1000px){
+  :root {
+    --sidebarwidth: 8vw;
+    --topbarheight:6vh;
+  }
+}
+@media (width < 900px){
+  :root {
+    --sidebarwidth: 9vw;
+    --topbarheight:8vh;
+  }
+}
+@media (width < 800px){
+  :root {
+    --sidebarwidth: 0vw;
+    /* --topbarheight:0vh; */
+  }
+  .sidebarvisibility{
+    display: none;
+  }
 }

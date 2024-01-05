@@ -16,7 +16,7 @@ export default function App({ Component, pageProps }) {
       {!isAuthRoute && <Sidebar />}
 
       {!isAuthRoute && (
-        <div style={{ position: 'fixed', height: '90vh', bottom: '0', right: '0' }} className='leftwidth'>
+        <div style={{ position: 'fixed',  bottom: '0', right: '0' }} className='remcomponents'>
           <Component {...pageProps} />
         </div>
       )}
