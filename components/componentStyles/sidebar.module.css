@@ -10,7 +10,6 @@
 }
 
 .iconspng {
-    display: none;
     width: 3rem;
     height: auto;
 }
@@ -40,7 +39,6 @@
     box-shadow: -2px 4px 4px 0px rgba(0, 0, 0, 0.5);
     filter: invert(0);
     transition: width 0.3s, height 0.3s;
-    display: none;
 }
 
 @media (width<1400px){

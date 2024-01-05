@@ -10,14 +10,14 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  age: {
-    type: Number,
-    required: true,
-  },
   college: {
     type: String,
     required: true,
   },
+  isVerified:{
+    type: Boolean,
+    default: false,
+  }
 
 }, { timestamps: true }); // Adding timestamps for createdAt and updatedAt
 

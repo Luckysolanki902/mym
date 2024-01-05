@@ -7,6 +7,7 @@ import MuiAlert from '@mui/material/Alert';
 import styles from './textchat.module.css';
 import FilterOptions from '@/components/FilterOptions';
 import { io } from 'socket.io-client';
+import { IoSend } from "react-icons/io5";
 
 const ChatPage = () => {
   const { data: session, status } = useSession();
@@ -37,8 +38,8 @@ const ChatPage = () => {
       }
     }
   };
-  
-  
+
+
 
   const router = useRouter();
 
@@ -101,7 +102,7 @@ const ChatPage = () => {
 
       }
 
-      
+
 
       // Handling the successful pairing event
       newSocket.on('pairingSuccess', (data) => {
@@ -227,10 +228,10 @@ const ChatPage = () => {
     return null;
   }
 
-  
 
 
-  
+
+
   // Other functions related to typing, stopped, typing
 
   return (
@@ -270,36 +271,42 @@ const ChatPage = () => {
           </div>
 
         </div>
-        <div className={styles.inputContainer}>
-          <button className={styles.newButton} disabled={isFindingPair} onClick={handleFindNew}>
-            {isFindingPair ? (
-              <CircularProgress size={24} />
-            ) : (
-              'New'
-            )}
-          </button>
-          <div className={styles.textBox}>
-            <form onSubmit={handleSend} className={styles.textBox}>
-              <textarea
-                className={styles.textBox}
-                name="messageBox"
-                id="messageBox"
-                value={textValue}
-                rows={3}
-                onChange={(e) => setTextValue(e.target.value)}
-                style={{ width: '100%' }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && e.target.value.trim() !== '') {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-              ></textarea>
-            </form>
+        <div className={styles.inputContainerMainDiv}>
+          <div className={styles.inputContainer}>
+            <button className={styles.newButton} disabled={isFindingPair} onClick={handleFindNew}>
+              {isFindingPair ? (
+                <CircularProgress size={24} style={{color:'white'}}/>
+              ) : (
+                'New'
+              )}
+            </button>
+            <div className={styles.textBox}>
+              <form onSubmit={handleSend} className={styles.textBox}>
+                <input
+                  className={styles.textBox}
+                  name="messageBox"
+                  spellCheck='false'
+                  autoCorrect='false'
+                  placeholder='Start typing here...'
+                  autoFocus
+                  type='text'
+                  id="messageBox"
+                  value={textValue}
+                  onChange={(e) => setTextValue(e.target.value)}
+                  style={{ width: '100%' }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                      e.preventDefault();
+                      handleSend();
+                    }
+                  }}
+                ></input>
+              </form>
+            </div>
+            <button className={styles.sendButton} onClick={handleSend}>
+            <IoSend style={{color:'white'}}/>
+            </button>
           </div>
-          <button className={styles.sendButton} onClick={handleSend}>
-            Send
-          </button>
         </div>
       </div>
       <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>
