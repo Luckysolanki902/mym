@@ -32,7 +32,7 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender }) => {
   }
 
   return (
-    <div style={{display:'none'}}>
+    <div>
       <label>
         College Preference:
         <select value={'any'} onChange={handleCollegeChange}>

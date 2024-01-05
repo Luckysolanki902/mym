@@ -68,5 +68,7 @@ html,
     --sidebarwidth: 0vw;
     /* --topbarheight:0vh; */
   }
-
+  .sidebarvisibility{
+    display: none;
+  }
 }
