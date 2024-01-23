@@ -1,6 +1,7 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import Link from "next/link";
 
 export default function Signin() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function Signin() {
       }
 
       // Redirect the user after successful authentication
-      router.push('/textchat'); // Replace '/' with the desired redirect path
+      router.push('/dashboard'); // Replace '/' with the desired redirect path
     } catch (error) {
       console.error("Error signing in:", error);
       setSignInError(error.message); // Set the sign-in error message
@@ -94,8 +95,8 @@ export default function Signin() {
             Sign In
           </button>
         </form>
-        <div><a href="/signup">Not a user? Register Here</a></div>
-        <div><a href="/forgot-password">Forgot Password</a></div>
+        <div><Link href="/auth/signup">Not a user? Register Here</Link></div>
+        <div><Link href="/auth/forgot-password">Forgot Password</Link></div>
       </div>
     </div>
   );

@@ -18,6 +18,12 @@ html,
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: 'ITC Kristen';
+  src: url('/fonts/ITCKRIST.ttf');
+}
+
+
 .chatContainer {
   height: 100%;
 }

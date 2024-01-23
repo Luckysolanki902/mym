@@ -8,6 +8,8 @@ import styles from './textchat.module.css';
 import FilterOptions from '@/components/FilterOptions';
 import { io } from 'socket.io-client';
 import { IoSend } from "react-icons/io5";
+import { v4 as uuidv4 } from 'uuid';
+
 
 const ChatPage = () => {
   const { data: session, status } = useSession();
@@ -27,7 +29,10 @@ const ChatPage = () => {
   const [room, setRoom] = useState('');
   const [receiver, setReceiver] = useState('')
   const [strangerGender, setStrangerGender] = useState('')
-
+  const [hasPaired, setHasPaired] = useState(false);
+  const [userIsTyping, setUserIsTyping] = useState(false);
+  const [usersOnline, setUsersOnline] = useState('')
+  const typingTimeoutRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
@@ -86,10 +91,19 @@ const ChatPage = () => {
 
   // findnew function___________________________
   useEffect(() => {
-    const newSocket = io('https://hostedmymserver.onrender.com'); // Replace with your server URL if different
-
+    let newSocket
+    try {
+      if (socket === null || !socket || newSocket === undefined) {
+        newSocket = io('https://hostedmymserver.onrender.com'); // Replace with your server URL if different
+        setSocket(newSocket)
+      } else {
+        newSocket = socket
+      }
+    } catch (error) {
+      console.log('error setting newsocket', error)
+    }
     newSocket.on('connect', () => {
-      console.log('Connected to server:', newSocket.id);
+      console.log('Connected to server');
       if (userEmail && userGender && userCollege && preferredCollege && preferredGender) {
         // Identify user and send preferences to the server
         newSocket.emit('identify', {
@@ -101,45 +115,63 @@ const ChatPage = () => {
         });
 
       }
-
+      newSocket.on('roundedUsersCount', (count) => {
+        console.log('usersOnline:', count)
+        setUsersOnline(count)
+      })
 
 
       // Handling the successful pairing event
       newSocket.on('pairingSuccess', (data) => {
-        console.log('Pairing Success:', data);
-        setIsFindingPair(false);
-        const { roomId, strangerGender, stranger } = data;
+        if (!hasPaired) {
+          setStrangerDisconnectedMessageDiv(false)
+          // console.log('Pairing Success:', data);
+          setIsFindingPair(false);
+          const { roomId, strangerGender, stranger } = data;
 
-        setRoom(roomId);
-        setReceiver(stranger);
-        setStrangerGender(strangerGender);
-
-        // Show Snackbar based on stranger's gender
-        if (strangerGender === 'male') {
-          setSnackbarColor('#0094d4'); // Set Snackbar color for a boy
-          setSnackbarMessage('A boy connected');
-        } else if (strangerGender === 'female') {
-          setSnackbarColor('#e3368d'); // Set Snackbar color for a girl
-          setSnackbarMessage('A girl connected');
+          setRoom(roomId);
+          setReceiver(stranger);
+          setStrangerGender(strangerGender);
+          if (strangerGender === 'male') {
+            setSnackbarColor('#0094d4'); // Set Snackbar color for a boy
+            setSnackbarMessage('A boy connected');
+          } else if (strangerGender === 'female') {
+            setSnackbarColor('#e3368d'); // Set Snackbar color for a girl
+            setSnackbarMessage('A girl connected');
+          }
+          setSnackbarOpen(true); // Show the Snackbar
         }
-        setSnackbarOpen(true); // Show the Snackbar
+        setHasPaired(true)
       });
 
-      // Handle received messages from the server
+      // Handling received messages from the server
       newSocket.on('message', (data) => {
         handleReceivedMessage(data);
         console.log('message event')
       });
-
-      // Handle user disconnection event
-      newSocket.on('pairDisconnected', () => {
-        console.log('Pair disconnected, my socket id is:', socket);
-        setStrangerDisconnectedMessageDiv(true)
-        // Handle pair disconnection as needed
+      // Handling received messages from the server
+      newSocket.on('userTyping', () => {
+        setUserIsTyping(true)
+      });
+      // Handling received messages from the server
+      newSocket.on('userStoppedTyping', () => {
+        setUserIsTyping(false)
       });
 
-      setSocket(newSocket);
+      // Handling user disconnection event
+      newSocket.on('pairDisconnected', () => {
+        console.log('Partner disconnected');
+        setStrangerDisconnectedMessageDiv(true)
+        setHasPaired(false)
+      });
+      // handling my disconnection
+      newSocket.on('disconnect', () => {
+        setSocket(null)
+        console.log('disconnect message')
+      });
     });
+
+
 
     // Clear socket on unmount
     return () => {
@@ -164,7 +196,7 @@ const ChatPage = () => {
         preferredGender: preferredGender,
         preferredCollege: preferredCollege,
       }); // Send request to find a new pair with all details variables
-      console.log('finding new pair as:', userEmail, userGender, userCollege, preferredGender, preferredCollege)
+      console.log('finding new pair')
 
       // Set a timeout to simulate pairing process (Remove this in actual implementation)
       setTimeout(() => {
@@ -184,7 +216,7 @@ const ChatPage = () => {
   }, []);
 
   const sendMessage = useCallback((message) => {
-    if (message.trim() !== '') {
+    if (message.trim() !== '' && socket) {
       socket.emit('message', { type: 'message', content: message });
     }
   }, [socket]);
@@ -224,9 +256,35 @@ const ChatPage = () => {
   }
 
   if (!session) {
-    router.replace('/signin');
     return null;
   }
+
+  // handle partner's typing
+  const handleTyping = (event) => {
+    // Handle the typing event and emit to the server
+    if (event.key !== 'Enter' && socket) {
+      if (!userIsTyping) {
+        socket.emit('typing');
+        console.log('emitting typing...')
+      } else {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      typingTimeoutRef.current = setTimeout(() => {
+        socket.emit('stoppedTyping');
+      }, 1500); // Adjust the duration as needed (e.g., 1500 milliseconds = 1.5 seconds)
+    }
+  };
+
+  const handleStoppedTyping = () => {
+    // Handle the stopped typing event and emit to the server
+    if (userIsTyping && socket) {
+      socket.emit('stoppedTyping');
+      console.log('emitting stopped typing...')
+
+    }
+  };
+
 
 
 
@@ -237,14 +295,18 @@ const ChatPage = () => {
   return (
     <div>
       <div className={styles.textChatContainer}>
-        <FilterOptions
-          filters={filters}
-          setFilters={setFilters}
-          userCollege={userCollege}
-          userGender={userGender}
-          setUserGender={setUserGender}
-        />
-
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <FilterOptions
+            filters={filters}
+            setFilters={setFilters}
+            userCollege={userCollege}
+            userGender={userGender}
+            setUserGender={setUserGender}
+          />
+          {usersOnline && <>
+            <div>Users Online: <span>{usersOnline}</span><span>+</span></div>
+          </>}
+        </div>
         <div className={styles.messagesContainer} >
           <div className={styles.messages} ref={messagesContainerRef}>
             {messages.map((msg, index) => (
@@ -265,21 +327,24 @@ const ChatPage = () => {
                 </div>
               </div>
             ))}
-            {strangerDisconnectedMessageDiv && (
+            {strangerDisconnectedMessageDiv && !hasPaired && (
               <div>strangerDisconnectedMessageDiv</div>
             )}
+            {hasPaired && userIsTyping && <><div>{strangerGender === 'male' ? 'he' : 'she'} is typing...</div></>}
           </div>
 
         </div>
+
         <div className={styles.inputContainerMainDiv}>
           <div className={styles.inputContainer}>
             <button className={styles.newButton} disabled={isFindingPair} onClick={handleFindNew}>
               {isFindingPair ? (
-                <CircularProgress size={24} style={{color:'white'}}/>
+                <CircularProgress size={24} style={{ color: 'white' }} />
               ) : (
                 'New'
               )}
             </button>
+
             <div className={styles.textBox}>
               <form onSubmit={handleSend} className={styles.textBox}>
                 <input
@@ -298,13 +363,21 @@ const ChatPage = () => {
                     if (e.key === 'Enter' && e.target.value.trim() !== '') {
                       e.preventDefault();
                       handleSend();
+                      clearTimeout(typingTimeoutRef.current); // Clear typing timeout when sending a message
+                      setUserIsTyping(false); // Set userIsTyping to false on message send
+                    } else {
+                      handleTyping(e); // Handle typing event
                     }
                   }}
+                  onBlur={() => {
+                    clearTimeout(typingTimeoutRef.current); // Clear typing timeout when the input loses focus
+                    handleStoppedTyping(); // Stop typing on blur
+                  }} // Handling stopped typing event on blur
                 ></input>
               </form>
             </div>
             <button className={styles.sendButton} onClick={handleSend}>
-            <IoSend style={{color:'white'}}/>
+              <IoSend style={{ color: 'white' }} />
             </button>
           </div>
         </div>

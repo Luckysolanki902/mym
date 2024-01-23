@@ -14,13 +14,18 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  isVerified:{
+  isVerified: {
     type: Boolean,
     default: false,
-  }
-
-}, { timestamps: true }); // Adding timestamps for createdAt and updatedAt
+  },
+  otp: {
+    type: String, // Store OTP as a string
+  },
+  otpCooldown: {
+    type: Date, // Store cooldown as a Date
+  },
+}, { timestamps: true });
 
 mongoose.models = {};
 
-export default mongoose.model('User', UserSchema);;
+export default mongoose.model('User', UserSchema);

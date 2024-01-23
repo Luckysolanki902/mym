@@ -6,10 +6,8 @@ export default class MyDocument extends Document {
       <Html lang="en">
         <Head>
           {/* Link to Google Fonts for Inter font */}
-          <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-            rel="stylesheet"
-          />
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Dancing+Script&display=swap"/>
+
           {/* Other head elements can be added here */}
         </Head>
         <body>

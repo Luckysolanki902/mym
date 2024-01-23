@@ -1,5 +1,6 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -10,9 +11,12 @@ export default function Dashboard() {
   }
 
   if (!session) {
-    router.replace("/signin"); // Redirect to the signin page if not signed in
+    router.replace("auth/signin"); // Redirect to the signin page if not signed in
     return null; // Return null to prevent rendering anything else
   }
+  useEffect(()=>{
+    console.log(session)
+  }, [session])
 return(
     <>dashboard</>
 )
