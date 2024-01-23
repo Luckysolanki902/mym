@@ -12,13 +12,16 @@ export default function Dashboard() {
 
   if (!session) {
     router.replace("auth/signin"); // Redirect to the signin page if not signed in
-    return null; // Return null to prevent rendering anything else
   }
-  useEffect(()=>{
-    console.log(session)
-  }, [session])
-return(
-    <>dashboard</>
-)
+
+  useEffect(() => {
+    console.log(session);
+  }, [session]);
+
   // Your dashboard content can follow here
+  return (
+    <>
+      <p>dashboard</p>
+    </>
+  );
 }

@@ -4,6 +4,9 @@ import { auth } from '@/firebase';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useSession } from 'next-auth/react';
+import { signIn } from "next-auth/react";
+
 
 const Signup = () => {
   const router = useRouter();
@@ -13,6 +16,7 @@ const Signup = () => {
   const [college, setCollege] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
 
   const colleges = ['HBTU Kanpur', 'IIT Kanpur'];
 
@@ -24,10 +28,15 @@ const Signup = () => {
       setLoading(true);
 
       // Create user with email and password
-      const authResult = await createUserWithEmailAndPassword(auth, email, password);
+      const authResult = await createUserWithEmailAndPassword(auth, email, password,);
+      await signIn('credentials', {
+        email,
+        password,
+        redirect: false, // Remove redirect:true here
+      });
 
       // If createUserWithEmailAndPassword is successful, save user data to the database
-      if (authResult && authResult.user) {
+      if (authResult && authResult.user ) {
         console.log(authResult.user , 'authresult.user')
         const responseSaving = await fetch('/api/security/saveuseronsignup', {
           method: 'POST',
@@ -149,7 +158,7 @@ const Signup = () => {
               </button>
             </form>
             <div style={{ marginTop: '15px', textAlign: 'center' }}>
-              <a href="/signin" style={{ color: 'white' }}>Already a user? Login Here</a>
+              <a href="/auth/signin" style={{ color: 'white' }}>Already a user? Login Here</a>
             </div>
           </div>
         </div>

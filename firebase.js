@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth'; // Import necessary auth functions
 const firebaseConfig = {
   apiKey: "AIzaSyCVupEKdySNYhlzuXbEpLxnBtjT7xg3P9E",
@@ -11,6 +11,6 @@ const firebaseConfig = {
 };
 
 
-const app = initializeApp(firebaseConfig);
+const app =getApps().length? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app); // Pass the Firebase app instance to getAuth()
-export { auth, app };
+export { auth, app }; 

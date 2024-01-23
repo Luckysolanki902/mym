@@ -13,6 +13,7 @@ async function handler(req, res) {
   try {
     // Verify the OTP against the stored OTP in the database
     const user = await User.findOne({ email });
+    console.log(user.otp, 'otp saved')
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -21,7 +22,6 @@ async function handler(req, res) {
     if (!user.otp || user.otp !== otp) {
       return res.status(401).json({ error: 'Invalid OTP' });
     }
-console.log(user.otp, 'otp saved')
     // Update the user's isVerified status
     user.isVerified = true;
 

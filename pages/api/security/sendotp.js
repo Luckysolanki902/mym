@@ -29,6 +29,10 @@ async function handler(req, res) {
   });
 
   try {
+    // Update the user's OTP in the database
+    existingUser.otp = generatedOTP;
+    await existingUser.save();
+
     // Sending OTP email
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -38,11 +42,6 @@ async function handler(req, res) {
     };
 
     await transporter.sendMail(mailOptions);
-
-    // Update the user's OTP in the database
-    existingUser.otp = generatedOTP;
-
-    await existingUser.save();
 
     res.status(200).json({ message: 'OTP sent successfully!' });
   } catch (error) {
