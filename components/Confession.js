@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import styles from './componentStyles/confession.module.css';
-import { CircularProgress } from '@mui/material';
 import Image from 'next/image';
 import { FaHeart } from 'react-icons/fa';
 
@@ -9,8 +8,24 @@ const Confession = ({ confession, userDetails }) => {
   const [likesCount, setLikesCount] = useState(confession.likes.length);
 
   useEffect(() => {
-    setLiked(confession.likes.includes(userDetails?.email));
-    setLikesCount(confession.likes.length);
+    // Fetch likes for the confession
+    const fetchLikes = async () => {
+      try {
+        const response = await fetch(`/api/getdetails/getlikes?confessionId=${confession._id}`);
+
+        if (response.ok) {
+          const { likes } = await response.json();
+          setLiked(likes.some((like) => like.userEmail === userDetails?.email));
+          setLikesCount(likes.length);
+        } else {
+          console.error('Error fetching likes:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching likes:', error);
+      }
+    };
+
+    fetchLikes();
   }, [confession, userDetails]);
 
   const handleLike = async () => {
