@@ -8,7 +8,6 @@ const handler = async (req, res) => {
       const { email, gender, college } = req.body;
       const lowercaseEmail = email.toString().toLowerCase(); // Converting email to lowercase
 
-      console.log('Received data:', { lowercaseEmail, gender, college });
 
       const user = new User({ email: lowercaseEmail, gender, college, isVerified: false });
       await user.save();

@@ -3,6 +3,8 @@ import styles from './componentStyles/createconfessionform.module.css';
 import { CircularProgress } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const CreateConfessionForm = () => {
   const [userDetails, setUserDetails] = useState(null);
@@ -11,11 +13,13 @@ const CreateConfessionForm = () => {
   const router = useRouter();
   const [userEmail, setUserEmail] = useState('');
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (session?.user?.email) {
       setUserEmail(session.user.email);
     }
   }, [session]);
+
   useEffect(() => {
     if (userEmail) {
       fetchUserDetails(userEmail);
@@ -29,7 +33,7 @@ const CreateConfessionForm = () => {
         throw new Error('Network response was not ok.');
       }
       const userData = await response.json();
-      setUserDetails(userData)
+      setUserDetails(userData);
     } catch (error) {
       console.error('Error fetching user details:', error);
     }
@@ -46,11 +50,15 @@ const CreateConfessionForm = () => {
 
   const handleConfessionSubmit = async () => {
     try {
-      setLoading(true)
-      const { email, college, gender } = userDetails;
+      setLoading(true);
 
+      // Generate a random UUID
+      const confessionUuid = uuidv4();
+
+      const { email, college, gender } = userDetails;
       const dataToSend = {
-        email,
+        uuid: confessionUuid, 
+        email: email,
         college,
         gender,
         confessionContent: confessionValue,
@@ -67,17 +75,14 @@ const CreateConfessionForm = () => {
       if (confessResponse.ok) {
         console.log('Confession submitted successfully');
         setConfessionValue('');
-        setLoading(false)
-
-
+        setLoading(false);
       } else {
         console.error('Error submitting confession');
       }
     } catch (error) {
       console.error('Error:', error);
-    }
-    finally {
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,7 +99,7 @@ const CreateConfessionForm = () => {
         ></textarea>
         <div style={{ textAlign: 'right', margin: '1rem 0' }}>
           <button className={styles.confessButton} onClick={handleConfessionSubmit} disabled={confessionValue.trim()===''}>
-            {loading ? <CircularProgress size={20}/>: 'Confess'}
+            {loading ? <CircularProgress size={20} /> : 'Confess'}
           </button>
         </div>
       </div>

@@ -14,9 +14,7 @@ export default function Dashboard() {
     router.replace("auth/signin"); // Redirect to the signin page if not signed in
   }
 
-  useEffect(() => {
-    console.log(session);
-  }, [session]);
+
 
   // Your dashboard content can follow here
   return (

@@ -1,10 +1,17 @@
-// models/Confession.js
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const confessionSchema = new mongoose.Schema({
-  email: {
+  uuid: {
     type: String,
+    required: true,
+  },
+  encryptedEmail: {
+    type: String,
+    required: true,
+  },
+  iv: {
+    type: String, // Storing the IV as a string
     required: true,
   },
   college: {

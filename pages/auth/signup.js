@@ -37,7 +37,6 @@ const Signup = () => {
 
       // If createUserWithEmailAndPassword is successful, save user data to the database
       if (authResult && authResult.user ) {
-        console.log(authResult.user , 'authresult.user')
         const responseSaving = await fetch('/api/security/saveuseronsignup', {
           method: 'POST',
           headers: {

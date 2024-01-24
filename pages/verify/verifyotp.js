@@ -56,7 +56,6 @@ const VerifyOTP = () => {
   const handleResendOTP = async () => {
     try {
       // Send OTP through API for resending (replace with your actual API endpoint)
-      console.log(session?.user?.email)
       const resendResponse = await fetch('/api/security/sendotp', {
         method: 'POST',
         headers: {
@@ -84,9 +83,7 @@ const VerifyOTP = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(session?.user?.email, 'email');
-  }, [session]);
+
   
 
   return (

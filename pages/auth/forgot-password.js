@@ -8,7 +8,7 @@ export default function ForgotPassword() {
         sendPasswordResetEmail(auth, email)
             .then(() => {
                 // Password reset email sent successfully
-                console.log("Password reset email sent to:", email);
+                console.log("Password reset email sent to your email");
                 // You might want to display a success message to the user here
             })
             .catch((error) => {

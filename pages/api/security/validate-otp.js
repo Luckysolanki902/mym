@@ -8,12 +8,10 @@ async function handler(req, res) {
   }
 
   const { email, otp } = req.body;
-  console.log(email, otp)
 
   try {
     // Verify the OTP against the stored OTP in the database
     const user = await User.findOne({ email });
-    console.log(user.otp, 'otp saved')
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });

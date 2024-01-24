@@ -52,7 +52,6 @@ const ChatPage = () => {
   // Function to fetch user details
   useEffect(() => {
     if (userEmail) {
-      console.log(userEmail, 'user')
       fetchUserDetails(userEmail);
     }
   }, [userEmail]);
@@ -117,7 +116,6 @@ const ChatPage = () => {
 
       }
       newSocket.on('roundedUsersCount', (count) => {
-        console.log('usersOnline:', count)
         setUsersOnline(count)
       })
 
@@ -126,7 +124,6 @@ const ChatPage = () => {
       newSocket.on('pairingSuccess', (data) => {
         if (!hasPaired) {
           setStrangerDisconnectedMessageDiv(false)
-          // console.log('Pairing Success:', data);
           setIsFindingPair(false);
           const { roomId, strangerGender, stranger } = data;
 
@@ -148,7 +145,6 @@ const ChatPage = () => {
       // Handling received messages from the server
       newSocket.on('message', (data) => {
         handleReceivedMessage(data);
-        console.log('message event')
       });
       // Handling received messages from the server
       newSocket.on('userTyping', () => {
@@ -266,7 +262,6 @@ const ChatPage = () => {
     if (event.key !== 'Enter' && socket) {
       if (!userIsTyping) {
         socket.emit('typing');
-        console.log('emitting typing...')
       } else {
         clearTimeout(typingTimeoutRef.current);
       }
@@ -281,7 +276,6 @@ const ChatPage = () => {
     // Handle the stopped typing event and emit to the server
     if (userIsTyping && socket) {
       socket.emit('stoppedTyping');
-      console.log('emitting stopped typing...')
 
     }
   };

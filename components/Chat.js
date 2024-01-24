@@ -53,7 +53,6 @@ const Chat = () => {
 
     const handlePairedUsers = ({ user }) => {
       const currentUser = socket.id;
-      console.log(currentUser)
       const isPairedUser = user.socketId === currentUser;
 
       if (isPairedUser) {

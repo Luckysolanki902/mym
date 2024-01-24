@@ -36,7 +36,6 @@ const handler = async (req, res) => {
 
             // Add the like reference to the Confession document
             await Confession.findByIdAndUpdate(confessionId, { $push: { likes: newLike._id } });
-            console.log('done like to ', liked)
             res.status(200).json({ message: 'Confession liked successfully.' });
         }
     } catch (error) {
