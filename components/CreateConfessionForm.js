@@ -3,7 +3,6 @@ import styles from './componentStyles/createconfessionform.module.css';
 import { CircularProgress } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { v4 as uuidv4 } from 'uuid';
 
 
 const CreateConfessionForm = () => {
@@ -53,11 +52,9 @@ const CreateConfessionForm = () => {
       setLoading(true);
 
       // Generate a random UUID
-      const confessionUuid = uuidv4();
 
       const { email, college, gender } = userDetails;
       const dataToSend = {
-        uuid: confessionUuid, 
         email: email,
         college,
         gender,

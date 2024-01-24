@@ -2,10 +2,6 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const confessionSchema = new mongoose.Schema({
-  uuid: {
-    type: String,
-    required: true,
-  },
   encryptedEmail: {
     type: String,
     required: true,

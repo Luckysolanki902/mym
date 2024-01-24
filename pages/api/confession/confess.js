@@ -3,7 +3,7 @@ import Confession from '@/models/Confession';
 import connectToMongo from '@/middleware/middleware';
 
 const handler = async (req, res) => {
-  const { uuid, email, college, gender, confessionContent } = req.body;
+  const { email, college, gender, confessionContent } = req.body;
   try {
     // Your secret key from environment variables
     const secretKey = Buffer.from(process.env.ENCRYPTION_SECRET_KEY, 'hex');
@@ -18,7 +18,6 @@ const handler = async (req, res) => {
     encryptedEmail += cipher.final('hex');
 
     const newConfession = new Confession({
-      uuid,
       encryptedEmail,
       college,
       gender,
