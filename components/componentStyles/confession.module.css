@@ -2,14 +2,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     margin: 0;
+    padding: 1rem;
+    margin: 4rem 0;
 }
 
 .mainContainer {
     margin: 0;
     width: auto;
     height: auto;
-    min-width: 50vw;
+    width: 50vw;
     min-height: 60vh;
     /* border: 1px solid red; */
     border-radius: 1.1875rem;
@@ -19,7 +22,7 @@
     background: linear-gradient(204deg, hsla(0, 0%, 15%, 0.8) 30.1%, hsla(0, 100%, 50%, 0.8) 79.73%);
 }
 
-.mainContainer textarea {
+.mainContainer .textarea {
     padding-top: 2rem;
     padding-left: 2rem;
     resize: none;
@@ -39,7 +42,7 @@
 
 }
 
-.mainContainer textarea::placeholder {
+.mainContainer .textarea::placeholder {
     color: white;
     font-weight: 300;
 }
@@ -60,7 +63,8 @@
     font-weight: 600;
     line-height: normal;
 }
-.confessButton:disabled{
+
+.confessButton:disabled {
     background: #d7d7d7;
 }
 
@@ -88,4 +92,57 @@
 /* Handle on hover */
 .mainContainer textarea::-webkit-scrollbar-thumb:hover {
     background: #f1f1f1;
+}
+
+.masks img {
+    width: 3rem;
+    height: auto;
+}
+
+.confessionfooter {
+    margin-top: 1rem;
+    width: 50vw;
+    display: flex;
+    justify-content: space-between;
+}
+
+.likes {
+    display: flex;
+    align-items: center;
+    background-color: var(--mymblack);
+    min-width: 2rem;
+    padding: 0.5rem 2rem;
+    border-radius: 4rem;
+    justify-content: space-evenly;
+    gap: 0.8rem;
+    color: white;
+    font-family: Roboto;
+    font-size: 1.6rem;
+}
+
+.reply {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 2rem;
+    border-radius: 4rem;
+    flex: 1;
+    margin-left: 2rem;
+    
+}
+
+.reply input{
+    background-color: var(--mymblack);
+    height: 100%;
+    width: 100%;
+    color: white;
+    font-size: 1.3rem;
+    font-family: Roboto;
+    font-weight: 300;
+    padding-left: 3rem;
+    border-radius: 3rem;
+}
+
+.reply input::placeholder{
+    color: rgba(255, 255, 255, 0.589);
 }

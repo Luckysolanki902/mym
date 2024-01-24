@@ -14,13 +14,13 @@ export const authOptions = {
       name: 'Credentials',
       credentials: {},
       async authorize(credentials) {
-return await signInWithEmailAndPassword(auth, credentials.email || '', credentials.password || '').then(userCredentials=>{
-  if(userCredentials.user){
-    return userCredentials.user
-  }
-  return null
-}).catch(error=>console.log(error))
-  
+        return await signInWithEmailAndPassword(auth, credentials.email || '', credentials.password || '').then(userCredentials => {
+          if (userCredentials.user) {
+            return userCredentials.user
+          }
+          return null
+        }).catch(error => console.log(error))
+
 
       },
     }),

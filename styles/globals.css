@@ -1,10 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;1,100;1,300&display=swap');
+
 :root {
   --sidebarwidth: 6vw;
-  --topbarheight:9vh;
-  --inputboxheight:3rem;
-  --remwidth:calc(100vw - var(--sidebarwidth));
-  --remheight:calc(100vh - var(--topbarheight));
+  --topbarheight: 9vh;
+  --inputboxheight: 3rem;
+  --remwidth: calc(100vw - var(--sidebarwidth));
+  --remheight: calc(100vh - var(--topbarheight));
+  --mymblack: #2D2D2D;
 }
+
 body,
 html,
 :root {
@@ -30,7 +34,7 @@ html,
 
 
 
-.topbarheight{
+.topbarheight {
   height: var(--topbarheight);
 }
 
@@ -44,37 +48,41 @@ html,
   height: var(--remheight);
 }
 
-@media (width < 1400px){
+@media (width < 1400px) {
   :root {
     --sidebarwidth: 6vw;
-    --topbarheight:8vh;
+    --topbarheight: 8vh;
   }
 }
 
-@media (width < 1300px){
+@media (width < 1300px) {
   :root {
     --sidebarwidth: 8vw;
-    --topbarheight:8vh;
+    --topbarheight: 8vh;
   }
 }
-@media (width < 1000px){
+
+@media (width < 1000px) {
   :root {
     --sidebarwidth: 8vw;
-    --topbarheight:6vh;
+    --topbarheight: 6vh;
   }
 }
-@media (width < 900px){
+
+@media (width < 900px) {
   :root {
     --sidebarwidth: 9vw;
-    --topbarheight:8vh;
+    --topbarheight: 8vh;
   }
 }
-@media (width < 800px){
+
+@media (width < 800px) {
   :root {
     --sidebarwidth: 0vw;
     /* --topbarheight:0vh; */
   }
-  .sidebarvisibility{
+
+  .sidebarvisibility {
     display: none;
   }
 }

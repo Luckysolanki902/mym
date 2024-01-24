@@ -8,7 +8,7 @@ import styles from './textchat.module.css';
 import FilterOptions from '@/components/FilterOptions';
 import { io } from 'socket.io-client';
 import { IoSend } from "react-icons/io5";
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
 
 const ChatPage = () => {
@@ -52,13 +52,14 @@ const ChatPage = () => {
   // Function to fetch user details
   useEffect(() => {
     if (userEmail) {
+      console.log(userEmail, 'user')
       fetchUserDetails(userEmail);
     }
   }, [userEmail]);
 
   const fetchUserDetails = async (email) => {
     try {
-      const response = await fetch(`/api/getuserdetails?userEmail=${email}`);
+      const response = await fetch(`/api/getdetails/getuserdetails?userEmail=${email}`);
       if (!response.ok) {
         throw new Error('Network response was not ok.');
       }
@@ -247,7 +248,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (session?.user?.email) {
-      setUserEmail(session.user.email);
+      setUserEmail(session.user?.email);
     }
   }, [session]);
 

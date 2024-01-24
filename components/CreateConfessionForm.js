@@ -24,7 +24,7 @@ const CreateConfessionForm = () => {
 
   const fetchUserDetails = async (email) => {
     try {
-      const response = await fetch(`/api/getuserdetails?userEmail=${email}`);
+      const response = await fetch(`/api/getdetails/getuserdetails?userEmail=${email}`);
       if (!response.ok) {
         throw new Error('Network response was not ok.');
       }
@@ -56,7 +56,7 @@ const CreateConfessionForm = () => {
         confessionContent: confessionValue,
       };
 
-      const confessResponse = await fetch('/api/confess', {
+      const confessResponse = await fetch('/api/confession/confess', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ const CreateConfessionForm = () => {
           className={styles.textarea}
         ></textarea>
         <div style={{ textAlign: 'right', margin: '1rem 0' }}>
-          <button className={styles.confessButton} onClick={handleConfessionSubmit}>
+          <button className={styles.confessButton} onClick={handleConfessionSubmit} disabled={confessionValue.trim()===''}>
             {loading ? <CircularProgress size={20}/>: 'Confess'}
           </button>
         </div>
