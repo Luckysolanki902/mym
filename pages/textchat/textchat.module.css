@@ -1,25 +1,111 @@
-.textChatContainer {
+.mainC {
+  height: 100%;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  position: relative;
+  /* background-color: var(--lightpink); */
+
 }
 
-/* Add this CSS to your styles or CSS file */
-.messagesContainer {
-  display: flex;
-  flex-direction: column-reverse;
-  flex: 1;
-}
 
 .messages {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   padding: 1rem 0;
-  justify-content: left;
+  justify-content: flex-start;
   overflow-y: auto;
-  height: calc(100vh - var(--topbarheight) - var(--inputboxheight) - 4rem);
+  height: 100%;
+  flex: 1;
+  height: calc(var(--remheight) - var(--inputboxheight) - 2rem);
+  max-height: calc(var(--remheight) - var(--inputboxheight) - 2rem);
+  align-content: flex-start;
 }
+
+
+
+/* one message styling___________________________________________________ */
+.text {
+  padding: 0.5rem 1.4rem;
+}
+
+.maleMsg {
+  border-radius: 2.625rem;
+
+  background: linear-gradient(180deg, #ADF0FF 0%, #90B3F6 99.99%);
+}
+
+.sMsg {
+  border-radius: 2.625rem;
+  background: linear-gradient(180deg, #6AE9D9 0%, #B4EEFF 100%);
+}
+.femaleMsg {
+  border-radius: 2.625rem;
+
+  background: linear-gradient(180deg, #EFADFF 0%, #ED70EF 99.99%);
+}
+
+
+.message {
+  display: inline-block;
+  text-align: center;
+  font-family: Inter;
+  font-size: 1rem;
+  color: #3B3B3B;
+  width: auto;
+  word-wrap: break-word;
+  margin-bottom: 0.5rem;
+  padding: 0rem 1rem;
+}
+
+.isTyping {
+  text-align: center;
+  margin-bottom: -1.5rem;
+  color: #2D2D2D;
+  text-align: center;
+  font-family: "Inknut Antiqua";
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+
+}
+
+.isTyping img {
+  width: 2rem;
+  height: auto;
+  transform: translateY(20%);
+  opacity: 0.7;
+
+}
+
+/* one message styling ends_______________________________________________ */
+
+
+@media (width<650px) {
+  .left {
+    justify-content: left;
+    min-width: 50%;
+text-align: left;
+max-width: 70%;
+  }
+
+  .right {
+    justify-content: right;
+    float: right;
+    min-width: 50%;
+    text-align: left;
+    max-width: 70%;
+
+  }
+
+}
+
+
+
+
+
 
 
 
@@ -32,11 +118,11 @@
 /* inputbox and buttons main divs_____________________________ */
 
 .inputContainerMainDiv {
-  position: fixed;
+  /* position: fixed;
   bottom: 0;
   right: 0;
-  flex: 0;
-  width: var(--remwidth);
+  flex: 0; */
+  /* width: var(--remwidth); */
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -44,6 +130,7 @@
   align-items: center;
   height: calc(var(--inputboxheight) + 2rem);
   padding: 0.5rem;
+  flex: 0;
 }
 
 .inputContainer {
@@ -54,7 +141,9 @@
   box-shadow: 0px 7px 7px 3px rgba(0, 0, 0, 0.09) inset;
   border-radius: 1.0625rem;
   height: calc(var(--inputboxheight) + 1rem);
-  padding: 0 1rem;
+  padding: 0rem;
+  padding-left: 1rem;
+  transition: all 0.3s ease-in-out;
 
 }
 
@@ -73,106 +162,137 @@
   margin-right: 1rem;
   color: rgb(64, 64, 64);
   font-family: Inter;
+  color: #2D2D2D;
 }
-.textBox :focus{
+
+.textBox :focus {
   border: none;
   outline: none;
 }
+
 .newButton {
   flex: 0;
   margin-right: 1rem;
-  padding: 1rem 1.5rem;
+  padding: 0rem 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 0.625rem;
-  background: #FF4D4D;
+  background: var(--mymblack);
   border: none;
   color: white;
   text-align: center;
   font-family: Inter;
   font-size: 1.1em;
   height: var(--inputboxheight);
-  min-width: 5rem;
-}
-
-
-/* Send button */
-.sendButton {
-  flex: 0;
-  margin-right: 1rem;
-  padding: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 0.625rem;
-  background: #3ab700;
-  border: none;
-  color: #8B8B8B;
-  text-align: center;
-  font-family: Inter;
-  font-size: 1.3125rem;
-  min-width: 5rem;
-  height: var(--inputboxheight);
-}
-
-
-
-
-
-/* Rest of your existing styles... */
-
-/* Add this CSS to your styles or CSS file */
-
-
-
-
-/* one message styling___________________________________________________ */
-.text {
-  padding: 0.5rem 1.4rem;
-}
-
-.maleMsg {
-  border-radius: 2.625rem;
-
-  background: linear-gradient(180deg, #ADF0FF 0%, #90B3F6 99.99%);
-}
-
-.femaleMsg {
-  border-radius: 2.625rem;
-
-  background: linear-gradient(180deg, #EFADFF 0%, #ED70EF 99.99%);
-}
-
-.sMsg {
-  border-radius: 2.625rem;
-  background: linear-gradient(180deg, #6AE9D9 0%, #B4EEFF 100%);
-}
-
-.message {
-  display: inline-block;
-  text-align: center;
-  font-family: Inter;
-  font-size: 1rem;
-  color: #3B3B3B;
   width: auto;
-  word-wrap: break-word;
-  margin-bottom: 0.5rem;
-  padding: 0rem 1rem;
+  min-width: 7rem;
+  cursor: pointer;
+
 }
 
-/* one message styling ends_______________________________________________ */
+.randomIcon {
+  width: 3.5rem;
+  height: auto;
+  filter: invert(1);
+}
 
 
-@media (width<650px) {
-  .left {
-    justify-content: left;
+.sendIcon {
+  width: 2rem;
+  height: auto;
+}
+
+.inpFocus {
+  scale: 0.992;
+}
+
+.inputContainerMainDiv button {
+  transition: all 0.3s ease-in-out;
+}
+
+.inputContainerMainDiv button:hover {
+  scale: 0.98;
+}
+
+
+@media (width<800px) {
+
+
+  .newButton {
+    background: none;
+    min-width: 5rem;
+    margin-right: 0rem;
+    /* border: 1px solid red; */
+    padding: 0;
 
   }
 
-  .right {
-    justify-content: right;
-
+  .randomIcon {
+    width: 3.5rem;
+    height: auto;
+    filter: invert(0);
+    opacity: 0.8;
+    filter: drop-shadow(5px 2px 2px gray);
   }
 
+
+  .sendIcon {
+    width: 3.5rem;
+    height: auto;
+    color: black;
+    opacity: 0.8;
+  }
+.newButton2{
+  transform: translateX(0%);
+}
+
+
+}
+
+@media (width< 600px){
+  .randomIcon {
+    width: 3rem;
+    height: auto;
+    filter: invert(0);
+    opacity: 0.8;
+    filter: drop-shadow(5px 2px 2px gray);
+  }
+  .textBox {
+    font-size: 1rem;
+  }
+
+  .textBox::selection{
+    background-color: #2d2d2d;
+  }
+
+
+  .sendIcon {
+    width: 2.5rem;
+    height: auto;
+    color: black;
+    opacity: 0.8;
+  }
+
+  .isTyping {
+    margin-bottom: -1.2rem;
+    font-size: 0.8rem;
+  
+  }
+  
+  .isTyping img {
+    width: 2rem;
+    height: auto;
+    transform: translateY(20%);
+    opacity: 0.7;
+  }
+  .newButton2{
+    
+min-width: 3rem;
+  }
+
+  .textBox{
+    margin-right: 0.5rem;
+  }
+  
 }

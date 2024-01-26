@@ -8,7 +8,8 @@ import styles from './textchat.module.css';
 import FilterOptions from '@/components/FilterOptions';
 import { io } from 'socket.io-client';
 import { IoSend } from "react-icons/io5";
-// import { v4 as uuidv4 } from 'uuid';
+import Image from 'next/image';
+import { IoIosSend } from "react-icons/io";
 
 
 const ChatPage = () => {
@@ -32,8 +33,10 @@ const ChatPage = () => {
   const [hasPaired, setHasPaired] = useState(false);
   const [userIsTyping, setUserIsTyping] = useState(false);
   const [usersOnline, setUsersOnline] = useState('')
+  const [inpFocus, setInpFocus] = useState(false)
   const typingTimeoutRef = useRef(null);
   const messagesContainerRef = useRef(null);
+
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
       const messagesContainer = messagesContainerRef.current;
@@ -283,98 +286,103 @@ const ChatPage = () => {
 
 
 
-
-
   // Other functions related to typing, stopped, typing
 
   return (
-    <div>
-      <div className={styles.textChatContainer}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <FilterOptions
-            filters={filters}
-            setFilters={setFilters}
-            userCollege={userCollege}
-            userGender={userGender}
-            setUserGender={setUserGender}
-          />
-          {usersOnline && <>
-            <div>Users Online: <span>{usersOnline}</span><span>+</span></div>
-          </>}
-        </div>
-        <div className={styles.messagesContainer} >
-          <div className={styles.messages} ref={messagesContainerRef}>
-            {messages.map((msg, index) => (
-              <div key={index}>
-                <div
-                  className={`${styles.message} ${msg.sender === userEmail ? styles.right : styles.left}`}
-                >
-                  <div className={`${styles.text} ${msg.sender === userEmail ?
-                    (userGender === 'male' ? styles.maleMsg : styles.femaleMsg) :
-                    (msg.sender === receiver ?
-                      (userGender === 'male' ? styles.femaleMsg : styles.maleMsg) :
-                      (preferredGender === userGender ? styles.sMsg :
-                        (userGender === 'male' ? styles.femaleMsg : styles.maleMsg)))
-                    }`}
-                  >
-                    {msg.message}
-                  </div>
-                </div>
+    <div className={styles.mainC}>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <FilterOptions
+          filters={filters}
+          setFilters={setFilters}
+          userCollege={userCollege}
+          userGender={userGender}
+          setUserGender={setUserGender}
+        />
+        {usersOnline && <>
+          <div>Users Online: <span>{usersOnline}</span><span>+</span></div>
+        </>}
+      </div>
+      <div className={styles.messages} ref={messagesContainerRef}>
+        {hasPaired && userIsTyping && <><div className={styles.isTyping}>{strangerGender === 'male' ? 'He' : 'She'} is typing <span><Image src={'/gifs/istyping3.gif'} width={800 / 2} height={600 / 2} alt=''></Image></span> </div></>}
+        {strangerDisconnectedMessageDiv && !hasPaired && (
+          <div className={styles.isTyping}>He said “good Bye!!”
+          </div>
+        )}
+        {/* {hasPaired && !userIsTyping && messages.length===0 && <div className={styles.isTyping}>paired with a {strangerGender === 'male' ? 'boy' : 'girl'}</div>} */}
+        {messages.map((msg, index) => (
+          <div key={index}>
+            <div
+              className={`${styles.message} ${msg.sender === userEmail ? styles.right : styles.left}`}
+            >
+              <div className={`${styles.text} ${msg.sender === userEmail ?
+                (userGender === 'male' ? styles.maleMsg : styles.femaleMsg) :
+                (msg.sender === receiver ?
+                  (userGender === 'male' ? styles.femaleMsg : styles.maleMsg) :
+                  (strangerGender === userGender ? styles.sMsg :
+                    (userGender === 'male' ? styles.femaleMsg : styles.maleMsg)))
+                }`}
+              >
+                {msg.message}
               </div>
-            ))}
-            {strangerDisconnectedMessageDiv && !hasPaired && (
-              <div>strangerDisconnectedMessageDiv</div>
-            )}
-            {hasPaired && userIsTyping && <><div>{strangerGender === 'male' ? 'he' : 'she'} is typing...</div></>}
-          </div>
-
-        </div>
-
-        <div className={styles.inputContainerMainDiv}>
-          <div className={styles.inputContainer}>
-            <button className={styles.newButton} disabled={isFindingPair} onClick={handleFindNew}>
-              {isFindingPair ? (
-                <CircularProgress size={24} style={{ color: 'white' }} />
-              ) : (
-                'New'
-              )}
-            </button>
-
-            <div className={styles.textBox}>
-              <form onSubmit={handleSend} className={styles.textBox}>
-                <input
-                  className={styles.textBox}
-                  name="messageBox"
-                  spellCheck='false'
-                  autoCorrect='false'
-                  placeholder='Start typing here...'
-                  autoFocus
-                  type='text'
-                  id="messageBox"
-                  value={textValue}
-                  onChange={(e) => setTextValue(e.target.value)}
-                  style={{ width: '100%' }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && e.target.value.trim() !== '') {
-                      e.preventDefault();
-                      handleSend();
-                      clearTimeout(typingTimeoutRef.current); // Clear typing timeout when sending a message
-                      setUserIsTyping(false); // Set userIsTyping to false on message send
-                    } else {
-                      handleTyping(e); // Handle typing event
-                    }
-                  }}
-                  onBlur={() => {
-                    clearTimeout(typingTimeoutRef.current); // Clear typing timeout when the input loses focus
-                    handleStoppedTyping(); // Stop typing on blur
-                  }} // Handling stopped typing event on blur
-                ></input>
-              </form>
             </div>
-            <button className={styles.sendButton} onClick={handleSend}>
-              <IoSend style={{ color: 'white' }} />
-            </button>
           </div>
+        ))}
+
+      </div>
+
+
+      <div className={`${styles.inputContainerMainDiv}`}>
+        <div className={`${styles.inputContainer} ${inpFocus ? styles.inpFocus : ''}`}>
+          <button className={styles.newButton} disabled={isFindingPair} onClick={handleFindNew} title={hasPaired ? 'Say Good Bye' : 'Find New'}>
+            {isFindingPair && !hasPaired ? (
+              <CircularProgress size={24} style={{ color: 'white' }} />
+            ) : (
+              <Image
+                src={'/images/sidebaricons/randomchat.png'}
+                width={1080 / 10}
+                height={720 / 10}
+                alt='icon'
+                className={styles.randomIcon}
+              />
+            )}
+          </button>
+
+          <div className={styles.textBox}>
+            <form onSubmit={handleSend} className={styles.textBox}>
+              <input
+                className={styles.textBox}
+                name="messageBox"
+                spellCheck='false'
+                autoCorrect='false'
+                placeholder={'Start typing here...'}
+                autoFocus
+                type='text'
+                id="messageBox"
+                value={textValue}
+                onFocus={() => setInpFocus(true)}
+                onBlurCapture={() => setInpFocus(false)}
+                onChange={(e) => setTextValue(e.target.value)}
+                style={{ width: '100%' }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                    e.preventDefault();
+                    handleSend();
+                    clearTimeout(typingTimeoutRef.current); // Clear typing timeout when sending a message
+                    setUserIsTyping(false); // Set userIsTyping to false on message send
+                  } else {
+                    handleTyping(e); // Handle typing event
+                  }
+                }}
+                onBlur={() => {
+                  clearTimeout(typingTimeoutRef.current); // Clear typing timeout when the input loses focus
+                  handleStoppedTyping(); // Stop typing on blur
+                }} // Handling stopped typing event on blur
+              ></input>
+            </form>
+          </div>
+          <button className={`${styles.newButton} ${styles.newButton2}`} onClick={handleSend}>
+            <IoIosSend className={styles.sendIcon} />
+          </button>
         </div>
       </div>
       <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose}>

@@ -1,0 +1,188 @@
+.mainC{
+  background-color: red;
+  display: flex;
+  flex-direction: column-reverse;
+
+}
+
+/* Add this CSS to your styles or CSS file */
+.messagesContainer {
+  display: flex;
+  flex-direction: column-reverse;
+  flex: 1;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  justify-content: left;
+  overflow-y: auto;
+  height: calc(var(--remheight) - var(--inputboxheight) - 3rem);
+}
+
+
+.textChatContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.37);
+  flex: 1;
+}
+
+
+
+
+
+
+
+
+/* inputbox and buttons main divs_____________________________ */
+
+.inputContainerMainDiv {
+  /* position: fixed;
+  bottom: 0;
+  right: 0;
+  flex: 0; */
+  width: var(--remwidth);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0.3rem;
+  align-items: center;
+  height: calc(var(--inputboxheight) + 2rem);
+  padding: 0.5rem;
+  background-color: rgba(128, 0, 128, 0.359);
+}
+
+.inputContainer {
+  display: flex;
+  align-items: center;
+  background: #E9E9E9;
+  width: 100%;
+  box-shadow: 0px 7px 7px 3px rgba(0, 0, 0, 0.09) inset;
+  border-radius: 1.0625rem;
+  height: calc(var(--inputboxheight) + 1rem);
+  padding: 0 1rem;
+
+}
+
+/* New button */
+/* Textbox */
+.textBox {
+  caret-color: black;
+  flex: 1;
+  background: #E9E9E9;
+  border: none;
+  margin-right: 0.5rem;
+  height: calc(var(--inputboxheight) - 1rem);
+  padding: 0;
+  font-size: 1.2rem;
+  margin-left: 0.4rem;
+  margin-right: 1rem;
+  color: rgb(64, 64, 64);
+  font-family: Inter;
+}
+.textBox :focus{
+  border: none;
+  outline: none;
+}
+.newButton {
+  flex: 0;
+  margin-right: 1rem;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.625rem;
+  background: #FF4D4D;
+  border: none;
+  color: white;
+  text-align: center;
+  font-family: Inter;
+  font-size: 1.1em;
+  height: var(--inputboxheight);
+  min-width: 5rem;
+}
+
+
+/* Send button */
+.sendButton {
+  flex: 0;
+  margin-right: 1rem;
+  padding: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.625rem;
+  background: #3ab700;
+  border: none;
+  color: #8B8B8B;
+  text-align: center;
+  font-family: Inter;
+  font-size: 1.3125rem;
+  min-width: 5rem;
+  height: var(--inputboxheight);
+}
+
+
+
+
+
+/* Rest of your existing styles... */
+
+/* Add this CSS to your styles or CSS file */
+
+
+
+
+/* one message styling___________________________________________________ */
+.text {
+  padding: 0.5rem 1.4rem;
+}
+
+.maleMsg {
+  border-radius: 2.625rem;
+
+  background: linear-gradient(180deg, #ADF0FF 0%, #90B3F6 99.99%);
+}
+
+.femaleMsg {
+  border-radius: 2.625rem;
+
+  background: linear-gradient(180deg, #EFADFF 0%, #ED70EF 99.99%);
+}
+
+.sMsg {
+  border-radius: 2.625rem;
+  background: linear-gradient(180deg, #6AE9D9 0%, #B4EEFF 100%);
+}
+
+.message {
+  display: inline-block;
+  text-align: center;
+  font-family: Inter;
+  font-size: 1rem;
+  color: #3B3B3B;
+  width: auto;
+  word-wrap: break-word;
+  margin-bottom: 0.5rem;
+  padding: 0rem 1rem;
+}
+
+/* one message styling ends_______________________________________________ */
+
+
+@media (width<650px) {
+  .left {
+    justify-content: left;
+
+  }
+
+  .right {
+    justify-content: right;
+
+  }
+
+}

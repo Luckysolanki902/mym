@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;1,100;1,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inknut+Antiqua:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --sidebarwidth: 6vw;
@@ -7,6 +8,7 @@
   --remwidth: calc(100vw - var(--sidebarwidth));
   --remheight: calc(100vh - var(--topbarheight));
   --mymblack: #2D2D2D;
+  --lightpink: rgba(128, 0, 128, 0.359);
 }
 
 body,
@@ -16,6 +18,7 @@ html,
   padding: 0;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 * {
@@ -46,6 +49,7 @@ html,
 .remcomponents {
   width: var(--remwidth);
   height: var(--remheight);
+  overflow: hidden;
 }
 
 @media (width < 1400px) {
@@ -84,5 +88,11 @@ html,
 
   .sidebarvisibility {
     display: none;
+  }
+}
+@media (width < 600px) {
+  :root {
+    --inputboxheight: 2rem;
+
   }
 }
