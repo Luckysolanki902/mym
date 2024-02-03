@@ -7,10 +7,10 @@ import { useRouter } from 'next/router';
 
 const CreateConfessionForm = () => {
   const [userDetails, setUserDetails] = useState(null);
+  const [userEmail, setUserEmail] = useState('');
   const [confessionValue, setConfessionValue] = useState('');
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [userEmail, setUserEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -48,44 +48,64 @@ const CreateConfessionForm = () => {
   }
 
   const handleConfessionSubmit = async () => {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      // Generate a random UUID
+    // Generate a random UUID
 
-      const { email, college, gender } = userDetails;
-      const dataToSend = {
-        email: email,
-        college,
-        gender,
-        confessionContent: confessionValue,
-      };
+    const { email, college, gender } = userDetails;
+    const dataToSend = {
+      email: email,
+      college,
+      gender,
+      confessionContent: confessionValue,
+    };
 
-      const confessResponse = await fetch('/api/confession/confess', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend),
-      });
+    // Submit the confession
+    const confessResponse = await fetch('/api/confession/confess', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dataToSend),
+    });
 
-      if (confessResponse.ok) {
-        console.log('Confession submitted successfully');
-        setConfessionValue('');
-        setLoading(false);
-      } else {
-        console.error('Error submitting confession');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
+    if (!confessResponse.ok) {
+      throw new Error('Error submitting confession');
     }
-  };
+
+    // Retrieve the confessionId from the response
+    const { confessionId } = await confessResponse.json();
+
+    // Create an entry in PersonalReply model
+    const personalReplyResponse = await fetch('/api/confession/personalreply', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        confessionId,
+        confesserEmail: email,
+      }),
+    });
+
+    if (personalReplyResponse.ok) {
+      console.log('Confession submitted successfully');
+      setConfessionValue('');
+    } else {
+      console.error('Error creating PersonalReply entry');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className={styles.mainDiv}>
-      <div className={styles.mainContainer}>
+      <div className={`${styles.mainContainer} ${userDetails ? styles[`${userDetails.gender}Gradient`] : ''}`}>     
         <textarea
           name="confessionContent"
           id="confessioncontentbox"

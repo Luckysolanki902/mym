@@ -2,6 +2,23 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import Link from "next/link";
+import { createTheme, ThemeProvider, TextField, Button } from '@mui/material';
+import Image from 'next/image';
+import styles from './signup.module.css'
+
+
+
+
+const mymtheme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: 'rgb(45, 45, 45)',
+    },
+  },
+});
+
+
 
 export default function Signin() {
   const router = useRouter();
@@ -11,7 +28,7 @@ export default function Signin() {
 
   const handleSignIn = async (e) => {
     e.preventDefault(); // Prevent default form submission
-    
+
     try {
       setSignInError(null); // Clear any previous sign-in errors
       const result = await signIn('credentials', {
@@ -32,7 +49,7 @@ export default function Signin() {
       }
 
       // Redirect the user after successful authentication
-      router.push('/dashboard'); // Replace '/' with the desired redirect path
+      router.push('/'); // Replace '/' with the desired redirect path
     } catch (error) {
       console.error("Error signing in:", error);
       setSignInError(error.message); // Set the sign-in error message
@@ -40,64 +57,71 @@ export default function Signin() {
   };
 
   return (
-    <div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-        }}
-      >
-        <h1>Sign In</h1>
-        {signInError && (
-          <p style={{ color: 'red' }}>{signInError}</p>
-        )}
-        <form onSubmit={handleSignIn} style={{ display: 'flex', flexDirection: 'column' }}>
-          <input
-            type="email"
-            placeholder="Email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{
-              margin: '10px',
-              padding: '8px',
-              width: '300px',
-            }}
-          />
-          <input
-            type="password"
-            autoComplete="current-password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{
-              margin: '10px',
-              padding: '8px',
-              width: '300px',
-            }}
-          />
-          <button
+    <ThemeProvider theme={mymtheme}>
+
+      <div className={styles.mainContainer}>
+        <div className={styles.macpng}>
+          <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview'></Image>
+        </div>
+        <div className={styles.mainBox}>
+          <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
+          {signInError && (<p style={{ color: 'red' }}>{signInError}</p>)}
+          <form onSubmit={handleSignIn} className={styles.form}>
+            <TextField
+              type="email"
+              label="College Id"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              variant='standard'
+              InputLabelProps={{
+                required: false, // Remove the asterisk for the Email field
+              }}
+              className={styles.input}
+            />
+            <TextField
+              variant='standard'
+              type="password"
+              label="Password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputLabelProps={{
+                required: false, // Remove the asterisk for the Email field
+              }}
+              className={styles.input}
+
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              className={styles.button}
+              style={{textTransform:'none'}}
+            >
+              Sign In
+            </Button>
+          </form>
+          <Link href="/auth/forgot-password" className={styles.paraLink2}>
+            Forgot Password?
+          </Link> 
+          <div className={styles.line}></div>
+          <Button
             type="submit"
-            style={{
-              margin: '10px',
-              padding: '8px 16px',
-              backgroundColor: 'blue',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-            disabled={!email || !password}
+            variant="contained"
+            color="primary"
+            onClick={() => router.push('/auth/signup')}
+            className={`${styles.button} ${styles.button2}`}
+            style={{textTransform:'none'}}
+
           >
-            Sign In
-          </button>
-        </form>
-        <div><Link href="/auth/signup">Not a user? Register Here</Link></div>
-        <div><Link href="/auth/forgot-password">Forgot Password</Link></div>
+            {'Create New Account'}
+          </Button>
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
+
   );
 }

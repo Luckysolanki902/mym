@@ -10,7 +10,7 @@ import { io } from 'socket.io-client';
 import { IoSend } from "react-icons/io5";
 import Image from 'next/image';
 import { IoIosSend } from "react-icons/io";
-
+import { IoFilterSharp } from "react-icons/io5";
 
 const ChatPage = () => {
   const { data: session, status } = useSession();
@@ -36,6 +36,13 @@ const ChatPage = () => {
   const [inpFocus, setInpFocus] = useState(false)
   const typingTimeoutRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
@@ -290,7 +297,11 @@ const ChatPage = () => {
 
   return (
     <div className={styles.mainC}>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', }} className={styles.filterPos}>
+        {/* {usersOnline && <>
+          <div>Users Online: <span>{usersOnline}</span><span>+</span></div>
+        </>} */}
+
         <FilterOptions
           filters={filters}
           setFilters={setFilters}
@@ -298,38 +309,37 @@ const ChatPage = () => {
           userGender={userGender}
           setUserGender={setUserGender}
         />
-        {usersOnline && <>
-          <div>Users Online: <span>{usersOnline}</span><span>+</span></div>
-        </>}
       </div>
-      <div className={styles.messages} ref={messagesContainerRef}>
-        {hasPaired && userIsTyping && <><div className={styles.isTyping}>{strangerGender === 'male' ? 'He' : 'She'} is typing <span><Image src={'/gifs/istyping3.gif'} width={800 / 2} height={600 / 2} alt=''></Image></span> </div></>}
+      <div className={`${styles.messCon} ${!hasPaired && !userIsTyping && styles.nopadb}`}>
+        <div className={styles.messages} ref={messagesContainerRef}>
+          {/* {hasPaired && !userIsTyping && messages.length===0 && <div className={styles.isTyping}>paired with a {strangerGender === 'male' ? 'boy' : 'girl'}</div>} */}
+          {messages.map((msg, index) => (
+            <div key={index}>
+              <div
+                className={`${styles.message} ${msg.sender === userEmail ? styles.right : styles.left}`}
+              >
+                <div className={`${styles.text} ${msg.sender === userEmail ?
+                  (userGender === 'male' ? styles.maleMsg : styles.femaleMsg) :
+                  (msg.sender === receiver ?
+                    (userGender === 'male' ? styles.femaleMsg : styles.maleMsg) :
+                    (strangerGender === userGender ? styles.sMsg :
+                      (userGender === 'male' ? styles.femaleMsg : styles.maleMsg)))
+                  }`}
+                >
+                  {msg.message}
+                </div>
+              </div>
+            </div>
+          ))}
+
+        </div>
+        {hasPaired && userIsTyping && <><div className={`${styles.isTyping} ${!hasPaired && !userIsTyping && styles.isTypinghz}`}>{strangerGender === 'male' ? 'He' : 'She'} is typing <span><Image src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt=''></Image></span> </div></>}
         {strangerDisconnectedMessageDiv && !hasPaired && (
           <div className={styles.isTyping}>He said “good Bye!!”
           </div>
         )}
-        {/* {hasPaired && !userIsTyping && messages.length===0 && <div className={styles.isTyping}>paired with a {strangerGender === 'male' ? 'boy' : 'girl'}</div>} */}
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <div
-              className={`${styles.message} ${msg.sender === userEmail ? styles.right : styles.left}`}
-            >
-              <div className={`${styles.text} ${msg.sender === userEmail ?
-                (userGender === 'male' ? styles.maleMsg : styles.femaleMsg) :
-                (msg.sender === receiver ?
-                  (userGender === 'male' ? styles.femaleMsg : styles.maleMsg) :
-                  (strangerGender === userGender ? styles.sMsg :
-                    (userGender === 'male' ? styles.femaleMsg : styles.maleMsg)))
-                }`}
-              >
-                {msg.message}
-              </div>
-            </div>
-          </div>
-        ))}
 
       </div>
-
 
       <div className={`${styles.inputContainerMainDiv}`}>
         <div className={`${styles.inputContainer} ${inpFocus ? styles.inpFocus : ''}`}>
@@ -354,15 +364,18 @@ const ChatPage = () => {
                 name="messageBox"
                 spellCheck='false'
                 autoCorrect='false'
-                placeholder={'Start typing here...'}
+                ref={inputRef}
+                placeholder={'Start typing...'}
                 autoFocus
                 type='text'
                 id="messageBox"
                 value={textValue}
                 onFocus={() => setInpFocus(true)}
+                autoComplete='off'
                 onBlurCapture={() => setInpFocus(false)}
                 onChange={(e) => setTextValue(e.target.value)}
                 style={{ width: '100%' }}
+
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && e.target.value.trim() !== '') {
                     e.preventDefault();

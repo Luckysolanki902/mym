@@ -1,11 +1,17 @@
 import React from 'react'
+import Image from 'next/image'
+import SwipeableTemporaryDrawer from '@/components/Drawer';
+import styles from './componentStyles/topbar.module.css'
 
 const Topbar = () => {
   return (
-    <div>
-        <div style={{display:'flex',  width:'100vw', position:'fixed', top:'0', left:'0', backgroundColor:'#2D2D2D'}} className='topbarheight'></div>
+    <div className={`topbarheight ${styles.mainDiv}`}>
+      <Image src={'/images/mym_logos/mymlogoinvert2.png'} width={724 / 3} height={338 / 3} alt='mym' style={{ height: '60%', width: 'auto' }}></Image>
+      <div style={{display:'flex', alignItems:'center'}}>
+        <SwipeableTemporaryDrawer />
+      </div>
     </div>
   )
 }
 
-export default Topbar
+export default Topbar;

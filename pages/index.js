@@ -12,13 +12,12 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-<main>
-  <div>  <a href="/signin">Login</a></div>
-  <div>  <a href="/signup">Create Account</a></div>
-  <div style={{margin:'3rem'}}>  <a href="/textchat">Chat</a></div>
-
-
-</main>
+      <main>
+        <div>  <a href="/auth/signin">Login</a></div>
+        <div>  <a href="/auth/signup">Create Account</a></div>
+        <div style={{ margin: '3rem' }}>  <a href="/textchat">Chat</a></div>
+        <div style={{ margin: '3rem' }}>  <a href="/confessions">Confessions</a></div>
+      </main>
     </>
   )
 }

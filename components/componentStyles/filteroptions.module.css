@@ -1,0 +1,82 @@
+.mainfiltercont {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    /* margin-right: 1rem; */
+    color: #FFF;
+    text-align: center;
+    font-family: Calibri;
+    font-size: 1.25rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+
+.filterIcon {
+    /* margin-top: 0.4rem; */
+    width: 2rem;
+    height: auto;
+    cursor: pointer;
+    color: black;
+}
+
+.closedFilters {
+    height: 0;
+    content-visibility: hidden;
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1rem;
+    background-color: var(--mymblack);
+    overflow: hidden;
+    color: white;
+    border-radius: 1rem;
+    padding: 0;
+    min-width: 20rem;
+    
+}
+
+.openFilters {
+    height: auto;
+    transition: all 0.3s ease-in-out;
+    content-visibility: auto;
+    overflow: hidden;
+    padding: 1rem;
+}
+
+.FormControl{
+    width: 100%;
+}
+
+.select{
+    width: 100%;
+text-align: left;
+padding-left: 0.3rem;
+}
+
+
+.toggleMenu {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 0.5rem;
+    color: #FFF;
+    text-align: center;
+    font-family: Calibri;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+@media(width<500px){
+    .toggleMenu {
+        font-size: 0.9rem;
+    }
+    .closedFilters {
+        min-width: 17rem;
+    }
+}

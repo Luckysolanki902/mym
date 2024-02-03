@@ -2,23 +2,66 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/firebase';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useSession } from 'next-auth/react';
-import { signIn } from "next-auth/react";
+import { signIn } from 'next-auth/react';
+import { createTheme, ThemeProvider, Select, MenuItem, TextField, Button, InputLabel } from '@mui/material';
+import Image from 'next/image';
+import styles from './signup.module.css'
+
+
+const mymtheme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: 'rgb(45, 45, 45)',
+    },
+  },
+});
 
 
 const Signup = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [gender, setGender] = useState('');
-  const [college, setCollege] = useState('');
+  const [gender, setGender] = useState('Select Gender');
+  const [college, setCollege] = useState('Select College');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [colleges, setColleges] = useState([]);
+  const [collegesLoaded, setCollegesLoaded] = useState(false);
+  const [allowedEmails, setAllowedEmails] = useState([]);
 
+  // admin
+  const [allowOnlyCollegeEmails, setAllowOnlyCollegeEmails] = useState(false);
+  useEffect(() => {
+    const fetchColleges = async () => {
+      try {
+        const response = await fetch('/api/admin/getdetails/getcolleges');
+        const data = await response.json();
 
-  const colleges = ['HBTU Kanpur', 'IIT Kanpur'];
+        if (response.ok) {
+          const mappedColleges = data.map((collegeData) => collegeData.college);
+          const mappedEmails = data.map((collegeData) => collegeData.emailendswith);
+          setColleges(mappedColleges);
+          setAllowedEmails(mappedEmails);
+        } else {
+          throw new Error('Failed to fetch colleges');
+        }
+      } catch (error) {
+        console.error('Error fetching colleges:', error);
+      } finally {
+        setCollegesLoaded(true);
+      }
+    };
+
+    fetchColleges();
+  }, []);
+
+  useEffect(() => {
+    console.log(colleges)
+  }, [colleges])
+  // const colleges = ['HBTU Kanpur', 'IIT Kanpur'];
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -27,8 +70,17 @@ const Signup = () => {
       setError(null);
       setLoading(true);
 
+      if (allowOnlyCollegeEmails) {
+        const isEmailAllowed = allowedEmails.some((allowedEmail) =>
+          email.endsWith(allowedEmail)
+        );
+        if (!isEmailAllowed) {
+          throw new Error('Your email is not allowed to register');
+        }
+      }
+
       // Create user with email and password
-      const authResult = await createUserWithEmailAndPassword(auth, email, password,);
+      const authResult = await createUserWithEmailAndPassword(auth, email, password);
       await signIn('credentials', {
         email,
         password,
@@ -36,7 +88,8 @@ const Signup = () => {
       });
 
       // If createUserWithEmailAndPassword is successful, save user data to the database
-      if (authResult && authResult.user ) {
+      if (authResult && authResult.user) {
+
         const responseSaving = await fetch('/api/security/saveuseronsignup', {
           method: 'POST',
           headers: {
@@ -78,91 +131,108 @@ const Signup = () => {
   };
 
   return (
-    <div>
-      <div style={{ display: 'block' }}>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          padding: '20px',
-          backgroundColor: 'black',
-        }}>
-          <div style={{
-            background: 'black',
-            padding: '30px',
-            borderRadius: '8px',
-            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-            maxWidth: '400px',
-            width: '100%',
-          }}>
-            <h1 style={{ textAlign: 'center', marginBottom: '20px', color: 'white' }}>Sign Up</h1>
-            {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
-            <form onSubmit={handleSignUp}>
-              <input
-                type="email"
-                placeholder="Email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ marginBottom: '15px', padding: '10px', width: '100%', boxSizing: 'border-box' }}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ marginBottom: '15px', padding: '10px', width: '100%', boxSizing: 'border-box' }}
-              />
-              <select
-                required
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                style={{ marginBottom: '15px', padding: '10px', width: '100%', boxSizing: 'border-box' }}
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-              <select
-                value={college}
-                onChange={(e) => setCollege(e.target.value)}
-                style={{ marginBottom: '15px', padding: '10px', width: '100%', boxSizing: 'border-box' }}
-              >
-                <option value="">Select College</option>
-                {colleges.map((collegeOption) => (
-                  <option key={collegeOption} value={collegeOption}>
-                    {collegeOption}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="submit"
-                style={{
-                  backgroundColor: 'green',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  padding: '10px',
-                  width: '100%',
-                  cursor: 'pointer',
-                }}
-                disabled={loading}
-              >
-                {loading ? <CircularProgress style={{ fontSize: '1rem', width: '1rem', height: '1rem' }} /> : 'Sign Up'}
-              </button>
-            </form>
-            <div style={{ marginTop: '15px', textAlign: 'center' }}>
-              <a href="/auth/signin" style={{ color: 'white' }}>Already a user? Login Here</a>
-            </div>
-          </div>
+    <ThemeProvider theme={mymtheme}>
+      <div className={styles.mainContainer}>
+        <div className={styles.macpng}>
+          <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview'></Image>
+        </div>
+        <div className={styles.mainBox}>
+          <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
+          {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
+          <form onSubmit={handleSignUp} className={styles.form}>
+            <TextField
+              type="email"
+              label="College Id"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              variant='standard'
+              InputLabelProps={{
+                required: false, // Remove the asterisk for the Email field
+              }}
+              className={styles.input}
+
+            />
+            <TextField
+              variant='standard'
+              type="password"
+              label="Password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputLabelProps={{
+                required: false, // Remove the asterisk for the Email field
+              }}
+              className={styles.input}
+
+            />
+            <Select
+              variant='standard'
+              required
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              label="Select Gender"
+              inputProps={{
+                name: 'gender',
+                id: 'gender-select',
+              }}
+              className={`${styles.selectInput} ${gender === 'Select Gender' ? `${styles.placeholder}` : ''}`}
+            >
+              <MenuItem value="Select Gender">Select Gender</MenuItem>
+              <MenuItem value="male">Male</MenuItem>
+              <MenuItem value="female">Female</MenuItem>
+            </Select>
+            <Select
+              disabled={!collegesLoaded}
+              variant='standard'
+              value={college}
+              onChange={(e) => setCollege(e.target.value)}
+              label="Select College"
+              inputProps={{
+                name: 'college',
+                id: 'college-select',
+              }}
+              className={`${styles.selectInput} ${college === 'Select College' ? `${styles.placeholder}` : ''}`}
+
+            >
+              <MenuItem value="Select College">Select College</MenuItem>
+              {colleges.map((collegeOption) => (
+                <MenuItem key={collegeOption} value={collegeOption}>
+                  {collegeOption}
+                </MenuItem>
+              ))}
+            </Select>
+            <Button
+              disabled={!collegesLoaded || loading}
+              type="submit"
+              variant="contained"
+              color="primary"
+
+              className={styles.button}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : 'Send OTP'}
+            </Button>
+          </form>
+          <div className={styles.line}></div>
+          <a href="/auth/signin" className={styles.paraLink}>
+            Already have an account?
+          </a>
+
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            onClick={() => router.push('/auth/signin')}
+            className={`${styles.button} ${styles.button2}`}
+          >
+            {'Sign In Instead'}
+          </Button>
         </div>
       </div>
-    </div>
+    </ThemeProvider>
+
   );
 };
 

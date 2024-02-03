@@ -2,8 +2,23 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import styles from '@/styles/signup.module.css';
 import { useSession } from 'next-auth/react';
+import { createTheme, ThemeProvider, Select, MenuItem, TextField, Button, InputLabel } from '@mui/material';
+import Image from 'next/image';
+import styles from './signup.module.css'
+
+
+
+
+const mymtheme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: 'rgb(45, 45, 45)',
+    },
+  },
+});
+
 
 const VerifyOTP = () => {
   const router = useRouter();
@@ -45,7 +60,7 @@ const VerifyOTP = () => {
       setLoading(false);
 
       // Redirect to textchat page if OTP verification succeeds
-      router.push('/textchat');
+      router.push('/');
     } catch (error) {
       console.error('Error verifying OTP:', error);
       setError(error.message || 'Failed to verify OTP. Please try again.');
@@ -84,61 +99,54 @@ const VerifyOTP = () => {
   };
 
 
-  
+
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '20px', backgroundColor: 'black', color: 'white' }}>
-      <div style={{ background: 'black', padding: '30px', borderRadius: '8px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', maxWidth: '400px', width: '100%' }}>
-        <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Verify Email</h1>
-        {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
-        <form onSubmit={handleVerifyOTP}>
-          <input
-            type="text"
-            placeholder="Enter OTP"
-            value={enteredOTP}
-            required
-            onChange={(e) => setEnteredOTP(e.target.value)}
-            style={{ marginBottom: '15px', padding: '10px', width: '100%' }}
-          />
-          <button
-            type="submit"
-            style={{
-              backgroundColor: 'blue',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              padding: '10px',
-              width: '100%',
-              cursor: 'pointer',
-              backgroundColor: 'green',
-            }}
-            disabled={loading}
-          >
-            {loading ? <CircularProgress style={{ fontSize: '1rem', width: '1rem', height: '1rem' }} /> : 'Verify Email'}
-          </button>
-        </form>
-        <div className={styles.resendOTP} style={{ marginTop: '15px', textAlign: 'center' }}>
-            <button
-              style={{
-                backgroundColor: 'blue',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                padding: '10px',
-                width: '100%',
-                cursor: 'pointer',
-                backgroundColor: 'black',
-                margin: '1rem 0',
-                border: '1px solid white',
+    <ThemeProvider theme={mymtheme}>
+      <div className={styles.mainContainer} >
+        {/* <div className={styles.macpng}>
+          <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview'></Image>
+        </div> */}
+        <div className={styles.mainBox}>
+          <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
+          {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
+          <form onSubmit={handleVerifyOTP} className={styles.form}>
+            <TextField
+              type="text"
+              label="Enter OTP"
+              value={enteredOTP}
+              required
+              variant='standard'
+              onChange={(e) => setEnteredOTP(e.target.value)}
+              InputLabelProps={{
+                required: false, // Remove the asterisk for the Email field
               }}
+              className={styles.input}
+
+            />
+
+            <Button
+              type="submit"
+              disabled={loading}
+              variant="contained"
+              color="primary"
+              className={styles.button}
+            >
+              {loading ? <CircularProgress style={{ fontSize: '1rem', width: '1rem', height: '1rem' }} /> : 'Verify'}
+            </Button>
+            <Button
               onClick={handleResendOTP}
               disabled={wait30sec}
+              variant="text"
+              color="primary"
             >
               {wait30sec ? `Resend OTP in 30s` : 'Resend OTP'}
-            </button>
+            </Button>
+          </form>
         </div>
       </div>
-    </div>
+    </ThemeProvider>
+
   );
 };
 

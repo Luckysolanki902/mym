@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './componentStyles/confession.module.css';
 import Image from 'next/image';
 import { FaHeart, FaComment, FaTimes } from 'react-icons/fa';
@@ -6,15 +6,12 @@ import Avatar from 'avataaars';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import { IoSend } from "react-icons/io5";
+import { IoIosSend } from "react-icons/io";
+import { TextField, Button } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 
-
-
-
-
-const Confession = ({ confession, userDetails }) => {
+const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => {
+  const isSmallDevice = useMediaQuery('(max-width:800px)');
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(confession.likes.length);
   const [commentAvatars, setCommentAvatars] = useState([]);
@@ -22,6 +19,30 @@ const Confession = ({ confession, userDetails }) => {
   const [commentValue, setCommentValue] = useState('');
   const [commentsCount, setCommentsCount] = useState('')
   const [isCommentDialogOpen, setCommentDialogOpen] = useState(false);
+  const [isAnonymousReplyDialogOpen, setAnonymousReplyDialogOpen] = useState(false);
+  const [anonymousReplyValue, setAnonymousReplyValue] = useState('');
+  const [gender, setGender] = useState('')
+
+
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    console.log('Dialog open state:', isAnonymousReplyDialogOpen);
+    if (inputRef.current && isAnonymousReplyDialogOpen) {
+      inputRef.current.focus();
+      console.log('focussing')
+    }
+  }, [isAnonymousReplyDialogOpen]);
+
+
+  const openAnonymousReplyDialog = () => {
+    setAnonymousReplyDialogOpen(true);
+  };
+
+  const closeAnonymousReplyDialog = () => {
+    setAnonymousReplyDialogOpen(false);
+  };
+
   const getRandomOption = (options) => {
     const randomIndex = Math.floor(Math.random() * options.length);
     return options[randomIndex];
@@ -61,6 +82,16 @@ const Confession = ({ confession, userDetails }) => {
     setCommentDialogOpen(!isCommentDialogOpen);
   };
 
+  useEffect(() => {
+    if (applyGenderBasedGrandients && confession.gender === 'male') {
+      setGender('male')
+    }
+
+    if (applyGenderBasedGrandients && confession.gender === 'female') {
+      setGender('female')
+    }
+
+  }, confession)
 
   useEffect(() => {
     // Fetch likes for the confession
@@ -117,7 +148,7 @@ const Confession = ({ confession, userDetails }) => {
       // Save like operation locally (for offline support)
       localStorage.setItem('pendingLikeOperation', JSON.stringify(likeOperation));
 
-      const response = await fetch(`/api/likeconfession`, {
+      const response = await fetch(`/api/confession/likeconfession`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -176,10 +207,51 @@ const Confession = ({ confession, userDetails }) => {
       console.error('Error:', error);
     }
   };
+  const handleAnonymousReply = async () => {
+    try {
+      const { encryptedEmail, iv } = confession;
+      const replyData = {
+        confessionId: confession._id,
+        encryptedEmail,
+        iv,
+        replyContent: anonymousReplyValue,
+      };
+
+      const response = await fetch('/api/confession/saveanonymousreply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(replyData),
+      });
+
+      if (response.ok) {
+        console.log('Anonymous reply sent successfully');
+        setAnonymousReplyValue('')
+        // You may want to update the UI or trigger a refresh of the replies
+      } else {
+        console.error('Error saving anonymous reply');
+      }
+    } catch (error) {
+      console.error('Error saving anonymous reply:', error);
+    } finally {
+      closeAnonymousReplyDialog();
+    }
+  };
+  useEffect(() => {
+    console.log(gender, applyGenderBasedGrandients)
+
+  }, [gender, applyGenderBasedGrandients])
+
+  const handleClick = () => {
+    if (isSmallDevice) {
+      openAnonymousReplyDialog();
+    }
+  };
 
   return (
     <div className={styles.mainDiv}>
-      <div className={styles.mainContainer}>
+      <div className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`}>
         <div className={styles.textarea}>
           {confession.confessionContent}
         </div>
@@ -188,19 +260,35 @@ const Confession = ({ confession, userDetails }) => {
         </div>
       </div>
       <div className={styles.confessionfooter}>
-        <div className={styles.likes} onClick={handleLike} style={{ cursor:'pointer' }}>
+        <div className={styles.likes} onClick={handleLike} style={{ cursor: 'pointer' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <FaHeart style={{ color: liked ? 'red' : 'white', width: '2rem', height: 'auto', }} />
+            <FaHeart style={{ color: liked ? 'red' : 'white' }} className={styles.iconm} />
           </div>
           <div>{likesCount}</div>
         </div>
-        <div className={styles.likes} onClick={toggleCommentsDialog} style={{ cursor:'pointer' }}>
+        <div className={styles.likes} onClick={toggleCommentsDialog} style={{ cursor: 'pointer' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <FaComment style={{ color: 'white', width: '2rem', height: 'auto',}} />
+            <FaComment style={{ color: 'white', }} className={styles.iconm} />
           </div>
           <div>{commentsCount}</div>
         </div>
-        <div className={styles.reply}><input className={styles.anonymInput} type="text" placeholder='Send a message anonymously...' /></div>
+        <div className={styles.reply} onClick={handleClick}>
+          <input className={styles.anonymInput} type="text" placeholder='Reply anonymously...'
+            value={anonymousReplyValue}
+            onChange={(e) => setAnonymousReplyValue(e.target.value)}
+          />
+          <button
+            className={styles.comBtn}
+            id={styles.anonsendbtn}
+            variant="text"
+            color="primary"
+            style={{ height: '100%', cursor: 'pointer' }}
+            onClick={handleAnonymousReply}
+            disabled={anonymousReplyValue.trim() === ''}
+          >
+            <IoIosSend style={{ width: '100%', height: 'auto' }} className={styles.iosendanon} />
+          </button>
+        </div>
       </div>
 
       <Dialog open={isCommentDialogOpen} onClose={toggleCommentsDialog} fullWidth maxWidth="md">
@@ -210,9 +298,9 @@ const Confession = ({ confession, userDetails }) => {
             <FaTimes style={{ cursor: 'pointer' }} onClick={toggleCommentsDialog} />
           </div>
         </DialogTitle>
-        <DialogContent style={{display:'flex', flexDirection:'column', height:'100%'}}>
+        <DialogContent style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           {/* Comment input and display */}
-          <div className={styles.comments} style={{flex:'1',overflowY: 'auto', marginBottom:'1rem'}}>
+          <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
             <div className={styles.comments}>
 
               {comments.map((comment, index) => (
@@ -247,13 +335,50 @@ const Confession = ({ confession, userDetails }) => {
               color="primary"
               onClick={handleCommentSubmit}
               disabled={commentValue.trim() === ''}
-              style={{ height: '100%', cursor:'pointer'}}
+              style={{ height: '100%', cursor: 'pointer' }}
             >
-              <IoSend style={{width:'100%', height:'auto'}}/>
+              <IoIosSend style={{ width: '100%', height: 'auto' }} />
             </button>
           </div>
         </DialogContent>
       </Dialog>
+
+
+      {/* Anon. dialog________________ */}
+      <Dialog
+        open={isAnonymousReplyDialogOpen}
+        onClose={closeAnonymousReplyDialog}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>
+          Reply Anonymously
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            multiline
+            rows={4}
+            fullWidth
+            autoFocus
+            ref={inputRef}
+            variant="outlined"
+            placeholder="Type your anonymous reply here..."
+            style={{ marginTop: '0.1rem' }}
+            value={anonymousReplyValue}
+            onChange={(e) => setAnonymousReplyValue(e.target.value)}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAnonymousReply}
+            disabled={anonymousReplyValue.trim() === ''}
+            className={styles.anonymdianlogbtn}
+          >
+            Send
+          </Button>
+        </DialogContent>
+      </Dialog>
+
 
     </div>
   );

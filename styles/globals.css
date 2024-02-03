@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;1,100;1,300&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inknut+Antiqua:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Krona+One&display=swap');
 
 :root {
   --sidebarwidth: 6vw;
@@ -23,6 +24,10 @@ html,
 
 * {
   box-sizing: border-box;
+}
+
+*::-webkit-scrollbar {
+  display: none;
 }
 
 @font-face {
@@ -90,6 +95,7 @@ html,
     display: none;
   }
 }
+
 @media (width < 600px) {
   :root {
     --inputboxheight: 2rem;

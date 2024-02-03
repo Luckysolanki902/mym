@@ -6,21 +6,38 @@
   display: flex;
   flex-direction: column;
   /* background-color: var(--lightpink); */
+  position: relative;
 
 }
 
 
-.messages {
+.messCon{
   display: flex;
-  flex-direction: column-reverse;
-  padding: 1rem 0;
+  flex-direction: column;
   justify-content: flex-start;
+  padding-bottom: 1rem;
   overflow-y: auto;
   height: 100%;
   flex: 1;
   height: calc(var(--remheight) - var(--inputboxheight) - 2rem);
   max-height: calc(var(--remheight) - var(--inputboxheight) - 2rem);
   align-content: flex-start;
+  background: none;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  justify-content: flex-end;
+  overflow-y: auto;
+  height: 100%;
+  flex: 1;
+  /* height: calc(var(--remheight) - var(--inputboxheight) - 2rem); */
+  max-height: calc(var(--remheight) - var(--inputboxheight) - 2rem);
+  margin-bottom: -1.2rem;
+  align-content: flex-start;
+  /* box-shadow: 0px -3px 3px 1px rgba(128, 128, 128, 0.197) inset; */
 }
 
 
@@ -40,6 +57,7 @@
   border-radius: 2.625rem;
   background: linear-gradient(180deg, #6AE9D9 0%, #B4EEFF 100%);
 }
+
 .femaleMsg {
   border-radius: 2.625rem;
 
@@ -60,17 +78,21 @@
 }
 
 .isTyping {
-  text-align: center;
-  margin-bottom: -1.5rem;
-  color: #2D2D2D;
-  text-align: center;
-  font-family: "Inknut Antiqua";
-  font-size: 1rem;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-
+/* margin-top: -1rem; */
+text-align: center;
+margin-bottom: -1.5rem;
+color: #2D2D2D;
+text-align: center;
+font-family: "Inknut Antiqua";
+font-size: 1rem;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+/* background-color: rgba(255, 255, 255, 0.834); */
+transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
+
+
 
 .isTyping img {
   width: 2rem;
@@ -86,15 +108,15 @@
 @media (width<650px) {
   .left {
     justify-content: left;
-    min-width: 50%;
-text-align: left;
-max-width: 70%;
+    min-width: 30%;
+    text-align: left;
+    max-width: 70%;
   }
 
   .right {
     justify-content: right;
     float: right;
-    min-width: 50%;
+    min-width: 30%;
     text-align: left;
     max-width: 70%;
 
@@ -104,7 +126,11 @@ max-width: 70%;
 
 
 
-
+.filterPos {
+  position: fixed;
+  top: calc(var(--topbarheight) + 0.5rem);
+  right: 1rem;
+}
 
 
 
@@ -143,8 +169,7 @@ max-width: 70%;
   height: calc(var(--inputboxheight) + 1rem);
   padding: 0rem;
   padding-left: 1rem;
-  transition: all 0.3s ease-in-out;
-
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 /* New button */
@@ -155,7 +180,6 @@ max-width: 70%;
   background: #E9E9E9;
   border: none;
   margin-right: 0.5rem;
-  height: calc(var(--inputboxheight) - 1rem);
   padding: 0;
   font-size: 1.2rem;
   margin-left: 0.4rem;
@@ -191,6 +215,11 @@ max-width: 70%;
 
 }
 
+.textBox::selection {
+  background-color: #2d2d2ddf;
+  color: white;
+}
+
 .randomIcon {
   width: 3.5rem;
   height: auto;
@@ -203,17 +232,19 @@ max-width: 70%;
   height: auto;
 }
 
-.inpFocus {
-  scale: 0.992;
-}
+/* .inpFocus {
+  scale: 0.995;
+} */
 
 .inputContainerMainDiv button {
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .inputContainerMainDiv button:hover {
   scale: 0.98;
 }
+
+
 
 
 @media (width<800px) {
@@ -243,14 +274,15 @@ max-width: 70%;
     color: black;
     opacity: 0.8;
   }
-.newButton2{
-  transform: translateX(0%);
-}
+
+  .newButton2 {
+    transform: translateX(0%);
+  }
 
 
 }
 
-@media (width< 600px){
+@media (width< 600px) {
   .randomIcon {
     width: 3rem;
     height: auto;
@@ -258,13 +290,11 @@ max-width: 70%;
     opacity: 0.8;
     filter: drop-shadow(5px 2px 2px gray);
   }
+
   .textBox {
     font-size: 1rem;
   }
 
-  .textBox::selection{
-    background-color: #2d2d2d;
-  }
 
 
   .sendIcon {
@@ -277,22 +307,30 @@ max-width: 70%;
   .isTyping {
     margin-bottom: -1.2rem;
     font-size: 0.8rem;
-  
+
   }
-  
+
   .isTyping img {
     width: 2rem;
     height: auto;
     transform: translateY(20%);
     opacity: 0.7;
   }
-  .newButton2{
-    
-min-width: 3rem;
+
+  .newButton2 {
+
+    min-width: 3rem;
   }
 
-  .textBox{
+  .textBox {
     margin-right: 0.5rem;
   }
-  
+
+}
+.isTypinghz{
+  height: 0;
+}
+
+.nopadb{
+  padding-bottom: 0;
 }

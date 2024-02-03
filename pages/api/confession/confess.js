@@ -26,7 +26,7 @@ const handler = async (req, res) => {
     });
 
     const savedConfession = await newConfession.save();
-    res.status(201).json({ message: 'Confession stored successfully', savedConfession });
+    res.status(201).json({ message: 'Confession stored successfully', confessionId: savedConfession._id });
   } catch (error) {
     console.error('Error storing confession:', error);
     res.status(500).json({ error: 'Unable to store confession', detailedError: error.message });

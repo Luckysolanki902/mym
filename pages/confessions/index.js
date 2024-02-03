@@ -72,7 +72,7 @@ const Index = () => {
         <p>Loading...</p>
       ) : (
         confessions.map((confession) => (
-          <Confession key={confession._id} confession={confession} userDetails={userDetails} />
+          <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true}/>
         ))
       )}
     </div>

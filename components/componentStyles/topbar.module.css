@@ -1,0 +1,130 @@
+.mainDiv {
+    display: flex;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: var(--mymblack);
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    padding-left: 1rem;
+}
+
+
+
+
+
+/* Drawer__________________________ */
+
+.MainCont {
+    width: 280px;
+    background-color: var(--mymblack);
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.MainCont * {
+    text-decoration: none;
+}
+
+.list {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+
+}
+
+.link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.imageCont {
+    width: 100%;
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.logoImage {
+    width: 60%;
+    height: auto;
+    overflow: hidden;
+}
+
+
+.sideBarLinks {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    width: 100%;
+    
+}
+
+.sideBarListItem {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 1rem;
+    overflow: hidden;
+    padding: 0.3rem 0.5rem;
+}
+
+.activeListItem {
+    background-color: rgba(211, 211, 211, 0.3);
+    text-decoration: none;
+}
+
+.sideIcon {
+    font-size: 25px;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    overflow: hidden;
+}
+
+
+
+
+.linkText {
+    color: white;
+    text-decoration: none;
+    font-family: 'Krona One', Inter;
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 100;
+
+}
+
+
+/* The hamburger icon_____________________ */
+.menuIcon {
+    color: white;
+    font-size: 55px;
+}
+
+@media (width<800px) {
+    .mainDiv {
+        justify-content: space-between;
+    }
+
+}
+@media (width>=800px){
+    .mainDiv{
+        padding-left: 3.5rem;
+    }
+    .drawermain{
+        display: none;
+    }
+}
