@@ -9,6 +9,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { IoIosSend } from "react-icons/io";
 import { TextField, Button } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
+import { useInView } from 'react-intersection-observer';
+import Typewriter from 'typewriter-effect';
+
 
 const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => {
   const isSmallDevice = useMediaQuery('(max-width:800px)');
@@ -22,6 +25,9 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
   const [isAnonymousReplyDialogOpen, setAnonymousReplyDialogOpen] = useState(false);
   const [anonymousReplyValue, setAnonymousReplyValue] = useState('');
   const [gender, setGender] = useState('')
+  const [delay, setDelay] = useState(40);
+  const [likeanimation, setlikeanimation] = useState('')
+
 
 
   const inputRef = useRef(null);
@@ -137,6 +143,15 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
     try {
       // Optimistic UI update
       setLiked(!liked);
+      if (!liked) {
+
+        setlikeanimation('likeAnim')
+        console.log('likeAnim')
+      } else {
+        setlikeanimation('unlikeAnim')
+        console.log('unlikeAnim')
+
+      }
       setLikesCount((prevCount) => (liked ? prevCount - 1 : prevCount + 1));
 
       const likeOperation = {
@@ -248,12 +263,31 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       openAnonymousReplyDialog();
     }
   };
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+  });
 
   return (
-    <div className={styles.mainDiv}>
-      <div className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`}>
+    <div ref={ref} className={styles.mainDiv}>
+      <div className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`} onClick={() => setDelay(0)}>
         <div className={styles.textarea}>
-          {confession.confessionContent}
+          {inView ? (
+            // Use Typewriter component instead of the old TypingEffect
+            <Typewriter
+              options={{
+                strings: [confession.confessionContent],
+                autoStart: true,
+                loop: false,
+                delay: delay,
+                deleteSpeed: 20, // Speed of deleting characters
+                pauseFor: 150000, 
+                onComplete: () => setSpeed(0), // Stop the animation when it's complete
+              }}
+            />
+          ) : (
+            // Display an empty span to preserve the layout
+            <span >{confession.confessionContent}</span>
+          )}
         </div>
         <div style={{ textAlign: 'right', margin: '1rem 0' }} className={styles.masks}>
           <Image src={'/images/othericons/masks.png'} width={512} height={512} alt='' />
@@ -262,7 +296,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       <div className={styles.confessionfooter}>
         <div className={styles.likes} onClick={handleLike} style={{ cursor: 'pointer' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <FaHeart style={{ color: liked ? 'red' : 'white' }} className={styles.iconm} />
+            <FaHeart className={`${styles.iconm} ${liked ? styles.redheart : ''} ${likeanimation ? styles[likeanimation] : ''}`} />
           </div>
           <div>{likesCount}</div>
         </div>

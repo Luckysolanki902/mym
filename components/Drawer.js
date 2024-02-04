@@ -49,9 +49,9 @@ export default function SwipeableTemporaryDrawer(props) {
             <List className={styles.list}>
                 {[
                     { text: 'Home', href: '/' },
-                    { text: 'Option 2', href: '/#homecontactdiv' },
-                    { text: 'Option 3', href: '/#searchyourbikeinput' },
-                    { text: 'Option 4', href: '/bikenotfound' },
+                    { text: 'Random Chat', href: '/textchat' },
+                    { text: 'Confessions', href: '/confessions' },
+                    { text: 'Write Confession', href: '/create-confession' },
                 ].map((item, index) => (
                     <ListItem
                         key={item.text}
@@ -61,13 +61,35 @@ export default function SwipeableTemporaryDrawer(props) {
                             <ListItemButton className={styles.sideBarListItem}>
                                 <ListItemIcon className={styles.listItemIcon}>
                                     {index === 0 ? (
-                                        <HomeRoundedIcon className={styles.sideIcon} />
-                                    ) : index === 1 ? (
-                                        <PhoneIcon className={styles.sideIcon} />
-                                    ) : index === 2 ? (
-                                        <SearchIcon className={styles.sideIcon} />
-                                    ) : (
-                                        <ReportProblemRoundedIcon className={styles.sideIcon} />
+                                        <Image
+                                            src={'/images/sidebaricons/home.png'}
+                                            width={512 / 3}
+                                            height={512 / 3}
+                                            alt='icon'
+                                            className={`${styles.iconspng1} ${styles.sideIcon}`}
+                                        />) : index === 1 ? (
+                                            <Image
+                                                src={'/images/sidebaricons/randomchat.png'}
+                                                width={1080 / 10}
+                                                height={720 / 10}
+                                                alt='icon'
+                                                className={`${styles.iconspng2} ${styles.sideIcon}`}
+                                            />
+                                        ) : index === 2 ? (
+                                            <Image
+                                                src={'/images/sidebaricons/confessions.png'}
+                                                width={545 / 10}
+                                                height={720 / 10}
+                                                alt='icon'
+                                                className={`${styles.iconspng3} ${styles.sideIcon}`}
+                                            />) : (
+                                        <Image
+                                            src={'/images/sidebaricons/createconfession.png'}
+                                            width={225 / 2}
+                                            height={272 / 2}
+                                            alt='icon'
+                                            className={`${styles.iconspng4} ${styles.sideIcon}`}
+                                        />
                                     )}
                                 </ListItemIcon>
                                 <ListItemText
@@ -90,7 +112,7 @@ export default function SwipeableTemporaryDrawer(props) {
         <div className={styles.drawermain}>
             <Button
                 onClick={toggleDrawer('right', true)}
-                startIcon={<MenuIcon className={styles.menuIcon} style={{fontSize:'40px'}}/>}
+                startIcon={<MenuIcon className={styles.menuIcon} style={{ fontSize: '40px' }} />}
             >
             </Button>
             <SwipeableDrawer

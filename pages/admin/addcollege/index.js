@@ -36,7 +36,7 @@ const AddCollege = () => {
   };
 
   return (
-    <div style={{ display: 'block' }}>
+    <div style={{ display: 'block', backgroundColor:'rgb(35,35,35)', margin:'0', padding:'0', }}>
       <div
         style={{
           display: 'flex',
@@ -44,7 +44,6 @@ const AddCollege = () => {
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: '100vh',
-          padding: '20px',
         }}
       >
         <div
@@ -54,6 +53,7 @@ const AddCollege = () => {
             boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
             maxWidth: '400px',
             width: '100%',
+            backgroundColor:'rgb(45, 45, 45)'
           }}
         >
           <form onSubmit={handleSubmit} style={{display:'flex', flexDirection:'column', gap:'2rem'}}>

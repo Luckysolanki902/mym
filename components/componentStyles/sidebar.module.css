@@ -9,14 +9,26 @@
     gap: 2rem;
 }
 
-.iconspng {
-    width: 3rem;
+.iconspng1 {
+    width: 2rem;
+    height: auto;
+}
+.iconspng2 {
+    width: 2.7rem;
+    height: auto;
+}
+.iconspng3 {
+    width: 2rem;
+    height: auto;
+}
+.iconspng4 {
+    width: 2rem;
     height: auto;
 }
 
+
 .active .iconspng {
-    width: 3rem;
-    height: auto;
+    color: rgb(0, 243, 247);
     filter: drop-shadow(2px 4px 2px rgba(0, 0, 0, 0.3));
 }
 

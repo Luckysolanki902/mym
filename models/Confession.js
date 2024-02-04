@@ -26,6 +26,13 @@ const confessionSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: 'Like',
   }],
+  showForAllColleges: {
+    type: String,
+  },
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Comment',
+  }],
   timestamps: {
     type: Date,
     default: Date.now,

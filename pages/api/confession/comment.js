@@ -1,10 +1,19 @@
-import Comment from '@/models/Comment';
 import connectToMongo from '@/middleware/middleware';
+import Comment from '@/models/Comment';
+import Confession from '@/models/Confession';
 
 const handler = async (req, res) => {
-    const { email,gender, confessionId, commentContent } = req.body;
+    const { email, gender, confessionId, commentContent } = req.body;
 
     try {
+        // Check if the confession exists
+        const confession = await Confession.findById(confessionId);
+
+        if (!confession) {
+            return res.status(404).json({ error: 'Confession not found.' });
+        }
+
+        // Create a new comment
         const newComment = new Comment({
             userEmail: email,
             gender,
@@ -12,7 +21,11 @@ const handler = async (req, res) => {
             commentContent,
         });
 
+        // Save the comment
         const savedComment = await newComment.save();
+
+        // Update the Confession document to include the new comment reference
+        await Confession.findByIdAndUpdate(confessionId, { $push: { comments: savedComment._id } });
 
         res.status(201).json({ message: 'Comment stored successfully', savedComment });
     } catch (error) {

@@ -88,12 +88,26 @@
 }
 
 .sideIcon {
+    width: 1.5rem;
+    filter: invert(1);
+    height: auto;
     font-size: 25px;
     color: rgb(255, 255, 255);
     cursor: pointer;
     overflow: hidden;
 }
-
+.iconspng1{
+    width: 1.4rem;
+}
+.iconspng2{
+    width: 2rem;
+}
+.iconspng3{
+    width: 1.6rem;
+}
+.iconspng1{
+    width: 1.4rem;
+}
 
 
 
