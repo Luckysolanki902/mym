@@ -15,6 +15,7 @@ import Typewriter from 'typewriter-effect';
 
 const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => {
   const isSmallDevice = useMediaQuery('(max-width:800px)');
+  const [delay, setDelay] = useState(40);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(confession.likes.length);
   const [commentAvatars, setCommentAvatars] = useState([]);
@@ -25,7 +26,6 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
   const [isAnonymousReplyDialogOpen, setAnonymousReplyDialogOpen] = useState(false);
   const [anonymousReplyValue, setAnonymousReplyValue] = useState('');
   const [gender, setGender] = useState('')
-  const [delay, setDelay] = useState(40);
   const [likeanimation, setlikeanimation] = useState('')
 
 
@@ -281,7 +281,6 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
                 delay: delay,
                 deleteSpeed: 20, // Speed of deleting characters
                 pauseFor: 150000, 
-                onComplete: () => setSpeed(0), // Stop the animation when it's complete
               }}
             />
           ) : (
