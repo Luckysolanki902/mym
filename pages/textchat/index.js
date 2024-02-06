@@ -11,15 +11,17 @@ import { IoSend } from "react-icons/io5";
 import Image from 'next/image';
 import { IoIosSend } from "react-icons/io";
 import { IoFilterSharp } from "react-icons/io5";
+import { useAuth } from '@/AuthContext';
 
 const ChatPage = () => {
   const { data: session, status } = useSession();
+  const { loading, userDetails } = useAuth();
+  const router = useRouter();
+  
+  
   const [socket, setSocket] = useState(null);
-  const [userEmail, setUserEmail] = useState('');
   const [textValue, setTextValue] = useState('');
   const [messages, setMessages] = useState([]);
-  const [userCollege, setUserCollege] = useState('');
-  const [userGender, setUserGender] = useState('');
   const [isFindingPair, setIsFindingPair] = useState(false);
   const [strangerDisconnectedMessageDiv, setStrangerDisconnectedMessageDiv] = useState(false);
   const [preferredGender, setPreferredGender] = useState('any');
@@ -36,13 +38,8 @@ const ChatPage = () => {
   const [inpFocus, setInpFocus] = useState(false)
   const typingTimeoutRef = useRef(null);
   const messagesContainerRef = useRef(null);
-  const inputRef = useRef(null);
+  
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
 
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
@@ -56,43 +53,21 @@ const ChatPage = () => {
 
 
 
-  const router = useRouter();
 
-
-  // Function to fetch user details
-  useEffect(() => {
-    if (userEmail) {
-      fetchUserDetails(userEmail);
-    }
-  }, [userEmail]);
-
-  const fetchUserDetails = async (email) => {
-    try {
-      const response = await fetch(`/api/getdetails/getuserdetails?userEmail=${email}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok.');
-      }
-      const userData = await response.json();
-      setUserCollege(userData.college || 'Not Available');
-      setUserGender(userData.gender || 'Not Available');
-    } catch (error) {
-      console.error('Error fetching user details:', error);
-    }
-  };
 
 
   const [filters, setFilters] = useState({
-    college: userCollege,
-    strangerGender: userGender === 'male' ? 'female' : 'male',
+    college: userDetails?.college,
+    strangerGender: userDetails?.gender === 'male' ? 'female' : 'male',
   });
 
   useEffect(() => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      college: userCollege || 'any',
-      preferredGender: userGender === 'male' ? 'female' : 'male',
+      college: userDetails?.college || 'any',
+      preferredGender: userDetails?.gender === 'male' ? 'female' : 'male',
     }));
-  }, [userCollege, userGender]);
+  }, [userDetails]);
 
   useEffect(() => {
     setPreferredCollege(filters.college)
@@ -114,12 +89,12 @@ const ChatPage = () => {
     }
     newSocket.on('connect', () => {
       console.log('Connected to server');
-      if (userEmail && userGender && userCollege && preferredCollege && preferredGender) {
+      if (userDetails && preferredCollege && preferredGender) {
         // Identify user and send preferences to the server
         newSocket.emit('identify', {
-          userEmail: userEmail,
-          userGender: userGender,
-          userCollege: userCollege,
+          userEmail: userDetails?.email,
+          userGender: userDetails?.gender,
+          userCollege: userDetails?.college,
           preferredGender: preferredGender,
           preferredCollege: preferredCollege,
         });
@@ -136,7 +111,6 @@ const ChatPage = () => {
           setStrangerDisconnectedMessageDiv(false)
           setIsFindingPair(false);
           const { roomId, strangerGender, stranger } = data;
-
           setRoom(roomId);
           setReceiver(stranger);
           setStrangerGender(strangerGender);
@@ -186,20 +160,18 @@ const ChatPage = () => {
         newSocket.disconnect();
       }
     };
-  }, [userEmail, userGender, userCollege, preferredCollege, preferredGender]);
+  }, [userDetails, preferredCollege, preferredGender]);
 
 
   const handleFindNew = useCallback(() => {
-
     if (socket) {
       setIsFindingPair(true); // Set finding pair state to true
       setStrangerDisconnectedMessageDiv(false)
       setMessages([])
-
       socket.emit('findNewPair', {
-        userEmail: userEmail,
-        userGender: userGender,
-        userCollege: userCollege,
+        userEmail: userDetails?.email,
+        userGender: userDetails?.gender,
+        userCollege: userDetails?.college,
         preferredGender: preferredGender,
         preferredCollege: preferredCollege,
       }); // Send request to find a new pair with all details variables
@@ -210,7 +182,7 @@ const ChatPage = () => {
         setIsFindingPair(false); // Set finding pair state to false after the timeout (Remove this in actual implementation)
       }, 10000); // Replace 3000 with your desired duration or remove it in actual implementation
     }
-  }, [socket, userEmail, userGender, userCollege, preferredGender, preferredCollege]);
+  }, [socket, userDetails, preferredGender, preferredCollege]);
 
 
   const handleReceivedMessage = useCallback((data) => {
@@ -235,7 +207,7 @@ const ChatPage = () => {
     }
     setMessages(prevMessages => [
       ...prevMessages,
-      { sender: userEmail, message: textValue.trim() },
+      { sender: userDetails?.email, message: textValue.trim() },
     ]);
     scrollToBottom()
   }, [textValue, sendMessage]);
@@ -248,23 +220,9 @@ const ChatPage = () => {
     setSnackbarOpen(false);
   }, []);
 
-  useEffect(() => {
-    // Logic to handle snackbar messages for stranger connections
-  }, []);
 
-  useEffect(() => {
-    if (session?.user?.email) {
-      setUserEmail(session.user?.email);
-    }
-  }, [session]);
 
-  if (status === 'loading') {
-    return <p>Loading...</p>;
-  }
 
-  if (!session) {
-    return null;
-  }
 
   // handle partner's typing
   const handleTyping = (event) => {
@@ -305,9 +263,8 @@ const ChatPage = () => {
         <FilterOptions
           filters={filters}
           setFilters={setFilters}
-          userCollege={userCollege}
-          userGender={userGender}
-          setUserGender={setUserGender}
+          userCollege={userDetails?.college}
+          userGender={userDetails?.gender}
         />
       </div>
       <div className={`${styles.messCon} ${!hasPaired && !userIsTyping && styles.nopadb}`}>
@@ -316,14 +273,14 @@ const ChatPage = () => {
           {messages.map((msg, index) => (
             <div key={index}>
               <div
-                className={`${styles.message} ${msg.sender === userEmail ? styles.right : styles.left}`}
+                className={`${styles.message} ${msg.sender === userDetails?.email ? styles.right : styles.left}`}
               >
-                <div className={`${styles.text} ${msg.sender === userEmail ?
-                  (userGender === 'male' ? styles.maleMsg : styles.femaleMsg) :
+                <div className={`${styles.text} ${msg.sender === userDetails?.email ?
+                  (userDetails?.gender === 'male' ? styles.maleMsg : styles.femaleMsg) :
                   (msg.sender === receiver ?
-                    (userGender === 'male' ? styles.femaleMsg : styles.maleMsg) :
-                    (strangerGender === userGender ? styles.sMsg :
-                      (userGender === 'male' ? styles.femaleMsg : styles.maleMsg)))
+                    (userDetails?.gender === 'male' ? styles.femaleMsg : styles.maleMsg) :
+                    (strangerGender === userDetails?.gender ? styles.sMsg :
+                      (userDetails?.gender === 'male' ? styles.femaleMsg : styles.maleMsg)))
                   }`}
                 >
                   {msg.message}
@@ -364,7 +321,6 @@ const ChatPage = () => {
                 name="messageBox"
                 spellCheck='false'
                 autoCorrect='false'
-                ref={inputRef}
                 placeholder={'Start typing...'}
                 autoFocus
                 type='text'

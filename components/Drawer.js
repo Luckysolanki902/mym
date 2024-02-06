@@ -50,7 +50,7 @@ export default function SwipeableTemporaryDrawer(props) {
                 {[
                     { text: 'Home', href: '/' },
                     { text: 'Random Chat', href: '/textchat' },
-                    { text: 'Confessions', href: '/confessions' },
+                    { text: 'Confessions', href: '/all-confessions' },
                     { text: 'Write Confession', href: '/create-confession' },
                 ].map((item, index) => (
                     <ListItem

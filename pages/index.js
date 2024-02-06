@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
-
 const inter = Inter({ subsets: ['latin'] })
+import { signOut } from 'next-auth/react'
 
 export default function Home() {
   return (
@@ -16,7 +16,8 @@ export default function Home() {
         <div>  <a href="/auth/signin">Login</a></div>
         <div>  <a href="/auth/signup">Create Account</a></div>
         <div style={{ margin: '3rem' }}>  <a href="/textchat">Chat</a></div>
-        <div style={{ margin: '3rem' }}>  <a href="/confessions">Confessions</a></div>
+        <div style={{ margin: '3rem' }}>  <a href="/all-confessions">Confessions</a></div>
+        <button onClick={()=>signOut()}>Signout</button>
       </main>
     </>
   )

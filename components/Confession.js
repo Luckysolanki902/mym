@@ -6,12 +6,12 @@ import Avatar from 'avataaars';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { IoIosSend } from "react-icons/io";
+import { IoIosSend } from 'react-icons/io';
 import { TextField, Button } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
 import { useInView } from 'react-intersection-observer';
 import Typewriter from 'typewriter-effect';
-
+import AuthPrompt from '@/components/AuthPrompt';
 
 const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => {
   const isSmallDevice = useMediaQuery('(max-width:800px)');
@@ -21,25 +21,30 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
   const [commentAvatars, setCommentAvatars] = useState([]);
   const [comments, setComments] = useState([]);
   const [commentValue, setCommentValue] = useState('');
-  const [commentsCount, setCommentsCount] = useState('')
+  const [commentsCount, setCommentsCount] = useState('');
   const [isCommentDialogOpen, setCommentDialogOpen] = useState(false);
   const [isAnonymousReplyDialogOpen, setAnonymousReplyDialogOpen] = useState(false);
   const [anonymousReplyValue, setAnonymousReplyValue] = useState('');
-  const [gender, setGender] = useState('')
-  const [likeanimation, setlikeanimation] = useState('')
+  const [gender, setGender] = useState('');
+  const [likeanimation, setlikeanimation] = useState('');
+  const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
 
+  const handleOpenAuthPrompt = () => {
+    setIsAuthPromptOpen(true);
+  };
 
+  const handleCloseAuthPrompt = () => {
+    setIsAuthPromptOpen(false);
+  };
 
   const inputRef = useRef(null);
 
   useEffect(() => {
-    console.log('Dialog open state:', isAnonymousReplyDialogOpen);
     if (inputRef.current && isAnonymousReplyDialogOpen) {
       inputRef.current.focus();
-      console.log('focussing')
+      console.log('focussing');
     }
   }, [isAnonymousReplyDialogOpen]);
-
 
   const openAnonymousReplyDialog = () => {
     setAnonymousReplyDialogOpen(true);
@@ -55,12 +60,42 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
   };
 
   const getRandomColor = () => {
-    const colors = ['black', 'blue01', 'blue02', 'blue03', 'gray01', 'gray02', 'heather', 'pastelBlue', 'pastelGreen', 'pastelOrange', 'pastelRed', 'pastelYellow', 'pink', 'red', 'white'];
+    const colors = [
+      'black',
+      'blue01',
+      'blue02',
+      'blue03',
+      'gray01',
+      'gray02',
+      'heather',
+      'pastelBlue',
+      'pastelGreen',
+      'pastelOrange',
+      'pastelRed',
+      'pastelYellow',
+      'pink',
+      'red',
+      'white',
+    ];
     return getRandomOption(colors);
   };
 
-  const optionsForMale = ['ShortHairShortWaved', 'ShortHairShortCurly', 'ShortHairShaggyMullet']
-  const optionsForFemale = ['LongHairMiaWallace', 'LongHairBigHair', 'LongHairBob', 'LongHairCurly', 'LongHairCurvy', 'LongHairNotTooLong', 'LongHairStraight', 'LongHairStraight2', 'LongHairStraightStrand']
+  const optionsForMale = [
+    'ShortHairShortWaved',
+    'ShortHairShortCurly',
+    'ShortHairShaggyMullet',
+  ];
+  const optionsForFemale = [
+    'LongHairMiaWallace',
+    'LongHairBigHair',
+    'LongHairBob',
+    'LongHairCurly',
+    'LongHairCurvy',
+    'LongHairNotTooLong',
+    'LongHairStraight',
+    'LongHairStraight2',
+    'LongHairStraightStrand',
+  ];
   const getRandomAvatarProperties = (gender = 'male') => {
     const options = gender === 'male' ? optionsForMale : optionsForFemale;
     return {
@@ -68,17 +103,82 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       svgBackground: getRandomColor(),
       skin: 'light',
       topType: getRandomOption(options),
-      accessoriesType: getRandomOption(['Wayfarers', 'Blank', 'Kurt', 'Prescription01', 'Prescription02', 'Round', 'Sunglasses']),
-      hairColor: getRandomOption(['BrownDark', 'Brown', 'BlondeGolden', 'Blonde', 'Black', 'Auburn']),
-      clotheType: getRandomOption(['Hoodie', 'BlazerShirt', 'BlazerSweater', 'CollarSweater', 'GraphicShirt', 'ShirtCrewNeck', 'ShirtVNeck', 'ShirtScoopNeck']),
-      clotheColor: getRandomOption(['Black', 'Blue01', 'Blue02', 'Blue03', 'Gray01', 'Gray02', 'Heather', 'PastelBlue', 'PastelGreen', 'PastelRed', 'PastelOrange', 'PastelYellow', 'Pink', 'Red', 'White']),
-      eyeType: getRandomOption(['Close', 'Default', 'Dizzy', 'EyeRoll', 'Happy', 'Side', 'Wink', 'WinkWacky']),
-      eyebrowType: getRandomOption(['Angry', 'AngryNatural', 'Default', 'DefaultNatural', 'FlatNatural', 'RaisedExcited', 'RaisedExcitedNatural', 'SadConcerned', 'SadConcernedNatural']),
-      mouthType: getRandomOption(['Smile', 'Twinkle', 'Tongue', 'Serious', 'Disbelief', 'Default', 'ScreamOpen']),
+      accessoriesType: getRandomOption([
+        'Wayfarers',
+        'Blank',
+        'Kurt',
+        'Prescription01',
+        'Prescription02',
+        'Round',
+        'Sunglasses',
+      ]),
+      hairColor: getRandomOption([
+        'BrownDark',
+        'Brown',
+        'BlondeGolden',
+        'Blonde',
+        'Black',
+        'Auburn',
+      ]),
+      clotheType: getRandomOption([
+        'Hoodie',
+        'BlazerShirt',
+        'BlazerSweater',
+        'CollarSweater',
+        'GraphicShirt',
+        'ShirtCrewNeck',
+        'ShirtVNeck',
+        'ShirtScoopNeck',
+      ]),
+      clotheColor: getRandomOption([
+        'Black',
+        'Blue01',
+        'Blue02',
+        'Blue03',
+        'Gray01',
+        'Gray02',
+        'Heather',
+        'PastelBlue',
+        'PastelGreen',
+        'PastelRed',
+        'PastelOrange',
+        'PastelYellow',
+        'Pink',
+        'Red',
+        'White',
+      ]),
+      eyeType: getRandomOption([
+        'Close',
+        'Default',
+        'Dizzy',
+        'EyeRoll',
+        'Happy',
+        'Side',
+        'Wink',
+        'WinkWacky',
+      ]),
+      eyebrowType: getRandomOption([
+        'Angry',
+        'AngryNatural',
+        'Default',
+        'DefaultNatural',
+        'FlatNatural',
+        'RaisedExcited',
+        'RaisedExcitedNatural',
+        'SadConcerned',
+        'SadConcernedNatural',
+      ]),
+      mouthType: getRandomOption([
+        'Smile',
+        'Twinkle',
+        'Tongue',
+        'Serious',
+        'Disbelief',
+        'Default',
+        'ScreamOpen',
+      ]),
     };
   };
-
-
 
   const getRandomCommentAvatar = (commentId, gender) => {
     const avatarProperties = getRandomAvatarProperties(gender);
@@ -89,25 +189,27 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
   };
 
   useEffect(() => {
-    if (applyGenderBasedGrandients && confession.gender === 'male') {
-      setGender('male')
+    if (
+      applyGenderBasedGrandients &&
+      (confession.gender === 'male' || confession.gender === 'female')
+    ) {
+      setGender(confession.gender);
     }
-
-    if (applyGenderBasedGrandients && confession.gender === 'female') {
-      setGender('female')
-    }
-
-  }, confession)
+  }, [confession, applyGenderBasedGrandients]);
 
   useEffect(() => {
     // Fetch likes for the confession
     const fetchLikes = async () => {
       try {
-        const response = await fetch(`/api/getdetails/getlikes?confessionId=${confession._id}`);
+        const response = await fetch(
+          `/api/getdetails/getlikes?confessionId=${confession._id}`
+        );
 
         if (response.ok) {
           const { likes } = await response.json();
-          setLiked(likes.some((like) => like.userEmail === userDetails?.email));
+          setLiked(
+            likes.some((like) => like.userEmail === userDetails?.email)
+          );
           setLikesCount(likes.length);
         } else {
           console.error('Error fetching likes:', response.statusText);
@@ -118,11 +220,15 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
     };
     const fetchComments = async () => {
       try {
-        const response = await fetch(`/api/getdetails/getcomments?confessionId=${confession._id}`);
+        const response = await fetch(
+          `/api/getdetails/getcomments?confessionId=${confession._id}`
+        );
 
         if (response.ok) {
           const { comments } = await response.json();
-          const commentAvatars = comments.map((comment) => getRandomCommentAvatar(comment._id, comment.gender));
+          const commentAvatars = comments.map((comment) =>
+            getRandomCommentAvatar(comment._id, comment.gender)
+          );
           setComments(comments);
           setCommentsCount(comments.length);
           setCommentAvatars(commentAvatars);
@@ -141,16 +247,21 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
 
   const handleLike = async () => {
     try {
+      // Check if user is authenticated
+      if (!userDetails) {
+        // Open the authentication prompt
+        handleOpenAuthPrompt(true)
+        return;
+      }
+
       // Optimistic UI update
       setLiked(!liked);
       if (!liked) {
-
-        setlikeanimation('likeAnim')
-        console.log('likeAnim')
+        setlikeanimation('likeAnim');
+        console.log('likeAnim');
       } else {
-        setlikeanimation('unlikeAnim')
-        console.log('unlikeAnim')
-
+        setlikeanimation('unlikeAnim');
+        console.log('unlikeAnim');
       }
       setLikesCount((prevCount) => (liked ? prevCount - 1 : prevCount + 1));
 
@@ -161,7 +272,10 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       };
 
       // Save like operation locally (for offline support)
-      localStorage.setItem('pendingLikeOperation', JSON.stringify(likeOperation));
+      localStorage.setItem(
+        'pendingLikeOperation',
+        JSON.stringify(likeOperation)
+      );
 
       const response = await fetch(`/api/confession/likeconfession`, {
         method: 'POST',
@@ -181,6 +295,13 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
 
   const handleCommentSubmit = async () => {
     try {
+      // Check if user is authenticated
+      if (!userDetails) {
+        // Open the authentication prompt
+        handleOpenAuthPrompt(true);
+        return;
+      }
+
       const { email, gender } = userDetails;
 
       const dataToSend = {
@@ -199,7 +320,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       };
 
       setComments((prevComments) => [...prevComments, optimisticComment]);
-      setCommentsCount((prevCount) => (prevCount + 1))
+      setCommentsCount((prevCount) => prevCount + 1);
       setCommentValue('');
 
       const commentResponse = await fetch('/api/confession/comment', {
@@ -216,12 +337,17 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       } else {
         console.error('Error submitting comment');
         // Revert the optimistic update if there was an error
-        setComments((prevComments) => prevComments.filter((comment) => comment._id !== optimisticComment._id));
+        setComments((prevComments) =>
+          prevComments.filter(
+            (comment) => comment._id !== optimisticComment._id
+          )
+        );
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
+
   const handleAnonymousReply = async () => {
     try {
       const { encryptedEmail, iv } = confession;
@@ -242,7 +368,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
 
       if (response.ok) {
         console.log('Anonymous reply sent successfully');
-        setAnonymousReplyValue('')
+        setAnonymousReplyValue('');
         // You may want to update the UI or trigger a refresh of the replies
       } else {
         console.error('Error saving anonymous reply');
@@ -253,10 +379,6 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       closeAnonymousReplyDialog();
     }
   };
-  useEffect(() => {
-    console.log(gender, applyGenderBasedGrandients)
-
-  }, [gender, applyGenderBasedGrandients])
 
   const handleClick = () => {
     if (isSmallDevice) {
@@ -270,7 +392,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
   return (
     <div ref={ref} className={styles.mainDiv}>
       <div className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`} onClick={() => setDelay(0)}>
-        <div className={styles.textarea}>
+        <div className={styles.textarea} style={{ whiteSpace: 'pre-line' }}>
           {inView ? (
             // Use Typewriter component instead of the old TypingEffect
             <Typewriter
@@ -280,7 +402,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
                 loop: false,
                 delay: delay,
                 deleteSpeed: 20, // Speed of deleting characters
-                pauseFor: 150000, 
+                pauseFor: 150000,
               }}
             />
           ) : (
@@ -292,6 +414,9 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
           <Image src={'/images/othericons/masks.png'} width={512} height={512} alt='' />
         </div>
       </div>
+
+
+
       <div className={styles.confessionfooter}>
         <div className={styles.likes} onClick={handleLike} style={{ cursor: 'pointer' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -309,6 +434,12 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
           <input className={styles.anonymInput} type="text" placeholder='Reply anonymously...'
             value={anonymousReplyValue}
             onChange={(e) => setAnonymousReplyValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                e.preventDefault();
+                handleAnonymousReply()
+              }
+            }}
           />
           <button
             className={styles.comBtn}
@@ -323,6 +454,10 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
           </button>
         </div>
       </div>
+
+
+      <AuthPrompt open={isAuthPromptOpen} onClose={handleCloseAuthPrompt} />
+
 
       <Dialog open={isCommentDialogOpen} onClose={toggleCommentsDialog} fullWidth maxWidth="md">
         <DialogTitle>
@@ -361,6 +496,12 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
               value={commentValue}
               onChange={(e) => setCommentValue(e.target.value)}
               style={{ flex: '1', height: '100%', outline: 'none', border: 'none' }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                  e.preventDefault();
+                  handleCommentSubmit()
+                }
+              }}
             />
             <button
               className={styles.comBtn}
@@ -375,7 +516,6 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
           </div>
         </DialogContent>
       </Dialog>
-
 
       {/* Anon. dialog________________ */}
       <Dialog
@@ -411,8 +551,6 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
           </Button>
         </DialogContent>
       </Dialog>
-
-
     </div>
   );
 };

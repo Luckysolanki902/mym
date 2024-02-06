@@ -39,7 +39,7 @@ const Sidebar = () => {
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 2 ? styles.active : ''}`}
-          onClick={() => {handleSetActive(2); router.push('/confessions')}}
+          onClick={() => {handleSetActive(2); router.push('/all-confessions')}}
         >
           <Image
             src={'/images/sidebaricons/confessions.png'}

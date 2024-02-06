@@ -8,6 +8,7 @@ import SessionProvider from './SessionProvider';
 import Topbar from '@/components/Topbar';
 import Sidebar from '@/components/Sidebar';
 import '@/styles/globals.css';
+import { AuthProvider } from '@/AuthContext';
 
 const mymtheme = createTheme({
   palette: {
@@ -132,19 +133,22 @@ export default function App({ Component, pageProps }) {
         </ThemeProvider>
       ) : (
         <SessionProvider>
-          <ThemeProvider theme={mymtheme}>
+          <AuthProvider>
 
-            {!isAuthRoute && <Topbar />}
-            {!isAuthRoute && <Sidebar />}
+            <ThemeProvider theme={mymtheme}>
 
-            {!isAuthRoute && (
-              <div style={{ position: 'fixed', bottom: '0', right: '0', overflowY: 'auto' }} className='remcomponents'>
-                <Component {...pageProps} />
-              </div>
-            )}
-            {isAuthRoute && <Component {...pageProps} />}
-          </ThemeProvider>
+              {!isAuthRoute && <Topbar />}
+              {!isAuthRoute && <Sidebar />}
 
+              {!isAuthRoute && (
+                <div style={{ position: 'fixed', bottom: '0', right: '0', overflowY: 'auto' }} className='remcomponents'>
+                  <Component {...pageProps} />
+                </div>
+              )}
+              {isAuthRoute && <Component {...pageProps} />}
+            </ThemeProvider>
+
+          </AuthProvider>
         </SessionProvider>
       )}
     </>
