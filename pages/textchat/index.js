@@ -7,18 +7,17 @@ import MuiAlert from '@mui/material/Alert';
 import styles from './textchat.module.css';
 import FilterOptions from '@/components/FilterOptions';
 import { io } from 'socket.io-client';
-import { IoSend } from "react-icons/io5";
 import Image from 'next/image';
 import { IoIosSend } from "react-icons/io";
-import { IoFilterSharp } from "react-icons/io5";
 import { useAuth } from '@/AuthContext';
+import Message from '@/components/Message';
+
 
 const ChatPage = () => {
-  const { data: session, status } = useSession();
   const { loading, userDetails } = useAuth();
   const router = useRouter();
-  
-  
+
+
   const [socket, setSocket] = useState(null);
   const [textValue, setTextValue] = useState('');
   const [messages, setMessages] = useState([]);
@@ -38,7 +37,7 @@ const ChatPage = () => {
   const [inpFocus, setInpFocus] = useState(false)
   const typingTimeoutRef = useRef(null);
   const messagesContainerRef = useRef(null);
-  
+  const [refreshOnClick, setRefreshOnClick] = useState(false)
 
 
   const scrollToBottom = () => {
@@ -50,9 +49,6 @@ const ChatPage = () => {
       }
     }
   };
-
-
-
 
 
 
@@ -74,12 +70,22 @@ const ChatPage = () => {
     setPreferredGender(filters.strangerGender)
   }, [filters])
 
+  const handlePairDisconnectedStrict = useCallback(() => {
+    console.log('Partner disconnected by refreshing or closing');
+    setStrangerDisconnectedMessageDiv(true);
+    setHasPaired(false);
+    scrollToBottom()
+    setRefreshOnClick(true)
+    // Add any additional cleanup or logic you want to run on partner disconnection
+  }, []);
+
   // findnew function___________________________
   useEffect(() => {
     let newSocket
     try {
       if (socket === null || !socket || newSocket === undefined) {
-        newSocket = io('https://hostedmymserver.onrender.com'); // Replace with your server URL if different
+        newSocket = io('https://hostedmymserver.onrender.com');
+        // newSocket = io('http://localhost:1000');
         setSocket(newSocket)
       } else {
         newSocket = socket
@@ -143,8 +149,13 @@ const ChatPage = () => {
       newSocket.on('pairDisconnected', () => {
         console.log('Partner disconnected');
         setStrangerDisconnectedMessageDiv(true)
+        scrollToBottom()
+
         setHasPaired(false)
       });
+      // Handling user strict-disconnection event
+      newSocket.on('pairDisconnectedStrict', handlePairDisconnectedStrict);
+
       // handling my disconnection
       newSocket.on('disconnect', () => {
         setSocket(null)
@@ -164,10 +175,12 @@ const ChatPage = () => {
 
 
   const handleFindNew = useCallback(() => {
-    if (socket) {
+    if (socket && !refreshOnClick) {
+      setHasPaired(false)
       setIsFindingPair(true); // Set finding pair state to true
-      setStrangerDisconnectedMessageDiv(false)
-      setMessages([])
+      setStrangerDisconnectedMessageDiv(false);
+
+      setMessages([]);
       socket.emit('findNewPair', {
         userEmail: userDetails?.email,
         userGender: userDetails?.gender,
@@ -175,17 +188,21 @@ const ChatPage = () => {
         preferredGender: preferredGender,
         preferredCollege: preferredCollege,
       }); // Send request to find a new pair with all details variables
-      console.log('finding new pair')
+      console.log('finding new pair');
 
-      // Set a timeout to simulate pairing process (Remove this in actual implementation)
+      // Set a timeout to simulate pairing process (Remove this in the actual implementation)
       setTimeout(() => {
-        setIsFindingPair(false); // Set finding pair state to false after the timeout (Remove this in actual implementation)
-      }, 10000); // Replace 3000 with your desired duration or remove it in actual implementation
+        setIsFindingPair(false); // Set finding pair state to false after the timeout (Remove this in the actual implementation)
+      }, 10000); // Replace 3000 with your desired duration or remove it in the actual implementation
+    } else {
+      router.reload();
     }
-  }, [socket, userDetails, preferredGender, preferredCollege]);
+  }, [refreshOnClick, socket, userDetails, preferredGender, preferredCollege, router]);
+
 
 
   const handleReceivedMessage = useCallback((data) => {
+    setUserIsTyping(false)
     const { sender, content } = data;
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -272,29 +289,25 @@ const ChatPage = () => {
           {/* {hasPaired && !userIsTyping && messages.length===0 && <div className={styles.isTyping}>paired with a {strangerGender === 'male' ? 'boy' : 'girl'}</div>} */}
           {messages.map((msg, index) => (
             <div key={index}>
-              <div
-                className={`${styles.message} ${msg.sender === userDetails?.email ? styles.right : styles.left}`}
-              >
-                <div className={`${styles.text} ${msg.sender === userDetails?.email ?
-                  (userDetails?.gender === 'male' ? styles.maleMsg : styles.femaleMsg) :
-                  (msg.sender === receiver ?
-                    (userDetails?.gender === 'male' ? styles.femaleMsg : styles.maleMsg) :
-                    (strangerGender === userDetails?.gender ? styles.sMsg :
-                      (userDetails?.gender === 'male' ? styles.femaleMsg : styles.maleMsg)))
-                  }`}
-                >
-                  {msg.message}
-                </div>
-              </div>
+              <Message
+                key={index}
+                msg={msg}
+                userDetails={userDetails}
+                receiver={receiver}
+                strangerGender={strangerGender}
+                hasPaired={hasPaired}
+              />
             </div>
           ))}
 
+          {strangerDisconnectedMessageDiv && !hasPaired && (
+            <>
+              <div className={styles.isTyping}>He said “good Bye!!”
+              </div>
+            </>
+          )}
+          {hasPaired && userIsTyping && <><div className={`${styles.isTyping} ${!hasPaired && !userIsTyping && styles.isTypinghz}`}>{strangerGender === 'male' ? 'He' : 'She'} is typing <span><Image src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt=''></Image></span> </div></>}
         </div>
-        {hasPaired && userIsTyping && <><div className={`${styles.isTyping} ${!hasPaired && !userIsTyping && styles.isTypinghz}`}>{strangerGender === 'male' ? 'He' : 'She'} is typing <span><Image src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt=''></Image></span> </div></>}
-        {strangerDisconnectedMessageDiv && !hasPaired && (
-          <div className={styles.isTyping}>He said “good Bye!!”
-          </div>
-        )}
 
       </div>
 
@@ -331,15 +344,16 @@ const ChatPage = () => {
                 onBlurCapture={() => setInpFocus(false)}
                 onChange={(e) => setTextValue(e.target.value)}
                 style={{ width: '100%' }}
-
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                  if (e.key === 'Enter') {
                     e.preventDefault();
-                    handleSend();
-                    clearTimeout(typingTimeoutRef.current); // Clear typing timeout when sending a message
-                    setUserIsTyping(false); // Set userIsTyping to false on message send
+                    if (e.target.value.trim() !== '') {
+                      handleSend();
+                      clearTimeout(typingTimeoutRef.current);
+                      setUserIsTyping(false);
+                    }
                   } else {
-                    handleTyping(e); // Handle typing event
+                    handleTyping(e);
                   }
                 }}
                 onBlur={() => {

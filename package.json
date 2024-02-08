@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.7",
     "@mui/material": "^5.15.2",
+    "@mui/styles": "^5.15.8",
     "avataaars": "^2.0.0",
     "bcryptjs": "^2.4.3",
     "crypto": "^1.0.1",

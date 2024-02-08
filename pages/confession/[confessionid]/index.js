@@ -5,6 +5,7 @@ import { getSession } from 'next-auth/react';
 import Confession from '@/components/Confession'; // Adjust the path based on your project structure
 import { useAuth } from '@/AuthContext';
 
+
 const ConfessionPage = () => {
     const router = useRouter();
     const { confessionid } = router.query;
