@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
@@ -84,8 +83,8 @@ const ChatPage = () => {
     let newSocket
     try {
       if (socket === null || !socket || newSocket === undefined) {
-        newSocket = io('https://hostedmymserver.onrender.com');
-        // newSocket = io('http://localhost:1000');
+        // newSocket = io('https://hostedmymserver.onrender.com');
+        newSocket = io('http://localhost:1000');
         setSocket(newSocket)
       } else {
         newSocket = socket
@@ -153,8 +152,7 @@ const ChatPage = () => {
 
         setHasPaired(false)
       });
-      // Handling user strict-disconnection event
-      newSocket.on('pairDisconnectedStrict', handlePairDisconnectedStrict);
+
 
       // handling my disconnection
       newSocket.on('disconnect', () => {
@@ -299,6 +297,7 @@ const ChatPage = () => {
               />
             </div>
           ))}
+          {usersOnline && <>Users: {usersOnline}</>}
 
           {strangerDisconnectedMessageDiv && !hasPaired && (
             <>

@@ -2,16 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import styles from './componentStyles/confession.module.css';
 import Image from 'next/image';
 import { FaHeart, FaComment, FaTimes } from 'react-icons/fa';
-import Avatar from 'avataaars';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import { IoIosSend } from 'react-icons/io';
-import { TextField, Button } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
 import { useInView } from 'react-intersection-observer';
 import Typewriter from 'typewriter-effect';
 import AuthPrompt from '@/components/AuthPrompt';
+import AnonymDialog from './confessionComps/AnonymDialog';
+import { getRandomCommentAvatar } from '@/utils/avtarUtils';
+import CommentsDialog from './confessionComps/CommentsDialog';
 
 const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => {
   const isSmallDevice = useMediaQuery('(max-width:800px)');
@@ -37,14 +35,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
     setIsAuthPromptOpen(false);
   };
 
-  const inputRef = useRef(null);
 
-  useEffect(() => {
-    if (inputRef.current && isAnonymousReplyDialogOpen) {
-      inputRef.current.focus();
-      console.log('focussing');
-    }
-  }, [isAnonymousReplyDialogOpen]);
 
   const openAnonymousReplyDialog = () => {
     setAnonymousReplyDialogOpen(true);
@@ -54,136 +45,6 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
     setAnonymousReplyDialogOpen(false);
   };
 
-  const getRandomOption = (options) => {
-    const randomIndex = Math.floor(Math.random() * options.length);
-    return options[randomIndex];
-  };
-
-  const getRandomColor = () => {
-    const colors = [
-      'black',
-      'blue01',
-      'blue02',
-      'blue03',
-      'gray01',
-      'gray02',
-      'heather',
-      'pastelBlue',
-      'pastelGreen',
-      'pastelOrange',
-      'pastelRed',
-      'pastelYellow',
-      'pink',
-      'red',
-      'white',
-    ];
-    return getRandomOption(colors);
-  };
-
-  const optionsForMale = [
-    'ShortHairShortWaved',
-    'ShortHairShortCurly',
-    'ShortHairShaggyMullet',
-  ];
-  const optionsForFemale = [
-    'LongHairMiaWallace',
-    'LongHairBigHair',
-    'LongHairBob',
-    'LongHairCurly',
-    'LongHairCurvy',
-    'LongHairNotTooLong',
-    'LongHairStraight',
-    'LongHairStraight2',
-    'LongHairStraightStrand',
-  ];
-  const getRandomAvatarProperties = (gender = 'male') => {
-    const options = gender === 'male' ? optionsForMale : optionsForFemale;
-    return {
-      background: getRandomColor(),
-      svgBackground: getRandomColor(),
-      skin: 'light',
-      topType: getRandomOption(options),
-      accessoriesType: getRandomOption([
-        'Wayfarers',
-        'Blank',
-        'Kurt',
-        'Prescription01',
-        'Prescription02',
-        'Round',
-        'Sunglasses',
-      ]),
-      hairColor: getRandomOption([
-        'BrownDark',
-        'Brown',
-        'BlondeGolden',
-        'Blonde',
-        'Black',
-        'Auburn',
-      ]),
-      clotheType: getRandomOption([
-        'Hoodie',
-        'BlazerShirt',
-        'BlazerSweater',
-        'CollarSweater',
-        'GraphicShirt',
-        'ShirtCrewNeck',
-        'ShirtVNeck',
-        'ShirtScoopNeck',
-      ]),
-      clotheColor: getRandomOption([
-        'Black',
-        'Blue01',
-        'Blue02',
-        'Blue03',
-        'Gray01',
-        'Gray02',
-        'Heather',
-        'PastelBlue',
-        'PastelGreen',
-        'PastelRed',
-        'PastelOrange',
-        'PastelYellow',
-        'Pink',
-        'Red',
-        'White',
-      ]),
-      eyeType: getRandomOption([
-        'Close',
-        'Default',
-        'Dizzy',
-        'EyeRoll',
-        'Happy',
-        'Side',
-        'Wink',
-        'WinkWacky',
-      ]),
-      eyebrowType: getRandomOption([
-        'Angry',
-        'AngryNatural',
-        'Default',
-        'DefaultNatural',
-        'FlatNatural',
-        'RaisedExcited',
-        'RaisedExcitedNatural',
-        'SadConcerned',
-        'SadConcernedNatural',
-      ]),
-      mouthType: getRandomOption([
-        'Smile',
-        'Twinkle',
-        'Tongue',
-        'Serious',
-        'Disbelief',
-        'Default',
-        'ScreamOpen',
-      ]),
-    };
-  };
-
-  const getRandomCommentAvatar = (commentId, gender) => {
-    const avatarProperties = getRandomAvatarProperties(gender);
-    return { ...avatarProperties, key: `avatar_${commentId}_${Date.now()}` };
-  };
   const toggleCommentsDialog = () => {
     setCommentDialogOpen(!isCommentDialogOpen);
   };
@@ -459,98 +320,23 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       <AuthPrompt open={isAuthPromptOpen} onClose={handleCloseAuthPrompt} />
 
 
-      <Dialog open={isCommentDialogOpen} onClose={toggleCommentsDialog} fullWidth maxWidth="md">
-        <DialogTitle>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            Comments
-            <FaTimes style={{ cursor: 'pointer' }} onClick={toggleCommentsDialog} />
-          </div>
-        </DialogTitle>
-        <DialogContent style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          {/* Comment input and display */}
-          <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
-            <div className={styles.comments}>
-
-              {comments.map((comment, index) => (
-                <div key={comment._id} className={styles.comment}>
-                  <div className={styles.avatar}>
-                    <Avatar
-                      style={{ width: '30px', height: '30px' }}
-                      avatarStyle='Circle'
-                      {...commentAvatars[index]} />
-                  </div>
-                  <div className={styles.commentContent}>
-                    <strong>Stranger:</strong> {comment.commentContent}
-                  </div>
-                </div>
-              ))}
-
-
-            </div>
-          </div>
-          {/* Comment input */}
-          <div className={styles.reply2}>
-            <input
-              type='text'
-              placeholder='Add a comment...'
-              value={commentValue}
-              onChange={(e) => setCommentValue(e.target.value)}
-              style={{ flex: '1', height: '100%', outline: 'none', border: 'none' }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && e.target.value.trim() !== '') {
-                  e.preventDefault();
-                  handleCommentSubmit()
-                }
-              }}
-            />
-            <button
-              className={styles.comBtn}
-              variant="contained"
-              color="primary"
-              onClick={handleCommentSubmit}
-              disabled={commentValue.trim() === ''}
-              style={{ height: '100%', cursor: 'pointer' }}
-            >
-              <IoIosSend style={{ width: '100%', height: 'auto' }} />
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CommentsDialog
+        isOpen={isCommentDialogOpen}
+        onClose={() => setCommentDialogOpen(false)}
+        comments={comments}
+        commentAvatars={commentAvatars}
+        commentValue={commentValue}
+        handleCommentSubmit={handleCommentSubmit}
+        setCommentValue={setCommentValue}
+      />
 
       {/* Anon. dialog________________ */}
-      <Dialog
+      <AnonymDialog
         open={isAnonymousReplyDialogOpen}
         onClose={closeAnonymousReplyDialog}
-        fullWidth
-        maxWidth="md"
-      >
-        <DialogTitle>
-          Reply Anonymously
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            multiline
-            rows={4}
-            fullWidth
-            autoFocus
-            ref={inputRef}
-            variant="outlined"
-            placeholder="Type your anonymous reply here..."
-            style={{ marginTop: '0.1rem' }}
-            value={anonymousReplyValue}
-            onChange={(e) => setAnonymousReplyValue(e.target.value)}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAnonymousReply}
-            disabled={anonymousReplyValue.trim() === ''}
-            className={styles.anonymdianlogbtn}
-          >
-            Send
-          </Button>
-        </DialogContent>
-      </Dialog>
+        handleAnonymousReply={handleAnonymousReply}
+      />
+
     </div>
   );
 };
