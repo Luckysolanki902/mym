@@ -51,11 +51,6 @@ html,
   height: var(--remheight);
 }
 
-.remcomponents {
-  width: var(--remwidth);
-  height: var(--remheight);
-  overflow: hidden;
-}
 
 @media (width < 1400px) {
   :root {
@@ -90,7 +85,7 @@ html,
     --sidebarwidth: 0vw;
     /* --topbarheight:0vh; */
   }
-
+  
   .sidebarvisibility {
     display: none;
   }
@@ -99,6 +94,11 @@ html,
 @media (width < 600px) {
   :root {
     --inputboxheight: 2rem;
-
+    
   }
+}
+.remcomponents {
+  width: var(--remwidth);
+  height: var(--remheight);
+  overflow: hidden;
 }
