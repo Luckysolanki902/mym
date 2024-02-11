@@ -83,8 +83,8 @@ const ChatPage = () => {
     let newSocket
     try {
       if (socket === null || !socket || newSocket === undefined) {
-        // newSocket = io('https://hostedmymserver.onrender.com');
-        newSocket = io('http://localhost:1000');
+        newSocket = io('https://hostedmymserver.onrender.com');
+        // newSocket = io('http://localhost:1000');
         setSocket(newSocket)
       } else {
         newSocket = socket

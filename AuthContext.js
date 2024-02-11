@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
+
 const excludedPaths = ['/admin', '/auth', '/verify', '/confession', '/api'];
 const AuthContext = createContext();
 
@@ -22,35 +23,49 @@ export const AuthProvider = ({ children }) => {
                     email: userData.email || 'Not Available',
                     gender: userData.gender || 'Not Available',
                     college: userData.college || 'Not Available',
-                    isVerified: userData.isVerified || false,
+                    isVerified: userData.isVerified,
                 });
+                // Store user details in local storage
+                localStorage.setItem('userDetails', JSON.stringify(userDetails));
             } catch (error) {
                 console.error('Error fetching user details:', error);
             }
         };
 
-        // Check if there is a session
-        if (!session
-            && router.pathname !== '/'
-            && !excludedPaths.some(path => router.pathname.startsWith(path))
-        ) {
-            // Redirect to signup page if no session
-            router.push('/auth/signup');
-        } else if (session?.user?.email) {
-            // Fetch user details if session is available
-            fetchUserDetails(session.user.email);
-        }
-    }, [session, router]);
+        const checkAndFetchUserDetails = async () => {
+            if (!session) {
+                // Redirect to signup page if no session
+                router.push('/auth/signup');
+            } else if (session?.user?.email) {
+                try {
+                    // Check if user details are in local storage and match the current session email
+                    const storedUserDetails = localStorage.getItem('userDetails');
+                    if (storedUserDetails) {
+                        const parsedUserDetails = JSON.parse(storedUserDetails);
+                        if (parsedUserDetails.email === session.user.email) {
+                            setUserDetails(parsedUserDetails);
+                        } else {
+                            // Clear local storage and fetch user details for the new user
+                            localStorage.removeItem('userDetails');
+                            fetchUserDetails(session.user.email);
+                        }
+                    } else {
+                        // Fetch user details if not in local storage
+                        fetchUserDetails(session.user.email);
+                    }
+                } catch (error) {
+                    console.error('Error loading user details from localStorage:', error);
+                    // Handle the error - trigger a refetch or other appropriate actions
+                    // For now, let's refetch the user details
+                    fetchUserDetails(session.user.email);
+                }
+            }
+        };
 
-
-    useEffect(() => {
-
-        const redirectToVerifyOtp = async () => {
-            // Check if the path is not in the excludedPaths array
+        const redirectToVerifyOtp = () => {
             if (
                 userDetails &&
                 !userDetails.isVerified &&
-                router.pathname !== '/' &&
                 !excludedPaths.some(path => router.pathname.startsWith(path))
             ) {
                 console.log('Redirecting to otp verification');
@@ -58,12 +73,15 @@ export const AuthProvider = ({ children }) => {
             }
         };
 
+        checkAndFetchUserDetails();
         redirectToVerifyOtp();
-
-        // Cleanup function
-        return () => { };
-    }, [userDetails, router.pathname]);
-
+        return () => {
+            if (!session) {
+                setUserDetails(null);
+                localStorage.removeItem('userDetails');
+            }
+        };
+    }, [session, router]);
 
 
     const contextValue = {

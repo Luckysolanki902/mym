@@ -58,10 +58,6 @@ const Signup = () => {
     fetchColleges();
   }, []);
 
-  useEffect(() => {
-    console.log(colleges)
-  }, [colleges])
-  // const colleges = ['HBTU Kanpur', 'IIT Kanpur'];
 
   const handleSignUp = async (e) => {
     e.preventDefault();

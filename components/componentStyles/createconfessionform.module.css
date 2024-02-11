@@ -17,7 +17,6 @@
     flex-direction: column;
     padding: 1rem;
     background: linear-gradient(204deg, hsla(0, 0%, 15%, 0.8) 30.1%, hsla(0, 100%, 50%, 0.8) 79.73%);
-    opacity: 0;
     transition: all 0.2s ease-in-out;
 }
 
