@@ -28,13 +28,18 @@ html,
 
 *::-webkit-scrollbar {
   display: none;
+  }
+button:focus{
+  box-shadow: none;
 }
 
 @font-face {
   font-family: 'ITC Kristen';
   src: url('/fonts/ITCKRIST.ttf');
 }
-
+button {
+  -webkit-tap-highlight-color: transparent;
+}
 
 .chatContainer {
   height: 100%;

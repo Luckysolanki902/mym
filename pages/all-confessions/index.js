@@ -15,7 +15,7 @@ const Index = ({ userDetails, confessions }) => {
 export async function getServerSideProps(context) {
   // Fetch session and user details
   const session = await getSession(context);
-const pageurl = 'http://localhost:3000'  
+const pageurl = 'https://www.meetyourmate.in'  
   let userDetails = null;
   if (session?.user?.email) {
     try {
