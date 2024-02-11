@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 
-const excludedPaths = ['/admin', '/auth', '/verify', '/confession', '/api'];
+const excludedPaths = ['/admin', '/auth', '/verify', '/confession', '/api', 'all-confessions'];
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
