@@ -15,19 +15,13 @@ const Index = ({ userDetails, confessions }) => {
 export async function getServerSideProps(context) {
   // Fetch session and user details
   const session = await getSession(context);
-const pageurl = 'https://www.meetyourmate.in'  
+  const pageurl = 'https://www.meetyourmate.in'
   let userDetails = null;
   if (session?.user?.email) {
     try {
       const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
       if (response.ok) {
-        const userData = await response.json();
-        userDetails = {
-          email: userData.email || 'Not Available',
-          gender: userData.gender || 'Not Available',
-          college: userData.college || 'Not Available',
-          isVerified: userData.isVerified || false,
-        };
+        userDetails = await response.json();
       } else {
         console.error('Error fetching user details');
       }

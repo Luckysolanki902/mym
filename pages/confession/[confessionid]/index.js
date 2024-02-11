@@ -1,51 +1,58 @@
-// pages/confessions/[confessionid].js
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React from 'react';
+import Confession from '@/components/Confession';
 import { getSession } from 'next-auth/react';
-import Confession from '@/components/Confession'; // Adjust the path based on your project structure
-import { useAuth } from '@/AuthContext';
 
-
-const ConfessionPage = () => {
-    const router = useRouter();
-    const { confessionid } = router.query;
-    const [confession, setConfession] = useState(null);
-    const { loading, userDetails } = useAuth();
-
-    useEffect(() => {
-        const fetchConfessionDetails = async () => {
-            if (confessionid) {
-
-                try {
-                    const response = await fetch(`/api/confession/getconfessionbyid/${confessionid}`);
-                    if (response.ok) {
-                        const confessionData = await response.json();
-                        setConfession(confessionData);
-                    } else {
-                        console.error('Error fetching confession details');
-                    }
-                } catch (error) {
-                    console.error('Error fetching confession details:', error);
-                }
-            }
-        };
-        // Fetch confession details and user details when the component mounts
-        fetchConfessionDetails();
-    }, [confessionid]);
-
-
-    return (
-
-        <div>
-            {loading ? (
-                <p>Loading...</p>
-            ) : (
-                <div>
-                    {confession && <Confession confession={confession} userDetails={userDetails || null} />}
-                </div>
-            )}
-        </div>
-    );
+const ConfessionPage = ({ confession, userDetails }) => {
+  return (
+    <div>
+      <div>
+        {confession && <Confession confession={confession} userDetails={userDetails || null} />}
+      </div>
+    </div>
+  );
 };
+
+export async function getServerSideProps(context) {
+  const { params } = context;
+  const { confessionid } = params;
+
+  // Fetch session and user details
+  const session = await getSession(context);
+  const pageurl = 'https://www.meetyourmate.in'
+
+  let userDetails = null;
+  if (session?.user?.email) {
+    try {
+      const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
+      if (response.ok) {
+        userDetails = await response.json();
+      } else {
+        console.error('Error fetching user details');
+      }
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  }
+
+  // Fetch confession details
+  let confession = null;
+  try {
+    const response = await fetch(`${pageurl}/api/confession/getconfessionbyid/${confessionid}`);
+    if (response.ok) {
+      confession = await response.json();
+    } else {
+      console.error('Error fetching confession details');
+    }
+  } catch (error) {
+    console.error('Error fetching confession details:', error);
+  }
+
+  return {
+    props: {
+      confession,
+      userDetails,
+    },
+  };
+}
 
 export default ConfessionPage;

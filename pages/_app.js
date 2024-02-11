@@ -8,7 +8,6 @@ import SessionProvider from './SessionProvider';
 import Topbar from '@/components/Topbar';
 import Sidebar from '@/components/Sidebar';
 import '@/styles/globals.css';
-import { AuthProvider } from '@/AuthContext';
 
 const mymtheme = createTheme({
   palette: {
@@ -75,9 +74,6 @@ export default function App({ Component, pageProps }) {
     verifyToken();
   }, []);
 
-  const handleLogin = () => {
-    setIsAdminLoggedIn(true);
-  };
 
   useEffect(() => {
     let interval;
@@ -133,7 +129,6 @@ export default function App({ Component, pageProps }) {
         </ThemeProvider>
       ) : (
         <SessionProvider>
-          <AuthProvider>
 
             <ThemeProvider theme={mymtheme}>
               <div style={{ display: 'flex', width:'100vw', height:'100vh', flexDirection:'column' }}>
@@ -154,7 +149,6 @@ export default function App({ Component, pageProps }) {
               </div>
             </ThemeProvider>
 
-          </AuthProvider>
         </SessionProvider>
       )}
     </>

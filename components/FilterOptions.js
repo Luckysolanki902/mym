@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import styles from './componentStyles/filteroptions.module.css';
 import { IoFilterSharp } from 'react-icons/io5';
 import { MenuItem, Button, FormControl, createTheme, ThemeProvider, Menu } from '@mui/material';
-import { FaCaretDown } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
 const darkTheme = createTheme({
   palette: {
@@ -72,6 +71,7 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender }) => {
   };
 
   const handleCollegeMenuOpen = (event) => {
+    console.log('pressed')
     setCollegeMenuAnchor(event.currentTarget);
     setCollegeMenuWidth(event.currentTarget.offsetWidth);
   };
@@ -87,7 +87,7 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender }) => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <div className={styles.mainfiltercont} ref={mainFilterContainerRef}>
+      <div className={styles.mainfiltercont} ref={mainFilterContainerRef} >
         <IoFilterSharp className={styles.filterIcon} onClick={handlefilterToggle} style={{backgroundColor:'white', borderRadius:'1rem', padding:'0.3rem'}}/>
 
         <div className={`${styles.closedFilters} ${openFilterIcon && styles.openFilters}`}>
