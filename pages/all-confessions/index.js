@@ -3,6 +3,8 @@ import React from 'react';
 import Confession from '@/components/Confession';
 
 const Index = ({ userDetails, confessions }) => {
+  console.log(userDetails)
+  console.log(confessions)
   return (
     <div>
       {confessions.map((confession) => (
