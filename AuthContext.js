@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
                     email: userData.email || 'Not Available',
                     gender: userData.gender || 'Not Available',
                     college: userData.college || 'Not Available',
-                    isVerified: userData.isVerified,
+                    isVerified: userData.isVerified || false,
                 });
                 // Store user details in local storage
                 localStorage.setItem('userDetails', JSON.stringify(userDetails));
@@ -33,7 +33,9 @@ export const AuthProvider = ({ children }) => {
         };
 
         const checkAndFetchUserDetails = async () => {
-            if (!session) {
+            if (!session
+                && router.pathname !== '/'
+                && !excludedPaths.some(path => router.pathname.startsWith(path))) {
                 // Redirect to signup page if no session
                 router.push('/auth/signup');
             } else if (session?.user?.email) {
@@ -66,7 +68,8 @@ export const AuthProvider = ({ children }) => {
             if (
                 userDetails &&
                 !userDetails.isVerified &&
-                !excludedPaths.some(path => router.pathname.startsWith(path))
+                !excludedPaths.some(path => router.pathname.startsWith(path)) &&
+                router.pathname !== '/'
             ) {
                 console.log('Redirecting to otp verification');
                 router.push('/verify/verifyotp');
@@ -82,7 +85,6 @@ export const AuthProvider = ({ children }) => {
             }
         };
     }, [session, router]);
-
 
     const contextValue = {
         loading: status === 'loading',
