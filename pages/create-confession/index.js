@@ -1,5 +1,5 @@
 import React from 'react';
-import CreateConfessionForm from '@/components/CreateConfessionForm';
+import CreateConfessionForm from '@/components/fullPageComps/CreateConfessionForm';
 import { getSession } from 'next-auth/react';
 
 const CreateConfession = ({ userDetails }) => {

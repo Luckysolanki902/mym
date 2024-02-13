@@ -1,6 +1,6 @@
 import { getSession } from 'next-auth/react';
 import React from 'react';
-import Confession from '@/components/Confession';
+import Confession from '@/components/fullPageComps/Confession';
 
 const Index = ({ userDetails, confessions }) => {
   console.log(userDetails)

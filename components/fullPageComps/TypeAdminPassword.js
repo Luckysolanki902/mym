@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { TextField, Button, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import styles from './componentStyles/admin.module.css';
+import styles from '../componentStyles/admin.module.css';
 
 const TypeAdminPassword = ({ onLogin }) => {
   const [password1, setPassword1] = useState('');

@@ -1,7 +1,7 @@
 // components/Message.js
 import React from 'react';
 import Image from 'next/image';
-import styles from './componentStyles/textchat.module.css';
+import styles from '../componentStyles/textchat.module.css';
 
 const Message = ({ msg, userDetails, receiver, strangerGender, hasPaired }) => {
   return (

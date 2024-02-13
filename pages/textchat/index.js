@@ -1,17 +1,17 @@
 // pages/textchat.js
-import TextChat from '@/components/TextChat';
+import TextChat from '@/components/fullPageComps/TextChat';
 import { getSession } from 'next-auth/react';
 
 const TextChatPage = ({ userDetails }) => {
   return (
     <>
-      <TextChat userDetails={userDetails}  />
+      <TextChat userDetails={userDetails} />
     </>
   );
 };
 
 export async function getServerSideProps(context) {
-  const session = await getSession(context); 
+  const session = await getSession(context);
   const pageurl = 'https://www.meetyourmate.in'
 
   let userDetails = null;
@@ -33,7 +33,7 @@ export async function getServerSideProps(context) {
   return {
     props: {
       userDetails,
-      },
+    },
   };
 }
 

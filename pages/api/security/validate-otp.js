@@ -7,8 +7,8 @@ async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { email, otp } = req.body;
 
+  console.log(email, otp)
   try {
     // Verify the OTP against the stored OTP in the database
     const user = await User.findOne({ email });

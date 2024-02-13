@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './componentStyles/createconfessionform.module.css';
+import styles from '../componentStyles/createconfessionform.module.css';
 import { CircularProgress } from '@mui/material';
 
 const CreateConfessionForm = ({ userDetails }) => {

@@ -2,11 +2,11 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import LoadingBar from 'react-top-loading-bar';
-import TypeAdminPassword from '@/components/TypeAdminPassword';
+import TypeAdminPassword from '@/components/fullPageComps/TypeAdminPassword';
 import { createTheme, ThemeProvider } from '@mui/material';
 import SessionProvider from './SessionProvider';
-import Topbar from '@/components/Topbar';
-import Sidebar from '@/components/Sidebar';
+import Topbar from '@/components/appComps/Topbar';
+import Sidebar from '@/components/appComps/Sidebar';
 import '@/styles/globals.css';
 
 const mymtheme = createTheme({

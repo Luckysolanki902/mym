@@ -19,7 +19,7 @@ async function handler(req, res) {
 
   // Generate a random 6-digit OTP
   const generatedOTP = Math.floor(100000 + Math.random() * 900000);
-
+console.log(generatedOTP, email)
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {

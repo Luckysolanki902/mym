@@ -1,9 +1,8 @@
 import Head from 'next/head'
-import { Inter } from 'next/font/google'
-const inter = Inter({ subsets: ['latin'] })
-import { signOut } from 'next-auth/react'
+import { getSession, signOut } from 'next-auth/react'
 
-export default function Home() {
+export default function Home({ session }) {
+console.log(session)
   return (
     <>
       <Head>
@@ -13,12 +12,34 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div>  <a href="/auth/signin">Login</a></div>
-        <div>  <a href="/auth/signup">Create Account</a></div>
-        <div style={{ margin: '3rem' }}>  <a href="/textchat">Chat</a></div>
-        <div style={{ margin: '3rem' }}>  <a href="/all-confessions">Confessions</a></div>
-        <button onClick={()=>signOut()}>Signout</button>
+        {session ? (
+          <>
+            {/* Content to be shown only for session users */}
+            <p>Welcome, {session?.user?.email}!</p>
+            <button onClick={() => signOut()}>Signout</button>
+          </>
+        ) : (
+          <>
+            {/* Content to be shown only for non session users */}
+            <div><a href="/auth/signin">Login</a></div>
+            <div><a href="/auth/signup">Create Account</a></div>
+          </>
+        )}
+        {/* Content to show to both */}
+        <div style={{ margin: '3rem' }}><a href="/textchat">Chat</a></div>
+        <div style={{ margin: '3rem' }}><a href="/all-confessions">Confessions</a></div>
+
       </main>
     </>
   )
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  return {
+    props: {
+      session,
+    },
+  }
 }

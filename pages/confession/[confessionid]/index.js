@@ -1,5 +1,5 @@
 import React from 'react';
-import Confession from '@/components/Confession';
+import Confession from '@/components/fullPageComps/Confession';
 import { getSession } from 'next-auth/react';
 
 const ConfessionPage = ({ confession, userDetails }) => {

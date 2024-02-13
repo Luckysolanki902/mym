@@ -1,7 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
-import SwipeableTemporaryDrawer from '@/components/Drawer';
-import styles from './componentStyles/topbar.module.css'
+import SwipeableTemporaryDrawer from '@/components/appComps/Drawer';
+import styles from './styles/topbar.module.css'
 
 const Topbar = () => {
   return (

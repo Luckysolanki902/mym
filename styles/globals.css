@@ -107,3 +107,8 @@ button {
   height: var(--remheight);
   overflow: hidden;
 }
+
+*{
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-focus-ring-color: transparent !important;
+}

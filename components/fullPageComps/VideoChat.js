@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import { useRouter } from 'next/router';
-import styles from './componentStyles/videochat.module.css';
+import styles from '../componentStyles/videochat.module.css';
 
 const OmegleVideoChat = ({ username }) => {
   const videoRef = useRef(null);

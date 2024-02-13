@@ -2,13 +2,10 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useSession } from 'next-auth/react';
-import { createTheme, ThemeProvider, Select, MenuItem, TextField, Button, InputLabel } from '@mui/material';
+import { createTheme, ThemeProvider, TextField, Button } from '@mui/material';
 import Image from 'next/image';
-import styles from './signup.module.css'
-
-
-
+import styles from './signup.module.css';
+import { getSession } from 'next-auth/react';
 
 const mymtheme = createTheme({
   palette: {
@@ -19,16 +16,13 @@ const mymtheme = createTheme({
   },
 });
 
-
-const VerifyOTP = () => {
+const VerifyOTP = ({ session }) => {
   const router = useRouter();
   const [enteredOTP, setEnteredOTP] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [otpSent, setOTPSent] = useState(false);
   const [wait30sec, setWait30sec] = useState(false);
-
-  const { data: session } = useSession();
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
@@ -42,13 +36,12 @@ const VerifyOTP = () => {
 
       setLoading(true);
 
-      // Validate OTP through API (replace with your actual API endpoint)
       const response = await fetch('/api/security/validate-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: session?.user?.email, otp: enteredOTP }), // Use the email from session
+        body: JSON.stringify({ email: session?.user?.email, otp: enteredOTP }),
       });
 
       const data = await response.json();
@@ -70,13 +63,12 @@ const VerifyOTP = () => {
 
   const handleResendOTP = async () => {
     try {
-      // Send OTP through API for resending (replace with your actual API endpoint)
       const resendResponse = await fetch('/api/security/sendotp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: session?.user?.email }), // Use the email from session
+        body: JSON.stringify({ email: session?.user?.email }),
       });
 
       const resendData = await resendResponse.json();
@@ -85,10 +77,9 @@ const VerifyOTP = () => {
         throw new Error(resendData.error || 'Failed to resend OTP.');
       }
 
-      setOTPSent(true); // Set this to true to show the button after OTP is sent
-      setWait30sec(true); // Disable the Resend OTP button for 30 seconds
+      setOTPSent(true);
+      setWait30sec(true);
 
-      // Set a timer to re-enable the Resend OTP button after 30 seconds
       setTimeout(() => {
         setWait30sec(false);
       }, 30000);
@@ -98,17 +89,15 @@ const VerifyOTP = () => {
     }
   };
 
-
-
+  useEffect(() => {
+    console.log('sessionemail: ', session?.user?.email);
+  }, [session]);
 
   return (
     <ThemeProvider theme={mymtheme}>
-      <div className={styles.mainContainer} >
-        {/* <div className={styles.macpng}>
-          <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview'></Image>
-        </div> */}
+      <div className={styles.mainContainer}>
         <div className={styles.mainBox}>
-          <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
+          <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo} />
           {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
           <form onSubmit={handleVerifyOTP} className={styles.form}>
             <TextField
@@ -118,11 +107,6 @@ const VerifyOTP = () => {
               required
               variant='standard'
               onChange={(e) => setEnteredOTP(e.target.value)}
-              InputLabelProps={{
-                required: false, // Remove the asterisk for the Email field
-              }}
-              className={styles.input}
-
             />
 
             <Button
@@ -130,7 +114,6 @@ const VerifyOTP = () => {
               disabled={loading}
               variant="contained"
               color="primary"
-              className={styles.button}
             >
               {loading ? <CircularProgress style={{ fontSize: '1rem', width: '1rem', height: '1rem' }} /> : 'Verify'}
             </Button>
@@ -146,8 +129,18 @@ const VerifyOTP = () => {
         </div>
       </div>
     </ThemeProvider>
-
   );
 };
+
+export async function getServerSideProps(context) {
+let session = null
+   session = await getSession(context);
+
+  return {
+    props: {
+      session,
+    },
+  };
+}
 
 export default VerifyOTP;

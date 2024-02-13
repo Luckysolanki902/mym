@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import styles from './componentStyles/filteroptions.module.css';
+import styles from '../componentStyles/filteroptions.module.css';
 import { IoFilterSharp } from 'react-icons/io5';
 import { MenuItem, Button, FormControl, createTheme, ThemeProvider, Menu } from '@mui/material';
 import { FaChevronDown } from "react-icons/fa";
@@ -12,19 +12,32 @@ const darkTheme = createTheme({
   },
 });
 
-const FilterOptions = ({ filters, setFilters, userCollege, userGender }) => {
+const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetails }) => {
   const [openFilterIcon, setOpenFilterIcon] = useState(false);
   const [collegeMenuAnchor, setCollegeMenuAnchor] = useState(null);
   const [genderMenuAnchor, setGenderMenuAnchor] = useState(null);
   const [collegeMenuWidth, setCollegeMenuWidth] = useState(null);
   const [genderMenuWidth, setGenderMenuWidth] = useState(null);
   const mainFilterContainerRef = useRef(null);
+
+
   const handlefilterToggle = () => {
-    if (!userCollege || !userGender){
-      return
+    if (!userCollege || !userGender || userDetails) {
+      return;
     }
-    setOpenFilterIcon(!openFilterIcon)
-}
+    setOpenFilterIcon(!openFilterIcon);
+  };
+
+  useEffect(() => {
+    if (userDetails) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        college: userDetails?.college || 'any',
+        preferredGender: userDetails?.gender === 'male' ? 'female' : 'male',
+      }));
+    }
+  }, [userDetails]);
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Check if the clicked element is not within the main container

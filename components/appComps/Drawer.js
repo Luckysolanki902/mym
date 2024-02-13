@@ -7,15 +7,10 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import PhoneIcon from '@mui/icons-material/Phone';
 import Link from 'next/link';
-import Typography from '@mui/material/Typography';
-import ReportProblemRoundedIcon from '@mui/icons-material/ReportProblemRounded';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import styles from '@/components/componentStyles/topbar.module.css';
+import styles from './styles/topbar.module.css';
 
 
 export default function SwipeableTemporaryDrawer(props) {

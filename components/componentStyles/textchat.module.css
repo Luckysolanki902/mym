@@ -126,6 +126,8 @@ transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
   position: fixed;
   top: calc(var(--topbarheight) + 0.5rem);
   right: 1rem;
+  display: flex;
+  justify-content: center;
 }
 
 
