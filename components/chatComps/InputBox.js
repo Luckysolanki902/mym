@@ -20,19 +20,21 @@ const InputBox = ({
   typingTimeoutRef,
 }) => {
   return (
+    <div className={styles.inputContainerMainDiv}>
+
     <div className={`${styles.inputContainer} ${inpFocus ? styles.inpFocus : ''}`}>
       <button className={styles.newButton} disabled={isFindingPair} onClick={handleFindNewButton} title="Find New">
         {isFindingPair ? (
           <CircularProgress size={24} style={{ color: 'white' }} />
         ) : (
           <Image
-            src={'/images/sidebaricons/randomchat.png'}
-            width={1080 / 10}
+          src={'/images/sidebaricons/randomchat.png'}
+          width={1080 / 10}
             height={720 / 10}
             alt="icon"
             className={styles.randomIcon}
-          />
-        )}
+            />
+            )}
       </button>
 
       <div className={styles.textBox}>
@@ -64,8 +66,10 @@ const InputBox = ({
       </div>
       <button className={`${styles.newButton} ${styles.newButton2}`} onClick={handleSendButton}>
         <IoIosSend className={styles.sendIcon} />
+        <div className={styles.sendTextIcon}>Send</div>
       </button>
     </div>
+            </div>
   );
 };
 

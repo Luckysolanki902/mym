@@ -130,24 +130,20 @@ export default function App({ Component, pageProps }) {
       ) : (
         <SessionProvider>
 
-            <ThemeProvider theme={mymtheme}>
-              <div style={{ display: 'flex', width:'100vw', height:'100vh', flexDirection:'column' }}>
+          <ThemeProvider theme={mymtheme}>
+            <div style={{ display: 'flex', width: '100vw', height: '100vh', flexDirection: 'column', overflow: 'hidden' }}>
 
-                {!isAuthRoute && <Topbar />}
+              {!isAuthRoute && <Topbar />}
 
-                <div style={{display:'flex', width:'100vw'}}>
-                  {!isAuthRoute && <Sidebar />}
-
-                  {!isAuthRoute && (
-                    <div style={{  overflowY: 'auto' }} className='remcomponents'>
-                      <Component {...pageProps} />
-                    </div>
-                  )}
-                  {isAuthRoute && <Component {...pageProps} />}
+              <div style={{ display: 'flex', width: '100vw', overflow: 'hidden' }}>
+                {!isAuthRoute && <Sidebar />}
+                <div style={{ overflow: 'auto', width: '100%' }}>
+                  <Component {...pageProps} />
                 </div>
-
               </div>
-            </ThemeProvider>
+
+            </div>
+          </ThemeProvider>
 
         </SessionProvider>
       )}

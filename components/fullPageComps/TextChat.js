@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import FilterOptions from '@/components/chatComps/FilterOptions';
 import styles from '../componentStyles/textchat.module.css';
 import { initiateSocket } from '@/utils/ramdomchat/initiateSocket';
-import { handleSend, handleTyping, handleStoppedTyping, handleFindNew } from '@/utils/ramdomchat/socketEvents';
+import { handleSend, handleTyping, handleStoppedTyping, handleFindNew } from '@/utils/ramdomchat/socketFunctions';
 import CustomSnackbar from '../commonComps/Snackbar';
 import InputBox from '../chatComps/InputBox';
 import MessageContainer from '../chatComps/MessageContainer';

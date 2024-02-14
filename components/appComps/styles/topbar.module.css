@@ -9,8 +9,10 @@
     align-items: center;
     padding: 0;
     padding-left: 1rem;
-    min-height: 5rem;
-    z-index: 99;
+    /* min-height: 5rem; */
+    z-index: 99; 
+    flex-shrink: 0;
+    height: var(--topbarheight);
 }
 
 

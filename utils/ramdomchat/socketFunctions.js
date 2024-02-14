@@ -1,6 +1,6 @@
 // @/utils/randomchat/socketEvents.js
 import { scrollToBottom } from "../generalUtilities";
-import { debounce } from "lodash";
+import SimplePeer from "simple-peer";
 
 export const handleIdentify = (socket, userDetailsAndPreferences) => {
 
@@ -140,3 +140,49 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions)
         setIsFindingPair(false);
     }, timeout);
 };
+
+
+
+// Video calling
+
+
+export const startVideoCall = (socket, myStream, { setPartnerStream, setPeer }) => {
+    const peer = new SimplePeer({ initiator: true, stream: myStream });
+  
+    peer.on('signal', (data) => {
+      socket.emit('startVideoCall', { signalData: data });
+    });
+  
+    socket.on('videoCallAnswer', (data) => {
+      const { signalData } = data;
+      peer.signal(signalData);
+    });
+  
+    peer.on('stream', (stream) => {
+      setPartnerStream(stream);
+    });
+  
+    setPeer(peer);
+  };
+  
+  export const endVideoCall = (socket, myStream, { setPartnerStream, setPeer }) => {
+    if (socket) {
+      socket.emit('endVideoCall');
+    }
+  
+    if (myStream) {
+      myStream.getTracks().forEach((track) => {
+        track.stop();
+      });
+    }
+  
+    if (setPartnerStream) {
+      setPartnerStream(null);
+    }
+  
+    if (setPeer) {
+      setPeer(null);
+    }
+  };
+  
+  

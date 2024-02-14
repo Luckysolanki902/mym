@@ -5,7 +5,6 @@ import { IoIosSend } from 'react-icons/io';
 import { useMediaQuery } from '@mui/material';
 import { useInView } from 'react-intersection-observer';
 import AuthPrompt from '@/components/commonComps/AuthPrompt';
-import AnonymDialog from '../confessionComps/AnonymDialog';
 import { getRandomCommentAvatar } from '@/utils/avtarUtils';
 import CommentsDialog from '../confessionComps/CommentsDialog';
 import ConfessionBox from '../confessionComps/ConfessionBox';

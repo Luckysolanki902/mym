@@ -4,7 +4,7 @@
 
 :root {
   --sidebarwidth: 6vw;
-  --topbarheight: 9vh;
+  --topbarheight: 4.5rem;
   --inputboxheight: 3rem;
   --remwidth: calc(100vw - var(--sidebarwidth));
   --remheight: calc(100vh - var(--topbarheight));
@@ -13,13 +13,11 @@
 }
 
 body,
-html,
-:root {
+html {
   margin: 0;
   padding: 0;
   height: 100%;
-  width: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 * {
@@ -31,6 +29,13 @@ html,
   }
 button:focus{
   box-shadow: none;
+}
+
+.sidebarvisibility {
+  /* display: none; */
+  /* content-visibility: hidden; */
+  opacity: 1;
+  z-index: 5;
 }
 
 @font-face {
@@ -47,9 +52,6 @@ button {
 
 
 
-.topbarheight {
-  height: var(--topbarheight);
-}
 
 .sidebardim {
   width: var(--sidebarwidth);
@@ -60,30 +62,32 @@ button {
 @media (width < 1400px) {
   :root {
     --sidebarwidth: 6vw;
-    --topbarheight: 8vh;
+    --topbarheight: 4rem;
   }
 }
 
 @media (width < 1300px) {
   :root {
     --sidebarwidth: 8vw;
-    --topbarheight: 8vh;
+    --topbarheight: 4rem;
   }
 }
 
 @media (width < 1000px) {
   :root {
     --sidebarwidth: 8vw;
-    --topbarheight: 6vh;
+    --topbarheight: 4rem;
   }
 }
 
 @media (width < 900px) {
   :root {
     --sidebarwidth: 9vw;
-    --topbarheight: 8vh;
+    --topbarheight: 3.7rem;
   }
 }
+
+
 
 @media (width < 800px) {
   :root {
@@ -92,7 +96,10 @@ button {
   }
   
   .sidebarvisibility {
-    display: none;
+    /* display: none; */
+    /* content-visibility: hidden; */
+    opacity: 0;
+    z-index: -9990;
   }
 }
 

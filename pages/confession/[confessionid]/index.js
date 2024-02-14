@@ -4,11 +4,9 @@ import { getSession } from 'next-auth/react';
 
 const ConfessionPage = ({ confession, userDetails }) => {
   return (
-    <div>
-      <div>
+    <>
         {confession && <Confession confession={confession} userDetails={userDetails || null} />}
-      </div>
-    </div>
+    </>
   );
 };
 

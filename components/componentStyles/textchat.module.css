@@ -1,17 +1,19 @@
 .mainC {
-  height: 100%;
   overflow: hidden;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
   position: relative;
-height: 100%;
-padding-bottom: 1rem;
+  height: 100%;
+  padding-bottom: 1rem;
+  width: 100%;
+  height: calc(100vh - var(--topbarheight));
+  flex-grow: 1;
 }
 
 
-.messCon{
+.messCon {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -19,9 +21,13 @@ padding-bottom: 1rem;
   overflow-y: auto;
   height: 100%;
   flex: 1;
-height: 100%;
+  height: 100%;
   align-content: flex-start;
   background: none;
+  flex-grow: 1;
+  /* background-color: wheat;
+  border: 3px solid green; */
+
 }
 
 .messages {
@@ -34,6 +40,8 @@ height: 100%;
   flex: 1;
   margin-bottom: -1.2rem;
   align-content: flex-start;
+  flex-grow: 1;
+
 }
 
 
@@ -74,18 +82,18 @@ height: 100%;
 }
 
 .isTyping {
-/* margin-top: -1rem; */
-text-align: center;
-margin-bottom: -1.5rem;
-color: #2D2D2D;
-text-align: center;
-font-family: "Inknut Antiqua";
-font-size: 1rem;
-font-style: normal;
-font-weight: 500;
-line-height: normal;
-/* background-color: rgba(255, 255, 255, 0.834); */
-transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  /* margin-top: -1rem; */
+  text-align: center;
+  margin-bottom: -1.5rem;
+  color: #2D2D2D;
+  text-align: center;
+  font-family: "Inknut Antiqua";
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  /* background-color: rgba(255, 255, 255, 0.834); */
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 
@@ -130,32 +138,15 @@ transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
   justify-content: center;
 }
 
-
-
-
-
-
-
-
-
-
 /* inputbox and buttons main divs_____________________________ */
 
 .inputContainerMainDiv {
-  /* position: fixed;
-  bottom: 0;
-  right: 0;
-  flex: 0; */
-  /* width: var(--remwidth); */
-  box-sizing: border-box;
   display: flex;
   align-items: center;
-  padding: 0.3rem;
-  align-items: center;
-  height: calc(var(--inputboxheight) + 2rem);
-  padding: 0.5rem;
-  flex: 0;
-  justify-self: flex-end;
+  width: 100%;
+  justify-content: center;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 .inputContainer {
@@ -211,6 +202,7 @@ transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
   width: auto;
   min-width: 7rem;
   cursor: pointer;
+  transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
 }
 
@@ -224,11 +216,17 @@ transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
   height: auto;
   filter: invert(1);
 }
+.newButton:hover{
+scale: 0.95;
+
+}
 
 
 .sendIcon {
   width: 2rem;
   height: auto;
+  /* margin-right: 1rem; */
+  display: none;
 }
 
 /* .inpFocus {
@@ -243,11 +241,24 @@ transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
   scale: 0.98;
 }
 
+.sendTextIcon {
+  display: auto;
+  color: white;
+  font-family: Inter;
+  font-size: 1rem;
+  font-weight: 600;
+}
 
 
 
 @media (width<800px) {
-
+  .inputContainerMainDiv{
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .sendTextIcon {
+    display: none;
+  }
 
   .newButton {
     background: none;
@@ -272,6 +283,7 @@ transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     height: auto;
     color: black;
     opacity: 0.8;
+    display: block;
   }
 
   .newButton2 {
@@ -326,10 +338,11 @@ transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
   }
 
 }
-.isTypinghz{
+
+.isTypinghz {
   height: 0;
 }
 
-.nopadb{
+.nopadb {
   padding-bottom: 0;
 }

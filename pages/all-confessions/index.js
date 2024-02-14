@@ -6,7 +6,7 @@ const Index = ({ userDetails, confessions }) => {
   console.log(userDetails)
   console.log(confessions)
   return (
-    <div>
+    <div style={{width:'100%'}}>
       {confessions.map((confession) => (
         <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
       ))}
