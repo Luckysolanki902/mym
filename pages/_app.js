@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import LoadingBar from 'react-top-loading-bar';
 import TypeAdminPassword from '@/components/fullPageComps/TypeAdminPassword';
-import { createTheme, ThemeProvider } from '@mui/material';
+import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import SessionProvider from './SessionProvider';
 import Topbar from '@/components/appComps/Topbar';
 import Sidebar from '@/components/appComps/Sidebar';
@@ -99,11 +99,15 @@ export default function App({ Component, pageProps }) {
     };
   }, [router.events]);
 
+
+
   return (
     <>
       <Head>
         <title>MYM</title>
         <meta name="description" content={`Meet Your Mate`} />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
       </Head>
       {/* <LoadingBar
         height={2}
@@ -114,6 +118,7 @@ export default function App({ Component, pageProps }) {
       /> */}
       {isAdminPage ? (
         <ThemeProvider theme={mymthemeDark}>
+           <CssBaseline />
           {isLoading && (
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
               Loading...
@@ -129,22 +134,20 @@ export default function App({ Component, pageProps }) {
         </ThemeProvider>
       ) : (
         <SessionProvider>
-
           <ThemeProvider theme={mymtheme}>
-            <div style={{ display: 'flex', width: '100vw', height: '100vh', flexDirection: 'column', overflow: 'hidden' }}>
-
+          <CssBaseline />
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', overflow:'hidden', height:'100vh' }}>
               {!isAuthRoute && <Topbar />}
-
-              <div style={{ display: 'flex', width: '100vw', overflow: 'hidden' }}>
-                {!isAuthRoute && <Sidebar />}
-                <div style={{ overflow: 'auto', width: '100%' }}>
+              <div style={{ display: 'flex', flex: 1, overflowY: 'auto' }}>
+                {/* Sidebar - only visible on wider screens */}
+                <Sidebar />
+                <div style={{ overflow: 'auto', flex: 1 }}>
+                  {/* Main content */}
                   <Component {...pageProps} />
                 </div>
               </div>
-
             </div>
           </ThemeProvider>
-
         </SessionProvider>
       )}
     </>

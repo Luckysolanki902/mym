@@ -17,8 +17,8 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow-x: hidden;
 }
+
 
 * {
   box-sizing: border-box;
@@ -26,8 +26,9 @@ html {
 
 *::-webkit-scrollbar {
   display: none;
-  }
-button:focus{
+}
+
+button:focus {
   box-shadow: none;
 }
 
@@ -42,13 +43,11 @@ button:focus{
   font-family: 'ITC Kristen';
   src: url('/fonts/ITCKRIST.ttf');
 }
+
 button {
   -webkit-tap-highlight-color: transparent;
 }
 
-.chatContainer {
-  height: 100%;
-}
 
 
 
@@ -92,12 +91,9 @@ button {
 @media (width < 800px) {
   :root {
     --sidebarwidth: 0vw;
-    /* --topbarheight:0vh; */
   }
-  
+
   .sidebarvisibility {
-    /* display: none; */
-    /* content-visibility: hidden; */
     opacity: 0;
     z-index: -9990;
   }
@@ -106,16 +102,22 @@ button {
 @media (width < 600px) {
   :root {
     --inputboxheight: 2rem;
-    
+
   }
 }
+
 .remcomponents {
   width: var(--remwidth);
   height: var(--remheight);
   overflow: hidden;
 }
 
-*{
+* {
   -webkit-tap-highlight-color: transparent !important;
   -webkit-focus-ring-color: transparent !important;
+}
+
+.remheightofcop {
+  height: var(--remheight);
+  max-height: var(--remheight);
 }

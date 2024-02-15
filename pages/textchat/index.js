@@ -1,11 +1,20 @@
 // pages/textchat.js
 import TextChat from '@/components/fullPageComps/TextChat';
 import { getSession } from 'next-auth/react';
+import React, { useEffect, useRef } from 'react';
+
 
 const TextChatPage = ({ userDetails }) => {
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    // Scroll to the bottom when the component mounts
+    bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, []);
   return (
     <>
       <TextChat userDetails={userDetails} />
+      <div ref={bottomRef}></div>
     </>
   );
 };

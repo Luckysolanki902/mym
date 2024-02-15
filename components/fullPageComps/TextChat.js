@@ -6,9 +6,7 @@ import { handleSend, handleTyping, handleStoppedTyping, handleFindNew } from '@/
 import CustomSnackbar from '../commonComps/Snackbar';
 import InputBox from '../chatComps/InputBox';
 import MessageContainer from '../chatComps/MessageContainer';
-
 const TextChat = ({ userDetails }) => {
-
   const [socket, setSocket] = useState(null);
   const [textValue, setTextValue] = useState('');
   const [messages, setMessages] = useState([]);
@@ -28,6 +26,9 @@ const TextChat = ({ userDetails }) => {
   const [inpFocus, setInpFocus] = useState(false);
   const typingTimeoutRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  const inputRef = useRef(null);
+
+
 
   const [filters, setFilters] = useState({
     college: userDetails?.college,
@@ -115,6 +116,7 @@ const TextChat = ({ userDetails }) => {
         socket={socket}
         strangerIsTyping={strangerIsTyping}
         typingTimeoutRef={typingTimeoutRef}
+        inputRef={inputRef}
       />
       <CustomSnackbar
         open={snackbarOpen}

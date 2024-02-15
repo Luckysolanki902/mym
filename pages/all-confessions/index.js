@@ -1,18 +1,25 @@
 import { getSession } from 'next-auth/react';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Confession from '@/components/fullPageComps/Confession';
 
 const Index = ({ userDetails, confessions }) => {
-  console.log(userDetails)
-  console.log(confessions)
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    // Scroll to the bottom when the component mounts
+    bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
   return (
-    <div style={{width:'100%'}}>
+    <div style={{ width: '100%' }}>
       {confessions.map((confession) => (
         <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
       ))}
+      <div ref={bottomRef}></div>
     </div>
   );
 };
+
 
 export async function getServerSideProps(context) {
   // Fetch session and user details

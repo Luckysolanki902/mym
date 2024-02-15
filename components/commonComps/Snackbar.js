@@ -11,7 +11,7 @@ const CustomSnackbar = ({ open, onClose, message, color }) => {
   }, [onClose]);
 
   return (
-    <Snackbar open={open} autoHideDuration={2000} onClose={handleSnackbarClose}>
+    <Snackbar open={open} autoHideDuration={2000} onClose={handleSnackbarClose} anchorOrigin={{horizontal:'center', vertical:'top'}}>
       <MuiAlert
         elevation={6}
         variant="filled"
