@@ -118,7 +118,7 @@ export default function App({ Component, pageProps }) {
       /> */}
       {isAdminPage ? (
         <ThemeProvider theme={mymthemeDark}>
-           <CssBaseline />
+          <CssBaseline />
           {isLoading && (
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
               Loading...
@@ -135,16 +135,12 @@ export default function App({ Component, pageProps }) {
       ) : (
         <SessionProvider>
           <ThemeProvider theme={mymtheme}>
-          <CssBaseline />
-            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', overflow:'hidden', height:'100vh' }}>
-              {!isAuthRoute && <Topbar />}
-              <div style={{ display: 'flex', flex: 1, overflowY: 'auto' }}>
-                {/* Sidebar - only visible on wider screens */}
-                <Sidebar />
-                <div style={{ overflow: 'auto', flex: 1 }}>
-                  {/* Main content */}
-                  <Component {...pageProps} />
-                </div>
+            <CssBaseline />
+            {!isAuthRoute && <Topbar />}
+              <Sidebar />
+            <div style={{ display: 'flex', flex: 1, overflowY: 'scroll' }} className='remcheight'>
+              <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
+                <Component {...pageProps} />
               </div>
             </div>
           </ThemeProvider>

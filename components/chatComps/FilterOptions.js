@@ -100,7 +100,7 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetai
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <div className={styles.mainfiltercont} ref={mainFilterContainerRef} >
+      <div className={styles.mainfiltercont} ref={mainFilterContainerRef} style={{opacity:'0'}} >
         <IoFilterSharp className={styles.filterIcon} onClick={handlefilterToggle} style={{backgroundColor:'white', borderRadius:'1rem', padding:'0.3rem'}}/>
 
         <div className={`${styles.closedFilters} ${openFilterIcon && styles.openFilters}`}>

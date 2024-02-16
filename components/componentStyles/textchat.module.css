@@ -1,47 +1,40 @@
 .mainC {
-  z-index: 2;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  position: relative;
-  height: 100%;
   padding-bottom: 1rem;
   width: 100%;
   height: 100%;
   overflow: auto;
-  border: 4px solid grey;
+  /* border: 4px solid grey; */
 }
 
 .messCon {
   display: flex;
-  flex-direction: column;
-  /* justify-content: flex-start; */
-  padding-bottom: 1rem;
-  height: 100%;
+  flex-direction: column-reverse;
   flex: 1;
-  height: 100%;
-  align-content: flex-start;
-  background: none;
-  background-color: wheat;
-  border: 3px solid green;
-  overflow-y: hidden;
-  
+  /* align-content: flex-start; */
+  /* background-color: wheat;
+  border: 3px solid green; */
+  overflow-y: scroll;
+  margin-bottom: 4rem;
+  max-height: 80vh;
+  /* Removed height: 100%; */
+  /* Removed padding-top: 7rem; */
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+  position: relative;
+  padding-bottom: 0;
 }
 
-.messages {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem 0;
-  justify-content: flex-end;
-  height: 100%;
-  flex: 1;
-  margin-bottom: -1.2rem;
-  align-content: flex-start;
-  scroll-behavior: smooth;
-  overflow-y: auto;
-}
 
+
+
+
+.message ::-webkit-scrollbar {
+  display: block;
+}
 
 
 /* one message styling___________________________________________________ */
@@ -82,7 +75,7 @@
 .isTyping {
   /* margin-top: -1rem; */
   text-align: center;
-  margin-bottom: -1.5rem;
+  margin-bottom: 0rem;
   color: #2D2D2D;
   text-align: center;
   font-family: "Inknut Antiqua";
@@ -92,7 +85,18 @@
   line-height: normal;
   /* background-color: rgba(255, 255, 255, 0.834); */
   transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  position: fixed;
+  bottom: 5rem;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+ max-height: 1.1rem;
+
+
 }
+
 
 
 
@@ -129,11 +133,12 @@
 
 
 .filterPos {
-  position: fixed;
+  /* position: fixed; */
   top: calc(var(--topbarheight) + 0.5rem);
   right: 1rem;
   display: flex;
   justify-content: center;
+  display: none;
 }
 
 /* inputbox and buttons main divs_____________________________ */
@@ -145,6 +150,12 @@
   justify-content: center;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+  position: fixed;
+  bottom: 0.4rem;
+  right: 0;
+  width: calc(100vw - var(--sidebarwidth));
+  /* transition: all 0.3s ease-out; */
+
 }
 
 .inputContainer {
@@ -156,7 +167,7 @@
   border-radius: 1.0625rem;
   height: calc(var(--inputboxheight) + 1rem);
   padding: 0rem;
-  padding-left: 0rem;
+  padding-left: 1rem;
   transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
@@ -214,8 +225,9 @@
   height: auto;
   filter: invert(1);
 }
-.newButton:hover{
-scale: 0.95;
+
+.newButton:hover {
+  scale: 0.95;
 
 }
 
@@ -250,10 +262,11 @@ scale: 0.95;
 
 
 @media (width<800px) {
-  .inputContainerMainDiv{
+  .inputContainerMainDiv {
     padding-left: 1rem;
     padding-right: 1rem;
   }
+
   .sendTextIcon {
     display: none;
   }
@@ -287,7 +300,8 @@ scale: 0.95;
   .newButton2 {
     transform: translateX(0%);
   }
-  .input{
+
+  .input {
     padding-left: 0;
   }
 
@@ -317,7 +331,6 @@ scale: 0.95;
   }
 
   .isTyping {
-    margin-bottom: -1.2rem;
     font-size: 0.8rem;
 
   }
@@ -342,8 +355,4 @@ scale: 0.95;
 
 .isTypinghz {
   height: 0;
-}
-
-.nopadb {
-  padding-bottom: 0;
 }

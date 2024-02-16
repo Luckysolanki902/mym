@@ -17,6 +17,7 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
+  overflow: hidden;
 }
 
 
@@ -117,7 +118,12 @@ button {
   -webkit-focus-ring-color: transparent !important;
 }
 
-.remheightofcop {
+.remcheight{
+  margin-top: var(--topbarheight);
   height: var(--remheight);
-  max-height: var(--remheight);
+
+}
+
+.remcwidth{
+  margin-left: var(--sidebarwidth);
 }

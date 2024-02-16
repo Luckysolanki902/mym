@@ -117,6 +117,7 @@ const TextChat = ({ userDetails }) => {
         strangerIsTyping={strangerIsTyping}
         typingTimeoutRef={typingTimeoutRef}
         inputRef={inputRef}
+        
       />
       <CustomSnackbar
         open={snackbarOpen}

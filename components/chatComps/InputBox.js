@@ -49,7 +49,7 @@ const InputBox = ({
               type="text"
               id="messageBox"
               value={textValue}
-              onFocus={() => setInpFocus(true)}
+              onFocus={() =>{ setInpFocus(true)}}
               autoComplete="off"
               onBlurCapture={() => setInpFocus(false)}
               onChange={(e) => setTextValue(e.target.value)}

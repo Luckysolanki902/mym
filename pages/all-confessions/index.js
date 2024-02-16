@@ -5,17 +5,17 @@ import Confession from '@/components/fullPageComps/Confession';
 const Index = ({ userDetails, confessions }) => {
   const bottomRef = useRef(null);
 
-  useEffect(() => {
-    // Scroll to the bottom when the component mounts
-    bottomRef.current.scrollIntoView({ behavior: 'smooth' });
-  }, []);
+  // useEffect(() => {
+  //   // Scroll to the bottom when the component mounts
+  //   bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+  // }, []);
 
   return (
     <div style={{ width: '100%' }}>
       {confessions.map((confession) => (
         <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
       ))}
-      <div ref={bottomRef}></div>
+      {/* <div ref={bottomRef}></div> */}
     </div>
   );
 };
