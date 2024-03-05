@@ -71,7 +71,9 @@ export default function App({ Component, pageProps }) {
       }
     };
 
-    verifyToken();
+    if (isAdminPage) {
+      verifyToken();
+    }
   }, []);
 
 
@@ -137,7 +139,7 @@ export default function App({ Component, pageProps }) {
           <ThemeProvider theme={mymtheme}>
             <CssBaseline />
             {!isAuthRoute && <Topbar />}
-              <Sidebar />
+            <Sidebar />
             <div style={{ display: 'flex', flex: 1, overflowY: 'scroll' }} className='remcheight'>
               <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
                 <Component {...pageProps} />

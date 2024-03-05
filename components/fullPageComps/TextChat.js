@@ -42,7 +42,7 @@ const TextChat = ({ userDetails }) => {
       preferredGender: userDetails?.gender === 'male' ? 'female' : 'male',
     }));
   }, [userDetails]);
-
+ 
   useEffect(() => {
     setPreferredCollege(filters.college)
     setPreferredGender(filters.strangerGender)

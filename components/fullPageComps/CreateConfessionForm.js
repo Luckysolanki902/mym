@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import styles from '../componentStyles/createconfessionform.module.css';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Button } from '@mui/material';
+import WarningDialog from '../confessionComps/WarningDialog';
 
 const CreateConfessionForm = ({ userDetails }) => {
   const [confessionValue, setConfessionValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogContent, setDialogContent] = useState({});
 
   const handleConfessionSubmit = async () => {
     try {
@@ -18,7 +21,7 @@ const CreateConfessionForm = ({ userDetails }) => {
         confessionContent: confessionValue,
       };
 
-      const confessResponse = await fetch('/api/confession/confess', {
+      const moderationResponse = await fetch('/api/confession/content-moderation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,29 +29,54 @@ const CreateConfessionForm = ({ userDetails }) => {
         body: JSON.stringify(dataToSend),
       });
 
-      if (!confessResponse.ok) {
-        throw new Error('Error submitting confession');
+      if (!moderationResponse.ok) {
+        throw new Error('Error checking content moderation');
       }
 
-      const { confessionId } = await confessResponse.json();
+      const moderationResult = await moderationResponse.json();
 
-      // Create an entry in PersonalReply model
-      const personalReplyResponse = await fetch('/api/confession/personalreply', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          confessionId,
-          confesserEmail: email,
-        }),
-      });
+      if (moderationResult.isFitForSubmission) {
+        // Proceed with submission
+        const confessResponse = await fetch('/api/confession/confess', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dataToSend),
+        });
 
-      if (personalReplyResponse.ok) {
-        console.log('Confession submitted successfully');
-        setConfessionValue('');
+        if (!confessResponse.ok) {
+          throw new Error('Error submitting confession');
+        }
+
+        const { confessionId } = await confessResponse.json();
+
+        // Create an entry in PersonalReply model
+        const enablePersonalReplyResponse = await fetch('/api/confession/enablepersonalreply', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            confessionId,
+            confesserEmail: email,
+          }),
+        });
+
+        if (enablePersonalReplyResponse.ok) {
+          console.log('Confession submitted successfully');
+          setConfessionValue('');
+        } else {
+          console.error('Error creating PersonalReply entry');
+        }
       } else {
-        console.error('Error creating PersonalReply entry');
+        // Show dialog with problematic sentences list, warning, and advice
+        setDialogContent({
+          problematicSentences: moderationResult.problematicSentences,
+          warning: moderationResult.warning,
+          advice: moderationResult.advice
+        });
+        setDialogOpen(true);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -57,6 +85,9 @@ const CreateConfessionForm = ({ userDetails }) => {
     }
   };
 
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
 
   return (
     <div className={styles.mainDiv}>
@@ -75,6 +106,9 @@ const CreateConfessionForm = ({ userDetails }) => {
           </button>
         </div>
       </div>
+
+      {/* Custom Dialog for displaying warnings and advice */}
+      <WarningDialog open={dialogOpen} onClose={handleDialogClose} content={dialogContent} />
     </div>
   );
 };

@@ -1,11 +1,11 @@
 import { io } from 'socket.io-client';
 import { handleIdentify, handlePairDisconnected, handlePairingSuccess, handleReceivedMessage } from "@/utils/ramdomchat/socketFunctions";
-const serverUrl = 'https://hostedmymserver.onrender.com'
-// const serverUrl = 'http://localhost:1000'
+// const serverUrl = 'https://hostedmymserver.onrender.com'
+const serverUrl = 'http://localhost:1000'
 
 export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, stateFunctions, refs) => {
 
-    const { setSocket, setUsersOnline, setStrangerIsTyping, } = stateFunctions;
+    const { setSocket, setUsersOnline, setStrangerIsTyping,strangerSocketId } = stateFunctions;
     const { messagesContainerRef } = refs
 
 
