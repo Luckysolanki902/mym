@@ -66,7 +66,7 @@ const AudioCall = ({ userDetails }) => {
             });
 
             newSocket.on('pairingSuccess', (data) => {
-                handlePairingSuccess(data, newSocket);
+                handlePairingSuccess(data, newSocket, stream);
             });
 
             newSocket.on('pairDisconnected', () => {
@@ -108,7 +108,7 @@ const AudioCall = ({ userDetails }) => {
         }
     }
 
-    const handlePairingSuccess = (data, newSocket) => {
+    const handlePairingSuccess = (data, newSocket, stream, remoteStream) => {
         if (!hasPaired) {
             setStrangerDisconnectedMessageDiv(false);
             setIsFindingPair(false);
@@ -126,7 +126,7 @@ const AudioCall = ({ userDetails }) => {
             setSnackbarMessage(snackbarMessage);
 
             setSnackbarOpen(true);
-            joinCall();
+            joinCall(stream, stranger,roomId);
             setHasPaired(true);
         }
     };
@@ -138,10 +138,13 @@ const AudioCall = ({ userDetails }) => {
         setHasPaired(false);
     }
 
-    const joinCall = async () => {
-        if (!localStream || !receiver || !agora.current) return;
-
+    const joinCall = async (localStream, stranger, room) => {
+        console.log(localStream, receiver, agora.current);
+    
+        if (!localStream || !stranger || !agora.current) return;
+    
         const client = agora.current.createClient({ codec: 'vp8', mode: 'rtc' });
+    
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
             if (mediaType === 'audio') {
@@ -149,10 +152,14 @@ const AudioCall = ({ userDetails }) => {
                 setRemoteStream(remoteAudioTrack);
             }
         });
-
+    
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
-        await client.publish([localStream]);
+    
+        // Convert localStream to an array of tracks
+        const localAudioTrack = await agora.current.createMicrophoneAudioTrack();
+        await client.publish([localAudioTrack]);
     };
+    
 
     const cleanCall = () => {
         if (agora.current) {
@@ -191,6 +198,10 @@ const AudioCall = ({ userDetails }) => {
             init();
         }
     }
+
+    useEffect(() => {
+        console.log('remotestream',remoteStream)
+    }, [remoteStream])
 
     return (
         <div className={styles.mainC}>
