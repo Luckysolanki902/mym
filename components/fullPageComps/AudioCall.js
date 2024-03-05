@@ -126,7 +126,7 @@ const AudioCall = ({ userDetails }) => {
             setSnackbarMessage(snackbarMessage);
 
             setSnackbarOpen(true);
-            joinCall(stream, stranger,roomId);
+            joinCall(stream, stranger, roomId);
             setHasPaired(true);
         }
     };
@@ -140,26 +140,27 @@ const AudioCall = ({ userDetails }) => {
 
     const joinCall = async (localStream, stranger, room) => {
         console.log(localStream, receiver, agora.current);
-    
+
         if (!localStream || !stranger || !agora.current) return;
-    
+
         const client = agora.current.createClient({ codec: 'vp8', mode: 'rtc' });
-    
+
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
             if (mediaType === 'audio') {
-                const remoteAudioTrack = user.audioTrack;
-                setRemoteStream(remoteAudioTrack);
+                if (audioRef.current) {
+                    audioRef.current.srcObject = user.audioTrack.play();
+                }
             }
         });
-    
+
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
-    
+
         // Convert localStream to an array of tracks
         const localAudioTrack = await agora.current.createMicrophoneAudioTrack();
         await client.publish([localAudioTrack]);
     };
-    
+
 
     const cleanCall = () => {
         if (agora.current) {
@@ -200,7 +201,7 @@ const AudioCall = ({ userDetails }) => {
     }
 
     useEffect(() => {
-        console.log('remotestream',remoteStream)
+        console.log('remotestream', remoteStream)
     }, [remoteStream])
 
     return (
@@ -215,7 +216,7 @@ const AudioCall = ({ userDetails }) => {
             </div>
             {usersOnline && <div>Users Online: {usersOnline}</div>}
             {strangerDisconnectedMessageDiv && hasPaired && <div>Stranger disconnected</div>}
-            {remoteStream && <audio ref={audioRef} autoPlay />}
+            <audio ref={audioRef} autoPlay />
 
             <AudioCallControls
                 isFindingPair={isFindingPair}
