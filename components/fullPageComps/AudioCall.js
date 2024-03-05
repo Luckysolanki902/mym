@@ -32,8 +32,8 @@ const AudioCall = ({ userDetails }) => {
         })();
     }, []);
 
-    const serverUrl = 'https://hostedmymserver.onrender.com';
-
+    const serverUrl = 'https://hostedmymserver.onrender.com'
+    // const serverUrl = 'http://localhost:1000'
     const [filters, setFilters] = useState({
         college: userDetails?.college,
         strangerGender: userDetails?.gender === 'male' ? 'female' : 'male',
@@ -104,6 +104,7 @@ const AudioCall = ({ userDetails }) => {
                 userCollege: userDetails?.college,
                 preferredGender: filters.strangerGender,
                 preferredCollege: filters.college,
+                pageType: 'audiocall',
             });
         }
     }
@@ -183,6 +184,7 @@ const AudioCall = ({ userDetails }) => {
                 userCollege: userDetails?.college,
                 preferredGender: filters.strangerGender,
                 preferredCollege: filters.college,
+                pageType: 'audiocall',
             });
 
             const timeout = 10000;

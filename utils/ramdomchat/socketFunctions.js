@@ -14,6 +14,7 @@ export const handleIdentify = (socket, userDetailsAndPreferences) => {
             userCollege: userDetails?.college,
             preferredGender: preferredGender,
             preferredCollege: preferredCollege,
+            pageType: 'textchat'
         });
     }
 }
@@ -94,7 +95,7 @@ export const handleSend = (socket, textValue, stateFunctions, messagesContainerR
     scrollToBottom(messagesContainerRef)
 }
 
-export const handleTyping = (e, socket, typingTimeoutRef ) => { 
+export const handleTyping = (e, socket, typingTimeoutRef) => {
     if (e.key !== 'Enter' && socket) {
         socket.emit('typing');
 
@@ -132,6 +133,7 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions)
         userCollege: userDetails?.college,
         preferredGender: preferredGender,
         preferredCollege: preferredCollege,
+        pageType: 'textchat'
     });
     console.log('Finding new pair');
 
@@ -145,47 +147,46 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions)
 export const handleReceivedCall = (data, streamsAndPeerStates) => {
     const { setMyStream, setPartnerStream, setPeer } = streamsAndPeerStates;
     const { signal, sender } = data;
-  
+
     // Create Simple Peer connection for audio call
     const peer = new SimplePeer({ initiator: false, trickle: false });
-  
+
     // Save the peer instance
     setPeer(peer);
-  
+
     // Set up signal events
     peer.on('signal', (data) => {
-      // Send signal data back to the caller
-      socket.emit('answerCall', { signalData: data, receiver: sender });
+        // Send signal data back to the caller
+        socket.emit('answerCall', { signalData: data, receiver: sender });
     });
-  
+
     // Set up stream event
     peer.on('stream', (stream) => {
-      // Save partner's stream
-      setPartnerStream(stream);
+        // Save partner's stream
+        setPartnerStream(stream);
     });
-  
+
     // Set up error event
     peer.on('error', (error) => {
-      console.error('SimplePeer error:', error);
+        console.error('SimplePeer error:', error);
     });
-  
+
     // Signal the peer with the received signal
     peer.signal(signal);
-  
-    console.log(`Received call from ${sender}`);
-  };
 
-  export const startAudioCall = (socket, myStream, partnerUserId, { setPeer }) => {
+    console.log(`Received call from ${sender}`);
+};
+
+export const startAudioCall = (socket, myStream, partnerUserId, { setPeer }) => {
     // Create Simple Peer connection for audio call
     const peer = new SimplePeer({ initiator: true, trickle: false, stream: myStream });
-  
+
     // Save the peer instance
     setPeer(peer);
-  
+
     // Set up signal events
     peer.on('signal', (data) => {
-      // Send signal data to the partner
-      socket.emit('startCall', { signalData: data, receiver: partnerUserId });
+        // Send signal data to the partner
+        socket.emit('startCall', { signalData: data, receiver: partnerUserId });
     });
-  };
-  
+};
