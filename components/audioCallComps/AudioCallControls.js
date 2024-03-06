@@ -15,7 +15,8 @@ const AudioCallControls = ({
     handleFindNewButton,
     handleToggleMute,
     isMuted,
-    // isLoudspeaker,
+    isSpeakerMuted,
+    handleToggleSpeakerMute
 }) => {
 
     return (
@@ -42,6 +43,12 @@ const AudioCallControls = ({
                         {isMuted ? <MicOffIcon /> : <MicIcon />}
                     </IconButton>
                 </Tooltip>
+
+                <Tooltip title={isSpeakerMuted ? '' : 'Silence'}>
+                        <IconButton onClick={handleToggleSpeakerMute}>
+                            {isSpeakerMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                        </IconButton>
+                    </Tooltip>
 
                 {/* Toggle Loudspeaker Button (For Phone Only) */}
                 {/* <MobileView>

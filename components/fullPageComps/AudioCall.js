@@ -17,23 +17,42 @@ const AudioCall = ({ userDetails }) => {
     const [room, setRoom] = useState('');
     const [receiver, setReceiver] = useState('');
     const [strangerGender, setStrangerGender] = useState('');
-    const [localStream, setLocalStream] = useState(null);
-    const [remoteStream, setRemoteStream] = useState(null)
+
+    const localStreamRef = useRef(null);
+    const remoteStreamRef = useRef(null);
     const audioRef = useRef(null);
     const agora = useRef(null);
+    const clientRef = useRef(null);
 
     const [isMuted, setIsMuted] = useState(false);
 
+    const [isSpeakerMuted, setIsSpeakerMuted] = useState(false)
+    const handleToggleSpeakerMute = () => {
+        setIsSpeakerMuted(!isSpeakerMuted)
+        const audioElement = audioRef.current;
+        if (audioElement) {
+            audioElement.muted = !audioElement.muted;
+            console.log(audioElement.muted);
+        }
+    }
 
     const handleMuteToggle = () => {
-        if (localStream) {
-            const audioTracks = localStream.getAudioTracks();
+        console.log('localStream:', localStreamRef.current);
+        if (localStreamRef.current) {
+            const audioTracks = localStreamRef.current.getAudioTracks();
+            console.log('audioTracks:', audioTracks);
+
             audioTracks.forEach(track => {
+                console.log('Track enabled before toggle:', track.enabled);
                 track.enabled = !track.enabled;
+                console.log('Track enabled after toggle:', track.enabled);
             });
             setIsMuted(!isMuted);
+            console.log('isMuted:', isMuted);
         }
     };
+
+
 
     useEffect(() => {
         (async () => {
@@ -64,7 +83,7 @@ const AudioCall = ({ userDetails }) => {
     const init = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            setLocalStream(stream);
+            localStreamRef.current = stream;
             console.log('Successfully obtained local stream:', stream);
 
             const newSocket = io(serverUrl);
@@ -80,7 +99,7 @@ const AudioCall = ({ userDetails }) => {
             });
 
             newSocket.on('pairingSuccess', (data) => {
-                handlePairingSuccess(data, newSocket, stream);
+                handlePairingSuccess(data);
             });
 
             newSocket.on('pairDisconnected', () => {
@@ -123,7 +142,7 @@ const AudioCall = ({ userDetails }) => {
         }
     }
 
-    const handlePairingSuccess = (data, newSocket, stream, remoteStream) => {
+    const handlePairingSuccess = (data) => {
         if (!hasPaired) {
             setStrangerDisconnectedMessageDiv(false);
             setIsFindingPair(false);
@@ -136,12 +155,9 @@ const AudioCall = ({ userDetails }) => {
 
             const snackbarColor = strangerGender === 'male' ? '#0094d4' : '#e3368d';
             setSnackbarColor(snackbarColor);
-
             const snackbarMessage = `A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`;
-            setSnackbarMessage(snackbarMessage);
-
-            setSnackbarOpen(true);
-            joinCall(stream, stranger, roomId);
+            setSnackbarMessage(snackbarMessage)
+            joinCall(stranger, roomId);
             setHasPaired(true);
         }
     };
@@ -153,13 +169,13 @@ const AudioCall = ({ userDetails }) => {
         setHasPaired(false);
     }
 
-    const joinCall = async (localStream, stranger, room) => {
-        console.log(localStream, receiver, agora.current);
+    const joinCall = async (stranger, room) => {
+        console.log(localStreamRef.current, stranger, agora.current);
 
-        if (!localStream || !stranger || !agora.current) return;
+        if (!localStreamRef.current || !stranger || !agora.current) return;
 
         const client = agora.current.createClient({ codec: 'vp8', mode: 'rtc' });
-
+        clientRef.current = client;
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
             if (mediaType === 'audio') {
@@ -168,23 +184,21 @@ const AudioCall = ({ userDetails }) => {
                 }
             }
         });
-
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
-
         // Convert localStream to an array of tracks
         const localAudioTrack = await agora.current.createMicrophoneAudioTrack();
         await client.publish([localAudioTrack]);
+        setSnackbarOpen(true);
     };
-
-
-    const cleanCall = () => {
-        if (agora.current) {
-            agora.current.leave(() => {
+    const cleanCall = async () => {
+        if (clientRef.current && clientRef.current != null) {
+            await clientRef.current.leave(() => {
                 console.log('User left the channel');
             });
         }
-        setLocalStream(null);
-        setRemoteStream(null);
+        localStreamRef.current = null;
+        remoteStreamRef.current = null;
+        clientRef.current = null;
     };
 
     const handleFindNew = () => {
@@ -217,9 +231,6 @@ const AudioCall = ({ userDetails }) => {
         }
     }
 
-    useEffect(() => {
-        console.log('remotestream', remoteStream)
-    }, [remoteStream])
 
     return (
         <div className={styles.mainC}>
@@ -233,6 +244,7 @@ const AudioCall = ({ userDetails }) => {
             </div>
             {usersOnline && <div>Users Online: {usersOnline}</div>}
             {strangerDisconnectedMessageDiv && hasPaired && <div>Stranger disconnected</div>}
+
             <audio ref={audioRef} autoPlay />
 
             <AudioCallControls
@@ -240,6 +252,8 @@ const AudioCall = ({ userDetails }) => {
                 handleFindNewButton={handleFindNewButton}
                 handleToggleMute={handleMuteToggle}
                 isMuted={isMuted}
+                isSpeakerMuted={isSpeakerMuted}
+                handleToggleSpeakerMute={handleToggleSpeakerMute}
             />
             <CustomSnackbar
                 open={snackbarOpen}
