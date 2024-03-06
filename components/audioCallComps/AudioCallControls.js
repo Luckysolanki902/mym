@@ -15,8 +15,8 @@ const AudioCallControls = ({
     handleFindNewButton,
     handleToggleMute,
     isMuted,
-    isSpeakerMuted,
-    handleToggleSpeakerMute
+    isPartnerMuted,
+    handleTogglePartnerMute
 }) => {
 
     return (
@@ -44,9 +44,9 @@ const AudioCallControls = ({
                     </IconButton>
                 </Tooltip>
 
-                <Tooltip title={isSpeakerMuted ? '' : 'Silence'}>
-                        <IconButton onClick={handleToggleSpeakerMute}>
-                            {isSpeakerMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                <Tooltip title={isPartnerMuted ? '' : 'Silence'}>
+                        <IconButton onClick={handleTogglePartnerMute}>
+                            {isPartnerMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
                         </IconButton>
                     </Tooltip>
 

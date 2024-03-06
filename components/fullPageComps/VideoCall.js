@@ -1,11 +1,13 @@
+// Import necessary modules
 import React, { useEffect, useRef, useState } from 'react';
 import FilterOptions from '@/components/chatComps/FilterOptions';
 import styles from '../componentStyles/textchat.module.css';
 import CustomSnackbar from '../commonComps/Snackbar';
-import AudioCallControls from '../audioCallComps/AudioCallControls';
+// import VideoCallControls from './VideoCallControls'; 
 import { io } from 'socket.io-client';
+import AudioCallControls from '../audioCallComps/AudioCallControls';
 
-const AudioCall = ({ userDetails }) => {
+const VideoCall = ({ userDetails }) => {
     const [socket, setSocket] = useState(null);
     const [isFindingPair, setIsFindingPair] = useState(false);
     const [strangerDisconnectedMessageDiv, setStrangerDisconnectedMessageDiv] = useState(false);
@@ -20,14 +22,16 @@ const AudioCall = ({ userDetails }) => {
 
     const localStreamRef = useRef(null);
     const remoteStreamRef = useRef(null);
-    const audioRef = useRef(null);
+    const localVideoRef = useRef(null);
+    const remoteVideoRef = useRef(null);
 
     const agora = useRef(null);
     const clientRef = useRef(null);
     const localAudioTrackRef = useRef(null);
     const remoteAudioTrackRef = useRef(null);
+    const localVideoTrackRef = useRef(null);
 
-    const [isPartnerMuted, setIsPartnerMuted] = useState(false)
+    const [isPartnerMuted, setIsPartnerMuted] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
 
     useEffect(() => {
@@ -40,13 +44,14 @@ const AudioCall = ({ userDetails }) => {
             }
         })();
     }, []);
+
     const handleTogglePartnerMute = () => {
         // Use remoteAudioTrackRef to toggle partner mute
         if (remoteAudioTrackRef.current) {
             remoteAudioTrackRef.current.setVolume(!isPartnerMuted ? 0 : 1000);
         }
         setIsPartnerMuted(!isPartnerMuted);
-    }
+    };
 
     const handleToggleMute = () => {
         // Use localAudioTrackRef to toggle local mute
@@ -55,11 +60,9 @@ const AudioCall = ({ userDetails }) => {
             console.log('isMuted:', isMuted);
         }
         setIsMuted(!isMuted);
-
     };
 
-
-    const serverUrl = 'https://hostedmymserver.onrender.com'
+    const serverUrl = 'https://hostedmymserver.onrender.com';
     // const serverUrl = 'http://localhost:1000'
     const [filters, setFilters] = useState({
         college: userDetails?.college,
@@ -76,19 +79,19 @@ const AudioCall = ({ userDetails }) => {
 
     const init = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
             localStreamRef.current = stream;
             console.log('Successfully obtained local stream:', stream);
-            let newSocket
+            let newSocket;
             try {
                 if (socket === null || !socket || socket === undefined) {
                     newSocket = io(serverUrl);
-                    setSocket(newSocket)
+                    setSocket(newSocket);
                 } else {
-                    newSocket = socket
+                    newSocket = socket;
                 }
             } catch (error) {
-                console.log('error setting newsocket', error)
+                console.log('error setting newsocket', error);
             }
 
             newSocket.on('connect', () => {
@@ -139,10 +142,10 @@ const AudioCall = ({ userDetails }) => {
                 userCollege: userDetails?.college,
                 preferredGender: filters.strangerGender,
                 preferredCollege: filters.college,
-                pageType: 'audiocall',
+                pageType: 'videocall',
             });
         }
-    }
+    };
 
     const handlePairingSuccess = (data) => {
         if (!hasPaired) {
@@ -158,7 +161,7 @@ const AudioCall = ({ userDetails }) => {
             const snackbarColor = strangerGender === 'male' ? '#0094d4' : '#e3368d';
             setSnackbarColor(snackbarColor);
             const snackbarMessage = `A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`;
-            setSnackbarMessage(snackbarMessage)
+            setSnackbarMessage(snackbarMessage);
             joinCall(stranger, roomId);
             setHasPaired(true);
         }
@@ -169,7 +172,7 @@ const AudioCall = ({ userDetails }) => {
         setStrangerDisconnectedMessageDiv(true);
         cleanCall();
         setHasPaired(false);
-    }
+    };
 
     const joinCall = async (stranger, room) => {
         console.log(stranger, agora.current);
@@ -186,15 +189,27 @@ const AudioCall = ({ userDetails }) => {
                 if (audioRef.current && remoteAudioTrackRef.current) {
                     audioRef.current.srcObject = remoteAudioTrackRef.current.play();
                 }
+            } else if (mediaType === 'video') {
+                remoteVideoRef.current = user.videoTrack;
+                if (remoteVideoRef.current) {
+                    remoteVideoRef.current.play('remoteVideo'); // 'remoteVideo' is the ID of your remote video element
+                }
             }
         });
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
         // Convert localStream to an array of tracks
         const localAudioTrack = await agora.current.createMicrophoneAudioTrack();
         localAudioTrackRef.current = localAudioTrack;
-        await client.publish([localAudioTrackRef.current]);
+        await client.publish([localAudioTrackRef.current, localVideoTrackRef.current]);
+
+        // Set up the video elements
+        if (localVideoRef.current) {
+            localVideoRef.current.srcObject = localStreamRef.current;
+        }
+
         setSnackbarOpen(true);
     };
+
     const cleanCall = async () => {
         if (clientRef.current && clientRef.current != null) {
             await clientRef.current.leave(() => {
@@ -208,7 +223,7 @@ const AudioCall = ({ userDetails }) => {
 
     const handleFindNew = async () => {
         if (socket) {
-            await cleanCall()
+            await cleanCall();
             setHasPaired(false);
             setIsFindingPair(true);
             setStrangerDisconnectedMessageDiv(false);
@@ -218,7 +233,7 @@ const AudioCall = ({ userDetails }) => {
                 userCollege: userDetails?.college,
                 preferredGender: filters.strangerGender,
                 preferredCollege: filters.college,
-                pageType: 'audiocall',
+                pageType: 'videocall',
             });
 
             const timeout = 10000;
@@ -227,9 +242,6 @@ const AudioCall = ({ userDetails }) => {
             }, timeout);
         }
     };
-
-
-
 
     return (
         <div className={styles.mainC}>
@@ -244,7 +256,11 @@ const AudioCall = ({ userDetails }) => {
             {usersOnline && <div>Users Online: {usersOnline}</div>}
             {strangerDisconnectedMessageDiv && hasPaired && <div>Stranger disconnected</div>}
 
-            <audio ref={audioRef} autoPlay />
+            {/* Video elements */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', padding: '1rem', width: '50%' }}>
+                <video id="localVideo" ref={localVideoRef} autoPlay muted style={{ backgroundColor: 'black' }} />
+                <video id="remoteVideo" ref={remoteVideoRef} autoPlay style={{ backgroundColor: 'black' }} />
+            </div>
 
             <AudioCallControls
                 isFindingPair={isFindingPair}
@@ -264,4 +280,4 @@ const AudioCall = ({ userDetails }) => {
     );
 };
 
-export default AudioCall
+export default VideoCall;
