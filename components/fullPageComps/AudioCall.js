@@ -21,6 +21,20 @@ const AudioCall = ({ userDetails }) => {
     const [remoteStream, setRemoteStream] = useState(null)
     const audioRef = useRef(null);
     const agora = useRef(null);
+
+    const [isMuted, setIsMuted] = useState(false);
+
+
+    const handleMuteToggle = () => {
+        if (localStream) {
+            const audioTracks = localStream.getAudioTracks();
+            audioTracks.forEach(track => {
+                track.enabled = !track.enabled;
+            });
+            setIsMuted(!isMuted);
+        }
+    };
+
     useEffect(() => {
         (async () => {
             try {
@@ -175,6 +189,7 @@ const AudioCall = ({ userDetails }) => {
 
     const handleFindNew = () => {
         if (socket) {
+            cleanCall()
             setHasPaired(false);
             setIsFindingPair(true);
             setStrangerDisconnectedMessageDiv(false);
@@ -223,6 +238,8 @@ const AudioCall = ({ userDetails }) => {
             <AudioCallControls
                 isFindingPair={isFindingPair}
                 handleFindNewButton={handleFindNewButton}
+                handleToggleMute={handleMuteToggle}
+                isMuted={isMuted}
             />
             <CustomSnackbar
                 open={snackbarOpen}
