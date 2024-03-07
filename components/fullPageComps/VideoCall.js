@@ -1,11 +1,9 @@
-// Import necessary modules
 import React, { useEffect, useRef, useState } from 'react';
 import FilterOptions from '@/components/chatComps/FilterOptions';
 import styles from '../componentStyles/textchat.module.css';
 import CustomSnackbar from '../commonComps/Snackbar';
-// import VideoCallControls from './VideoCallControls'; 
+import VideoCallControls from '../videoCallComps/VideoCallControls'; // Assuming you have VideoCallControls component
 import { io } from 'socket.io-client';
-import AudioCallControls from '../audioCallComps/AudioCallControls';
 
 const VideoCall = ({ userDetails }) => {
     const [socket, setSocket] = useState(null);
@@ -19,51 +17,22 @@ const VideoCall = ({ userDetails }) => {
     const [room, setRoom] = useState('');
     const [receiver, setReceiver] = useState('');
     const [strangerGender, setStrangerGender] = useState('');
+    const [isMyAudioMuted, setIsMyAudioMuted] = useState(false);
+    const [isPartnerAudioMuted, setIsPartnerAudioMuted] = useState(false);
+    const [isMyVideoDisabled, setIsMyVideoDisabled] = useState(false);
+    const [isPartnerVideoDisabled, setIsPartnerVideoDisabled] = useState(false);
 
     const localStreamRef = useRef(null);
     const remoteStreamRef = useRef(null);
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
+    const videoTracksRef = useRef([]);
 
     const agora = useRef(null);
     const clientRef = useRef(null);
-    const localAudioTrackRef = useRef(null);
-    const remoteAudioTrackRef = useRef(null);
-    const localVideoTrackRef = useRef(null);
-
-    const [isPartnerMuted, setIsPartnerMuted] = useState(false);
-    const [isMuted, setIsMuted] = useState(false);
-
-    useEffect(() => {
-        (async () => {
-            try {
-                agora.current = await import('agora-rtc-sdk-ng');
-                console.log('AgoraRTC imported successfully');
-            } catch (error) {
-                console.error('Error importing AgoraRTC:', error);
-            }
-        })();
-    }, []);
-
-    const handleTogglePartnerMute = () => {
-        // Use remoteAudioTrackRef to toggle partner mute
-        if (remoteAudioTrackRef.current) {
-            remoteAudioTrackRef.current.setVolume(!isPartnerMuted ? 0 : 1000);
-        }
-        setIsPartnerMuted(!isPartnerMuted);
-    };
-
-    const handleToggleMute = () => {
-        // Use localAudioTrackRef to toggle local mute
-        if (localAudioTrackRef.current) {
-            localAudioTrackRef.current.setMuted(!isMuted);
-            console.log('isMuted:', isMuted);
-        }
-        setIsMuted(!isMuted);
-    };
 
     const serverUrl = 'https://hostedmymserver.onrender.com';
-    // const serverUrl = 'http://localhost:1000'
+
     const [filters, setFilters] = useState({
         college: userDetails?.college,
         strangerGender: userDetails?.gender === 'male' ? 'female' : 'male',
@@ -77,11 +46,23 @@ const VideoCall = ({ userDetails }) => {
         }));
     }, [userDetails]);
 
+    useEffect(() => {
+        (async () => {
+            try {
+                agora.current = await import('agora-rtc-sdk-ng');
+                console.log('AgoraRTC imported successfully');
+            } catch (error) {
+                console.error('Error importing AgoraRTC:', error);
+            }
+        })();
+    }, []);
+
     const init = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
             localStreamRef.current = stream;
-            console.log('Successfully obtained local stream:', stream);
+            localVideoRef.current.srcObject = stream;
+
             let newSocket;
             try {
                 if (socket === null || !socket || socket === undefined) {
@@ -119,7 +100,7 @@ const VideoCall = ({ userDetails }) => {
                 console.error('Socket error:', error);
             });
         } catch (error) {
-            console.error('Error getting audio permissions:', error);
+            console.error('Error getting audio and video permissions:', error);
         }
     };
 
@@ -184,29 +165,32 @@ const VideoCall = ({ userDetails }) => {
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
             if (mediaType === 'audio') {
-                remoteAudioTrackRef.current = user.audioTrack;
+                const audioTrack = user.audioTrack;
+                videoTracksRef.current.push(audioTrack);
 
-                if (audioRef.current && remoteAudioTrackRef.current) {
-                    audioRef.current.srcObject = remoteAudioTrackRef.current.play();
+                if (audioTrack && remoteStreamRef.current) {
+                    remoteStreamRef.current.addTrack(audioTrack);
                 }
             } else if (mediaType === 'video') {
-                remoteVideoRef.current = user.videoTrack;
-                if (remoteVideoRef.current) {
-                    remoteVideoRef.current.play('remoteVideo'); // 'remoteVideo' is the ID of your remote video element
+                const videoTrack = user.videoTrack;
+                videoTracksRef.current.push(videoTrack);
+
+                if (videoTrack && remoteStreamRef.current) {
+                    remoteStreamRef.current.addTrack(videoTrack);
                 }
             }
         });
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
         // Convert localStream to an array of tracks
-        const localAudioTrack = await agora.current.createMicrophoneAudioTrack();
-        localAudioTrackRef.current = localAudioTrack;
-        await client.publish([localAudioTrackRef.current, localVideoTrackRef.current]);
+        const localAudioTrack = agora.current.createMicrophoneAudioTrack();
+        const localVideoTrack = agora.current.createCameraVideoTrack();
+        videoTracksRef.current.push(localAudioTrack, localVideoTrack);
 
-        // Set up the video elements
-        if (localVideoRef.current) {
-            localVideoRef.current.srcObject = localStreamRef.current;
+        if (localVideoTrack && localStreamRef.current) {
+            localStreamRef.current.addTrack(localVideoTrack);
         }
 
+        await client.publish([localAudioTrack, localVideoTrack]);
         setSnackbarOpen(true);
     };
 
@@ -216,6 +200,11 @@ const VideoCall = ({ userDetails }) => {
                 console.log('User left the channel');
             });
         }
+
+        videoTracksRef.current.forEach((track) => {
+            track.stop();
+        });
+
         localStreamRef.current = null;
         remoteStreamRef.current = null;
         clientRef.current = null;
@@ -255,20 +244,22 @@ const VideoCall = ({ userDetails }) => {
             </div>
             {usersOnline && <div>Users Online: {usersOnline}</div>}
             {strangerDisconnectedMessageDiv && hasPaired && <div>Stranger disconnected</div>}
-
-            {/* Video elements */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', padding: '1rem', width: '50%' }}>
-                <video id="localVideo" ref={localVideoRef} autoPlay muted style={{ backgroundColor: 'black' }} />
-                <video id="remoteVideo" ref={remoteVideoRef} autoPlay style={{ backgroundColor: 'black' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: "0.4rem", alignItems:'flex-start', border:'1px solid red', maxWidth:'600px' }}>
+            <video ref={localVideoRef} autoPlay muted={!isMyAudioMuted} style={{ height: '200px', width: '400px', backgroundColor:'black', objectFit:'cover' }} />
+            <video ref={remoteVideoRef} autoPlay muted={!isPartnerAudioMuted} style={{ height: '200px', width: '400px', backgroundColor:'black', objectFit:'cover' }} />
             </div>
 
-            <AudioCallControls
+            <VideoCallControls
                 isFindingPair={isFindingPair}
                 handleFindNewButton={handleFindNew}
-                handleToggleMute={handleToggleMute}
-                isMuted={isMuted}
-                isPartnerMuted={isPartnerMuted}
-                handleTogglePartnerMute={handleTogglePartnerMute}
+                handleToggleMyAudio={() => setIsMyAudioMuted(!isMyAudioMuted)}
+                handleTogglePartnerAudio={() => setIsPartnerAudioMuted(!isPartnerAudioMuted)}
+                handleToggleMyVideo={() => setIsMyVideoDisabled(!isMyVideoDisabled)}
+                handleTogglePartnerVideo={() => setIsPartnerVideoDisabled(!isPartnerVideoDisabled)}
+                isMyAudioMuted={isMyAudioMuted}
+                isPartnerAudioMuted={isPartnerAudioMuted}
+                isMyVideoDisabled={isMyVideoDisabled}
+                isPartnerVideoDisabled={isPartnerVideoDisabled}
             />
             <CustomSnackbar
                 open={snackbarOpen}
