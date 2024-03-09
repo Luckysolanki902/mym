@@ -17,12 +17,16 @@ const VideoCall = ({ userDetails }) => {
     const [receiver, setReceiver] = useState('');
     const [strangerGender, setStrangerGender] = useState('');
 
+    const localStreamRef = useRef(null);
+    const remoteStreamRef = useRef(null);
     const localVideoRef = useRef(null);
-    const remoteVideoRef = useRef(null);
-    const remoteVideoTrackrRef = useRef(null);
+    const videoRef = useRef(null);
 
     const agora = useRef(null);
     const clientRef = useRef(null);
+
+    const localStreamTrackRef = useRef(null);
+    const remoteStreamTrackRef = useRef(null);
 
     const serverUrl = 'https://hostedmymserver.onrender.com'
     //   const serverUrl = 'http://localhost:1000'
@@ -58,7 +62,10 @@ const VideoCall = ({ userDetails }) => {
     const init = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            localVideoRef.current.srcObject = stream;
+            localStreamRef.current = stream;
+            if (localVideoRef.current && stream) {
+                localVideoRef.current.srcObject = stream;
+            }
             console.log('Successfully obtained local stream:', stream);
             let newSocket
             try {
@@ -161,18 +168,17 @@ const VideoCall = ({ userDetails }) => {
 
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
-            remoteVideoTrackrRef.current = user.videoTrack;
-            remoteVideoTrackrRef.current = user.videoTrack;
+            remoteStreamTrackRef.current = user.videoTrack;
             console.log('remoteVideoTrack')
-            if (remoteVideoRef.current && remoteVideoTrackrRef.current) {
-                remoteVideoRef.current.srcObject = remoteVideoTrackrRef.current.play();
+            if (videoRef.current && remoteStreamTrackRef.current) {
+                videoRef.current.srcObject = remoteStreamTrackRef.current.play();
             }
         });
 
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
-        const localVideoTrack = await agora.current.createCameraVideoTrack();
-        localVideoRef.current = localVideoTrack;
-        await client.publish([localVideoRef.current]);
+        const localVideoTrack = await agora.current.createMicrophoneAndCameraTracks();
+        localStreamTrackRef.current = localVideoTrack;
+        await client.publish([localStreamTrackRef.current]);
         setSnackbarOpen(true);
     };
 
@@ -182,8 +188,8 @@ const VideoCall = ({ userDetails }) => {
                 console.log('User left the channel');
             });
         }
-        localVideoRef.current.srcObject = null;
-        remoteVideoRef.current.srcObject = null;
+        localStreamRef.current.srcObject = null;
+        remoteStreamRef.current.srcObject = null;
         clientRef.current = null;
     };
 
@@ -224,7 +230,7 @@ const VideoCall = ({ userDetails }) => {
 
             <div>
                 <video ref={localVideoRef} autoPlay muted style={{ width: '300px', height: '200px' }} />
-                <video ref={remoteVideoRef} autoPlay style={{ width: '300px', height: '200px' }} />
+                <video ref={videoRef} autoPlay style={{ width: '300px', height: '200px' }} />
             </div>
 
             <div>

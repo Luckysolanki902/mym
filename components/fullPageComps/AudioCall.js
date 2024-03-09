@@ -24,7 +24,7 @@ const AudioCall = ({ userDetails }) => {
 
     const localAudioTrackRef = useRef(null);
     const remoteAudioTrackRef = useRef(null);
-    
+
     const agora = useRef(null);
     const clientRef = useRef(null);
 
@@ -183,12 +183,9 @@ const AudioCall = ({ userDetails }) => {
         clientRef.current = client;
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
-            if (mediaType === 'audio') {
-                remoteAudioTrackRef.current = user.audioTrack;
-
-                if (audioRef.current && remoteAudioTrackRef.current) {
-                    audioRef.current.srcObject = remoteAudioTrackRef.current.play();
-                }
+            remoteAudioTrackRef.current = user.audioTrack;
+            if (audioRef.current && remoteAudioTrackRef.current) {
+                audioRef.current.srcObject = remoteAudioTrackRef.current.play();
             }
         });
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
