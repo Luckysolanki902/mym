@@ -168,6 +168,7 @@ const VideoCall = ({ userDetails }) => {
 
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
+            console.log('user', user)
             remoteStreamTrackRef.current = user.videoTrack;
             console.log('remoteVideoTrack')
             if (videoRef.current && remoteStreamTrackRef.current) {
@@ -176,7 +177,7 @@ const VideoCall = ({ userDetails }) => {
         });
 
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
-        const localVideoTrack = await agora.current.createMicrophoneAndCameraTracks();
+        const localVideoTrack = await agora.current.createCameraVideoTrack();
         localStreamTrackRef.current = localVideoTrack;
         await client.publish([localStreamTrackRef.current]);
         setSnackbarOpen(true);
