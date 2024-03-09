@@ -157,13 +157,10 @@ const VideoCall = ({ userDetails }) => {
 
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
-            if (mediaType === 'video') {
-                console.log('media type is video')
-                const remoteVideoTrack = user.videoTrack;
-                console.log(remoteVideoTrack)
-                if (remoteVideoRef.current && remoteVideoTrack) {
-                    remoteVideoTrack.play(remoteVideoRef.current);
-                }
+            const remoteVideoTrack = user.videoTrack;
+            console.log('remoteVideoTrack',remoteVideoTrack)
+            if (remoteVideoRef.current && remoteVideoTrack) {
+                remoteVideoTrack.play(remoteVideoRef.current);
             }
         });
 
