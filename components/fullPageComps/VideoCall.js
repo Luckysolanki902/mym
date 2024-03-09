@@ -183,9 +183,11 @@ const AudioCall = ({ userDetails }) => {
         clientRef.current = client;
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
-            remoteAudioTrackRef.current = user.videoTrack;
-            if (audioRef.current && remoteAudioTrackRef.current) {
-                audioRef.current.srcObject = remoteAudioTrackRef.current.play();
+            if (mediaType === "video") {
+                remoteAudioTrackRef.current = user.videoTrack;
+                if (audioRef.current && remoteAudioTrackRef.current) {
+                    remoteAudioTrackRef.current.play(audioRef.current);
+                }
             }
         });
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
