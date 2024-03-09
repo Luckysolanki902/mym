@@ -22,10 +22,12 @@ const AudioCall = ({ userDetails }) => {
     const remoteStreamRef = useRef(null);
     const audioRef = useRef(null);
 
-    const agora = useRef(null);
-    const clientRef = useRef(null);
     const localAudioTrackRef = useRef(null);
     const remoteAudioTrackRef = useRef(null);
+    
+    const agora = useRef(null);
+    const clientRef = useRef(null);
+
 
     const [isPartnerMuted, setIsPartnerMuted] = useState(false)
     const [isMuted, setIsMuted] = useState(false);
@@ -40,6 +42,7 @@ const AudioCall = ({ userDetails }) => {
             }
         })();
     }, []);
+
     const handleTogglePartnerMute = () => {
         // Use remoteAudioTrackRef to toggle partner mute
         if (remoteAudioTrackRef.current) {
@@ -58,9 +61,9 @@ const AudioCall = ({ userDetails }) => {
 
     };
 
-
     const serverUrl = 'https://hostedmymserver.onrender.com'
     // const serverUrl = 'http://localhost:1000'
+
     const [filters, setFilters] = useState({
         college: userDetails?.college,
         strangerGender: userDetails?.gender === 'male' ? 'female' : 'male',

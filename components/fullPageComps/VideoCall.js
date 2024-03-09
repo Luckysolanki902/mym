@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import FilterOptions from '@/components/chatComps/FilterOptions';
 import styles from '../componentStyles/textchat.module.css';
 import CustomSnackbar from '../commonComps/Snackbar';
-import VideoCallControls from '../videoCallComps/VideoCallControls'; // Assuming you have VideoCallControls component
 import { io } from 'socket.io-client';
 
 const VideoCall = ({ userDetails }) => {
@@ -17,21 +16,16 @@ const VideoCall = ({ userDetails }) => {
     const [room, setRoom] = useState('');
     const [receiver, setReceiver] = useState('');
     const [strangerGender, setStrangerGender] = useState('');
-    const [isMyAudioMuted, setIsMyAudioMuted] = useState(false);
-    const [isPartnerAudioMuted, setIsPartnerAudioMuted] = useState(false);
-    const [isMyVideoDisabled, setIsMyVideoDisabled] = useState(false);
-    const [isPartnerVideoDisabled, setIsPartnerVideoDisabled] = useState(false);
 
-    const localStreamRef = useRef(null);
-    const remoteStreamRef = useRef(null);
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
-    const videoTracksRef = useRef([]);
 
     const agora = useRef(null);
     const clientRef = useRef(null);
 
-    const serverUrl = 'https://hostedmymserver.onrender.com';
+    const [isMyVideoEnabled, setIsMyVideoEnabled] = useState(true);
+      const serverUrl = 'https://hostedmymserver.onrender.com'
+    //   const serverUrl = 'http://localhost:1000'
 
     const [filters, setFilters] = useState({
         college: userDetails?.college,
@@ -46,6 +40,7 @@ const VideoCall = ({ userDetails }) => {
         }));
     }, [userDetails]);
 
+
     useEffect(() => {
         (async () => {
             try {
@@ -57,22 +52,32 @@ const VideoCall = ({ userDetails }) => {
         })();
     }, []);
 
+    useEffect(() => {
+        init();
+
+        return () => {
+            if (socket) {
+                socket.disconnect();
+            }
+            cleanCall();
+        };
+    }, []);
+
     const init = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-            localStreamRef.current = stream;
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             localVideoRef.current.srcObject = stream;
-
-            let newSocket;
+            console.log('Successfully obtained local stream:', stream);
+            let newSocket
             try {
                 if (socket === null || !socket || socket === undefined) {
                     newSocket = io(serverUrl);
-                    setSocket(newSocket);
+                    setSocket(newSocket)
                 } else {
-                    newSocket = socket;
+                    newSocket = socket
                 }
             } catch (error) {
-                console.log('error setting newsocket', error);
+                console.log('error setting newsocket', error)
             }
 
             newSocket.on('connect', () => {
@@ -100,20 +105,9 @@ const VideoCall = ({ userDetails }) => {
                 console.error('Socket error:', error);
             });
         } catch (error) {
-            console.error('Error getting audio and video permissions:', error);
+            console.error('Error getting audio permissions:', error);
         }
     };
-
-    useEffect(() => {
-        init();
-
-        return () => {
-            if (socket) {
-                socket.disconnect();
-            }
-            cleanCall();
-        };
-    }, []);
 
     const handleIdentify = (socket) => {
         if (userDetails && filters.college && filters.strangerGender) {
@@ -126,7 +120,7 @@ const VideoCall = ({ userDetails }) => {
                 pageType: 'videocall',
             });
         }
-    };
+    }
 
     const handlePairingSuccess = (data) => {
         if (!hasPaired) {
@@ -142,7 +136,7 @@ const VideoCall = ({ userDetails }) => {
             const snackbarColor = strangerGender === 'male' ? '#0094d4' : '#e3368d';
             setSnackbarColor(snackbarColor);
             const snackbarMessage = `A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`;
-            setSnackbarMessage(snackbarMessage);
+            setSnackbarMessage(snackbarMessage)
             joinCall(stranger, roomId);
             setHasPaired(true);
         }
@@ -153,44 +147,30 @@ const VideoCall = ({ userDetails }) => {
         setStrangerDisconnectedMessageDiv(true);
         cleanCall();
         setHasPaired(false);
-    };
+    }
 
     const joinCall = async (stranger, room) => {
-        console.log(stranger, agora.current);
-
         if (!stranger || !agora.current) return;
 
         const client = agora.current.createClient({ codec: 'vp8', mode: 'rtc' });
         clientRef.current = client;
+
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
-            if (mediaType === 'audio') {
-                const audioTrack = user.audioTrack;
-                videoTracksRef.current.push(audioTrack);
-
-                if (audioTrack && remoteStreamRef.current) {
-                    remoteStreamRef.current.addTrack(audioTrack);
-                }
-            } else if (mediaType === 'video') {
-                const videoTrack = user.videoTrack;
-                videoTracksRef.current.push(videoTrack);
-
-                if (videoTrack && remoteStreamRef.current) {
-                    remoteStreamRef.current.addTrack(videoTrack);
+            if (mediaType === 'video') {
+                const remoteVideoTrack = user.videoTrack;
+                if (remoteVideoRef.current && remoteVideoTrack) {
+                    remoteVideoTrack.play(remoteVideoRef.current);
                 }
             }
         });
+
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
-        // Convert localStream to an array of tracks
-        const localAudioTrack = agora.current.createMicrophoneAudioTrack();
-        const localVideoTrack = agora.current.createCameraVideoTrack();
-        videoTracksRef.current.push(localAudioTrack, localVideoTrack);
-
-        if (localVideoTrack && localStreamRef.current) {
-            localStreamRef.current.addTrack(localVideoTrack);
+        const localVideoTrack = await agora.current.createCameraVideoTrack();
+        if (localVideoRef.current && localVideoTrack) {
+            localVideoRef.current.srcObject = localVideoTrack.play();
         }
-
-        await client.publish([localAudioTrack, localVideoTrack]);
+        await client.publish([localVideoTrack]);
         setSnackbarOpen(true);
     };
 
@@ -200,19 +180,15 @@ const VideoCall = ({ userDetails }) => {
                 console.log('User left the channel');
             });
         }
-
-        videoTracksRef.current.forEach((track) => {
-            track.stop();
-        });
-
-        localStreamRef.current = null;
-        remoteStreamRef.current = null;
+        localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        localVideoRef.current.srcObject = null;
+        remoteVideoRef.current.srcObject = null;
         clientRef.current = null;
     };
 
     const handleFindNew = async () => {
         if (socket) {
-            await cleanCall();
+            await cleanCall()
             setHasPaired(false);
             setIsFindingPair(true);
             setStrangerDisconnectedMessageDiv(false);
@@ -244,23 +220,17 @@ const VideoCall = ({ userDetails }) => {
             </div>
             {usersOnline && <div>Users Online: {usersOnline}</div>}
             {strangerDisconnectedMessageDiv && hasPaired && <div>Stranger disconnected</div>}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: "0.4rem", alignItems:'flex-start', border:'1px solid red', maxWidth:'600px' }}>
-            <video ref={localVideoRef} autoPlay muted={!isMyAudioMuted} style={{ height: '200px', width: '400px', backgroundColor:'black', objectFit:'cover' }} />
-            <video ref={remoteVideoRef} autoPlay muted={!isPartnerAudioMuted} style={{ height: '200px', width: '400px', backgroundColor:'black', objectFit:'cover' }} />
+
+            <div>
+                <video ref={localVideoRef} autoPlay muted={!isMyVideoEnabled} style={{ width: '300px', height: '200px' }} />
+                <video ref={remoteVideoRef} autoPlay style={{ width: '300px', height: '200px' }} />
             </div>
 
-            <VideoCallControls
-                isFindingPair={isFindingPair}
-                handleFindNewButton={handleFindNew}
-                handleToggleMyAudio={() => setIsMyAudioMuted(!isMyAudioMuted)}
-                handleTogglePartnerAudio={() => setIsPartnerAudioMuted(!isPartnerAudioMuted)}
-                handleToggleMyVideo={() => setIsMyVideoDisabled(!isMyVideoDisabled)}
-                handleTogglePartnerVideo={() => setIsPartnerVideoDisabled(!isPartnerVideoDisabled)}
-                isMyAudioMuted={isMyAudioMuted}
-                isPartnerAudioMuted={isPartnerAudioMuted}
-                isMyVideoDisabled={isMyVideoDisabled}
-                isPartnerVideoDisabled={isPartnerVideoDisabled}
-            />
+            <div>
+                <button onClick={handleFindNew}>{isFindingPair ? 'Finding Pair...' : 'Find New'}</button>
+                {/* <button onClick={handleToggleMyVideo}>{isMyVideoEnabled ? 'Turn off my video' : 'Turn on my video'}</button> */}
+            </div>
+
             <CustomSnackbar
                 open={snackbarOpen}
                 onClose={() => setSnackbarOpen(false)}
