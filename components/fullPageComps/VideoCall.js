@@ -6,7 +6,7 @@ import VideoCallControls from '../videoCallComps/VideoCallControls';
 import { io } from 'socket.io-client';
 
 const VideoCall = ({ userDetails }) => {
-    const [socket, setSocket] = useState(null);
+    const socketRef = useRef(null);
     const [isFindingPair, setIsFindingPair] = useState(false);
     const [strangerDisconnectedMessageDiv, setStrangerDisconnectedMessageDiv] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -24,9 +24,7 @@ const VideoCall = ({ userDetails }) => {
     const localStreamRef = useRef(null);
     const remoteStreamRef = useRef(null);
 
-    const localVideoTrackRef = useRef(null);
     const remoteVideoTrackRef = useRef(null);
-    const localAudioTrackRef = useRef(null);
     const remoteAudioTrackRef = useRef(null);
 
     const peerConnectionRef = useRef(null);
@@ -66,13 +64,11 @@ const VideoCall = ({ userDetails }) => {
                 localVideoRef.current.srcObject = stream;
             }
 
-            let newSocket;
+            let newSocket = socketRef.current;
             try {
-                if (socket === null || !socket || socket === undefined) {
+                if (!newSocket) {
                     newSocket = io(serverUrl, { query: { pageType: 'videocall' } });
-                    setSocket(newSocket);
-                } else {
-                    newSocket = socket;
+                    socketRef.current = newSocket;
                 }
             } catch (error) {
                 console.log('error setting newsocket', error);
@@ -102,6 +98,11 @@ const VideoCall = ({ userDetails }) => {
             newSocket.on('error', (error) => {
                 console.error('Socket error:', error);
             });
+
+            // Listen for SDP answer
+            newSocket.on('answer', (data) => {
+                handleAnswer(data);
+            });
         } catch (error) {
             console.error('Error getting media permissions:', error);
         }
@@ -111,8 +112,8 @@ const VideoCall = ({ userDetails }) => {
         init();
 
         return () => {
-            if (socket) {
-                socket.disconnect();
+            if (socketRef.current) {
+                socketRef.current.disconnect();
             }
             cleanCall();
         };
@@ -173,26 +174,36 @@ const VideoCall = ({ userDetails }) => {
 
         // Set up event listeners
         peerConnection.onicecandidate = (event) => {
-            if (event.candidate) {
+            if (event.candidate && socketRef.current) {
                 // Send the local ICE candidate to the remote peer
-                socket.emit('add-ice-candidate', {
-                    candidate: event.candidate,
-                    type: 'sender',
-                    roomId: room,
-                });
+                try {
+                    socketRef.current.emit('add-ice-candidate', {
+                        candidate: event.candidate,
+                        type: 'sender',
+                        roomId: room,
+                    });
+                } catch (error) {
+                    console.error('Error sending ICE candidate:', error.message);
+                }
             }
         };
 
         peerConnection.onnegotiationneeded = async () => {
             // Create an offer and set it as the local description
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
+            try {
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
 
-            // Send the offer to the remote peer
-            socket.emit('offer', {
-                sdp: peerConnection.localDescription,
-                roomId: room,
-            });
+                // Send the offer to the remote peer
+                if (socketRef.current) {
+                    socketRef.current.emit('offer', {
+                        sdp: peerConnection.localDescription,
+                        roomId: room,
+                    });
+                }
+            } catch (error) {
+                console.error('Error creating and sending offer:', error.message);
+            }
         };
 
         peerConnection.ontrack = (event) => {
@@ -206,16 +217,34 @@ const VideoCall = ({ userDetails }) => {
         };
 
         // Send an offer to the remote peer
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
+        try {
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
 
-        socket.emit('offer', {
-            sdp: peerConnection.localDescription,
-            roomId: room,
-        });
+            if (socketRef.current) {
+                socketRef.current.emit('offer', {
+                    sdp: peerConnection.localDescription,
+                    roomId: room,
+                });
+            }
 
-        // Save the PeerConnection reference
-        peerConnectionRef.current = peerConnection;
+            // Save the PeerConnection reference
+            peerConnectionRef.current = peerConnection;
+        } catch (error) {
+            console.error('Error creating and sending offer:', error.message);
+        }
+    };
+
+    // Handle SDP answer from the remote peer
+    const handleAnswer = async (data) => {
+        const { sdp, roomId } = data;
+        const remoteDescription = new RTCSessionDescription(sdp);
+
+        try {
+            await peerConnectionRef.current.setRemoteDescription(remoteDescription);
+        } catch (error) {
+            console.error('Error setting remote description:', error.message);
+        }
     };
 
     const cleanCall = async () => {
@@ -247,23 +276,28 @@ const VideoCall = ({ userDetails }) => {
     };
 
     const handleFindNew = async () => {
-        if (socket) {
+        if (socketRef.current) {
             await cleanCall();
             setIsFindingPair(true);
             setStrangerDisconnectedMessageDiv(false);
-            socket.emit('findNewPair', {
-                userEmail: userDetails?.email,
-                userGender: userDetails?.gender,
-                userCollege: userDetails?.college,
-                preferredGender: filters.strangerGender,
-                preferredCollege: filters.college,
-                pageType: 'videocall',
-            });
+            try {
+                socketRef.current.emit('findNewPair', {
+                    userEmail: userDetails?.email,
+                    userGender: userDetails?.gender,
+                    userCollege: userDetails?.college,
+                    preferredGender: filters.strangerGender,
+                    preferredCollege: filters.college,
+                    pageType: 'videocall',
+                });
 
-            const timeout = 10000;
-            setTimeout(() => {
+                const timeout = 10000;
+                setTimeout(() => {
+                    setIsFindingPair(false);
+                }, timeout);
+            } catch (error) {
+                console.error('Error emitting findNewPair event:', error.message);
                 setIsFindingPair(false);
-            }, timeout);
+            }
         }
     };
 
