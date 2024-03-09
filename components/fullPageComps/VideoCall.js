@@ -162,26 +162,27 @@ const VideoCall = ({ userDetails }) => {
 
     const joinCall = async (stranger, room) => {
         if (!stranger || !agora.current) return;
-
+    
         const client = agora.current.createClient({ codec: 'vp8', mode: 'rtc' });
         clientRef.current = client;
-
+    
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
-            console.log('user', user)
             remoteStreamTrackRef.current = user.videoTrack;
-            console.log('remoteVideoTrack')
+            console.log('remoteVideoTrack');
+    
             if (videoRef.current && remoteStreamTrackRef.current) {
-                videoRef.current.srcObject = remoteStreamTrackRef.current.play();
+                videoRef.current.srcObject = new MediaStream([remoteStreamTrackRef.current]);
             }
         });
-
+    
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
         const localVideoTrack = await agora.current.createCameraVideoTrack();
         localStreamTrackRef.current = localVideoTrack;
         await client.publish([localStreamTrackRef.current]);
         setSnackbarOpen(true);
     };
+    
 
     const cleanCall = async () => {
         if (clientRef.current && clientRef.current != null) {
