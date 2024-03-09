@@ -165,7 +165,7 @@ const VideoCall = ({ userDetails }) => {
             remoteVideoTrackrRef.current = user.videoTrack;
             console.log('remoteVideoTrack')
             if (remoteVideoRef.current && remoteVideoTrackrRef.current) {
-                remoteVideoRef.current.srcObject = remoteVideoTrackrRef.play();
+                remoteVideoRef.current.srcObject = remoteVideoTrackrRef.current.play();
             }
         });
 
