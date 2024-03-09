@@ -19,12 +19,25 @@ const VideoCall = ({ userDetails }) => {
 
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
+    const remoteVideoTrackrRef = useRef(null);
 
     const agora = useRef(null);
     const clientRef = useRef(null);
 
     const serverUrl = 'https://hostedmymserver.onrender.com'
     //   const serverUrl = 'http://localhost:1000'
+
+
+    useEffect(() => {
+        (async () => {
+            try {
+                agora.current = await import('agora-rtc-sdk-ng');
+                console.log('AgoraRTC imported successfully');
+            } catch (error) {
+                console.error('Error importing AgoraRTC:', error);
+            }
+        })();
+    }, []);
 
     const [filters, setFilters] = useState({
         college: userDetails?.college,
@@ -40,27 +53,7 @@ const VideoCall = ({ userDetails }) => {
     }, [userDetails]);
 
 
-    useEffect(() => {
-        (async () => {
-            try {
-                agora.current = await import('agora-rtc-sdk-ng');
-                console.log('AgoraRTC imported successfully');
-            } catch (error) {
-                console.error('Error importing AgoraRTC:', error);
-            }
-        })();
-    }, []);
 
-    useEffect(() => {
-        init();
-
-        return () => {
-            if (socket) {
-                socket.disconnect();
-            }
-            cleanCall();
-        };
-    }, []);
 
     const init = async () => {
         try {
@@ -104,9 +97,20 @@ const VideoCall = ({ userDetails }) => {
                 console.error('Socket error:', error);
             });
         } catch (error) {
-            console.error('Error getting audio permissions:', error);
+            console.error('Error getting video permissions:', error);
         }
     };
+
+    useEffect(() => {
+        init();
+
+        return () => {
+            if (socket) {
+                socket.disconnect();
+            }
+            cleanCall();
+        };
+    }, []);
 
     const handleIdentify = (socket) => {
         if (userDetails && filters.college && filters.strangerGender) {
@@ -157,19 +161,18 @@ const VideoCall = ({ userDetails }) => {
 
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
-            const remoteVideoTrack = user.videoTrack;
-            console.log('remoteVideoTrack',remoteVideoTrack)
-            if (remoteVideoRef.current && remoteVideoTrack) {
-                remoteVideoTrack.play(remoteVideoRef.current);
+            remoteVideoTrackrRef.current = user.videoTrack;
+            remoteVideoTrackrRef.current = user.videoTrack;
+            console.log('remoteVideoTrack')
+            if (remoteVideoRef.current && remoteVideoTrackrRef.current) {
+                remoteVideoRef.current.srcObject = remoteVideoTrackrRef.play();
             }
         });
 
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
         const localVideoTrack = await agora.current.createCameraVideoTrack();
-        if (localVideoRef.current && localVideoTrack) {
-            localVideoRef.current.srcObject = localVideoTrack.play();
-        }
-        await client.publish([localVideoTrack]);
+        localVideoRef.current = localVideoTrack;
+        await client.publish([localVideoRef.current]);
         setSnackbarOpen(true);
     };
 
@@ -179,7 +182,6 @@ const VideoCall = ({ userDetails }) => {
                 console.log('User left the channel');
             });
         }
-        localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
         localVideoRef.current.srcObject = null;
         remoteVideoRef.current.srcObject = null;
         clientRef.current = null;
