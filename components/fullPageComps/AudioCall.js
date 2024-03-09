@@ -85,7 +85,8 @@ const AudioCall = ({ userDetails }) => {
             let newSocket
             try {
                 if (socket === null || !socket || socket === undefined) {
-                    newSocket = io(serverUrl);
+                    newSocket = io(serverUrl, { query: { pageType: 'audiocall' } });
+
                     setSocket(newSocket)
                 } else {
                     newSocket = socket

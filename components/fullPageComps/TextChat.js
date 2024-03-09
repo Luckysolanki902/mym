@@ -27,9 +27,6 @@ const TextChat = ({ userDetails }) => {
   const typingTimeoutRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const inputRef = useRef(null);
-
-
-
   const [filters, setFilters] = useState({
     college: userDetails?.college,
     strangerGender: userDetails?.gender === 'male' ? 'female' : 'male',
@@ -51,7 +48,7 @@ const TextChat = ({ userDetails }) => {
 
   // Provide socket and handle socketEvents___________________________
   useEffect(() => {
-    initiateSocket(socket, { userDetails, preferredCollege, preferredGender }, hasPaired, { setSocket, setUsersOnline, setStrangerIsTyping, setStrangerDisconnectedMessageDiv, setIsFindingPair, setRoom, setReceiver, setStrangerGender, setSnackbarColor, setSnackbarMessage, setSnackbarOpen, setHasPaired, setMessages }, { messagesContainerRef })
+    initiateSocket(socket, { userDetails, preferredCollege, preferredGender }, hasPaired, {room, setSocket, setUsersOnline, setStrangerIsTyping, setStrangerDisconnectedMessageDiv, setIsFindingPair, setRoom, setReceiver, setStrangerGender, setSnackbarColor, setSnackbarMessage, setSnackbarOpen, setHasPaired, setMessages }, { messagesContainerRef })
 
     return () => {
       if (socket) {
@@ -78,7 +75,7 @@ const TextChat = ({ userDetails }) => {
       e.preventDefault();
       handleSendButton();
     } else {
-      handleTyping(e, socket, typingTimeoutRef);
+      handleTyping(e, socket, typingTimeoutRef, userDetails); 
     }
   }
 
@@ -117,6 +114,7 @@ const TextChat = ({ userDetails }) => {
         strangerIsTyping={strangerIsTyping}
         typingTimeoutRef={typingTimeoutRef}
         inputRef={inputRef}
+        userDetails = {userDetails}
         
       />
       <CustomSnackbar

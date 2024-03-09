@@ -5,14 +5,13 @@ const serverUrl = 'http://localhost:1000'
 
 export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, stateFunctions, refs) => {
 
-    const { setSocket, setUsersOnline, setStrangerIsTyping,strangerSocketId } = stateFunctions;
+    const {room, setSocket, setUsersOnline, setStrangerIsTyping,strangerSocketId } = stateFunctions;
     const { messagesContainerRef } = refs
-
 
     let newSocket
     try {
         if (socket === null || !socket || socket === undefined) {
-            newSocket = io(serverUrl);
+            newSocket = io(serverUrl, { query: { pageType: 'textchat' } });
             setSocket(newSocket)
         } else {
             newSocket = socket
@@ -25,7 +24,7 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
         console.log('Connected to server');
 
         // sending your preferences to server
-        handleIdentify(newSocket, userDetailsAndPreferences)
+        handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions)
 
         // getting number of users online
         newSocket.on('roundedUsersCount', (count) => {
@@ -44,11 +43,13 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
 
         // sending 'user is typing' evnent to server
         newSocket.on('userTyping', () => {
+            console.log('eern')
             setStrangerIsTyping(true)
         });
 
         // sending 'user stopped typing' event to server
         newSocket.on('userStoppedTyping', () => {
+            console.log('eern')
             setStrangerIsTyping(false)
         });
 

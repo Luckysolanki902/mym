@@ -1,23 +1,37 @@
-// @/utils/randomchat/socketEvents.js
 import { scrollToBottom } from "../generalUtilities";
-import SimplePeer from "simple-peer";
 
-export const handleIdentify = (socket, userDetailsAndPreferences) => {
+export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions) => {
+    const { setIsFindingPair } = stateFunctions;
+    const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
+    setIsFindingPair(true);
 
-    const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences
+    try {
 
-    if (userDetails && preferredCollege && preferredGender) {
-        // Identify user and send preferences to the server
-        socket.emit('identify', {
-            userEmail: userDetails?.email,
-            userGender: userDetails?.gender,
-            userCollege: userDetails?.college,
-            preferredGender: preferredGender,
-            preferredCollege: preferredCollege,
-            pageType: 'textchat'
-        });
+        if (userDetails && preferredCollege !== undefined && preferredGender !== undefined) {
+            // Identify user and send preferences to the server
+            socket.emit('identify', {
+                userEmail: userDetails.email,
+                userGender: userDetails.gender,
+                userCollege: userDetails.college,
+                preferredGender: preferredGender,
+                preferredCollege: preferredCollege,
+                pageType: 'textchat'
+            });
+
+            console.log('Finding first pair');
+
+            const timeout = 10000;
+            setTimeout(() => {
+                // emit stop pairing here
+                socket.emit('stopFindingPair');
+                setIsFindingPair(false);
+            }, timeout);
+        }
+    } catch (error) {
+        console.error('Error in handleIdentify:', error.message);
     }
-}
+};
+
 
 export const handlePairingSuccess = (data, hasPaired, stateFunctions) => {
 
@@ -64,7 +78,7 @@ export const handleReceivedMessage = (data, stateFunctions, messagesContainerRef
         ...prevMessages,
         { sender: sender, message: content },
     ]);
-    scrollToBottom(messagesContainerRef)
+    scrollToBottom(messagesContainerRef);
 };
 
 export const handlePairDisconnected = (stateFunctions, messagesContainerRef) => {
@@ -72,19 +86,19 @@ export const handlePairDisconnected = (stateFunctions, messagesContainerRef) => 
     const { setStrangerDisconnectedMessageDiv, setHasPaired } = stateFunctions;
 
     console.log('Partner disconnected');
-    setStrangerDisconnectedMessageDiv(true)
-    setHasPaired(false)
-    scrollToBottom(messagesContainerRef)
-}
+    setStrangerDisconnectedMessageDiv(true);
+    setHasPaired(false);
+    scrollToBottom(messagesContainerRef);
+};
 
 export const handleSend = (socket, textValue, stateFunctions, messagesContainerRef, userDetails) => {
 
     const { setTextValue, setMessages, setStrangerIsTyping } = stateFunctions;
 
-    const message = textValue.trim()
+    const message = textValue.trim();
 
     if (message !== '' && socket) {
-        socket.emit('message', { type: 'message', content: message });
+        socket.emit('message', { type: 'message', content: message, userEmail: userDetails?.email, pageType: 'textchat' });
         setTextValue('');
         setMessages(prevMessages => [
             ...prevMessages,
@@ -92,31 +106,29 @@ export const handleSend = (socket, textValue, stateFunctions, messagesContainerR
         ]);
         setStrangerIsTyping(false);
     }
-    scrollToBottom(messagesContainerRef)
-}
+    scrollToBottom(messagesContainerRef);
+};
 
-export const handleTyping = (e, socket, typingTimeoutRef) => {
+export const handleTyping = (e, socket, typingTimeoutRef, userDetails) => {
     if (e.key !== 'Enter' && socket) {
-        socket.emit('typing');
+        socket.emit('userTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
 
         // Clear any existing timeout
         clearTimeout(typingTimeoutRef.current);
 
         // Set a new timeout with dynamic delay
         typingTimeoutRef.current = setTimeout(() => {
-            socket.emit('stoppedTyping');
+            socket.emit('stoppedTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
         }, e.key === ' ' ? 500 : 1500); // Shorter timeout for spaces
     }
 };
 
-
-export const handleStoppedTyping = (socket, typingTimeoutRef) => { // Removed strangerIsTyping
+export const handleStoppedTyping = (socket, typingTimeoutRef, userDetails) => {
     clearTimeout(typingTimeoutRef.current);
     if (socket) {
-        socket.emit('stoppedTyping');
+        socket.emit('stoppedTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
     }
 };
-
 
 export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions) => {
     const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
@@ -139,54 +151,8 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions)
 
     const timeout = 10000;
     setTimeout(() => {
+        // emit stop pairing here
+        socket.emit('stopFindingPair');
         setIsFindingPair(false);
     }, timeout);
-};
-
-
-export const handleReceivedCall = (data, streamsAndPeerStates) => {
-    const { setMyStream, setPartnerStream, setPeer } = streamsAndPeerStates;
-    const { signal, sender } = data;
-
-    // Create Simple Peer connection for audio call
-    const peer = new SimplePeer({ initiator: false, trickle: false });
-
-    // Save the peer instance
-    setPeer(peer);
-
-    // Set up signal events
-    peer.on('signal', (data) => {
-        // Send signal data back to the caller
-        socket.emit('answerCall', { signalData: data, receiver: sender });
-    });
-
-    // Set up stream event
-    peer.on('stream', (stream) => {
-        // Save partner's stream
-        setPartnerStream(stream);
-    });
-
-    // Set up error event
-    peer.on('error', (error) => {
-        console.error('SimplePeer error:', error);
-    });
-
-    // Signal the peer with the received signal
-    peer.signal(signal);
-
-    console.log(`Received call from ${sender}`);
-};
-
-export const startAudioCall = (socket, myStream, partnerUserId, { setPeer }) => {
-    // Create Simple Peer connection for audio call
-    const peer = new SimplePeer({ initiator: true, trickle: false, stream: myStream });
-
-    // Save the peer instance
-    setPeer(peer);
-
-    // Set up signal events
-    peer.on('signal', (data) => {
-        // Send signal data to the partner
-        socket.emit('startCall', { signalData: data, receiver: partnerUserId });
-    });
 };

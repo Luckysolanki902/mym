@@ -18,6 +18,7 @@ const InputBox = ({
   socket,
   typingTimeoutRef,
   inputRef,
+  userDetails
 }) => {
   return (
     <div className={styles.inputContainerMainDiv} ref={inputRef}>
@@ -59,7 +60,7 @@ const InputBox = ({
               }}
               onBlur={() => {
                 // Clear typing timeout when the input loses focus
-                handleStoppedTyping(socket, typingTimeoutRef);
+                handleStoppedTyping(socket, typingTimeoutRef, userDetails);
               }}
             ></input>
           </form>

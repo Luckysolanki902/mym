@@ -46,7 +46,7 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetai
         !mainFilterContainerRef.current.contains(event.target) &&
         // Check if the clicked element is not an option within the MUI Menu
         !event.target.closest('[role="menuitem"]')
-      ) {
+      ) { 
         setOpenFilterIcon(false);
       }
     };

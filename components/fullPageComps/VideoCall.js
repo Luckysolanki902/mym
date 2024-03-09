@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import FilterOptions from '@/components/chatComps/FilterOptions';
 import styles from '../componentStyles/textchat.module.css';
 import CustomSnackbar from '../commonComps/Snackbar';
-import AudioCallControls from '../audioCallComps/AudioCallControls';
+import VideoCallControls from '../videoCallComps/VideoCallControls';
 import { io } from 'socket.io-client';
 
-const AudioCall = ({ userDetails }) => {
+const VideoCall = ({ userDetails }) => {
     const [socket, setSocket] = useState(null);
     const [isFindingPair, setIsFindingPair] = useState(false);
     const [strangerDisconnectedMessageDiv, setStrangerDisconnectedMessageDiv] = useState(false);
@@ -18,51 +18,29 @@ const AudioCall = ({ userDetails }) => {
     const [receiver, setReceiver] = useState('');
     const [strangerGender, setStrangerGender] = useState('');
 
+    const localVideoRef = useRef(null);
+    const remoteVideoRef = useRef(null);
+
     const localStreamRef = useRef(null);
     const remoteStreamRef = useRef(null);
-    const audioRef = useRef(null);
 
+    const localVideoTrackRef = useRef(null);
+    const remoteVideoTrackRef = useRef(null);
     const localAudioTrackRef = useRef(null);
     const remoteAudioTrackRef = useRef(null);
 
-    const agora = useRef(null);
-    const clientRef = useRef(null);
-
-
-    const [isPartnerMuted, setIsPartnerMuted] = useState(false)
-    const [isMuted, setIsMuted] = useState(false);
-
-    useEffect(() => {
-        (async () => {
-            try {
-                agora.current = await import('agora-rtc-sdk-ng');
-                console.log('AgoraRTC imported successfully');
-            } catch (error) {
-                console.error('Error importing AgoraRTC:', error);
-            }
-        })();
-    }, []);
-
-    const handleTogglePartnerMute = () => {
-        // Use remoteAudioTrackRef to toggle partner mute
-        if (remoteAudioTrackRef.current) {
-            remoteAudioTrackRef.current.setVolume(!isPartnerMuted ? 0 : 1000);
-        }
-        setIsPartnerMuted(!isPartnerMuted);
-    }
-
-    const handleToggleMute = () => {
-        // Use localAudioTrackRef to toggle local mute
-        if (localAudioTrackRef.current) {
-            localAudioTrackRef.current.setMuted(!isMuted);
-            console.log('isMuted:', isMuted);
-        }
-        setIsMuted(!isMuted);
-
-    };
+    const peerConnectionRef = useRef(null);
 
     const serverUrl = 'https://hostedmymserver.onrender.com'
     // const serverUrl = 'http://localhost:1000'
+
+    const iceServers = [
+        { urls: 'stun:stun.l.google.com:19302' },
+        // Add more ICE servers if needed
+    ];
+
+    const [isPartnerMuted, setIsPartnerMuted] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
 
     const [filters, setFilters] = useState({
         college: userDetails?.college,
@@ -79,19 +57,25 @@ const AudioCall = ({ userDetails }) => {
 
     const init = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             localStreamRef.current = stream;
             console.log('Successfully obtained local stream:', stream);
-            let newSocket
+
+            // Display local video
+            if (localVideoRef.current) {
+                localVideoRef.current.srcObject = stream;
+            }
+
+            let newSocket;
             try {
                 if (socket === null || !socket || socket === undefined) {
-                    newSocket = io(serverUrl);
-                    setSocket(newSocket)
+                    newSocket = io(serverUrl, { query: { pageType: 'videocall' } });
+                    setSocket(newSocket);
                 } else {
-                    newSocket = socket
+                    newSocket = socket;
                 }
             } catch (error) {
-                console.log('error setting newsocket', error)
+                console.log('error setting newsocket', error);
             }
 
             newSocket.on('connect', () => {
@@ -119,7 +103,7 @@ const AudioCall = ({ userDetails }) => {
                 console.error('Socket error:', error);
             });
         } catch (error) {
-            console.error('Error getting audio permissions:', error);
+            console.error('Error getting media permissions:', error);
         }
     };
 
@@ -142,10 +126,10 @@ const AudioCall = ({ userDetails }) => {
                 userCollege: userDetails?.college,
                 preferredGender: filters.strangerGender,
                 preferredCollege: filters.college,
-                pageType: 'audiocall',
+                pageType: 'videocall',
             });
         }
-    }
+    };
 
     const handlePairingSuccess = (data) => {
         if (!hasPaired) {
@@ -161,7 +145,7 @@ const AudioCall = ({ userDetails }) => {
             const snackbarColor = strangerGender === 'male' ? '#0094d4' : '#e3368d';
             setSnackbarColor(snackbarColor);
             const snackbarMessage = `A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`;
-            setSnackbarMessage(snackbarMessage)
+            setSnackbarMessage(snackbarMessage);
             joinCall(stranger, roomId);
             setHasPaired(true);
         }
@@ -172,46 +156,99 @@ const AudioCall = ({ userDetails }) => {
         setStrangerDisconnectedMessageDiv(true);
         cleanCall();
         setHasPaired(false);
-    }
+    };
 
     const joinCall = async (stranger, room) => {
-        console.log(stranger, agora.current);
+        console.log(stranger);
 
-        if (!stranger || !agora.current) return;
+        if (!stranger) return;
 
-        const client = agora.current.createClient({ codec: 'vp8', mode: 'rtc' });
-        clientRef.current = client;
-        client.on('user-published', async (user, mediaType) => {
-            await client.subscribe(user, mediaType);
-            if (mediaType === "video") {
-                remoteAudioTrackRef.current = user.videoTrack;
-                if (audioRef.current && remoteAudioTrackRef.current) {
-                    remoteAudioTrackRef.current.play(audioRef.current);
-                }
-            }
+        // Create PeerConnection
+        const peerConnection = new RTCPeerConnection({ iceServers });
+
+        // Add local stream tracks to PeerConnection
+        localStreamRef.current.getTracks().forEach((track) => {
+            peerConnection.addTrack(track, localStreamRef.current);
         });
-        await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
-        // Convert localStream to an array of tracks
-        const localAudioTrack = await agora.current.createCameraVideoTrack();
-        localAudioTrackRef.current = localAudioTrack;
-        await client.publish([localAudioTrackRef.current]);
-        setSnackbarOpen(true);
-    };
-    const cleanCall = async () => {
-        if (clientRef.current && clientRef.current != null) {
-            await clientRef.current.leave(() => {
-                console.log('User left the channel');
+
+        // Set up event listeners
+        peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                // Send the local ICE candidate to the remote peer
+                socket.emit('add-ice-candidate', {
+                    candidate: event.candidate,
+                    type: 'sender',
+                    roomId: room,
+                });
+            }
+        };
+
+        peerConnection.onnegotiationneeded = async () => {
+            // Create an offer and set it as the local description
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+
+            // Send the offer to the remote peer
+            socket.emit('offer', {
+                sdp: peerConnection.localDescription,
+                roomId: room,
             });
+        };
+
+        peerConnection.ontrack = (event) => {
+            const [remoteVideoTrack, remoteAudioTrack] = event.streams[0].getTracks();
+            remoteVideoTrackRef.current = remoteVideoTrack;
+            remoteAudioTrackRef.current = remoteAudioTrack;
+
+            if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = event.streams[0];
+            }
+        };
+
+        // Send an offer to the remote peer
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+
+        socket.emit('offer', {
+            sdp: peerConnection.localDescription,
+            roomId: room,
+        });
+
+        // Save the PeerConnection reference
+        peerConnectionRef.current = peerConnection;
+    };
+
+    const cleanCall = async () => {
+        // Close and clean up PeerConnection
+        if (peerConnectionRef.current) {
+            peerConnectionRef.current.close();
+            peerConnectionRef.current = null;
         }
-        localStreamRef.current = null;
-        remoteStreamRef.current = null;
-        clientRef.current = null;
+
+        // Clean up local stream
+        if (localStreamRef.current) {
+            localStreamRef.current.getTracks().forEach((track) => track.stop());
+            localStreamRef.current = null;
+        }
+
+        // Clean up remote stream
+        if (remoteStreamRef.current) {
+            remoteStreamRef.current.getTracks().forEach((track) => track.stop());
+            remoteStreamRef.current = null;
+        }
+
+        // Reset state
+        setStrangerDisconnectedMessageDiv(false);
+        setIsFindingPair(false);
+        setHasPaired(false);
+        setRoom('');
+        setReceiver('');
+        setStrangerGender('');
     };
 
     const handleFindNew = async () => {
         if (socket) {
-            await cleanCall()
-            setHasPaired(false);
+            await cleanCall();
             setIsFindingPair(true);
             setStrangerDisconnectedMessageDiv(false);
             socket.emit('findNewPair', {
@@ -220,7 +257,7 @@ const AudioCall = ({ userDetails }) => {
                 userCollege: userDetails?.college,
                 preferredGender: filters.strangerGender,
                 preferredCollege: filters.college,
-                pageType: 'audiocall',
+                pageType: 'videocall',
             });
 
             const timeout = 10000;
@@ -229,9 +266,6 @@ const AudioCall = ({ userDetails }) => {
             }, timeout);
         }
     };
-
-
-
 
     return (
         <div className={styles.mainC}>
@@ -246,15 +280,18 @@ const AudioCall = ({ userDetails }) => {
             {usersOnline && <div>Users Online: {usersOnline}</div>}
             {strangerDisconnectedMessageDiv && hasPaired && <div>Stranger disconnected</div>}
 
-            <video ref={audioRef} autoPlay />
+            <div style={{ display: 'grid', gap: '2rem' }}>
+                <video ref={localVideoRef} autoPlay muted playsInline style={{ backgroundColor: 'black' }} />
+                {hasPaired && <video ref={remoteVideoRef} autoPlay style={{ backgroundColor: 'black' }} />}
+            </div>
 
-            <AudioCallControls
+            <VideoCallControls
                 isFindingPair={isFindingPair}
                 handleFindNewButton={handleFindNew}
-                handleToggleMute={handleToggleMute}
+                // handleToggleMute={handleToggleMute}
                 isMuted={isMuted}
                 isPartnerMuted={isPartnerMuted}
-                handleTogglePartnerMute={handleTogglePartnerMute}
+            // handleTogglePartnerMute={handleTogglePartnerMute}
             />
             <CustomSnackbar
                 open={snackbarOpen}
@@ -266,4 +303,4 @@ const AudioCall = ({ userDetails }) => {
     );
 };
 
-export default AudioCall
+export default VideoCall;
