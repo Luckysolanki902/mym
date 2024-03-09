@@ -23,8 +23,7 @@ const VideoCall = ({ userDetails }) => {
     const agora = useRef(null);
     const clientRef = useRef(null);
 
-    const [isMyVideoEnabled, setIsMyVideoEnabled] = useState(true);
-      const serverUrl = 'https://hostedmymserver.onrender.com'
+    const serverUrl = 'https://hostedmymserver.onrender.com'
     //   const serverUrl = 'http://localhost:1000'
 
     const [filters, setFilters] = useState({
@@ -123,12 +122,13 @@ const VideoCall = ({ userDetails }) => {
     }
 
     const handlePairingSuccess = (data) => {
+        console.log('paired')
         if (!hasPaired) {
             setStrangerDisconnectedMessageDiv(false);
             setIsFindingPair(false);
 
             const { roomId, strangerGender, stranger } = data;
-            console.log('stranger:', stranger);
+            console.log('stranger:', stranger, roomId);
             setRoom(roomId);
             setReceiver(stranger);
             setStrangerGender(strangerGender);
@@ -158,7 +158,9 @@ const VideoCall = ({ userDetails }) => {
         client.on('user-published', async (user, mediaType) => {
             await client.subscribe(user, mediaType);
             if (mediaType === 'video') {
+                console.log('media type is video')
                 const remoteVideoTrack = user.videoTrack;
+                console.log(remoteVideoTrack)
                 if (remoteVideoRef.current && remoteVideoTrack) {
                     remoteVideoTrack.play(remoteVideoRef.current);
                 }
@@ -222,13 +224,12 @@ const VideoCall = ({ userDetails }) => {
             {strangerDisconnectedMessageDiv && hasPaired && <div>Stranger disconnected</div>}
 
             <div>
-                <video ref={localVideoRef} autoPlay muted={!isMyVideoEnabled} style={{ width: '300px', height: '200px' }} />
+                <video ref={localVideoRef} autoPlay muted style={{ width: '300px', height: '200px' }} />
                 <video ref={remoteVideoRef} autoPlay style={{ width: '300px', height: '200px' }} />
             </div>
 
             <div>
                 <button onClick={handleFindNew}>{isFindingPair ? 'Finding Pair...' : 'Find New'}</button>
-                {/* <button onClick={handleToggleMyVideo}>{isMyVideoEnabled ? 'Turn off my video' : 'Turn on my video'}</button> */}
             </div>
 
             <CustomSnackbar
