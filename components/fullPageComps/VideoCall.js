@@ -193,35 +193,35 @@ const VideoCall = ({ userDetails }) => {
     };
     console.log('deb4');
 
-    // peerConnection.onnegotiationneeded = async () => {
-    //     // Create an offer and set it as the local description
-    //     try {
-    //         const offer = await peerConnection.createOffer();
-    //         await peerConnection.setLocalDescription(offer);
+    peerConnection.onnegotiationneeded = async () => {
+        // Create an offer and set it as the local description
+        try {
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
 
-    //         // Send the offer to the remote peer
-    //         if (socketRef.current) {
-    //             socketRef.current.emit('offer', {
-    //                 sdp: peerConnection.localDescription,
-    //                 roomId: room,
-    //             });
-    //         }
-    //     } catch (error) {
-    //         console.error('Error creating and sending offer:', error.message);
-    //     }
-    // };
-
-    peerConnection.ontrack = (event) => {
-      console.log('deb5');
-
-      const [remoteVideoTrack, remoteAudioTrack] = event.streams[0].getTracks();
-      remoteVideoTrackRef.current = remoteVideoTrack;
-      remoteAudioTrackRef.current = remoteAudioTrack;
-
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = event.streams[0];
-      }
+            // Send the offer to the remote peer
+            if (socketRef.current) {
+                socketRef.current.emit('offer', {
+                    sdp: peerConnection.localDescription,
+                    roomId: room,
+                });
+            }
+        } catch (error) {
+            console.error('Error creating and sending offer:', error.message);
+        }
     };
+
+    // peerConnection.ontrack = (event) => {
+    //   console.log('deb5');
+
+    //   const [remoteVideoTrack, remoteAudioTrack] = event.streams[0].getTracks();
+    //   remoteVideoTrackRef.current = remoteVideoTrack;
+    //   remoteAudioTrackRef.current = remoteAudioTrack;
+
+    //   if (remoteVideoRef.current) {
+    //     remoteVideoRef.current.srcObject = event.streams[0];
+    //   }
+    // };
 
     // Send an offer to the remote peer
     try {
@@ -331,6 +331,9 @@ const VideoCall = ({ userDetails }) => {
     }
   };
 
+  useEffect(()=>{
+    console.log('remotevideoref', remoteVideoRef)
+  },[remoteVideoRef])
   return (
     <div className={styles.mainC}>
       <div className={styles.filterPos}>
@@ -345,8 +348,8 @@ const VideoCall = ({ userDetails }) => {
       {strangerDisconnectedMessageDiv && hasPaired && <div>Stranger disconnected</div>}
 
       <div style={{ display: 'grid', gap: '2rem' }}>
-        <video ref={localVideoRef} autoPlay muted playsInline style={{ backgroundColor: 'black' }} />
-        {hasPaired && <video ref={remoteVideoRef} autoPlay style={{ backgroundColor: 'black' }} />}
+        <video ref={localVideoRef} autoPlay muted playsInline />
+        {hasPaired && <video ref={remoteVideoRef} autoPlay  />}
       </div>
 
       <VideoCallControls
