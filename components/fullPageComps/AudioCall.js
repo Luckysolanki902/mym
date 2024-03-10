@@ -178,7 +178,9 @@ const AudioCall = ({ userDetails }) => {
     const joinCall = async (stranger, room) => {
         console.log(stranger, agora.current);
 
-        if (!stranger || !agora.current) return;
+        if (!stranger || !agora.current || !room) {
+            return;
+        }
 
         const client = agora.current.createClient({ codec: 'vp8', mode: 'rtc' });
         clientRef.current = client;
@@ -189,6 +191,7 @@ const AudioCall = ({ userDetails }) => {
                 audioRef.current.srcObject = remoteAudioTrackRef.current.play();
             }
         });
+        console.log('room is', room, 'before join')
         await client.join('bcbdc5c2ee414020ad8e3881ade6ff9a', room, null, null);
         // Convert localStream to an array of tracks
         const localAudioTrack = await agora.current.createMicrophoneAudioTrack();

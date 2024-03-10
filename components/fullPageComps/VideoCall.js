@@ -188,21 +188,22 @@ const VideoCall = ({ userDetails }) => {
     };
   
     peerConnection.onnegotiationneeded = async () => {
-      try {
-        console.log('Debug 6');
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-  
-        if (socketRef.current) {
-          console.log('Debug 7');
-          socketRef.current.emit('offer', {
-            sdp: peerConnection.localDescription,
-            roomId: room,
-          });
-        }
-      } catch (error) {
-        console.error('Error creating and sending offer:', error.message);
-      }
+        try {
+            console.log('Debug: Creating offer');
+            const offer = await peerConnection.createOffer();
+            console.log('Debug: Setting local description');
+            await peerConnection.setLocalDescription(offer);
+          
+            if (socketRef.current) {
+              console.log('Debug: Emitting offer');
+              socketRef.current.emit('offer', {
+                sdp: peerConnection.localDescription,
+                roomId: room,
+              });
+            }
+          } catch (error) {
+            console.error('Error creating and sending offer:', error.message);
+          }
     };
   
     try {
