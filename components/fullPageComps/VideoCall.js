@@ -24,16 +24,12 @@ const VideoCall = ({ userDetails }) => {
   const localStreamRef = useRef(null);
   const remoteStreamRef = useRef(null);
 
-  const remoteVideoTrackRef = useRef(null);
-  const remoteAudioTrackRef = useRef(null);
-
   const peerConnectionRef = useRef(null);
 
   const serverUrl = 'https://hostedmymserver.onrender.com';
   // const serverUrl = 'http://localhost:1000'
 
   const iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
-  // Add more ICE servers if needed
 
   const [isPartnerMuted, setIsPartnerMuted] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -57,7 +53,6 @@ const VideoCall = ({ userDetails }) => {
       localStreamRef.current = stream;
       console.log('Successfully obtained local stream:', stream);
 
-      // Display local video
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
@@ -78,7 +73,7 @@ const VideoCall = ({ userDetails }) => {
       });
 
       newSocket.on('roundedUsersCount', (count) => {
-        console.log('online users in this category are:', count);
+        console.log('Online users in this category:', count);
         setUsersOnline(count);
       });
 
@@ -87,7 +82,7 @@ const VideoCall = ({ userDetails }) => {
       });
 
       newSocket.on('pairDisconnected', () => {
-        console.log('disconnected');
+        console.log('Partner disconnected');
         handlePairDisconnected();
       });
 
@@ -99,10 +94,14 @@ const VideoCall = ({ userDetails }) => {
         console.error('Socket error:', error);
       });
 
-      // Listen for SDP answer
-      newSocket.on('answer', (data) => {
-        handleAnswer(data);
+      newSocket.on('offer', (data) => {
+        handleOffer(data);
       });
+
+      newSocket.on('add-ice-candidate', (data) => {
+        handleAddIceCandidate(data);
+      });
+
     } catch (error) {
       console.error('Error getting media permissions:', error.message);
     }
@@ -134,12 +133,12 @@ const VideoCall = ({ userDetails }) => {
 
   const handlePairingSuccess = (data) => {
     if (!hasPaired) {
-      console.log('connected');
+      console.log('Connected');
       setStrangerDisconnectedMessageDiv(false);
       setIsFindingPair(false);
 
       const { roomId, strangerGender, stranger } = data;
-      console.log('stranger:', stranger);
+      console.log('Stranger:', stranger);
       setRoom(roomId);
       setReceiver(stranger);
       setStrangerGender(strangerGender);
@@ -162,24 +161,19 @@ const VideoCall = ({ userDetails }) => {
 
   const joinCall = async (stranger, room) => {
     console.log(stranger);
-    console.log('deb1');
+    console.log('Debug 1');
 
     if (!stranger) return;
 
-    // Create PeerConnection
     const peerConnection = new RTCPeerConnection({ iceServers });
 
-    // Add local stream tracks to PeerConnection
     localStreamRef.current.getTracks().forEach((track) => {
       peerConnection.addTrack(track, localStreamRef.current);
     });
-    console.log('deb2');
 
-    // Set up event listeners
     peerConnection.onicecandidate = (event) => {
       if (event.candidate && socketRef.current) {
-        // Send the local ICE candidate to the remote peer
-        console.log('deb3');
+        console.log('Debug 3');
         try {
           socketRef.current.emit('add-ice-candidate', {
             candidate: event.candidate,
@@ -191,42 +185,26 @@ const VideoCall = ({ userDetails }) => {
         }
       }
     };
-    console.log('deb4');
 
     peerConnection.onnegotiationneeded = async () => {
-        // Create an offer and set it as the local description
-        try {
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
+      try {
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
 
-            // Send the offer to the remote peer
-            if (socketRef.current) {
-                socketRef.current.emit('offer', {
-                    sdp: peerConnection.localDescription,
-                    roomId: room,
-                });
-            }
-        } catch (error) {
-            console.error('Error creating and sending offer:', error.message);
+        if (socketRef.current) {
+          console.log('Debug 6');
+          socketRef.current.emit('offer', {
+            sdp: peerConnection.localDescription,
+            roomId: room,
+          });
         }
+      } catch (error) {
+        console.error('Error creating and sending offer:', error.message);
+      }
     };
 
-    // peerConnection.ontrack = (event) => {
-    //   console.log('deb5');
-
-    //   const [remoteVideoTrack, remoteAudioTrack] = event.streams[0].getTracks();
-    //   remoteVideoTrackRef.current = remoteVideoTrack;
-    //   remoteAudioTrackRef.current = remoteAudioTrack;
-
-    //   if (remoteVideoRef.current) {
-    //     remoteVideoRef.current.srcObject = event.streams[0];
-    //   }
-    // };
-
-    // Send an offer to the remote peer
     try {
-      console.log('deb6');
-
+      console.log('Debug 7');
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
 
@@ -237,31 +215,47 @@ const VideoCall = ({ userDetails }) => {
         });
       }
 
-      // Save the PeerConnection reference
       peerConnectionRef.current = peerConnection;
     } catch (error) {
       console.error('Error creating and sending offer:', error.message);
-
-      // Handle the error gracefully, log additional information if needed
     }
   };
 
-  // Handle SDP answer from the remote peer
-  const handleAnswer = async (data) => {
-    console.log('deb7');
-
+  const handleOffer = async (data) => {
+    console.log('Debug 8');
     const { sdp, roomId } = data;
     const remoteDescription = new RTCSessionDescription(sdp);
 
     try {
       await peerConnectionRef.current.setRemoteDescription(remoteDescription);
+      const answer = await peerConnectionRef.current.createAnswer();
+      await peerConnectionRef.current.setLocalDescription(answer);
+
+      socketRef.current.emit('answer', {
+        sdp: peerConnectionRef.current.localDescription,
+        roomId: room,
+      });
     } catch (error) {
-      console.error('Error setting remote description:', error.message);
+      console.error('Error handling offer:', error.message);
+    }
+  };
+
+  const handleAddIceCandidate = async (data) => {
+    console.log('Debug 9');
+    const { candidate, type } = data;
+
+    try {
+      if (type === 'sender') {
+        await peerConnectionRef.current.addIceCandidate(candidate);
+      } else {
+        await peerConnectionRef.current.addIceCandidate(candidate);
+      }
+    } catch (error) {
+      console.error('Error handling ICE candidate:', error.message);
     }
   };
 
   const cleanCall = async () => {
-    // Close and clean up PeerConnection
     if (peerConnectionRef.current) {
       try {
         peerConnectionRef.current.close();
@@ -271,7 +265,6 @@ const VideoCall = ({ userDetails }) => {
       peerConnectionRef.current = null;
     }
 
-    // Clean up local stream
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => {
         try {
@@ -283,7 +276,6 @@ const VideoCall = ({ userDetails }) => {
       localStreamRef.current = null;
     }
 
-    // Clean up remote stream
     if (remoteStreamRef.current) {
       remoteStreamRef.current.getTracks().forEach((track) => {
         try {
@@ -294,9 +286,9 @@ const VideoCall = ({ userDetails }) => {
       });
       remoteStreamRef.current = null;
     }
-    console.log('deb9');
 
-    // Reset state
+    console.log('Debug 10');
+
     setStrangerDisconnectedMessageDiv(false);
     setIsFindingPair(false);
     setHasPaired(false);
@@ -331,9 +323,10 @@ const VideoCall = ({ userDetails }) => {
     }
   };
 
-  useEffect(()=>{
-    console.log('remotevideoref', remoteVideoRef)
-  },[remoteVideoRef])
+  useEffect(() => {
+    console.log('Remote video ref:', remoteVideoRef);
+  }, [remoteVideoRef]);
+
   return (
     <div className={styles.mainC}>
       <div className={styles.filterPos}>
@@ -349,16 +342,14 @@ const VideoCall = ({ userDetails }) => {
 
       <div style={{ display: 'grid', gap: '2rem' }}>
         <video ref={localVideoRef} autoPlay muted playsInline />
-        {hasPaired && <video ref={remoteVideoRef} autoPlay  />}
+        {hasPaired && <video ref={remoteVideoRef} autoPlay />}
       </div>
 
       <VideoCallControls
         isFindingPair={isFindingPair}
         handleFindNewButton={handleFindNew}
-        // handleToggleMute={handleToggleMute}
         isMuted={isMuted}
         isPartnerMuted={isPartnerMuted}
-        // handleTogglePartnerMute={handleTogglePartnerMute}
       />
       <CustomSnackbar
         open={snackbarOpen}
