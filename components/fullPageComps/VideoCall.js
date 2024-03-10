@@ -161,17 +161,17 @@ const VideoCall = ({ userDetails }) => {
 
     const joinCall = async (stranger, room) => {
         console.log(stranger);
-
+    
         if (!stranger) return;
-
+    
         // Create PeerConnection
         const peerConnection = new RTCPeerConnection({ iceServers });
-
+    
         // Add local stream tracks to PeerConnection
         localStreamRef.current.getTracks().forEach((track) => {
             peerConnection.addTrack(track, localStreamRef.current);
         });
-
+    
         // Set up event listeners
         peerConnection.onicecandidate = (event) => {
             if (event.candidate && socketRef.current) {
@@ -187,53 +187,56 @@ const VideoCall = ({ userDetails }) => {
                 }
             }
         };
-
-        peerConnection.onnegotiationneeded = async () => {
-            // Create an offer and set it as the local description
-            try {
-                const offer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(offer);
-
-                // Send the offer to the remote peer
-                if (socketRef.current) {
-                    socketRef.current.emit('offer', {
-                        sdp: peerConnection.localDescription,
-                        roomId: room,
-                    });
-                }
-            } catch (error) {
-                console.error('Error creating and sending offer:', error.message);
-            }
-        };
-
+    
+        // peerConnection.onnegotiationneeded = async () => {
+        //     // Create an offer and set it as the local description
+        //     try {
+        //         const offer = await peerConnection.createOffer();
+        //         await peerConnection.setLocalDescription(offer);
+    
+        //         // Send the offer to the remote peer
+        //         if (socketRef.current) {
+        //             socketRef.current.emit('offer', {
+        //                 sdp: peerConnection.localDescription,
+        //                 roomId: room,
+        //             });
+        //         }
+        //     } catch (error) {
+        //         console.error('Error creating and sending offer:', error.message);
+        //     }
+        // };
+    
         peerConnection.ontrack = (event) => {
             const [remoteVideoTrack, remoteAudioTrack] = event.streams[0].getTracks();
             remoteVideoTrackRef.current = remoteVideoTrack;
             remoteAudioTrackRef.current = remoteAudioTrack;
-
+    
             if (remoteVideoRef.current) {
                 remoteVideoRef.current.srcObject = event.streams[0];
             }
         };
-
+    
         // Send an offer to the remote peer
         try {
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
-
+    
             if (socketRef.current) {
                 socketRef.current.emit('offer', {
                     sdp: peerConnection.localDescription,
                     roomId: room,
                 });
             }
-
+    
             // Save the PeerConnection reference
             peerConnectionRef.current = peerConnection;
         } catch (error) {
             console.error('Error creating and sending offer:', error.message);
+    
+            // Handle the error gracefully, log additional information if needed
         }
     };
+    
 
     // Handle SDP answer from the remote peer
     const handleAnswer = async (data) => {
