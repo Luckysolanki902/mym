@@ -162,15 +162,16 @@ const VideoCall = ({ userDetails }) => {
   const joinCall = async (stranger, room) => {
     console.log(stranger);
     console.log('Debug 1');
-
+  
     if (!stranger) return;
-
-    const peerConnection = new RTCPeerConnection({ iceServers });
-
+  
+    // Create PeerConnection with unified plan SDP semantics
+    const peerConnection = new RTCPeerConnection({ iceServers, sdpSemantics: 'unified-plan' });
+  
     localStreamRef.current.getTracks().forEach((track) => {
       peerConnection.addTrack(track, localStreamRef.current);
     });
-
+  
     peerConnection.onicecandidate = (event) => {
       if (event.candidate && socketRef.current) {
         console.log('Debug 3');
@@ -185,14 +186,15 @@ const VideoCall = ({ userDetails }) => {
         }
       }
     };
-
+  
     peerConnection.onnegotiationneeded = async () => {
       try {
+        console.log('Debug 6');
         const offer = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offer);
-
+  
         if (socketRef.current) {
-          console.log('Debug 6');
+          console.log('Debug 7');
           socketRef.current.emit('offer', {
             sdp: peerConnection.localDescription,
             roomId: room,
@@ -202,24 +204,25 @@ const VideoCall = ({ userDetails }) => {
         console.error('Error creating and sending offer:', error.message);
       }
     };
-
+  
     try {
-      console.log('Debug 7');
+      console.log('Debug 8');
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
-
+  
       if (socketRef.current) {
         socketRef.current.emit('offer', {
           sdp: peerConnection.localDescription,
           roomId: room,
         });
       }
-
+  
       peerConnectionRef.current = peerConnection;
     } catch (error) {
       console.error('Error creating and sending offer:', error.message);
     }
   };
+  
 
   const handleOffer = async (data) => {
     console.log('Debug 8');
