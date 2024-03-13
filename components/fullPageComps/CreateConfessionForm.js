@@ -49,26 +49,9 @@ const CreateConfessionForm = ({ userDetails }) => {
           throw new Error('Error submitting confession');
         }
 
-        const { confessionId } = await confessResponse.json();
-
-        // Create an entry in PersonalReply model
-        const enablePersonalReplyResponse = await fetch('/api/confession/enablepersonalreply', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            confessionId,
-            confesserEmail: email,
-          }),
-        });
-
-        if (enablePersonalReplyResponse.ok) {
-          console.log('Confession submitted successfully');
-          setConfessionValue('');
-        } else {
-          console.error('Error creating PersonalReply entry');
-        }
+        // const { confessionId } = await confessResponse.json();
+        setConfessionValue('');
+        console.log('Confession submitted successfully');
       } else {
         // Show dialog with problematic sentences list, warning, and advice
         setDialogContent({

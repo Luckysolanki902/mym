@@ -12,34 +12,33 @@ const truncateText = (text, maxLength) => {
 };
 
 const InboxPage = ({ personalReplies }) => {
-  console.log('replies', personalReplies)
-  const filteredReplies = personalReplies.filter((entry) => entry.replies.length > 0);
+console.log(personalReplies)
+  // Extract personalReplies array from the object
+  const repliesArray = personalReplies.personalReplies;
 
   return (
     <div>
       <Typography variant="h4" gutterBottom>
         Your Inbox
       </Typography>
-      {filteredReplies.map((entry) => (
+      {repliesArray?.map((entry) => (
         <Card key={entry._id} style={{ marginBottom: '16px' }}>
           <CardContent>
             <Link href={`/confessions/${entry.confessionId._id}`} passHref>
-              <a style={{ color: 'black', textDecoration: 'none' }}>
                 <Typography variant="h6">
                   {truncateText(entry.confessionId.confessionContent, 100)}
                 </Typography>
-              </a>
             </Link>
             <>
               <Divider style={{ margin: '8px 0' }} />
               <Typography variant="body1" color="primary">
                 Replies:
               </Typography>
-              {entry.replies.map((reply, index) => (
+              {/* {entry.replies.map((reply, index) => (
                 <Typography key={index} variant="body2" color="textSecondary">
-                  - {reply}
+                  - {reply.reply}
                 </Typography>
-              ))}
+              ))} */}
             </>
           </CardContent>
         </Card>
@@ -47,7 +46,6 @@ const InboxPage = ({ personalReplies }) => {
     </div>
   );
 };
-
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
@@ -57,11 +55,11 @@ export async function getServerSideProps(context) {
   if (session) {
     const email = session?.user?.email;
     if (email) {
-      console.log(email, 'email');
       try {
         const response = await fetch(`${pageurl}/api/getdetails/getinbox?email=${email}`);
         if (response.ok) {
-          personalReplies = await response.json();
+          const responseData = await response.json();
+          personalReplies = responseData;
         } else {
           const errorData = await response.json();
           console.log('Error fetching user details:', errorData);

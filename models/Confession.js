@@ -1,3 +1,4 @@
+// models/Confession.js
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
@@ -14,7 +15,7 @@ const confessionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  gender: {
+  gender: { 
     type: String,
     required: true,
   },

@@ -1,20 +1,21 @@
-// models/PersonalReply.js
 import mongoose from 'mongoose';
+import Confession from './Confession'; // Import Confession model
 
 const PersonalReplySchema = new mongoose.Schema({
   confessionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Confession',
+    type: String,
     required: true,
   },
   confesserEmail: {
     type: String,
     required: true,
   },
-  replies: {
-    type: [String],
-    default: [],
-  },
+  replies: [
+    {
+      reply: String,
+      replierGender: String,
+    }
+  ],
   timestamps: {
     type: Date,
     default: Date.now,

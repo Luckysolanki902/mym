@@ -1,9 +1,9 @@
 import PersonalReply from '@/models/PersonalReply';
+import Confession from '@/models/Confession';
 import connectToMongo from '@/middleware/middleware';
 
 const handler = async (req, res) => {
   const { email } = req.query;
-  console.log('email from api', email)
 
   try {
     if (!email) {
@@ -12,16 +12,19 @@ const handler = async (req, res) => {
     }
 
     // Find personal replies for the given email
-    const personalReplies = await PersonalReply.find({ confesserEmail: email })
-      .populate({
-        path: 'confessionId',
-        model: 'Confession',
-        select: 'confessionContent',
-      });
+    const personalReplies = await PersonalReply.find({ confesserEmail: email });
 
     // If no personal replies are found, return a 404 Not Found response
     if (!personalReplies || personalReplies.length === 0) {
       return res.status(404).json({ error: `No personal replies found for the given email: ${email}` });
+    }
+
+    // Manually populate confessionContent for each personal reply
+    for (const reply of personalReplies) {
+      const confession = await Confession.findById(reply.confessionId);
+      if (confession) {
+        reply.confessionContent = confession.confessionContent;
+      }
     }
 
     console.log(personalReplies);

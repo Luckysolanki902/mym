@@ -92,7 +92,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                 confessionId: confession._id,
                 encryptedEmail,
                 iv,
-                replyContent: anonymousReplyValue,
+                replyContent: { reply: anonymousReplyValue, replierGender: userDetails.gender }, // Modify this line
             };
 
             const response = await fetch('/api/confession/saveanonymousreply', {
