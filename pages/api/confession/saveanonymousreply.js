@@ -4,7 +4,7 @@ import connectToMongo from '@/middleware/middleware';
 import crypto from 'crypto';
 
 const handler = async (req, res) => {
-  const { confessionId, encryptedEmail, iv, replyContent } = req.body;
+  const { confessionId, encryptedEmail,confessionContent, iv, replyContent } = req.body;
 
   try {
     // Decrypt the encrypted email using the secret key from .env
