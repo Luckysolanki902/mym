@@ -10,6 +10,10 @@ const PersonalReplySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  confessionContent: {
+    type: String,
+    required: true,
+  },
   replies: [
     {
       reply: String,
