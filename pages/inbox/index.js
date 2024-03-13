@@ -48,30 +48,32 @@ const InboxPage = ({ personalReplies }) => {
   );
 };
 
+
 export async function getServerSideProps(context) {
-const session =await getSession(context)
-const pageurl = 'https://www.meetyourmate.in'
+  const session = await getSession(context);
+  const pageurl = 'https://www.meetyourmate.in';
   let personalReplies = [];
+
   if (session) {
     const email = session?.user?.email;
-    if(email){
-      console.log(email, 'email')
+    if (email) {
+      console.log(email, 'email');
       try {
         const response = await fetch(`${pageurl}/api/getdetails/getinbox?email=${email}`);
         if (response.ok) {
-          personalReplies =await response.json();
+          personalReplies = await response.json();
         } else {
-          console.error('Error fetching user details');
+          const errorData = await response.json();
+          console.log('Error fetching user details:', errorData);
         }
       } catch (error) {
-        console.error('Error fetching personal replies:', error);
+        console.log('Error fetching user details:', error);
       }
-
     }
   }
 
   return {
-    props: { 
+    props: {
       personalReplies,
     },
   };

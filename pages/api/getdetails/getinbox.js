@@ -21,7 +21,7 @@ const handler = async (req, res) => {
 
     // If no personal replies are found, return a 404 Not Found response
     if (!personalReplies || personalReplies.length === 0) {
-      return res.status(404).json({ error: 'No personal replies found for the given email' });
+      return res.status(404).json({ error: `No personal replies found for the given email: ${email}` });
     }
 
     console.log(personalReplies);
