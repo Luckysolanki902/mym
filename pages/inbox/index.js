@@ -12,7 +12,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const InboxPage = ({ personalReplies }) => {
-console.log(personalReplies)
+console.log('the replies are:',personalReplies)
   // Extract personalReplies array from the object
   const repliesArray = personalReplies.personalReplies;
 
@@ -26,7 +26,7 @@ console.log(personalReplies)
           <CardContent>
             <Link href={`/confessions/${entry.confessionId._id}`} passHref>
                 <Typography variant="h6">
-                  {truncateText(entry.confessionId.confessionContent, 100)}
+                  {truncateText(entry.confessionContent, 100)}
                 </Typography>
             </Link>
             <>
