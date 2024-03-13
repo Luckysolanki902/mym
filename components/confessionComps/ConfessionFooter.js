@@ -84,6 +84,14 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             console.error('Error liking/unliking confession:', error);
         }
     };
+    const truncateText = (text, maxLength) => {
+        if (text.length <= maxLength) {
+          return text;
+        }
+        const truncatedText = text.substring(0, maxLength).trim();
+        return `${truncatedText.substr(0, Math.min(truncatedText.length, truncatedText.lastIndexOf(' ')))}...`;
+      };
+      
 
     const handleAnonymousReply = async () => {
         try {
@@ -91,6 +99,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             const replyData = {
                 confessionId: confession._id,
                 encryptedEmail,
+                confessionContent:truncateText(confessionContent, 100),
                 iv,
                 replyContent: { reply: anonymousReplyValue, replierGender: userDetails.gender }, // Modify this line
             };

@@ -12,7 +12,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const InboxPage = ({ personalReplies }) => {
-console.log('the replies are:',personalReplies)
+  console.log('the replies are:', personalReplies);
   // Extract personalReplies array from the object
   const repliesArray = personalReplies.personalReplies;
 
@@ -21,28 +21,34 @@ console.log('the replies are:',personalReplies)
       <Typography variant="h4" gutterBottom>
         Your Inbox
       </Typography>
-      {repliesArray?.map((entry) => (
-        <Card key={entry._id} style={{ marginBottom: '16px' }}>
-          <CardContent>
-            <Link href={`/confessions/${entry.confessionId._id}`} passHref>
+      {repliesArray?.length > 0 ? (
+        repliesArray.map((entry) => (
+          <Card key={entry._id} style={{ marginBottom: '16px' }}>
+            <CardContent>
+              <Link href={`/confessions/${entry.confessionId._id}`} passHref>
                 <Typography variant="h6">
                   {truncateText(entry.confessionContent, 100)}
                 </Typography>
-            </Link>
-            <>
-              <Divider style={{ margin: '8px 0' }} />
-              <Typography variant="body1" color="primary">
-                Replies:
-              </Typography>
-              {/* {entry.replies.map((reply, index) => (
-                <Typography key={index} variant="body2" color="textSecondary">
-                  - {reply.reply}
+              </Link>
+              <>
+                <Divider style={{ margin: '8px 0' }} />
+                <Typography variant="body1" color="primary">
+                  Replies:
                 </Typography>
-              ))} */}
-            </>
-          </CardContent>
-        </Card>
-      ))}
+                {/* {entry.replies.map((reply, index) => (
+                  <Typography key={index} variant="body2" color="textSecondary">
+                    - {reply.reply}
+                  </Typography>
+                ))} */}
+              </>
+            </CardContent>
+          </Card>
+        ))
+      ) : (
+        <Typography variant="body1">
+          Replies to your confessions will appear here.
+        </Typography>
+      )}
     </div>
   );
 };

@@ -24,6 +24,7 @@ const handler = async (req, res) => {
       personalReply = new PersonalReply({
         confessionId,
         confesserEmail: decryptedEmail,
+        confessionContent:truncateText(confessionContent, 100),
       });
     }
 
