@@ -5,7 +5,8 @@ import { initiateSocket } from '@/utils/ramdomchat/initiateSocket';
 import { handleSend, handleTyping, handleStoppedTyping, handleFindNew } from '@/utils/ramdomchat/socketFunctions';
 import CustomSnackbar from '../commonComps/Snackbar';
 import InputBox from '../chatComps/InputBox';
-import MessageContainer from '../chatComps/MessageContainer';
+import MessageDisplay from '../chatComps/MessagesDisplay';
+import EventsContainer from '../chatComps/EventsContainer';
 const TextChat = ({ userDetails }) => {
   const [socket, setSocket] = useState(null);
   const [textValue, setTextValue] = useState('');
@@ -89,7 +90,8 @@ const TextChat = ({ userDetails }) => {
           userGender={userDetails?.gender}
         />
       </div>
-      <MessageContainer
+
+      <MessageDisplay
         messages={messages}
         userDetails={userDetails}
         receiver={receiver}
@@ -99,6 +101,8 @@ const TextChat = ({ userDetails }) => {
         strangerDisconnectedMessageDiv={strangerDisconnectedMessageDiv}
         strangerIsTyping={strangerIsTyping}
       />
+
+
 
       <InputBox
         isFindingPair={isFindingPair}

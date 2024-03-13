@@ -1,8 +1,15 @@
-import Head from 'next/head'
-import { getSession, signOut } from 'next-auth/react'
+import { useSpring, animated } from 'react-spring';
+import Head from 'next/head';
+import { getSession, signOut } from 'next-auth/react';
+import Image from 'next/image';
+import styles from '@/styles/Home.module.css';
 
 export default function Home({ session }) {
-console.log(session)
+  const containerSpring = useSpring({
+    from: { opacity: 0, transform: 'translate3d(0, -50px, 0)' },
+    to: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
+  });
+
   return (
     <>
       <Head>
@@ -11,27 +18,55 @@ console.log(session)
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
+      <animated.div style={containerSpring} className={styles.mainContainer}>
         {session ? (
           <>
             {/* Content to be shown only for session users */}
-            <p>Welcome, {session?.user?.email}!</p>
-            <button onClick={() => signOut()}>Signout</button>
           </>
         ) : (
           <>
-            {/* Content to be shown only for non session users */}
-            <div><a href="/auth/signin">Login</a></div>
-            <div><a href="/auth/signup">Create Account</a></div>
+            {/* Content to be shown only for non-session users */}
           </>
         )}
         {/* Content to show to both */}
-        <div style={{ margin: '3rem' }}><a href="/textchat">Chat</a></div>
-        <div style={{ margin: '3rem' }}><a href="/all-confessions">Confessions</a></div>
+        <div className={styles.hiuser}>
+          <Image src={'/images/large_pngs/hiuser.png'} width={1080 / 3} height={720 / 3} alt='hi user' />
+        </div>
+        <h2 className={styles.fullform}>Meet.Your.Mate</h2>
+        <p className={styles.desc}>Sign up now and start connecting with students from your college and beyond.</p>
+        <p className={styles.desc}>
+          "Ready to join the conversation? Take your student experience to the next level!”
+        </p>
+        <div className={styles.showcase}>
+          <Image src={'/images/showcase/showcaseCouple.jpg'} width={776} height={544} alt='showcase' className={styles.showcaseImg}/>
+          <div className={styles.showcaseCont}>
+            <div className={styles.tagline}>
+              Connect -&gt; Confess -&gt; Trend
+            </div>
+            <div className={styles.taglineP}>
+              "Your college experience, redefined."
+            </div>
+          </div>
+        </div>
+        <div className={styles.showcase}>
+          <div className={styles.showcaseCont}  id={styles.taglinePid}>
+            <img src="/images/showcase/svgs/arrow.svg" alt="" className={styles.arrowSvg} />
+            <div className={styles.taglineP} id={styles.taglineP2}>
+              The exclusive social platform designed for college students to connect, share, and confess anonymously.
+            </div>
+          </div>
+          <Image src={'/images/showcase/showcaseCouple.jpg'} width={776} height={544} alt='showcase' className={styles.showcaseImg} />
+        </div>
+        {/* <h3 className={styles.carousol}>Unlock the doors of possibility and embrace the friendships that await</h3> */}
+        <div className={styles.comingsoonCards}>
+        <Image src={'/images/large_pngs/comingsoonCards.png'} width={918} height={688} alt='cards' ></Image>
 
-      </main>
+        </div>
+        <div style={{ width: '100%', height: '10em' }}></div>
+      </animated.div>
+
     </>
-  )
+  );
 }
 
 export async function getServerSideProps(context) {
@@ -41,5 +76,5 @@ export async function getServerSideProps(context) {
     props: {
       session,
     },
-  }
+  };
 }

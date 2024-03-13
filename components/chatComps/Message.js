@@ -1,5 +1,5 @@
 // components/Message.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import styles from '../componentStyles/textchat.module.css';
 

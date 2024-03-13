@@ -1,12 +1,14 @@
 // MessageContainer.js
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
+import { useSpring, animated } from 'react-spring';
 import Image from 'next/image';
 import Message from '@/components/chatComps/Message';
 import styles from '../componentStyles/textchat.module.css';
 
-const MessageContainer = ({ messages, userDetails, receiver, strangerGender, hasPaired, usersOnline, strangerDisconnectedMessageDiv, strangerIsTyping }) => {
-  const reversedMessages = [...messages].reverse();
-  const shouldRenderPaddingDiv = strangerDisconnectedMessageDiv || (hasPaired && strangerIsTyping) ;
+
+const MessageContainer = React.memo(({ messages, userDetails, receiver, strangerGender, hasPaired, usersOnline, strangerDisconnectedMessageDiv, strangerIsTyping }) => {
+  const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
+  const shouldRenderPaddingDiv = strangerDisconnectedMessageDiv || (hasPaired && strangerIsTyping);
 
   // Create a ref for the padding div
   const paddingDivRef = useRef(null);
@@ -22,6 +24,24 @@ const MessageContainer = ({ messages, userDetails, receiver, strangerGender, has
   useEffect(() => {
     scrollToPaddingDiv();
   }, [messages]);
+
+  // Animation config for the latest message
+  const messageAppearConfig = useMemo(
+    () => ({
+      tension: 200,
+      friction: 20,
+      from: { scale: 0.8, opacity: 0 },
+      to: { scale: 1, opacity: 1 },
+    }),
+    []
+  );
+
+  // Animation for the latest message
+  const messageAnimation = useSpring({
+    ...messageAppearConfig,
+    reset: true,
+    reverse: shouldRenderPaddingDiv && !strangerIsTyping && messages.length > 1, // Only reverse when new message arrives, isTyping is false, and there is more than one message
+  });
 
   return (
     <div className={`${styles.messCon} ${!hasPaired && !strangerIsTyping && styles.nopadb}`}>
@@ -42,23 +62,18 @@ const MessageContainer = ({ messages, userDetails, receiver, strangerGender, has
       )}
 
       {/* Padding div with dynamic height based on conditions */}
-      <div ref={paddingDivRef} className={styles.paddingDiv} style={{ height: shouldRenderPaddingDiv ? '3rem' : 0 , opacity:'0'}} >sdfasdf</div>
+      <div ref={paddingDivRef} className={styles.paddingDiv} style={{ height: shouldRenderPaddingDiv ? '3rem' : 0, opacity: '0' }}>
+        sdfasdf
+      </div>
 
       {reversedMessages.map((msg, index) => (
-        <div key={index}>
-          <Message
-            key={index}
-            msg={msg}
-            userDetails={userDetails}
-            receiver={receiver}
-            strangerGender={strangerGender}
-            hasPaired={hasPaired}
-          />
-        </div>
+        <animated.div key={index} style={index === 0 ? messageAnimation : {}}>
+          <Message key={index} msg={msg} userDetails={userDetails} receiver={receiver} strangerGender={strangerGender} hasPaired={hasPaired} />
+        </animated.div>
       ))}
       {usersOnline && <>Users: {usersOnline}</>}
     </div>
   );
-};
+});
 
 export default MessageContainer;

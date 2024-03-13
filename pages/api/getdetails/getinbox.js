@@ -1,9 +1,9 @@
-// pages/api/getdetails/personalreplies.js
 import PersonalReply from '@/models/PersonalReply';
 import connectToMongo from '@/middleware/middleware';
 
 const handler = async (req, res) => {
   const { email } = req.query;
+  console.log('email from api', email)
 
   try {
     // Find personal replies for the given email
@@ -13,7 +13,7 @@ const handler = async (req, res) => {
         model: 'Confession',
         select: 'confessionContent',
       });
-
+    console.log(personalReplies)
     res.status(200).json({ personalReplies });
   } catch (error) {
     console.error('Error fetching personal replies:', error);

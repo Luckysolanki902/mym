@@ -38,7 +38,7 @@ const CommentsDialog = ({
                   />
                 </div>
                 <div className={styles.commentContent}>
-                  <strong>Stranger:</strong> {comment.commentContent}
+                  {comment.commentContent}
                 </div>
               </div>
             ))}

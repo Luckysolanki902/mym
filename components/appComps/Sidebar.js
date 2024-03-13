@@ -37,7 +37,7 @@ const Sidebar = () => {
     <div className='sidebarvisibility'>
       <div className={`${styles.mainSidebarDiv} sidebardim`}>
         <div
-          className={`${styles.icons} ${activeIndex === 0 ? styles.active : ''}`}
+          className={`${styles.icons} ${activeIndex === 0 ? styles.activeAndAtHome : ''}`}
           onClick={() => handleSetActive(0, '/')}
         >
           <Image

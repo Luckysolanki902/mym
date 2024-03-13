@@ -118,7 +118,7 @@ export const handleTyping = (e, socket, typingTimeoutRef, userDetails) => {
 
         // Set a new timeout with dynamic delay
         typingTimeoutRef.current = setTimeout(() => {
-            socket.emit('stoppedTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
+            socket.emit('userStoppedTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
         }, e.key === ' ' ? 500 : 1500); // Shorter timeout for spaces
     }
 };
@@ -126,7 +126,7 @@ export const handleTyping = (e, socket, typingTimeoutRef, userDetails) => {
 export const handleStoppedTyping = (socket, typingTimeoutRef, userDetails) => {
     clearTimeout(typingTimeoutRef.current);
     if (socket) {
-        socket.emit('stoppedTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
+        socket.emit('userStoppedTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
     }
 };
 

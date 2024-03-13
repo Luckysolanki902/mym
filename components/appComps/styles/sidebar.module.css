@@ -14,14 +14,17 @@
     width: 2rem;
     height: auto;
 }
+
 .iconspng2 {
     width: 2.7rem;
     height: auto;
 }
+
 .iconspng3 {
     width: 2rem;
     height: auto;
 }
+
 .iconspng4 {
     width: 2rem;
     height: auto;
@@ -54,6 +57,10 @@
     transition: width 0.3s, height 0.3s;
 }
 
-@media (width<1400px){
-
+.activeAndAtHome {
+    background-color: white;
+    background-image: url('/images/patterns/leatherhome2.jpg');
+    box-shadow: -2px 4px 4px 0px rgba(0, 0, 0, 0.5);
+    filter: invert(0);
+    transition: width 0.3s, height 0.3s;
 }
