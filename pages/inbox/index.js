@@ -12,6 +12,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const InboxPage = ({ personalReplies }) => {
+  console.log('replies', personalReplies)
   const filteredReplies = personalReplies.filter((entry) => entry.replies.length > 0);
 
   return (
