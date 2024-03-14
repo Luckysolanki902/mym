@@ -27,7 +27,7 @@ const InboxPage = ({ personalReplies }) => {
             <CardContent>
               <Link href={`/confessions/${entry.confessionId._id}`} passHref>
                 <Typography variant="h6">
-                  {truncateText(entry.confessionContent, 100)}
+                  {entry.confessionContent}
                 </Typography>
               </Link>
               <>
@@ -35,11 +35,11 @@ const InboxPage = ({ personalReplies }) => {
                 <Typography variant="body1" color="primary">
                   Replies:
                 </Typography>
-                {/* {entry.replies.map((reply, index) => (
+                {entry.replies.map((reply, index) => (
                   <Typography key={index} variant="body2" color="textSecondary">
                     - {reply.reply}
                   </Typography>
-                ))} */}
+                ))}
               </>
             </CardContent>
           </Card>

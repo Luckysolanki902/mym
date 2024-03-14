@@ -116,7 +116,6 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
           const response = await fetch(
               `/api/getdetails/getcomments?confessionId=${confession._id}`
           );
-
           if (response.ok) {
               const { comments } = await response.json();
               const commentAvatars = comments.map((comment) =>
@@ -133,7 +132,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       }
   };
   fetchComments()
-  }, confession, userDetails)
+  }, [confession, userDetails])
 
 
 
