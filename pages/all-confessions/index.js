@@ -3,24 +3,25 @@ import React, { useEffect, useRef, useState } from 'react';
 import Confession from '@/components/fullPageComps/Confession';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-const Index = ({ userDetails, initialConfessions }) => {
+const Index = ({ userDetails, initialConfessions, totalPages }) => {
   const [confessions, setConfessions] = useState(initialConfessions);
+  const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
 
-  const fetchMoreData = async () => {
+  const fetchMoreConfessions = async () => {
+    if (currentPage >= totalPages) {
+      setHasMore(false);
+      return;
+    }
+
     try {
-      const response = await fetch(`/api/confession/getconfessions?page=${page + 1}`);
+      const response = await fetch(`/api/confession?page=${currentPage + 1}`);
       if (response.ok) {
         const data = await response.json();
-        if (data.confessions.length === 0) {
-          setHasMore(false);
-          return;
-        }
-        setConfessions([...confessions, ...data.confessions]);
-        setPage(page + 1);
+        setConfessions((prevConfessions) => [...prevConfessions, ...data.confessions]);
+        setCurrentPage(currentPage + 1);
       } else {
-        console.error('Error fetching more confessions:', response.statusText);
+        console.error('Error fetching more confessions');
       }
     } catch (error) {
       console.error('Error fetching more confessions:', error);
@@ -31,11 +32,11 @@ const Index = ({ userDetails, initialConfessions }) => {
     <div style={{ width: '100%' }}>
       <InfiniteScroll
         dataLength={confessions.length}
-        next={fetchMoreData}
+        next={fetchMoreConfessions}
         hasMore={hasMore}
         loader={<h4>Loading...</h4>}
         endMessage={<p>No more confessions to load</p>}
-        scrollThreshold={0.9} // Adjust this threshold as needed
+        scrollableTarget="scrollableDiv"
       >
         {confessions.map((confession) => (
           <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
@@ -49,6 +50,7 @@ export async function getServerSideProps(context) {
   const session = await getSession(context);
   const pageurl = 'https://www.meetyourmate.in';
   let userDetails = null;
+
   if (session?.user?.email) {
     try {
       const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
@@ -63,11 +65,14 @@ export async function getServerSideProps(context) {
   }
 
   let initialConfessions = [];
+  let totalPages = 1;
+
   try {
-    const apiResponse = await fetch(`${pageurl}/api/confession/getconfessions?page=1`);
-    if (apiResponse.ok) {
-      const confessionsData = await apiResponse.json();
-      initialConfessions = confessionsData.confessions;
+    const initialResponse = await fetch(`/api/confession`);
+    if (initialResponse.ok) {
+      const data = await initialResponse.json();
+      initialConfessions = data.confessions;
+      totalPages = data.totalPages;
     } else {
       console.error('Error fetching initial confessions');
     }
@@ -79,6 +84,7 @@ export async function getServerSideProps(context) {
     props: {
       userDetails,
       initialConfessions,
+      totalPages,
     },
   };
 }
