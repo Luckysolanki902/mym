@@ -1,42 +1,41 @@
+import { getSession } from 'next-auth/react';
 import React, { useEffect, useRef, useState } from 'react';
 import Confession from '@/components/fullPageComps/Confession';
-import InfiniteScroll from 'react-infinite-scroll-component'; // Assuming you have installed react-infinite-scroll-component
-import { getSession } from 'next-auth/react';
+import InfiniteScroll from 'react-infinite-scroll-component';
+
 const Index = ({ userDetails, initialConfessions }) => {
   const [confessions, setConfessions] = useState(initialConfessions);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  useEffect(()=>{
-    console.log('confessions:', initialConfessions, confessions)
-  },[])
 
-  const fetchMoreConfessions = async () => {
-    console.log('fetching more...')
-    const response = await fetch(`/api/confession/getconfessionsofyourcollege?college=${userDetails.college}&page=${page + 1}`);
-    if (response.ok) {
-      const newConfessionsData = await response.json();
-      const newConfessions = newConfessionsData.confessions;
-      if (newConfessions.length === 0) {
-        setHasMore(false); // No more confessions available
+  const fetchMoreData = async () => {
+    try {
+      const response = await fetch(`/api/confession/getconfessions?page=${page + 1}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.confessions.length === 0) {
+          setHasMore(false);
+          return;
+        }
+        setConfessions([...confessions, ...data.confessions]);
+        setPage(page + 1);
       } else {
-        setConfessions(prevConfessions => [...prevConfessions, ...newConfessions]);
-        setPage(prevPage => prevPage + 1);
+        console.error('Error fetching more confessions:', response.statusText);
       }
-    } else {
-      console.error('Error fetching more confessions');
+    } catch (error) {
+      console.error('Error fetching more confessions:', error);
     }
   };
 
-  
   return (
     <div style={{ width: '100%' }}>
       <InfiniteScroll
         dataLength={confessions.length}
-        next={fetchMoreConfessions}
+        next={fetchMoreData}
         hasMore={hasMore}
         loader={<h4>Loading...</h4>}
         endMessage={<p>No more confessions to load</p>}
-        scrollableTarget="scrollableDiv"
+        scrollThreshold={0.9} // Adjust this threshold as needed
       >
         {confessions.map((confession) => (
           <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
@@ -47,7 +46,6 @@ const Index = ({ userDetails, initialConfessions }) => {
 };
 
 export async function getServerSideProps(context) {
-  // Fetch session and user details
   const session = await getSession(context);
   const pageurl = 'https://www.meetyourmate.in';
   let userDetails = null;
@@ -64,20 +62,17 @@ export async function getServerSideProps(context) {
     }
   }
 
-  // Fetch initial confessions based on user details
   let initialConfessions = [];
-  if (userDetails?.college) {
-    try {
-      const response = await fetch(`${pageurl}/api/confession/getconfessionsofyourcollege?college=${userDetails.college}&page=1`);
-      if (response.ok) {
-        const data = await response.json();
-        initialConfessions = data.confessions;
-      } else {
-        console.error('Error fetching initial confessions');
-      }
-    } catch (error) {
-      console.error('Error fetching initial confessions:', error);
+  try {
+    const apiResponse = await fetch(`${pageurl}/api/confession/getconfessions?page=1`);
+    if (apiResponse.ok) {
+      const confessionsData = await apiResponse.json();
+      initialConfessions = confessionsData.confessions;
+    } else {
+      console.error('Error fetching initial confessions');
     }
+  } catch (error) {
+    console.error('Error fetching initial confessions:', error);
   }
 
   return {
