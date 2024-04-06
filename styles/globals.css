@@ -2,6 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;1,100;1,300&family=Inknut+Antiqua:wght@300;400;500;600;700;800&family=Krona+One&family=Abhaya+Libre:wght@400;500;600;700;800&family=Aclonica&family=Belgrano&display=swap');
 /* after Courgette */
 @import url('https://fonts.googleapis.com/css2?family=Courgette&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Trade+Winds&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&family=Trade+Winds&display=swap');
 :root {
   --sidebarwidth: 6vw;
   --topbarheight: 4.5rem;

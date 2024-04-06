@@ -2,76 +2,77 @@ import React from 'react';
 import { getSession, useSession } from 'next-auth/react';
 import { Typography, Card, CardContent, Divider } from '@mui/material';
 import Link from 'next/link';
+import styles from '@/components/componentStyles/inboxStyles.module.css'
 
-const truncateText = (text, maxLength) => {
-  if (text.length <= maxLength) {
-    return text;
-  }
-  const truncatedText = text.substring(0, maxLength).trim();
-  return `${truncatedText.substr(0, Math.min(truncatedText.length, truncatedText.lastIndexOf(' ')))}...`;
-};
+import InboxCard from '@/components/confessionComps/InboxCard';
 
-const InboxPage = ({ personalReplies }) => {
-  console.log('the replies are:', personalReplies);
+
+const noEntry = {
+  "confessionContent": "Replies to your confessions will appear here",
+  "replies": [
+  ],
+}
+const InboxPage = ({ personalReplies, userDetails }) => {
   // Extract personalReplies array from the object
   const repliesArray = personalReplies.personalReplies;
 
   return (
-    <div>
-      <Typography variant="h4" gutterBottom>
-        Your Inbox
-      </Typography>
+    <div className={styles.cotainer}>
+      <h1 className={styles.h1}>
+        Inbox
+      </h1>
       {repliesArray?.length > 0 ? (
-        repliesArray.map((entry) => (
-          <Card key={entry._id} style={{ marginBottom: '16px' }}>
-            <CardContent>
-              <Link href={`/confessions/${entry.confessionId._id}`} passHref>
-                <Typography variant="h6">
-                  {entry.confessionContent}
-                </Typography>
-              </Link>
-              <>
-                <Divider style={{ margin: '8px 0' }} />
-                <Typography variant="body1" color="primary">
-                  Replies:
-                </Typography>
-                {entry.replies.map((reply, index) => (
-                  <Typography key={index} variant="body2" color="textSecondary">
-                    - {reply.reply}
-                  </Typography>
-                ))}
-              </>
-            </CardContent>
-          </Card>
-        ))
+        repliesArray.map((entry, index) => (
+          <div key={`${entry._id}${index}`}>
+            <InboxCard style={{ marginBottom: '16px' }}
+              entry={entry}
+              userDetails={userDetails}
+            />
+
+          </div>
+  ))
       ) : (
-        <Typography variant="body1">
-          Replies to your confessions will appear here.
-        </Typography>
-      )}
-    </div>
+        <InboxCard style={{ marginBottom: '16px' }}
+        entry={noEntry}
+        userDetails={userDetails}
+      />
+)}
+    </div >
   );
 };
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   const pageurl = 'https://www.meetyourmate.in';
-  let personalReplies = [];
+  let personalReplies = {};
+  let userDetails = null;
 
   if (session) {
     const email = session?.user?.email;
     if (email) {
+      // getting details
+        try {
+          const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
+          if (response.ok) {
+            userDetails = await response.json();
+          } else {
+            console.error('Error fetching user details');
+          }
+        } catch (error) {
+          console.error('Error fetching user details:', error);
+        }
+    // getting personal replies
       try {
-        const response = await fetch(`${pageurl}/api/getdetails/getinbox?email=${email}`);
+        const response = await fetch(`${pageurl}/api/inbox/getinbox?email=${email}`);
         if (response.ok) {
           const responseData = await response.json();
           personalReplies = responseData;
         } else {
           const errorData = await response.json();
-          console.log('Error fetching user details:', errorData);
+          console.log('Error fetching repplies:', errorData);
         }
       } catch (error) {
-        console.log('Error fetching user details:', error);
+        console.log('Error fetching replies:', error);
       }
     }
   }
@@ -79,6 +80,7 @@ export async function getServerSideProps(context) {
   return {
     props: {
       personalReplies,
+      userDetails,
     },
   };
 }

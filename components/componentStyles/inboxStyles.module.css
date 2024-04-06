@@ -1,0 +1,142 @@
+.cotainer{
+    padding: 2rem;
+}
+
+.h1{
+    font-family: 'ITC Kristen';
+    text-align: center;
+}
+
+.box {
+    background-color: white;
+    width: 60%;
+    margin: auto;
+    padding: 0.7rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 0 10px rgba(39, 39, 39, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.confession {
+    width: 100%;
+    padding: 2rem 1rem;
+    border-radius: 1.5rem;
+    transition: all 0.3s ease-out;
+    cursor: pointer;
+}
+.confession:hover{
+    filter: hue-rotate(20deg);
+}
+
+.confession a {
+    margin-left: 0rem;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    font-family: 'Dancing Script';
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0.105rem;
+}
+
+.br {
+    width: 97%;
+    border-radius: 1rem;
+    margin: 1rem auto;
+    height: 4px;
+    background-color: #9B9B9B;
+}
+
+.repliesBox {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+}
+
+.reply {
+    width: 100%;
+    display: flex;
+    box-shadow: 0px 0 5px rgba(39, 39, 39, 0.9);
+position: relative;
+    border-radius: 0.7rem;
+    /* border: 1px solid red; */
+    overflow: hidden;
+    font-family: "David Libre", serif;
+}
+
+
+.replyContent {
+    padding: 1rem 3rem;
+}
+
+.markup {
+    width: 0.7rem;
+    box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.2) inset;
+}
+
+#maleReply {
+    background-color: #2CBFDF;
+}
+
+#femaleReply {
+    background-color: #df2c7a;
+}
+
+#femaleConfession {
+    background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #AE67AF 79.73%);
+}
+
+#maleConfession {
+    background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #EF7FF1 79.73%);
+}
+
+.greenDot{
+    width: 7px;
+    height: 7px;
+    border-radius: 70%;
+    background-color: rgb(1, 209, 1);
+    margin: 2px;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+
+}
+
+@media (width<800px){
+    .h1{
+        text-align: left;
+        margin-left: 1rem;
+        margin-bottom: 2.5rem;
+    }
+    .box{
+        justify-content: flex-start;
+        width: 100%;
+    }
+    .reply{
+        border-radius: 0.5rem;
+    box-shadow: 0px 0 3px rgba(39, 39, 39, 0.7);
+
+    }
+    .confession a{
+        font-size: 1rem;
+        letter-spacing: 0.080rem;
+    }
+    .replyContent {
+        padding: 0.6rem 3rem;
+    }
+    .markup {
+        width: 0.5rem;
+        box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.2) inset;
+    }
+    .br{
+        height: 3px;
+    }
+}

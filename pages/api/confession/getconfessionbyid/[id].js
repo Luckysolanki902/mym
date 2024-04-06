@@ -5,13 +5,13 @@ import Comment from '@/models/Comment';
 
 const handler = async (req, res) => {
   const { id } = req.query;
+  console.log(id)
 
   try {
     const confession = await Confession.findById(id);
     if (!confession) {
       return res.status(404).json({ error: 'Confession not found' });
     }
-
     // Fetch comments for the confession and sort them by timestamp in descending order
     const comments = await Comment.find({ confessionId: id }).sort({ timestamps: -1 });
 

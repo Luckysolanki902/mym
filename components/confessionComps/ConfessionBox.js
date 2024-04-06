@@ -1,30 +1,47 @@
-// ConfessionBox.js
-import React,{useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Typewriter from 'typewriter-effect';
 import styles from '../componentStyles/confession.module.css';
 import { useInView } from 'react-intersection-observer'; // Import the useInView hook
 
 const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
+  const [content, setContent] = useState('');
+  const [index, setIndex] = useState(0);
+  const [canshowTypingEffect, setCanShowTypingEffect] = useState(true)
+  const [showCaret, setShowCaret] = useState(true);
   const [ref, inView] = useInView({
     triggerOnce: true,
   });
-  const [delay, setDelay] = useState(40);
+
+  const handleComplete = () =>{
+    setCanShowTypingEffect(false)
+    setShowCaret(false); 
+  }
+  
+
+  useEffect(() => {
+    if (inView && canshowTypingEffect) {
+      const timer = setTimeout(() => {
+        if (index < confession.confessionContent.length) {
+          setContent(prevContent => prevContent + confession.confessionContent.charAt(index));
+          setIndex(prevIndex => prevIndex + 1);
+        } else {
+          setShowCaret(prevShowCaret => !prevShowCaret); // Toggle caret visibility
+          handleComplete();
+        }
+      }, 40); // Adjust the speed here
+
+      return () => clearTimeout(timer);
+    }
+  }, [index, inView, confession.confessionContent.length]);
 
   return (
-    <div ref={ref} className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`} onClick={() => setDelay(0)}>
+    <div ref={ref} className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`} onClick={handleComplete}>
       <div className={styles.textarea} style={{ whiteSpace: 'pre-line' }}>
         {inView ? (
-          <Typewriter
-            options={{
-              strings: [confession.confessionContent],
-              autoStart: true,
-              loop: false,
-              delay: delay,
-              deleteSpeed: 20,
-              pauseFor: 150000,
-            }}
-          />
+          <>
+            <span>{content}</span>
+            {showCaret && <span style={{ animation: '1s step-end infinite blink-caret', fontStyle:'italic' }}> |</span>}
+          </>
         ) : (
           <span>{confession.confessionContent}</span>
         )}

@@ -94,11 +94,20 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  padding: 5rem;
 }
 
 .comingsoonCards img{
-  width: 40%; 
+  width: 80%; 
   height: auto;
+}
+
+.unlock{
+  font-family: "Trade Winds", system-ui;
+  font-size: 3rem;
+  text-align: center;
+  margin: 3rem 2rem;
+  color: #373737;
 }
 
 @media (width<1200px) {
@@ -155,6 +164,27 @@
     font-style: normal;
     font-size: 0.9rem;
   }
+
+  
+.unlock{
+  font-family: "Trade Winds", system-ui;
+  font-size: 2rem;
+  text-align: center;
+  margin: 3rem 3rem;
+  color: #373737;
+}
+
+.comingsoonCards{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.comingsoonCards img{
+  width: 90%; 
+  height: auto;
+}
 
 }
 
@@ -214,6 +244,28 @@
   #taglinePid {
     max-width: 320px;
   }
+  
+.unlock{
+  font-family: "Trade Winds", system-ui;
+  font-size: 2rem;
+  text-align: center;
+  margin: 3rem 2rem;
+  color: #373737;
+}
+
+
+.comingsoonCards{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.comingsoonCards img{
+  width: 100%; 
+  height: auto;
+}
+
 
 }
 
@@ -281,6 +333,14 @@
     height: auto;
     margin-bottom: 1rem;
   }
+  
+.unlock{
+  font-family: "Trade Winds", system-ui;
+  font-size: 1.4rem;
+  text-align: center;
+  margin: 3rem 2rem;
+  color: #373737;
+}
 
 
 }
@@ -349,4 +409,12 @@
     height: auto;
     margin-bottom: 0.2rem;
   }
+  
+.unlock{
+  font-family: "Trade Winds", system-ui;
+  font-size: 1rem;
+  text-align: center;
+  margin: 3rem 1rem;
+  color: #373737;
+}
 }

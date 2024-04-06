@@ -1,56 +1,67 @@
-import { getSession } from 'next-auth/react';
 import React, { useEffect, useRef, useState } from 'react';
 import Confession from '@/components/fullPageComps/Confession';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import { getSession } from 'next-auth/react';
+import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress from Material-UI
 
-const Index = ({ userDetails, initialConfessions, totalPages }) => {
+const Index = ({ userDetails, initialConfessions }) => {
   const [confessions, setConfessions] = useState(initialConfessions);
-  const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false); // Add loading state
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    console.log('confessions:', initialConfessions, confessions);
+  }, []);
 
   const fetchMoreConfessions = async () => {
-    if (currentPage >= totalPages) {
-      setHasMore(false);
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/confession?page=${currentPage + 1}`);
-      if (response.ok) {
-        const data = await response.json();
-        setConfessions((prevConfessions) => [...prevConfessions, ...data.confessions]);
-        setCurrentPage(currentPage + 1);
+    console.log('fetching more...');
+    setLoading(true); // Set loading to true while fetching
+    const response = await fetch(`/api/confession/getconfessionsofyourcollege?college=${userDetails.college}&page=${page + 1}`);
+    if (response.ok) {
+      const newConfessionsData = await response.json();
+      const newConfessions = newConfessionsData.confessions;
+      if (newConfessions.length === 0) {
+        setHasMore(false); // No more confessions available
       } else {
-        console.error('Error fetching more confessions');
+        setConfessions(prevConfessions => [...prevConfessions, ...newConfessions]);
+        setPage(prevPage => prevPage + 1);
       }
-    } catch (error) {
-      console.error('Error fetching more confessions:', error);
+    } else {
+      console.error('Error fetching more confessions');
     }
+    setLoading(false); // Set loading to false after fetching
   };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore && !loading) { // Add loading condition
+        fetchMoreConfessions();
+      }
+    }, { threshold: 0.5 }); // Adjust the threshold as needed
+
+    observer.observe(sentinelRef.current);
+
+    return () => observer.disconnect();
+  }, [hasMore, loading]); // Make sure to run the effect when `hasMore` or `loading` changes
 
   return (
     <div style={{ width: '100%' }}>
-      <InfiniteScroll
-        dataLength={confessions.length}
-        next={fetchMoreConfessions}
-        hasMore={hasMore}
-        loader={<h4>Loading...</h4>}
-        endMessage={<p>No more confessions to load</p>}
-        scrollableTarget="scrollableDiv"
-      >
-        {confessions.map((confession) => (
-          <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
-        ))}
-      </InfiniteScroll>
+      {confessions.map((confession, index) => (
+        <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
+      ))}
+      {loading && <CircularProgress />} {/* Render CircularProgress while loading */}
+      <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
+      {!hasMore && <p>No more confessions to load</p>}
     </div>
   );
 };
 
 export async function getServerSideProps(context) {
+  // Fetch session and user details
   const session = await getSession(context);
   const pageurl = 'https://www.meetyourmate.in';
   let userDetails = null;
-
   if (session?.user?.email) {
     try {
       const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
@@ -64,27 +75,26 @@ export async function getServerSideProps(context) {
     }
   }
 
+  // Fetch initial confessions based on user details
   let initialConfessions = [];
-  let totalPages = 1;
-
-  try {
-    const initialResponse = await fetch(`/api/confession`);
-    if (initialResponse.ok) {
-      const data = await initialResponse.json();
-      initialConfessions = data.confessions;
-      totalPages = data.totalPages;
-    } else {
-      console.error('Error fetching initial confessions');
+  if (userDetails?.college) {
+    try {
+      const response = await fetch(`${pageurl}/api/confession/getconfessionsofyourcollege?college=${userDetails.college}&page=1`);
+      if (response.ok) {
+        const data = await response.json();
+        initialConfessions = data.confessions;
+      } else {
+        console.error('Error fetching initial confessions');
+      }
+    } catch (error) {
+      console.error('Error fetching initial confessions:', error);
     }
-  } catch (error) {
-    console.error('Error fetching initial confessions:', error);
   }
 
   return {
     props: {
       userDetails,
       initialConfessions,
-      totalPages,
     },
   };
 }

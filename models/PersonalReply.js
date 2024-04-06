@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import Confession from './Confession'; // Import Confession model
 
 const PersonalReplySchema = new mongoose.Schema({
   confessionId: {
@@ -18,7 +17,11 @@ const PersonalReplySchema = new mongoose.Schema({
     {
       reply: String,
       replierGender: String,
-    }
+      seen: {
+        type: Boolean,
+        default: false,
+      },
+    },
   ],
   timestamps: {
     type: Date,

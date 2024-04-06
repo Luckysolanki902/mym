@@ -38,7 +38,7 @@ export default function Home({ session }) {
           "Ready to join the conversation? Take your student experience to the next level!”
         </p>
         <div className={styles.showcase}>
-          <Image src={'/images/showcase/showcaseCouple.jpg'} width={776} height={544} alt='showcase' className={styles.showcaseImg}/>
+          <Image src={'/images/showcase/mymLaptop.png'} width={1280} height={787} alt='showcase' className={styles.showcaseImg}/>
           <div className={styles.showcaseCont}>
             <div className={styles.tagline}>
               Connect -&gt; Confess -&gt; Trend
@@ -55,16 +55,17 @@ export default function Home({ session }) {
               The exclusive social platform designed for college students to connect, share, and confess anonymously.
             </div>
           </div>
-          <Image src={'/images/showcase/showcaseCouple.jpg'} width={776} height={544} alt='showcase' className={styles.showcaseImg} />
+          <Image src={'/images/showcase/mymFriends.png'} width={1280} height={787} alt='showcase' className={styles.showcaseImg} />
         </div>
-        {/* <h3 className={styles.carousol}>Unlock the doors of possibility and embrace the friendships that await</h3> */}
+        <h3 className={styles.unlock}>Unlock the doors of possibility and embrace <br /> the friendships that await</h3>
+        <div style={{padding:"2rem", width:"100%", height:"auto"}}>
+          <div style={{aspectRatio:'1280/720', width:'100%', backgroundColor:"gray"}}></div>
+        </div>
         <div className={styles.comingsoonCards}>
-        <Image src={'/images/large_pngs/comingsoonCards.png'} width={918} height={688} alt='cards' ></Image>
-
+        <Image src={'/images/showcase/cards.png'} width={1348} height={688} alt='cards'  ></Image>
         </div>
         <div style={{ width: '100%', height: '10em' }}></div>
       </animated.div>
-
     </>
   );
 }
