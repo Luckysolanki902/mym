@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import FilterOptions from '@/components/chatComps/FilterOptions';
 import styles from '../componentStyles/textchat.module.css';
 import { initiateSocket } from '@/utils/ramdomchat/initiateSocket';
-import { handleSend, handleTyping, handleStoppedTyping, handleFindNew } from '@/utils/ramdomchat/socketFunctions';
+import { handleSend, handleTyping, handleStoppedTyping, handleFindNew, stopFindingPair } from '@/utils/ramdomchat/socketFunctions';
 import CustomSnackbar from '../commonComps/Snackbar';
 import InputBox from '../chatComps/InputBox';
 import MessageDisplay from '../chatComps/MessagesDisplay';
 import EventsContainer from '../chatComps/EventsContainer';
+
 const TextChat = ({ userDetails }) => {
   const [socket, setSocket] = useState(null);
   const [textValue, setTextValue] = useState('');
@@ -28,6 +29,7 @@ const TextChat = ({ userDetails }) => {
   const typingTimeoutRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const inputRef = useRef(null);
+  const findingTimeoutRef = useRef(null);
   const [filters, setFilters] = useState({
     college: userDetails?.college,
     strangerGender: userDetails?.gender === 'male' ? 'female' : 'male',
@@ -49,7 +51,7 @@ const TextChat = ({ userDetails }) => {
 
   // Provide socket and handle socketEvents___________________________
   useEffect(() => {
-    initiateSocket(socket, { userDetails, preferredCollege, preferredGender }, hasPaired, {room, setSocket, setUsersOnline, setStrangerIsTyping, setStrangerDisconnectedMessageDiv, setIsFindingPair, setRoom, setReceiver, setStrangerGender, setSnackbarColor, setSnackbarMessage, setSnackbarOpen, setHasPaired, setMessages }, { messagesContainerRef })
+    initiateSocket(socket, { userDetails, preferredCollege, preferredGender }, hasPaired, {room, setSocket, setUsersOnline, setStrangerIsTyping, setStrangerDisconnectedMessageDiv, setIsFindingPair, setRoom, setReceiver, setStrangerGender, setSnackbarColor, setSnackbarMessage, setSnackbarOpen, setHasPaired, setMessages }, { messagesContainerRef, findingTimeoutRef })
 
     return () => {
       if (socket) {
@@ -59,27 +61,35 @@ const TextChat = ({ userDetails }) => {
   }, []);
 
   const handleSendButton = () => {
-    handleSend(socket, textValue, { setTextValue, setMessages, setStrangerIsTyping }, messagesContainerRef, userDetails)
+    handleSend(socket, textValue, { setTextValue, setMessages, setStrangerIsTyping }, messagesContainerRef, userDetails, hasPaired)
   }
 
   const handleFindNewButton = () => {
     if (socket) {
-      handleFindNew(socket, { userDetails, preferredCollege, preferredGender }, { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages, })
+      if( !isFindingPair){
+        handleFindNew(socket, { userDetails, preferredCollege, preferredGender }, { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages, }, hasPaired, findingTimeoutRef)
+      }
+      else{
+        stopFindingPair(socket, { setIsFindingPair })
+      }
     } else {
-      initiateSocket(socket, { userDetails, preferredCollege, preferredGender }, hasPaired, { setSocket, setUsersOnline, setStrangerIsTyping, setStrangerDisconnectedMessageDiv, setIsFindingPair, setRoom, setReceiver, setStrangerGender, setSnackbarColor, setSnackbarMessage, setSnackbarOpen, setHasPaired, setMessages }, { messagesContainerRef })
+      initiateSocket(socket, { userDetails, preferredCollege, preferredGender }, hasPaired, { setSocket, setUsersOnline, setStrangerIsTyping, setStrangerDisconnectedMessageDiv, setIsFindingPair, setRoom, setReceiver, setStrangerGender, setSnackbarColor, setSnackbarMessage, setSnackbarOpen, setHasPaired, setMessages }, { messagesContainerRef, findingTimeoutRef })
     }
   }
 
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter') { 
       e.preventDefault();
       handleSendButton();
     } else {
-      handleTyping(e, socket, typingTimeoutRef, userDetails); 
+      handleTyping(e, socket, typingTimeoutRef, userDetails, hasPaired); 
     }
   }
 
+  useEffect(()=>{
+  console.log(hasPaired)
+  })
   return (
     <div className={styles.mainC}>
       <div className={styles.filterPos}>
@@ -119,7 +129,7 @@ const TextChat = ({ userDetails }) => {
         typingTimeoutRef={typingTimeoutRef}
         inputRef={inputRef}
         userDetails = {userDetails}
-        
+        hasPaired={hasPaired}
       />
       <CustomSnackbar
         open={snackbarOpen}

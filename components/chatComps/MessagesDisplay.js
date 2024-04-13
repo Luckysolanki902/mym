@@ -59,7 +59,7 @@ const MessageDisplay = React.memo(({ messages, userDetails, receiver, strangerGe
             </div>
 
             {reversedMessages.map((msg, index) => (
-                <animated.div key={index} style={index === 0 ? messageAnimation : {}}>
+                <animated.div key={index} style={index === 0 && !strangerIsTyping ? messageAnimation : {}}>
                     <Message key={index} msg={msg} userDetails={userDetails} receiver={receiver} strangerGender={strangerGender} hasPaired={hasPaired} />
                 </animated.div>
             ))}

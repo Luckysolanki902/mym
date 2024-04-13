@@ -11,17 +11,26 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import styles from './styles/topbar.module.css';
+import Badge from '@mui/material/Badge';
+import MailIcon from '@mui/icons-material/Mail';
+import { styled } from '@mui/material/styles';
+import { getSession } from 'next-auth/react';
 
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    right: -3,
+    top: 13,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: '0 4px',
+  },
+}));
 
 export default function SwipeableTemporaryDrawer(props) {
     const router = useRouter();
-
-    const isActive = (href) => {
-        return router.asPath === href;
-    };
-
     const [state, setState] = React.useState({
         right: false,
+        userDetails: null,
+        unseenCount: 0,
     });
 
     const toggleDrawer = (anchor, open) => (event) => {
@@ -29,6 +38,54 @@ export default function SwipeableTemporaryDrawer(props) {
             return;
         }
         setState({ ...state, [anchor]: open });
+    };
+
+    const fetchUserDetails = async () => {
+        try {
+            const session = await getSession();
+            if (session?.user?.email) {
+                const response = await fetch(`/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setState((prevState) => ({ ...prevState, userDetails: data }));
+                } else {
+                    console.error('Failed to fetch user details');
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+        }
+    };
+
+    const fetchUnseenCount = async () => {
+        const { userDetails } = state;
+        if (userDetails && userDetails.email) {
+            try {
+                const response = await fetch(`/api/inbox/unseen-count?email=${userDetails.email}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setState((prevState) => ({ ...prevState, unseenCount: data.count }));
+                } else {
+                    console.error('Failed to fetch unseen count');
+                }
+            } catch (error) {
+                console.error('Error fetching unseen count:', error);
+            }
+        }
+    };
+
+    React.useEffect(() => {
+        fetchUserDetails();
+    }, []);
+
+    React.useEffect(() => {
+        fetchUnseenCount();
+        const intervalId = setInterval(fetchUnseenCount, 30000);
+        return () => clearInterval(intervalId);
+    }, [state.userDetails]);
+
+    const isActive = (href) => {
+        return router.asPath === href;
     };
 
     const list = (anchor) => (
@@ -47,6 +104,7 @@ export default function SwipeableTemporaryDrawer(props) {
                     { text: 'Random Chat', href: '/textchat' },
                     { text: 'Confessions', href: '/all-confessions' },
                     { text: 'Write Confession', href: '/create-confession' },
+                    { text: 'Inbox', href: '/inbox' },
                 ].map((item, index) => (
                     <ListItem
                         key={item.text}
@@ -77,15 +135,19 @@ export default function SwipeableTemporaryDrawer(props) {
                                                 height={720 / 10}
                                                 alt='icon'
                                                 className={`${styles.iconspng3} ${styles.sideIcon}`}
-                                            />) : (
-                                        <Image
-                                            src={'/images/sidebaricons/createconfession.png'}
-                                            width={225 / 2}
-                                            height={272 / 2}
-                                            alt='icon'
-                                            className={`${styles.iconspng4} ${styles.sideIcon}`}
-                                        />
-                                    )}
+                                            />) : index === 3 ? (
+                                                <Image
+                                                    src={'/images/sidebaricons/createconfession.png'}
+                                                    width={225 / 2}
+                                                    height={272 / 2}
+                                                    alt='icon'
+                                                    className={`${styles.iconspng4} ${styles.sideIcon}`}
+                                                />
+                                            ) : (
+                                                <StyledBadge badgeContent={state.unseenCount} color="primary">
+                                                    <MailIcon fontSize='medium' style={{ color: 'white' }} />
+                                                </StyledBadge>
+                                            )}
                                 </ListItemIcon>
                                 <ListItemText
                                     primary={

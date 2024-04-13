@@ -1,12 +1,12 @@
 import { io } from 'socket.io-client';
 import { handleIdentify, handlePairDisconnected, handlePairingSuccess, handleReceivedMessage } from "@/utils/ramdomchat/socketFunctions";
-const serverUrl = 'https://hostedmymserver.onrender.com'
-// const serverUrl = 'http://localhost:1000'
+// const serverUrl = 'https://hostedmymserver.onrender.com'
+const serverUrl = 'http://localhost:1000'
 
 export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, stateFunctions, refs) => {
 
     const {room, setSocket, setUsersOnline, setStrangerIsTyping,strangerSocketId } = stateFunctions;
-    const { messagesContainerRef } = refs
+    const { messagesContainerRef, findingTimeoutRef } = refs
 
     let newSocket
     try {
@@ -24,7 +24,7 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
         console.log('Connected to server');
 
         // sending your preferences to server
-        handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions)
+        handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef)
 
         // getting number of users online
         newSocket.on('roundedUsersCount', (count) => {
@@ -33,7 +33,7 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
 
         // Handling the successful pairing event
         newSocket.on('pairingSuccess', (data) => {
-            handlePairingSuccess(data, hasPaired, stateFunctions)
+            handlePairingSuccess(data, hasPaired, stateFunctions, findingTimeoutRef)
         });
 
         // Handling receive message event
@@ -43,13 +43,11 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
 
         // sending 'user is typing' evnent to server
         newSocket.on('userTyping', () => {
-            console.log('eern')
             setStrangerIsTyping(true)
         });
 
         // sending 'user stopped typing' event to server
         newSocket.on('userStoppedTyping', () => {
-            console.log('eern')
             setStrangerIsTyping(false)
         });
 

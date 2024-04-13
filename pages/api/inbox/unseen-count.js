@@ -13,7 +13,6 @@ const handler = async (req, res) => {
     personalReplies.forEach(reply => {
       unseenCount += reply.replies.filter(r => !r.seen).length;
     });
-    console.log({ unseenCount });
     res.status(200).json({ count: unseenCount });
   } catch (error) {
     console.error('Error fetching unseen count:', error);

@@ -1,10 +1,10 @@
 // InputBox.js
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import Image from 'next/image';
 import { IoIosSend } from 'react-icons/io';
 import styles from '../componentStyles/textchat.module.css';
-
+import { useMediaQuery } from '@mui/material';
 const InputBox = ({
   isFindingPair,
   handleFindNewButton,
@@ -18,15 +18,17 @@ const InputBox = ({
   socket,
   typingTimeoutRef,
   inputRef,
-  userDetails
+  userDetails,
+   hasPaired
 }) => {
+  const isSmallScreen = useMediaQuery('(max-width:800px)');
   return (
     <div className={styles.inputContainerMainDiv} ref={inputRef}>
 
       <div className={`${styles.inputContainer} ${inpFocus ? styles.inpFocus : ''}`}>
-        <button className={styles.newButton} disabled={isFindingPair} onClick={handleFindNewButton} title="Find New">
-          {isFindingPair ? (
-            <CircularProgress size={24} style={{ color: 'white' }} />
+        <button className={styles.newButton} onClick={handleFindNewButton} title={!isFindingPair?'Find New':'Stop'}>
+          {isFindingPair && !hasPaired ? (
+            <CircularProgress size={24} style={{ color: isSmallScreen ? 'black' : 'white' }} />
           ) : (
             <Image
               src={'/images/sidebaricons/randomchat.png'}
@@ -60,7 +62,7 @@ const InputBox = ({
               }}
               onBlur={() => {
                 // Clear typing timeout when the input loses focus
-                handleStoppedTyping(socket, typingTimeoutRef, userDetails);
+                handleStoppedTyping(socket, typingTimeoutRef, userDetails, hasPaired);
               }}
             ></input>
           </form>

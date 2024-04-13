@@ -1,6 +1,6 @@
 import { scrollToBottom } from "../generalUtilities";
 
-export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions) => {
+export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef) => {
     const { setIsFindingPair } = stateFunctions;
     const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
     setIsFindingPair(true);
@@ -21,7 +21,8 @@ export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions
             console.log('Finding first pair');
 
             const timeout = 10000;
-            setTimeout(() => {
+            clearTimeout(findingTimeoutRef.current)
+            findingTimeoutRef.current  = setTimeout(() => {
                 // emit stop pairing here
                 socket.emit('stopFindingPair');
                 setIsFindingPair(false);
@@ -33,7 +34,7 @@ export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions
 };
 
 
-export const handlePairingSuccess = (data, hasPaired, stateFunctions) => {
+export const handlePairingSuccess = (data, hasPaired, stateFunctions, findingTimeoutRef) => {
 
     const {
         setStrangerDisconnectedMessageDiv,
@@ -63,10 +64,14 @@ export const handlePairingSuccess = (data, hasPaired, stateFunctions) => {
         setSnackbarMessage(snackbarMessage);
 
         setSnackbarOpen(true); // Show the Snackbar
+        setHasPaired(true);
     }
 
-    setHasPaired(true);
+
+    // Clear the timeout
+    clearTimeout(findingTimeoutRef.current);
 };
+
 
 export const handleReceivedMessage = (data, stateFunctions, messagesContainerRef) => {
 
@@ -91,13 +96,13 @@ export const handlePairDisconnected = (stateFunctions, messagesContainerRef) => 
     scrollToBottom(messagesContainerRef);
 };
 
-export const handleSend = (socket, textValue, stateFunctions, messagesContainerRef, userDetails) => {
+export const handleSend = (socket, textValue, stateFunctions, messagesContainerRef, userDetails, hasPaired) => {
 
     const { setTextValue, setMessages, setStrangerIsTyping } = stateFunctions;
 
     const message = textValue.trim();
 
-    if (message !== '' && socket) {
+    if (message !== '' && socket && hasPaired) {
         socket.emit('message', { type: 'message', content: message, userEmail: userDetails?.email, pageType: 'textchat' });
         setTextValue('');
         setMessages(prevMessages => [
@@ -109,8 +114,8 @@ export const handleSend = (socket, textValue, stateFunctions, messagesContainerR
     scrollToBottom(messagesContainerRef);
 };
 
-export const handleTyping = (e, socket, typingTimeoutRef, userDetails) => {
-    if (e.key !== 'Enter' && socket) {
+export const handleTyping = (e, socket, typingTimeoutRef, userDetails, hasPaired) => {
+    if (e.key !== 'Enter' && socket && hasPaired) {
         socket.emit('userTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
 
         // Clear any existing timeout
@@ -123,14 +128,14 @@ export const handleTyping = (e, socket, typingTimeoutRef, userDetails) => {
     }
 };
 
-export const handleStoppedTyping = (socket, typingTimeoutRef, userDetails) => {
+export const handleStoppedTyping = (socket, typingTimeoutRef, userDetails, hasPaired) => {
     clearTimeout(typingTimeoutRef.current);
-    if (socket) {
+    if (socket && hasPaired) {
         socket.emit('userStoppedTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
     }
 };
 
-export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions) => {
+export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions, hasPaired, findingTimeoutRef) => {
     const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
     const { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages } = stateFunctions;
 
@@ -150,9 +155,19 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions)
     console.log('Finding new pair');
 
     const timeout = 10000;
-    setTimeout(() => {
+    clearTimeout(findingTimeoutRef.current); // Clear previous timeout
+    findingTimeoutRef.current = setTimeout(() => {
         // emit stop pairing here
-        socket.emit('stopFindingPair');
-        setIsFindingPair(false);
+        if (!hasPaired) {
+            socket.emit('stopFindingPair');
+            setIsFindingPair(false);
+        }
     }, timeout);
 };
+
+
+export const stopFindingPair = (socket, stateFunctions) => {
+    const {  setIsFindingPair} = stateFunctions;
+    socket.emit('stopFindingPair');
+    setIsFindingPair(false);
+}
