@@ -5,6 +5,7 @@ import React, { useEffect, useRef } from 'react';
 
 
 const TextChatPage = ({ userDetails }) => {
+  console.log(userDetails)
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -22,6 +23,15 @@ const TextChatPage = ({ userDetails }) => {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   const pageurl = 'https://www.meetyourmate.in'
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth/signup',
+        permanent: false,
+      },
+    };
+  }
 
   let userDetails = null;
   if (session?.user?.email) {

@@ -3,20 +3,23 @@
     /* flex-direction: column; */
     align-items: center;
     justify-content: space-evenly;
-    min-height: 100vh;
+    min-height: 100%;
     padding: 1.5rem;
 }
-.macpng{
+
+.macpng {
     width: 100%;
     display: flex;
     justify-content: center;
     max-width: 50%;
 }
-.macpng img{
-width: 100%;
-height: 100%;
-height: auto;
+
+.macpng img {
+    width: 100%;
+    height: 100%;
+    height: auto;
 }
+
 .mainBox {
     padding: 2rem;
     border-radius: 0.8rem;
@@ -61,12 +64,14 @@ height: auto;
 .placeholder {
     color: rgba(0, 0, 0, 0.537);
 }
-.button{
+
+.button {
     width: 80%;
     margin-top: 1rem;
     text-transform: none;
 }
-.button2{
+
+.button2 {
     margin-top: 1.5rem;
 }
 
@@ -82,7 +87,7 @@ height: auto;
     margin: 1rem auto;
 }
 
-.line{
+.line {
     width: 100%;
     height: 2px;
     background-color: #D9D9D9;
@@ -110,8 +115,8 @@ height: auto;
     }
 }
 
-@media (width<900px){
-    .macpng{
+@media (width<900px) {
+    .macpng {
         display: none;
     }
 }

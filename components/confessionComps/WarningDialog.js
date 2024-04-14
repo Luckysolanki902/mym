@@ -3,26 +3,26 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, List, ListIt
 
 const WarningDialog = ({ open, onClose, content }) => {
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle style={{ backgroundColor: '#2d2d2d', color: '#fff' }}>Content Moderation Warning</DialogTitle>
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth style={{backgroundColor:'rgba(0,0,0,0.5)'}}>
+            <DialogTitle style={{ backgroundColor: '#2d2d2d', color: '#fff', fontFamily:'David Libre' }}>Content Moderation Warning</DialogTitle>
             <DialogContent style={{ padding: '20px' }}>
                 <Typography variant="body1" gutterBottom>
-                    <span style={{fontWeight:'800'}}>Problem: </span>  {content.warning}
+                    <span style={{fontWeight:'900', fontFamily:'David Libre', fontSize:'1.1rem'}}>{content.warning} </span >  
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                    <span style={{fontWeight:'800'}}>  Advice: </span>  {content.advice}
+                    <span style={{fontFamily:'David Libre'}}>{content.advice} </span>  
                 </Typography>
-                <h3 style={{ marginBottom: '0' }}>Problematic Sentences:</h3>
+                <h3 style={{ marginBottom: '0', fontFamily:'David Libre' }}>Problematic Sentences:</h3>
                 <List>
                     {content?.problematicSentences?.map((sentence, index) => (
                         <div>
-                            <p style={{ marginLeft: '1rem', color: '#b00000' }}>{sentence}</p>
+                            <p style={{ marginLeft: '1rem', color: '#b00000',fontFamily:'David Libre' }}>{sentence}</p>
                         </div>
                     ))}
                 </List>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} variant="contained" color="primary">
+                <Button onClick={onClose} variant="contained" color="primary" style={{fontFamily:'David Libre'}}>
                     Okay
                 </Button>
             </DialogActions>

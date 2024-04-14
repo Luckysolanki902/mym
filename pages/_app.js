@@ -109,7 +109,6 @@ export default function App({ Component, pageProps }) {
         <title>MYM</title>
         <meta name="description" content={`Meet Your Mate`} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
       </Head>
       {/* <LoadingBar
         height={2}
@@ -138,7 +137,8 @@ export default function App({ Component, pageProps }) {
         <SessionProvider>
           <ThemeProvider theme={mymtheme}>
             <CssBaseline />
-            {!isAuthRoute && <Topbar />}
+            {/* {!isAuthRoute && <Topbar />} */}
+            <Topbar />
             <Sidebar />
             <div style={{ display: 'flex', flex: 1, overflowY: 'scroll' }} className='remcheight'>
               <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>

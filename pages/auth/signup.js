@@ -33,7 +33,7 @@ const Signup = () => {
   const [allowedEmails, setAllowedEmails] = useState([]);
 
   // admin
-  const [allowOnlyCollegeEmails, setAllowOnlyCollegeEmails] = useState(false);
+  const allowOnlyCollegeEmails = false;
   useEffect(() => {
     const fetchColleges = async () => {
       try {
@@ -71,7 +71,7 @@ const Signup = () => {
           email.endsWith(allowedEmail)
         );
         if (!isEmailAllowed) {
-          throw new Error('Your email is not allowed to register');
+          throw new Error('Your college is not on mym yet.');
         }
       }
 
@@ -98,22 +98,7 @@ const Signup = () => {
           throw new Error('Failed to save user data.');
         }
 
-        console.log('Successful signup and user data saved');
-
-        // Now that the user is saved, send OTP
-        const responseSendingOTP = await fetch('/api/security/sendotp', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email }),
-        });
-
-        if (!responseSendingOTP.ok) {
-          throw new Error('Failed to send OTP.');
-        }
-
-        console.log('OTP sent successfully');
+        console.log('Successful signup');
 
         // Redirect to verifyotp page with the entered email
         router.push(`/verify/verifyotp`);

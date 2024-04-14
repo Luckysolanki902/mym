@@ -3,8 +3,9 @@ import Head from 'next/head';
 import { getSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import styles from '@/styles/Home.module.css';
+import { useRouter } from 'next/router';
 
-export default function Home({ session }) {
+export default function Home({ session, userDetails }) {
   const containerSpring = useSpring({
     from: { opacity: 0, transform: 'translate3d(0, -50px, 0)' },
     to: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
@@ -22,6 +23,7 @@ export default function Home({ session }) {
         {session ? (
           <>
             {/* Content to be shown only for session users */}
+            <button onClick={signOut}>log out</button>
           </>
         ) : (
           <>
@@ -71,11 +73,37 @@ export default function Home({ session }) {
 }
 
 export async function getServerSideProps(context) {
+  // Fetch session and user details
   const session = await getSession(context);
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth/signup',
+        permanent: false,
+      },
+    };
+  }
+
+  const pageurl = 'https://www.meetyourmate.in'
+
+  let userDetails = null;
+  if (session?.user?.email) {
+    try {
+      const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
+      if (response.ok) {
+        userDetails = await response.json();
+      } else {
+        console.error('Error fetching user details');
+      }
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  }
 
   return {
     props: {
       session,
+      userDetails,
     },
   };
 }

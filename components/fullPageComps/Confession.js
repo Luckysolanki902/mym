@@ -5,7 +5,7 @@ import { IoIosSend } from 'react-icons/io';
 import { useMediaQuery } from '@mui/material';
 import { useInView } from 'react-intersection-observer';
 import AuthPrompt from '@/components/commonComps/AuthPrompt';
-import { getRandomCommentAvatar } from '@/utils/avtarUtils';
+// import { getRandomCommentAvatar } from '@/utils/avtarUtils';
 import CommentsDialog from '../confessionComps/CommentsDialog';
 import ConfessionBox from '../confessionComps/ConfessionBox';
 import ConfessionFooter from '../confessionComps/ConfessionFooter';
@@ -79,6 +79,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         userEmail: email,
         confessionId: confession._id,
         commentContent: commentValue,
+        gender: userDetails.gender,
       };
 
       setComments((prevComments) => [...prevComments, optimisticComment]);
@@ -118,12 +119,12 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
           );
           if (response.ok) {
               const { comments } = await response.json();
-              const commentAvatars = comments.map((comment) =>
-                  getRandomCommentAvatar(comment._id, comment.gender)
-              );
+              // const commentAvatars = comments.map((comment) =>
+              //     getRandomCommentAvatar(comment._id, comment.gender)
+              // );
+              // setCommentAvatars(commentAvatars);
               setComments(comments);
               setCommentsCount(comments.length);
-              setCommentAvatars(commentAvatars);
           } else {
               console.error('Error fetching comments:', response.statusText);
           }
@@ -171,7 +172,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         isOpen={isCommentDialogOpen}
         onClose={() => setCommentDialogOpen(false)}
         comments={comments}
-        commentAvatars={commentAvatars}
+        // commentAvatars={commentAvatars}
         commentValue={commentValue}
         handleCommentSubmit={handleCommentSubmit}
         setCommentValue={setCommentValue}

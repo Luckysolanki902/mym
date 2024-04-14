@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import Confession from '@/components/fullPageComps/Confession';
 import { getSession } from 'next-auth/react';
 import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress from Material-UI
+import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 const Index = ({ userDetails, initialConfessions }) => {
   const [confessions, setConfessions] = useState(initialConfessions);
@@ -10,9 +12,14 @@ const Index = ({ userDetails, initialConfessions }) => {
   const [loading, setLoading] = useState(false); // Add loading state
   const sentinelRef = useRef(null);
 
+  const router = useRouter();
   useEffect(() => {
-    console.log('confessions:', initialConfessions, confessions);
-  }, []);
+    // Redirect to verify/verifyotp if userDetails is not verified
+    if (userDetails && !userDetails.isVerified) {
+      router.push('/verify/verifyotp');
+    }
+  }, [userDetails]);
+
 
   const fetchMoreConfessions = async () => {
     console.log('fetching more...');
@@ -50,9 +57,21 @@ const Index = ({ userDetails, initialConfessions }) => {
       {confessions.map((confession, index) => (
         <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
       ))}
-      {loading && <CircularProgress />} {/* Render CircularProgress while loading */}
+      {loading &&
+        <div style={{ width: '1oo%', display: 'flex', justifyContent: 'center', marginBottom:'3rem', marginTop:'0' }}>
+          {/* <CircularProgress /> */}
+          <Image src={'/gifs/loadinghand.gif'} width={498} height={498} alt='loading more' loop={true}
+          style={{filter: 'grayscale(100%)'}}></Image>
+        </div>
+
+      } {/* Render CircularProgress while loading */}
       <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
-      {!hasMore && <p>No more confessions to load</p>}
+      {!hasMore &&
+        <div style={{ width: '1oo%', display: 'flex', justifyContent: 'center', marginBottom:'3rem', marginTop:'0' }}>
+          <p>No more confessions to load</p>
+        </div>
+
+      }
     </div>
   );
 };
@@ -60,6 +79,15 @@ const Index = ({ userDetails, initialConfessions }) => {
 export async function getServerSideProps(context) {
   // Fetch session and user details
   const session = await getSession(context);
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth/signup',
+        permanent: false,
+      },
+    };
+  }
+
   const pageurl = 'https://www.meetyourmate.in';
   let userDetails = null;
   if (session?.user?.email) {

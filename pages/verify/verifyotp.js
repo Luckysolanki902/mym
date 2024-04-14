@@ -1,4 +1,3 @@
-// pages/verifyotp.js
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -23,6 +22,39 @@ const VerifyOTP = ({ session }) => {
   const [loading, setLoading] = useState(false);
   const [otpSent, setOTPSent] = useState(false);
   const [wait30sec, setWait30sec] = useState(false);
+
+  useEffect(() => {
+    // Send OTP when the component mounts
+    sendOTP();
+  }, []);
+
+  const sendOTP = async () => {
+    try {
+      const resendResponse = await fetch('/api/security/sendotp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: session?.user?.email }),
+      });
+
+      const resendData = await resendResponse.json();
+
+      if (!resendResponse.ok) {
+        throw new Error(resendData.error || 'Failed to send OTP.');
+      }
+
+      setOTPSent(true);
+      setWait30sec(true);
+
+      setTimeout(() => {
+        setWait30sec(false);
+      }, 30000);
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      setError('Failed to send OTP. Please try again.');
+    }
+  };
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
@@ -61,38 +93,6 @@ const VerifyOTP = ({ session }) => {
     }
   };
 
-  const handleResendOTP = async () => {
-    try {
-      const resendResponse = await fetch('/api/security/sendotp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: session?.user?.email }),
-      });
-
-      const resendData = await resendResponse.json();
-
-      if (!resendResponse.ok) {
-        throw new Error(resendData.error || 'Failed to resend OTP.');
-      }
-
-      setOTPSent(true);
-      setWait30sec(true);
-
-      setTimeout(() => {
-        setWait30sec(false);
-      }, 30000);
-    } catch (error) {
-      console.error('Error resending OTP:', error);
-      setError('Failed to resend OTP. Please try again.');
-    }
-  };
-
-  useEffect(() => {
-    console.log('sessionemail: ', session?.user?.email);
-  }, [session]);
-
   return (
     <ThemeProvider theme={mymtheme}>
       <div className={styles.mainContainer}>
@@ -100,6 +100,14 @@ const VerifyOTP = ({ session }) => {
           <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo} />
           {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
           <form onSubmit={handleVerifyOTP} className={styles.form}>
+            <TextField
+              type="text"
+              label="Email"
+              value={session?.user?.email || ''}
+              required
+              variant='standard'
+              disabled
+            />
             <TextField
               type="text"
               label="Enter OTP"
@@ -118,7 +126,7 @@ const VerifyOTP = ({ session }) => {
               {loading ? <CircularProgress style={{ fontSize: '1rem', width: '1rem', height: '1rem' }} /> : 'Verify'}
             </Button>
             <Button
-              onClick={handleResendOTP}
+              onClick={sendOTP}
               disabled={wait30sec}
               variant="text"
               color="primary"
@@ -133,8 +141,7 @@ const VerifyOTP = ({ session }) => {
 };
 
 export async function getServerSideProps(context) {
-let session = null
-   session = await getSession(context);
+  const session = await getSession(context);
 
   return {
     props: {

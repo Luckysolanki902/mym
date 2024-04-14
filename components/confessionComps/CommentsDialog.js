@@ -1,78 +1,96 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { IoIosSend } from 'react-icons/io';
 import Avatar from 'avataaars';
 import styles from '../componentStyles/confession.module.css';
 
-const CommentsDialog = ({
+const CommentsDrawer = ({
   isOpen,
   onClose,
   comments,
-  commentAvatars,
   commentValue,
   handleCommentSubmit,
   setCommentValue,
 }) => {
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    // Scroll to the bottom when the comments change
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [comments]);
+
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          Comments
-          <FaTimes style={{ cursor: 'pointer' }} onClick={onClose} />
+    <SwipeableDrawer
+      anchor="bottom"
+      open={isOpen}
+      onClose={onClose}
+      onOpen={() => { }}
+    >
+      <div className={styles.drawerMainContainer}>
+        <div className={styles.drawerHeader}>
+          <div className={styles.puller}></div>
+          <h2 className={styles.drawerTitle}>
+            Comments
+          </h2>
         </div>
-      </DialogTitle>
-      <DialogContent style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {/* Comment input and display */}
-        <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
-          <div className={styles.comments}>
-            {comments.map((comment, index) => (
-              <div key={comment._id} className={styles.comment}>
-                <div className={styles.avatar}>
-                  <Avatar
+        {/* Comment input and display */}
+        <div className={styles.drawerContainer}>
+          <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
+            <div className={styles.comments}>
+              {comments.map((comment, index) => (
+                <div key={comment._id} className={styles.comment}>
+                  <div className={comment.gender === 'male' ? styles.maleAvatar : styles.femaleAvatar}>
+                    {/* <Avatar
                     style={{ width: '30px', height: '30px' }}
                     avatarStyle='Circle'
                     {...commentAvatars[index]}
-                  />
+                  /> */}
+                    {comment.gender === 'male' ? 'Some Boy:' : 'Some Girl:'}
+                  </div>
+                  <div className={styles.commentContent}>
+                    {comment.commentContent}
+                  </div>
                 </div>
-                <div className={styles.commentContent}>
-                  {comment.commentContent}
-                </div>
-              </div>
-            ))}
+              ))}
+              {comments.length < 1 && <>No comments Yet</>}
+              <div ref={bottomRef}></div>
+            </div>
+          </div>
+          {/* Comment input */}
+          <div className={styles.reply2}>
+            <input
+              type='text'
+              placeholder='Add a comment...'
+              value={commentValue}
+              onChange={(e) => setCommentValue(e.target.value)}
+              style={{ flex: '1', height: '100%', outline: 'none', border: 'none' }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                  e.preventDefault();
+                  handleCommentSubmit();
+                }
+              }}
+            />
+            <button
+              className={styles.comBtn}
+              variant="contained"
+              color="primary"
+              onClick={handleCommentSubmit}
+              disabled={commentValue.trim() === ''}
+              style={{ height: '100%', cursor: 'pointer' }}
+            >
+              <IoIosSend style={{ width: '100%', height: 'auto' }} />
+            </button>
           </div>
         </div>
-        {/* Comment input */}
-        <div className={styles.reply2}>
-          <input
-            type='text'
-            placeholder='Add a comment...'
-            value={commentValue}
-            onChange={(e) => setCommentValue(e.target.value)}
-            style={{ flex: '1', height: '100%', outline: 'none', border: 'none' }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && e.target.value.trim() !== '') {
-                e.preventDefault();
-                handleCommentSubmit();
-              }
-            }}
-          />
-          <button
-            className={styles.comBtn}
-            variant="contained"
-            color="primary"
-            onClick={handleCommentSubmit}
-            disabled={commentValue.trim() === ''}
-            style={{ height: '100%', cursor: 'pointer' }}
-          >
-            <IoIosSend style={{ width: '100%', height: 'auto' }} />
-          </button>
-        </div>
-      </DialogContent>
-    </Dialog>
+
+      </div>
+    </SwipeableDrawer>
   );
 };
 
-export default CommentsDialog;
+export default CommentsDrawer;

@@ -1,34 +1,46 @@
-const toxicityThreshold = 0.7;
-const severeToxicityThreshold = 0.6;
-const identityAttackThreshold = 0.6;
-const insultThreshold = 0.6;
-const threatThreshold = 0.6;
+const toxicityThreshold = 0.5;
+const severeToxicityThreshold = 0.5;
+const identityAttackThreshold = 0.5;
+const insultThreshold = 0.5;
+const threatThreshold = 0.5;
 
 export default async function handler(req, res) {
     const { confessionContent } = req.body;
+    console.log({ confessionContent });
 
     if (!confessionContent) {
         return res.status(400).json({ error: 'Missing confession content' });
     }
 
-    const sentences = confessionContent.split(/[.,!?\n]+/);
+    const { isFitForSubmission, problematicSentences, warning, advice } = await analyzeFullContent(confessionContent);
 
-    const problematicSentences = [];
-    let isFitForSubmission = true;
-    let warning = '';
-    let advice = ''; 
-
-    for (const sentence of sentences) {
-        const result = await analyzeSentence(sentence);
-
-        if (!result.isFitForSubmission) {
-            isFitForSubmission = false;
-            problematicSentences.push(sentence);
-            warning = result.warning;
-            advice = result.advice;
-        }
-    }
     res.status(200).json({ isFitForSubmission, problematicSentences, warning, advice });
+}
+
+async function analyzeFullContent(content) {
+    const result = await analyzeSentence(content);
+
+    if (result.isFitForSubmission) {
+        return { isFitForSubmission: true, problematicSentences: [], warning: '', advice: '' };
+    } else {
+        // If full content fails, analyze each sentence
+        const sentences = content.split(/[.,!?\n]+/);
+        const problematicSentences = [];
+        let warning = '';
+        let advice = '';
+
+        for (const sentence of sentences) {
+            const result = await analyzeSentence(sentence);
+
+            if (!result.isFitForSubmission) {
+                problematicSentences.push(sentence);
+                warning = result.warning;
+                advice = result.advice;
+            }
+        }
+
+        return { isFitForSubmission: false, problematicSentences, warning, advice };
+    }
 }
 
 async function analyzeSentence(sentence) {
@@ -55,10 +67,12 @@ async function analyzeSentence(sentence) {
     });
 
     const data = await response.json();
+
     if (data.error) {
         console.error('Error analyzing sentence:', data.error.message);
-        return { isFitForSubmission: true, warning: '' };
+        return { isFitForSubmission: true, warning: '', advice: '' };
     }
+
     const attributeScores = {
         insult: data.attributeScores.INSULT.summaryScore.value,
         threat: data.attributeScores.THREAT.summaryScore.value,
@@ -74,7 +88,7 @@ async function analyzeSentence(sentence) {
 function determineFitForSubmission(attributeScores) {
     let isFitForSubmission = true;
     let warning = '';
-    let advice = ''; 
+    let advice = '';
 
     Object.entries(attributeScores).forEach(([attribute, score]) => {
         if (score >= getThreshold(attribute)) {
@@ -127,5 +141,5 @@ function generateWarningAndAdvice(attributeScores) {
         }
     }
 
-    return {warning, advice};
+    return { warning, advice };
 }
