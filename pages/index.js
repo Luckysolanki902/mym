@@ -5,6 +5,7 @@ import Image from 'next/image';
 import styles from '@/styles/Home.module.css';
 import { useRouter } from 'next/router';
 
+
 export default function Home({ session, userDetails }) {
   const containerSpring = useSpring({
     from: { opacity: 0, transform: 'translate3d(0, -50px, 0)' },

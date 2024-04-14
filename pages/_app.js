@@ -8,6 +8,7 @@ import SessionProvider from './SessionProvider';
 import Topbar from '@/components/appComps/Topbar';
 import Sidebar from '@/components/appComps/Sidebar';
 import '@/styles/globals.css';
+import PageRefresh from '@/components/loadings/PageRefresh';
 
 const mymtheme = createTheme({
   palette: {
@@ -33,8 +34,9 @@ export default function App({ Component, pageProps }) {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const isAdminPage = router.pathname.startsWith('/admin');
   const [isLoading, setIsLoading] = useState(true);
-  const isAuthRoute = router.pathname.startsWith('/auth') || router.pathname.startsWith('/verify');
+  // const isAuthRoute = router.pathname.startsWith('/auth') || router.pathname.startsWith('/verify');
 
+  
 
   useEffect(() => {
     const verifyToken = async () => {
