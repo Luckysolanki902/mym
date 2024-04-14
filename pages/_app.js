@@ -147,7 +147,7 @@ export default function App({ Component, pageProps }) {
               <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
                 {showLoadingGif && 
                 <div style={{width:'100%', height:'100%',display:'flex', position:'absolute', top:'0', right:'0', justifyContent:'center', alignItems:'center', backgroundColor:'white'}}>
-                  <Image src={'/gifs/rhombus.gif'} width={800 / 3} height={800 / 3} style={{width:'10rem', height:'auto'}} alt='loading'></Image>
+                  <Image src={'/gifs/rhombus.gif'} width={800 / 3} height={800 / 3} style={{width:'10rem', height:'auto', zIndex:'999'}} alt='loading'></Image>
                 </div> 
                 }
                 <Component {...pageProps} />
