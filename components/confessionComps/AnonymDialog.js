@@ -8,7 +8,7 @@ const AnonymDialog = ({ open, onClose, handleAnonymousReply }) => {
     const [anonymousReplyValue, setAnonymousReplyValue] = useState('');
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+        <Dialog open={open} onClose={onClose} >
             <DialogTitle>Reply Anonymously</DialogTitle>
             <DialogContent>
                 <TextField
@@ -25,7 +25,7 @@ const AnonymDialog = ({ open, onClose, handleAnonymousReply }) => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => handleAnonymousReply(anonymousReplyValue)}
+                    onClick={() => {handleAnonymousReply(anonymousReplyValue);setAnonymousReplyValue(false);}}
                     disabled={anonymousReplyValue.trim() === ''}
                     style={{ marginTop: '2rem', float: 'right' }}
                 >

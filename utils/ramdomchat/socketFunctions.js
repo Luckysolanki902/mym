@@ -154,15 +154,15 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions,
     });
     console.log('Finding new pair');
 
-    const timeout = 10000;
-    clearTimeout(findingTimeoutRef.current); // Clear previous timeout
-    findingTimeoutRef.current = setTimeout(() => {
-        // emit stop pairing here
-        if (!hasPaired) {
-            socket.emit('stopFindingPair');
-            setIsFindingPair(false);
-        }
-    }, timeout);
+    // const timeout = 10000;
+    // clearTimeout(findingTimeoutRef.current); // Clear previous timeout
+    // findingTimeoutRef.current = setTimeout(() => {
+    //     // emit stop pairing here
+    //     if (!hasPaired) {
+    //         socket.emit('stopFindingPair');
+    //         setIsFindingPair(false);
+    //     }
+    // }, timeout);
 };
 
 

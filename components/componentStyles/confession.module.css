@@ -14,7 +14,8 @@
     width: auto;
     height: auto;
     width: 50vw;
-    min-height: 60vh;
+    min-height: 40vh;
+    max-height: 80vh;
     /* border: 1px solid red; */
     border-radius: 1.1875rem;
     display: flex;
@@ -22,6 +23,7 @@
     padding: 1rem;
     background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, rgba(255, 0, 0, 0.8) 79.73%);
     transition: all 0.3s ease-in-out;
+    overflow: scroll;
 }
 
 .mainContainer .textarea {
@@ -41,6 +43,7 @@
     font-weight: 400;
     line-height: normal;
     letter-spacing: 0.105rem;
+    overflow: auto;
 
 }
 
@@ -392,12 +395,10 @@
     }
 }
 
-
-
 @media (width<800px) {
     .reply2 input {
 
-        font-size: 0.8rem;
+        font-size: 1rem;
         color: rgb(50, 50, 50);
     }
 

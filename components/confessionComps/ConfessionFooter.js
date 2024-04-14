@@ -4,8 +4,11 @@ import { FaHeart, FaComment } from 'react-icons/fa';
 import { IoIosSend } from 'react-icons/io';
 import styles from '../componentStyles/confession.module.css';
 import AnonymDialog from './AnonymDialog';
+import { useMediaQuery } from '@mui/material';
+
 const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommentsDialog, handleClick, handleOpenAuthPrompt }) => {
     const [liked, setLiked] = useState(false);
+    const isSmallDevice = useMediaQuery('(max-width:800px)');
     const [likeanimation, setlikeanimation] = useState('');
     const [likesCount, setLikesCount] = useState(confession.likes.length);
     const [isAnonymousReplyDialogOpen, setAnonymousReplyDialogOpen] = useState(false);
@@ -86,12 +89,12 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
     };
     const truncateText = (text, maxLength) => {
         if (text.length <= maxLength) {
-          return text;
+            return text;
         }
         const truncatedText = text.substring(0, maxLength).trim();
         return `${truncatedText.substr(0, Math.min(truncatedText.length, truncatedText.lastIndexOf(' ')))}...`;
-      };
-      
+    };
+
 
     const handleAnonymousReply = async () => {
         try {
@@ -99,7 +102,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             const replyData = {
                 confessionId: confession._id,
                 encryptedEmail,
-                confessionContent:truncateText(confession.confessionContent, 100) || 'confession content',
+                confessionContent: truncateText(confession.confessionContent, 100) || 'confession content',
                 iv,
                 replyContent: { reply: anonymousReplyValue, replierGender: userDetails.gender }, // Modify this line
             };
@@ -128,7 +131,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
 
     const closeAnonymousReplyDialog = () => {
         setAnonymousReplyDialogOpen(false);
-      };
+    };
 
     return (
         <div>
@@ -157,6 +160,11 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                             if (e.key === 'Enter' && e.target.value.trim() !== '') {
                                 e.preventDefault();
                                 handleAnonymousReply();
+                            }
+                        }}
+                        onFocus={() => {
+                            if (isSmallDevice && isAnonymousReplyDialogOpen) {
+                                setAnonymousReplyDialogOpen(true)
                             }
                         }}
                     />

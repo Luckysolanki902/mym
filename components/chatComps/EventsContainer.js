@@ -4,6 +4,7 @@ import Image from 'next/image';
 import styles from '../componentStyles/textchat.module.css';
 
 const EventsContainer = ({ strangerDisconnectedMessageDiv, strangerIsTyping, hasPaired, strangerGender }) => {
+    console.log(strangerGender)
     useEffect(() => {
         console.log('stranger is typing');
     }, [strangerIsTyping, strangerGender]); // Include strangerGender as a dependency

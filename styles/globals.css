@@ -14,7 +14,7 @@
   --lightpink: rgba(128, 0, 128, 0.359);
 }
 
-html{
+body{
   margin: 0;
   padding: 0;
   height: 100%;

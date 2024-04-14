@@ -87,9 +87,6 @@ const TextChat = ({ userDetails }) => {
     }
   }
 
-  useEffect(()=>{
-  console.log(hasPaired)
-  })
   return (
     <div className={styles.mainC}>
       <div className={styles.filterPos}>
@@ -140,7 +137,5 @@ const TextChat = ({ userDetails }) => {
     </div>
   );
 };
-
-
 
 export default TextChat

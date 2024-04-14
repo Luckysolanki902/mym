@@ -51,6 +51,7 @@
 .sMsg {
   border-radius: 2.625rem;
   background: linear-gradient(180deg, #6AE9D9 0%, #B4EEFF 100%);
+
 }
 
 .femaleMsg {
@@ -134,11 +135,11 @@
 
 .filterPos {
   /* position: fixed; */
-  top: calc(var(--topbarheight) + 0.5rem);
+  top: calc(var(--topbarheight) + 3.5rem);
   right: 1rem;
   display: flex;
   justify-content: center;
-  display: none;
+  /* border: 1px solid red; */
 }
 
 /* inputbox and buttons main divs_____________________________ */

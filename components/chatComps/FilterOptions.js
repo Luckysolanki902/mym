@@ -37,7 +37,7 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetai
       }));
     }
   }, [userDetails]);
-  
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Check if the clicked element is not within the main container
@@ -46,7 +46,7 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetai
         !mainFilterContainerRef.current.contains(event.target) &&
         // Check if the clicked element is not an option within the MUI Menu
         !event.target.closest('[role="menuitem"]')
-      ) { 
+      ) {
         setOpenFilterIcon(false);
       }
     };
@@ -100,8 +100,13 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetai
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <div className={styles.mainfiltercont} ref={mainFilterContainerRef} style={{opacity:'0'}} >
-        <IoFilterSharp className={styles.filterIcon} onClick={handlefilterToggle} style={{backgroundColor:'white', borderRadius:'1rem', padding:'0.3rem'}}/>
+      <div className={styles.mainfiltercont} ref={mainFilterContainerRef}  >
+        <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}>
+          {openFilterIcon &&
+            <div className={styles.cancelDiv} style={{ width: '100%', opacity: '0' }} onClick={() => setOpenFilterIcon(false)}></div>
+          }
+          <IoFilterSharp className={styles.filterIcon} onClick={handlefilterToggle} style={{ backgroundColor: 'white', borderRadius: '1rem', padding: '0.3rem' }} />
+        </div>
 
         <div className={`${styles.closedFilters} ${openFilterIcon && styles.openFilters}`}>
           <FormControl className={styles.FormControl}>

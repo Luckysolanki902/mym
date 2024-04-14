@@ -51,6 +51,7 @@ const MessageDisplay = React.memo(({ messages, userDetails, receiver, strangerGe
                 strangerDisconnectedMessageDiv={strangerDisconnectedMessageDiv}
                 strangerIsTyping={strangerIsTyping}
                 hasPaired={hasPaired}
+                strangerGender={strangerGender}
             />
 
             {/* Padding div with dynamic height based on conditions */}
@@ -63,7 +64,7 @@ const MessageDisplay = React.memo(({ messages, userDetails, receiver, strangerGe
                     <Message key={index} msg={msg} userDetails={userDetails} receiver={receiver} strangerGender={strangerGender} hasPaired={hasPaired} />
                 </animated.div>
             ))}
-            {usersOnline && <>Users: {usersOnline}</>}
+            {/* {usersOnline && <>Users: {usersOnline}</>} */}
         </div>
     );
 });

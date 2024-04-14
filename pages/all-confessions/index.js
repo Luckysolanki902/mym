@@ -53,7 +53,8 @@ const Index = ({ userDetails, initialConfessions }) => {
   }, [hasMore, loading]); // Make sure to run the effect when `hasMore` or `loading` changes
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '100%', paddingTop:'2rem' }}>
+
       {confessions.map((confession, index) => (
         <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
       ))}

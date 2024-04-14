@@ -9,6 +9,7 @@ import Topbar from '@/components/appComps/Topbar';
 import Sidebar from '@/components/appComps/Sidebar';
 import '@/styles/globals.css';
 import PageRefresh from '@/components/loadings/PageRefresh';
+import Image from 'next/image';
 
 const mymtheme = createTheme({
   palette: {
@@ -30,10 +31,11 @@ const mymthemeDark = createTheme({
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
-  const [progress, setProgress] = useState(0);
+  // const [progress, setProgress] = useState(0);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const isAdminPage = router.pathname.startsWith('/admin');
   const [isLoading, setIsLoading] = useState(true);
+  const [showLoadingGif, setShowLoadingGif] = useState(false)
   // const isAuthRoute = router.pathname.startsWith('/auth') || router.pathname.startsWith('/verify');
 
   
@@ -80,28 +82,27 @@ export default function App({ Component, pageProps }) {
 
 
   useEffect(() => {
-    let interval;
-    const startProgress = () => {
-      setProgress((prev) => {
-        const newProgress = prev + 1;
-        return newProgress >= 100 ? 100 : newProgress;
-      });
-    };
-
+    let timeout;
+  
     router.events.on('routeChangeStart', () => {
-      setProgress(0);
-      interval = setInterval(startProgress, 50);
+      setShowLoadingGif(true);
+      // Set a timeout to hide the loading indicator after 5 seconds
+      timeout = setTimeout(() => {
+        setShowLoadingGif(false);
+      }, 5000); // Adjust this timeout duration as needed
     });
-
+  
     router.events.on('routeChangeComplete', () => {
-      clearInterval(interval);
-      setProgress(100);
+      // Clear the timeout and hide the loading indicator
+      clearTimeout(timeout);
+      setShowLoadingGif(false);
     });
-
+  
     return () => {
-      clearInterval(interval);
+      clearTimeout(timeout); // Clear the timeout on component unmount
     };
   }, [router.events]);
+  
 
 
 
@@ -142,8 +143,13 @@ export default function App({ Component, pageProps }) {
             {/* {!isAuthRoute && <Topbar />} */}
             <Topbar />
             <Sidebar />
-            <div style={{ display: 'flex', flex: 1, overflowY: 'scroll' }} className='remcheight'>
+            <div style={{ display: 'flex', flex: 1, overflowY: 'scroll', position:'relative' }} className='remcheight'>
               <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
+                {showLoadingGif && 
+                <div style={{width:'100%', height:'100%',display:'flex', position:'absolute', top:'0', right:'0', justifyContent:'center', alignItems:'center', backgroundColor:'white'}}>
+                  <Image src={'/gifs/rhombus.gif'} width={800 / 3} height={800 / 3} style={{width:'10rem', height:'auto'}} alt='loading'></Image>
+                </div> 
+                }
                 <Component {...pageProps} />
               </div>
             </div>
