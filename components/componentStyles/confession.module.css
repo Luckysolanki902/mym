@@ -158,6 +158,11 @@
     text-align: left;
     align-self: start;
 }
+
+.shareIcon{
+    font-size: 2rem;
+    
+}
 @media(width>800px){
     .puller{
         display: none;
@@ -400,6 +405,10 @@
 
         font-size: 1rem;
         color: rgb(50, 50, 50);
+    }
+    .shareIcon{
+        font-size: 1.5rem;
+        
     }
 
     .comBtn {

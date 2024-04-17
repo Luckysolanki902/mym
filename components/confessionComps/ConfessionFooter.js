@@ -162,8 +162,8 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                                 handleAnonymousReply();
                             }
                         }}
-                        onFocus={() => {
-                            if (isSmallDevice && isAnonymousReplyDialogOpen) {
+                        onClick={() => {
+                            if (isSmallDevice && !isAnonymousReplyDialogOpen) {
                                 setAnonymousReplyDialogOpen(true)
                             }
                         }}
@@ -185,6 +185,8 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                 open={isAnonymousReplyDialogOpen}
                 onClose={closeAnonymousReplyDialog}
                 handleAnonymousReply={handleAnonymousReply}
+                anonymousReplyValue={anonymousReplyValue}
+                setAnonymousReplyValue={setAnonymousReplyValue}
             />
         </div>
     );

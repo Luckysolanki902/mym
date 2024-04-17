@@ -128,3 +128,22 @@ button {
 .remcwidth{
   margin-left: var(--sidebarwidth);
 }
+
+.loadingGif{
+  width: 9rem;
+  height: auto;
+}
+
+@media (width<800px){
+  .loadingGif{
+    width: 7rem;
+    height: auto;
+  }
+}
+
+@media (width<600px){
+  .loadingGif{
+    width: 5rem;
+    height: auto;
+  }
+}

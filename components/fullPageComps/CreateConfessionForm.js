@@ -34,7 +34,7 @@ const CreateConfessionForm = ({ userDetails }) => {
       }
 
       const moderationResult = await moderationResponse.json();
-
+      console.log({ moderationResult })
       if (moderationResult.isFitForSubmission) {
         // Proceed with submission
         const confessResponse = await fetch('/api/confession/confess', {

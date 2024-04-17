@@ -134,9 +134,9 @@
 
 
 .filterPos {
-  /* position: fixed; */
-  top: calc(var(--topbarheight) + 3.5rem);
-  right: 1rem;
+  position: fixed;
+  top: calc(var(--topbarheight) + 0.5rem);
+  right: 0rem;
   display: flex;
   justify-content: center;
   /* border: 1px solid red; */

@@ -1,0 +1,50 @@
+.shareButton img {
+    width: 3rem;
+    height: auto;
+}
+.main{
+    transition: all .3s ease-in-out;
+}
+
+.shareLink {
+    font-style: italic;
+    font-family: 'Roboto';
+    font-size: 0.9rem;
+    display: flex;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 1.5rem;
+    align-items: center;
+    gap: 1rem;
+}
+.linkButtonForSmallScreen{
+    display: none;
+    transition: all 0.3s ease-out;
+}
+.shareLinkText{
+    max-width: 10rem;
+    overflow: scroll;
+}
+.copyBtnPc{
+    width: 5rem;
+}
+
+.copyBtnSmall{
+    min-width: 10rem;
+}
+@media (width<450px) {
+    .shareLink {
+        display: none;
+    }
+    .linkButtonForSmallScreen{
+        display: flex;
+        justify-content: center;
+        text-transform: none;
+        padding: 0.4rem 2rem;
+    }
+
+    .shareButton img {
+        width: 2.8rem;
+        height: auto;
+    }
+}
