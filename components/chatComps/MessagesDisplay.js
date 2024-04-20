@@ -50,7 +50,6 @@ const MessageDisplay = React.memo(({ userDetails }) => {
 
     return (
         <div className={`${styles.messCon} ${!hasPaired && !strangerIsTyping && styles.nopadb}`}>
-
             <EventsContainerMemoized />
 
             {/* Padding div with dynamic height based on conditions */}
