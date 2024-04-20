@@ -4,9 +4,8 @@ export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions
     const { setIsFindingPair } = stateFunctions;
     const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
     setIsFindingPair(true);
-
+    console.log({ userDetailsAndPreferences })
     try {
-
         if (userDetails && preferredCollege !== undefined && preferredGender !== undefined) {
             // Identify user and send preferences to the server
             socket.emit('identify', {
@@ -17,16 +16,7 @@ export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions
                 preferredCollege: preferredCollege,
                 pageType: 'textchat'
             });
-
             console.log('Finding first pair');
-
-            const timeout = 10000;
-            clearTimeout(findingTimeoutRef.current)
-            findingTimeoutRef.current  = setTimeout(() => {
-                // emit stop pairing here
-                socket.emit('stopFindingPair');
-                setIsFindingPair(false);
-            }, timeout);
         }
     } catch (error) {
         console.error('Error in handleIdentify:', error.message);
@@ -152,7 +142,42 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions,
         preferredCollege: preferredCollege,
         pageType: 'textchat'
     });
-    console.log('Finding new pair');
+    console.log('Finding new pair with:', {
+        userEmail: userDetails?.email,
+        userGender: userDetails?.gender,
+        userCollege: userDetails?.college,
+        preferredGender: preferredGender,
+        preferredCollege: preferredCollege,
+        pageType: 'textchat'
+    });
+
+    // const timeout = 10000;
+    // clearTimeout(findingTimeoutRef.current); // Clear previous timeout
+    // findingTimeoutRef.current = setTimeout(() => {
+    //     // emit stop pairing here
+    //     if (!hasPaired) {
+    //         socket.emit('stopFindingPair');
+    //         setIsFindingPair(false);
+    //     }
+    // }, timeout);
+};
+export const handleFindNewWhenSomeoneLeft = (socket, userDetailsAndPreferences, stateFunctions, hasPaired, findingTimeoutRef) => {
+    const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
+    const { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages } = stateFunctions;
+
+    setHasPaired(false);
+    setIsFindingPair(true); // Set finding pair state to true
+    setStrangerDisconnectedMessageDiv(false);
+
+    setMessages([]);
+    socket.emit('findNewPairWhenSomeoneLeft', {
+        userEmail: userDetails?.email,
+        userGender: userDetails?.gender,
+        userCollege: userDetails?.college,
+        preferredGender: preferredGender,
+        preferredCollege: preferredCollege,
+        pageType: 'textchat'
+    });
 
     // const timeout = 10000;
     // clearTimeout(findingTimeoutRef.current); // Clear previous timeout
@@ -167,7 +192,7 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions,
 
 
 export const stopFindingPair = (socket, stateFunctions) => {
-    const {  setIsFindingPair} = stateFunctions;
+    const { setIsFindingPair } = stateFunctions;
     socket.emit('stopFindingPair');
     setIsFindingPair(false);
 }

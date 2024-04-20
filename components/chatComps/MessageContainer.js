@@ -68,7 +68,7 @@ const MessageContainer = React.memo(({ messages, userDetails, receiver, stranger
 
       {reversedMessages.map((msg, index) => (
         <animated.div key={index} style={index === 0 ? messageAnimation : {}}>
-          <Message key={index} msg={msg} userDetails={userDetails} receiver={receiver} strangerGender={strangerGender} hasPaired={hasPaired} />
+          <Message key={index} msg={msg} userDetails={userDetails} />
         </animated.div>
       ))}
       {usersOnline && <>Users: {usersOnline}</>}

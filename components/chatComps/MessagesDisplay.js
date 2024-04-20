@@ -5,9 +5,15 @@ import Image from 'next/image';
 import Message from '@/components/chatComps/Message';
 import styles from '../componentStyles/textchat.module.css';
 import EventsContainer from './EventsContainer';
+import FilterOptions from './FilterOptions';
+import { useTextChat } from '@/context/TextChatContext';
 
 const EventsContainerMemoized = React.memo(EventsContainer);
-const MessageDisplay = React.memo(({ messages, userDetails, receiver, strangerGender, hasPaired, usersOnline, strangerDisconnectedMessageDiv, strangerIsTyping }) => {
+
+const MessageDisplay = React.memo(({ userDetails }) => {
+
+    const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping,usersOnline } = useTextChat()
+
     const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
     const shouldRenderPaddingDiv = strangerDisconnectedMessageDiv || (hasPaired && strangerIsTyping);
 
@@ -33,9 +39,7 @@ const MessageDisplay = React.memo(({ messages, userDetails, receiver, strangerGe
         from: { rotateX: 90, translateX: -30, opacity: 0 },
         to: { rotateX: 0, translateX: 0, opacity: 1 }
     };
-    
-    
-    
+
 
     // Animation for the latest message
     const messageAnimation = useSpring({
@@ -47,12 +51,7 @@ const MessageDisplay = React.memo(({ messages, userDetails, receiver, strangerGe
     return (
         <div className={`${styles.messCon} ${!hasPaired && !strangerIsTyping && styles.nopadb}`}>
 
-            <EventsContainerMemoized
-                strangerDisconnectedMessageDiv={strangerDisconnectedMessageDiv}
-                strangerIsTyping={strangerIsTyping}
-                hasPaired={hasPaired}
-                strangerGender={strangerGender}
-            />
+            <EventsContainerMemoized />
 
             {/* Padding div with dynamic height based on conditions */}
             <div ref={paddingDivRef} className={styles.paddingDiv} style={{ height: shouldRenderPaddingDiv ? '3rem' : 0, opacity: '0' }}>
@@ -65,6 +64,11 @@ const MessageDisplay = React.memo(({ messages, userDetails, receiver, strangerGe
                 </animated.div>
             ))}
             {/* {usersOnline && <>Users: {usersOnline}</>} */}
+            <div className={styles.filterPos}>
+                <FilterOptions
+                    userDetails={userDetails}
+                />
+            </div>
         </div>
     );
 });

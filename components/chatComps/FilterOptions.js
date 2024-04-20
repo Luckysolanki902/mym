@@ -3,6 +3,7 @@ import styles from '../componentStyles/filteroptions.module.css';
 import { IoFilterSharp } from 'react-icons/io5';
 import { MenuItem, Button, FormControl, createTheme, ThemeProvider, Menu } from '@mui/material';
 import { FaChevronDown } from "react-icons/fa";
+import { useFilters } from '@/context/FiltersContext';
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
@@ -12,7 +13,7 @@ const darkTheme = createTheme({
   },
 });
 
-const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetails }) => {
+const FilterOptions = ({ userDetails }) => {
   const [openFilterIcon, setOpenFilterIcon] = useState(false);
   const [collegeMenuAnchor, setCollegeMenuAnchor] = useState(null);
   const [genderMenuAnchor, setGenderMenuAnchor] = useState(null);
@@ -20,9 +21,11 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetai
   const [genderMenuWidth, setGenderMenuWidth] = useState(null);
   const mainFilterContainerRef = useRef(null);
 
+  // filters contexts
+  const { preferredGender, setPreferredGender, preferredCollege, setPreferredCollege } = useFilters();
 
   const handlefilterToggle = () => {
-    if (!userCollege || !userGender || userDetails) {
+    if (!userDetails) {
       return;
     }
     setOpenFilterIcon(!openFilterIcon);
@@ -30,11 +33,8 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetai
 
   useEffect(() => {
     if (userDetails) {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        college: userDetails?.college || 'any',
-        preferredGender: userDetails?.gender === 'male' ? 'female' : 'male',
-      }));
+      setPreferredCollege('any')
+      setPreferredGender(userDetails.gender === 'male' ? 'female' : 'male');
     }
   }, [userDetails]);
 
@@ -57,30 +57,15 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetai
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [mainFilterContainerRef]);
-  useEffect(() => {
-    if (userCollege && userGender) {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        college: userCollege || 'any',
-        strangerGender: userGender === 'male' ? 'female' : 'male', // Set the default as the opposite gender
-      }));
-    }
-  }, [userCollege, userGender, setFilters]);
 
   const handleCollegeChange = (value) => {
     setCollegeMenuAnchor(null);
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      college: value,
-    }));
+    setPreferredCollege(value);
   };
 
   const handleGenderChange = (value) => {
     setGenderMenuAnchor(null);
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      strangerGender: value,
-    }));
+    setPreferredGender(value)
   };
 
   const handleCollegeMenuOpen = (event) => {
@@ -94,10 +79,12 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetai
     setGenderMenuWidth(event.currentTarget.offsetWidth);
   };
 
-  const isCollegeSelected = (value) => filters.college === value;
-  const isGenderSelected = (value) => filters.strangerGender === value;
+  const isCollegeSelected = (value) => preferredCollege === value;
+  const isGenderSelected = (value) => preferredGender === value;
 
-
+  useEffect(()=>{
+    console.log('hellow', preferredCollege)
+  }, [preferredCollege])
   return (
     <ThemeProvider theme={darkTheme}>
       <div className={styles.mainfiltercont} ref={mainFilterContainerRef}  >
@@ -123,7 +110,7 @@ const FilterOptions = ({ filters, setFilters, userCollege, userGender, userDetai
               slotProps={{ paper: { style: { width: collegeMenuWidth } } }}
             >
               <MenuItem onClick={() => handleCollegeChange('any')} selected={isCollegeSelected('any')}>Any</MenuItem>
-              <MenuItem onClick={() => handleCollegeChange(userCollege)} selected={isCollegeSelected(userCollege)}>Same College</MenuItem>
+              <MenuItem onClick={() => handleCollegeChange(userDetails.college)} selected={isCollegeSelected(userDetails.college)}>Same College</MenuItem>
               {/* Add other college options if needed */}
             </Menu>
           </FormControl>

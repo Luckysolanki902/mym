@@ -5,8 +5,8 @@ import Image from 'next/image';
 import { IoIosSend } from 'react-icons/io';
 import styles from '../componentStyles/textchat.module.css';
 import { useMediaQuery } from '@mui/material';
+import { useTextChat } from '@/context/TextChatContext';
 const InputBox = ({
-  isFindingPair,
   handleFindNewButton,
   handleSendButton,
   textValue,
@@ -15,18 +15,17 @@ const InputBox = ({
   setInpFocus,
   handleKeyDown,
   handleStoppedTyping,
-  socket,
   typingTimeoutRef,
   inputRef,
   userDetails,
-   hasPaired
 }) => {
+  const { isFindingPair, socket, hasPaired } = useTextChat()
   const isSmallScreen = useMediaQuery('(max-width:800px)');
   return (
     <div className={styles.inputContainerMainDiv} ref={inputRef}>
 
       <div className={`${styles.inputContainer} ${inpFocus ? styles.inpFocus : ''}`}>
-        <button className={styles.newButton} onClick={handleFindNewButton} title={!isFindingPair?'Find New':'Stop'}>
+        <button className={styles.newButton} onClick={handleFindNewButton} title={!isFindingPair ? 'Find New' : 'Stop'}>
           {isFindingPair && !hasPaired ? (
             <CircularProgress size={24} style={{ color: isSmallScreen ? 'black' : 'white' }} />
           ) : (
@@ -52,7 +51,7 @@ const InputBox = ({
               type="text"
               id="messageBox"
               value={textValue}
-              onFocus={() =>{ setInpFocus(true)}}
+              onFocus={() => { setInpFocus(true) }}
               autoComplete="off"
               onBlurCapture={() => setInpFocus(false)}
               onChange={(e) => setTextValue(e.target.value)}

@@ -3,9 +3,7 @@ import TextChat from '@/components/fullPageComps/TextChat';
 import { getSession } from 'next-auth/react';
 import React, { useEffect, useRef } from 'react';
 
-
 const TextChatPage = ({ userDetails }) => {
-  console.log(userDetails)
   const bottomRef = useRef(null);
 
   useEffect(() => {

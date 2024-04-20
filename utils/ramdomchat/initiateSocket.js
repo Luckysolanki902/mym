@@ -5,9 +5,8 @@ const serverUrl = 'https://hostedmymserver.onrender.com'
 
 export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, stateFunctions, refs) => {
 
-    const {room, setSocket, setUsersOnline, setStrangerIsTyping,strangerSocketId } = stateFunctions;
+    const { room, setSocket, setUsersOnline, setStrangerIsTyping, strangerSocketId } = stateFunctions;
     const { messagesContainerRef, findingTimeoutRef } = refs
-
     let newSocket
     try {
         if (socket === null || !socket || socket === undefined) {
@@ -16,13 +15,17 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
         } else {
             newSocket = socket
         }
+
+        newSocket = io(serverUrl, { query: { pageType: 'textchat' } });
+        setSocket(newSocket)
+
     } catch (error) {
         console.log('error setting newsocket', error)
     }
 
     newSocket.on('connect', () => {
         console.log('Connected to server');
-
+        console.log('calling handleIdentify')
         // sending your preferences to server
         handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef)
 
@@ -30,7 +33,10 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
         newSocket.on('roundedUsersCount', (count) => {
             setUsersOnline(count)
         })
+        newSocket.on('identify', () => {
+            handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef)
 
+        })
         // Handling the successful pairing event
         newSocket.on('pairingSuccess', (data) => {
             handlePairingSuccess(data, hasPaired, stateFunctions, findingTimeoutRef)
