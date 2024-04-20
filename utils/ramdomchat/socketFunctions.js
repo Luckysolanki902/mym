@@ -4,7 +4,6 @@ export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions
     const { setIsFindingPair } = stateFunctions;
     const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
     setIsFindingPair(true);
-    console.log({ userDetailsAndPreferences })
     try {
         if (userDetails && preferredCollege !== undefined && preferredGender !== undefined) {
             // Identify user and send preferences to the server

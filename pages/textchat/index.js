@@ -5,7 +5,6 @@ import React, { useEffect, useRef } from 'react';
 
 const TextChatPage = ({ userDetails }) => {
   const bottomRef = useRef(null);
-
   useEffect(() => {
     // Scroll to the bottom when the component mounts
     bottomRef.current.scrollIntoView({ behavior: 'smooth' });

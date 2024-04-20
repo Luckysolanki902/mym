@@ -10,7 +10,6 @@ import EventsContainer from '../chatComps/EventsContainer';
 import { useTextChat, TextChatProvider } from '@/context/TextChatContext';
 import { useFilters, FiltersProvider } from '@/context/FiltersContext';
 const TextChatWithout = ({ userDetails }) => {
-
   const [textValue, setTextValue] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -40,7 +39,7 @@ const TextChatWithout = ({ userDetails }) => {
 
   // using filters contexts
   const { preferredCollege, preferredGender } = useFilters();
-  console.log({ preferredCollege, preferredGender })
+  
 
   // Provide socket and handle socketEvents___________________________
   useEffect(() => {

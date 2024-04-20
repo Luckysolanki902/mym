@@ -4,6 +4,7 @@ import { IoFilterSharp } from 'react-icons/io5';
 import { MenuItem, Button, FormControl, createTheme, ThemeProvider, Menu } from '@mui/material';
 import { FaChevronDown } from "react-icons/fa";
 import { useFilters } from '@/context/FiltersContext';
+
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
@@ -40,11 +41,9 @@ const FilterOptions = ({ userDetails }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if the clicked element is not within the main container
       if (
         mainFilterContainerRef.current &&
         !mainFilterContainerRef.current.contains(event.target) &&
-        // Check if the clicked element is not an option within the MUI Menu
         !event.target.closest('[role="menuitem"]')
       ) {
         setOpenFilterIcon(false);
@@ -69,7 +68,6 @@ const FilterOptions = ({ userDetails }) => {
   };
 
   const handleCollegeMenuOpen = (event) => {
-    console.log('pressed')
     setCollegeMenuAnchor(event.currentTarget);
     setCollegeMenuWidth(event.currentTarget.offsetWidth);
   };
@@ -82,61 +80,84 @@ const FilterOptions = ({ userDetails }) => {
   const isCollegeSelected = (value) => preferredCollege === value;
   const isGenderSelected = (value) => preferredGender === value;
 
-  useEffect(()=>{
-    console.log('hellow', preferredCollege)
-  }, [preferredCollege])
   return (
     <ThemeProvider theme={darkTheme}>
-      <div className={styles.mainfiltercont} ref={mainFilterContainerRef}  >
-        <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}>
-          {openFilterIcon &&
-            <div className={styles.cancelDiv} style={{ width: '100%', opacity: '0' }} onClick={() => setOpenFilterIcon(false)}></div>
-          }
-          <IoFilterSharp className={styles.filterIcon} onClick={handlefilterToggle} style={{ backgroundColor: 'white', borderRadius: '1rem', padding: '0.3rem' }} />
-        </div>
-
-        <div className={`${styles.closedFilters} ${openFilterIcon && styles.openFilters}`}>
-          <FormControl className={styles.FormControl}>
-            <Button onClick={handleCollegeMenuOpen}>
-              <div className={styles.toggleMenu}>
-                <div>College Preference</div>
-                <div><FaChevronDown /></div>
-              </div>
-            </Button>
-            <Menu
-              anchorEl={collegeMenuAnchor}
-              open={Boolean(collegeMenuAnchor)}
-              onClose={() => setCollegeMenuAnchor(null)}
-              slotProps={{ paper: { style: { width: collegeMenuWidth } } }}
-            >
-              <MenuItem onClick={() => handleCollegeChange('any')} selected={isCollegeSelected('any')}>Any</MenuItem>
-              <MenuItem onClick={() => handleCollegeChange(userDetails.college)} selected={isCollegeSelected(userDetails.college)}>Same College</MenuItem>
-              {/* Add other college options if needed */}
-            </Menu>
-          </FormControl>
-
-          <FormControl className={styles.FormControl}>
-            <Button onClick={handleGenderMenuOpen}>
-              <div className={styles.toggleMenu}>
-                <div>Meet With</div>
-                <div><FaChevronDown /></div>
-              </div>
-            </Button>
-            <Menu
-              anchorEl={genderMenuAnchor}
-              open={Boolean(genderMenuAnchor)}
-              onClose={() => setGenderMenuAnchor(null)}
-              slotProps={{ paper: { style: { width: genderMenuWidth } } }}
-            >
-              <MenuItem selected={isGenderSelected('male')} onClick={() => handleGenderChange('male')}>Male</MenuItem>
-              <MenuItem selected={isGenderSelected('female')} onClick={() => handleGenderChange('female')}>Female</MenuItem>
-              <MenuItem selected={isGenderSelected('any')} onClick={() => handleGenderChange('any')}>Any</MenuItem>
-            </Menu>
-          </FormControl>
+      <div className={styles.mainfiltercont} ref={mainFilterContainerRef}>
+        {openFilterIcon && <div className={styles.backdrop} />}
+        <div className={styles.filterContentWrapper}>
+          <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}>
+            {openFilterIcon && (
+              <div
+                className={styles.cancelDiv}
+                style={{ width: '100%', opacity: '0' }}
+                onClick={() => setOpenFilterIcon(false)}
+              ></div>
+            )}
+            <IoFilterSharp
+              className={styles.filterIcon}
+              onClick={handlefilterToggle}
+              style={{ backgroundColor: 'white', borderRadius: '1rem', padding: '0.3rem' }}
+            />
+          </div>
+  
+          <div className={`${styles.closedFilters} ${openFilterIcon && styles.openFilters}`}>
+            <FormControl className={styles.FormControl}>
+              <Button onClick={handleCollegeMenuOpen}>
+                <div className={styles.toggleMenu}>
+                  <div>College Preference</div>
+                  <div>
+                    <FaChevronDown />
+                  </div>
+                </div>
+              </Button>
+              <Menu
+                anchorEl={collegeMenuAnchor}
+                open={Boolean(collegeMenuAnchor)}
+                onClose={() => setCollegeMenuAnchor(null)}
+                slotProps={{ paper: { style: { width: collegeMenuWidth } } }}
+              >
+                <MenuItem onClick={() => handleCollegeChange('any')} selected={isCollegeSelected('any')}>
+                  Any
+                </MenuItem>
+                <MenuItem onClick={() => handleCollegeChange(userDetails.college)} selected={isCollegeSelected(userDetails.college)}>
+                  Same College
+                </MenuItem>
+                {/* Add other college options if needed */}
+              </Menu>
+            </FormControl>
+  
+            <FormControl className={styles.FormControl}>
+              <Button onClick={handleGenderMenuOpen}>
+                <div className={styles.toggleMenu}>
+                  <div>Meet With</div>
+                  <div>
+                    <FaChevronDown />
+                  </div>
+                </div>
+              </Button>
+              <Menu
+                anchorEl={genderMenuAnchor}
+                open={Boolean(genderMenuAnchor)}
+                onClose={() => setGenderMenuAnchor(null)}
+                slotProps={{ paper: { style: { width: genderMenuWidth } } }}
+              >
+                <MenuItem selected={isGenderSelected('male')} onClick={() => handleGenderChange('male')}>
+                  Male
+                </MenuItem>
+                <MenuItem selected={isGenderSelected('female')} onClick={() => handleGenderChange('female')}>
+                  Female
+                </MenuItem>
+                <MenuItem selected={isGenderSelected('any')} onClick={() => handleGenderChange('any')}>
+                  Any
+                </MenuItem>
+              </Menu>
+            </FormControl>
+          </div>
         </div>
       </div>
     </ThemeProvider>
   );
+  
 };
 
 export default FilterOptions;

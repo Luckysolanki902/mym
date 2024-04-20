@@ -3,12 +3,12 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  padding-bottom: 1rem;
+  /* padding-bottom: 1rem; */
   width: 100%;
   height: 100%;
   overflow: auto;
   /* border: 4px solid grey; */
-  position: relative;
+  /* position: relative; */
 }
 
 .messCon {
@@ -20,13 +20,11 @@
   border: 3px solid green; */
   overflow-y: scroll;
   margin-bottom: 4rem;
-  max-height: 80vh;
-  /* Removed height: 100%; */
-  /* Removed padding-top: 7rem; */
+  /* max-height: 90vh; */
   padding-top: 5rem;
-  padding-bottom: 5rem;
-  position: relative;
+  /* position: relative; */
   padding-bottom: 0;
+  /* margin-bottom: 5rem; */
 }
 
 
@@ -148,15 +146,20 @@
 .inputContainerMainDiv {
   display: flex;
   align-items: center;
-  width: 100%;
   justify-content: center;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
-  position: fixed;
-  bottom: 0.4rem;
-  right: 0;
   width: calc(100vw - var(--sidebarwidth));
   /* transition: all 0.3s ease-out; */
+
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 99;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  overflow-y: hidden;
 
 }
 
@@ -265,9 +268,13 @@
 
 @media (width<800px) {
   .inputContainerMainDiv {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
   }
+.inputContainer {
+
+padding-left: 0;
+}
 
   .sendTextIcon {
     display: none;
