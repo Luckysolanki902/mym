@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import styles from '../componentStyles/createconfessionform.module.css';
-import { CircularProgress, Button } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import WarningDialog from '../dialogs/WarningDialog';
-
+import Image from 'next/image';
 const CreateConfessionForm = ({ userDetails }) => {
   const [confessionValue, setConfessionValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState({});
+  const router = useRouter();
 
   const handleConfessionSubmit = async () => {
     try {
@@ -34,9 +36,8 @@ const CreateConfessionForm = ({ userDetails }) => {
       }
 
       const moderationResult = await moderationResponse.json();
-      // console.log({ moderationResult })
+
       if (moderationResult.isFitForSubmission) {
-        // Proceed with submission
         const confessResponse = await fetch('/api/confession/confess', {
           method: 'POST',
           headers: {
@@ -49,11 +50,11 @@ const CreateConfessionForm = ({ userDetails }) => {
           throw new Error('Error submitting confession');
         }
 
-        // const { confessionId } = await confessResponse.json();
-        setConfessionValue('');
-        console.log('Confession submitted successfully');
+        const { confessionId } = await confessResponse.json();
+
+        // Redirect to thank you page with confessionId
+        router.push(`/thank-you/${confessionId}`);
       } else {
-        // Show dialog with problematic sentences list, warning, and advice
         setDialogContent({
           problematicSentences: moderationResult.problematicSentences,
           warning: moderationResult.warning,

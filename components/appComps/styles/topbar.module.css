@@ -13,6 +13,7 @@
     z-index: 999; 
     flex-shrink: 0;
     height: var(--topbarheight);
+    /* position: relative; */
 }
  
 
@@ -29,6 +30,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
 }
 
 .MainCont * {
@@ -132,6 +134,33 @@
     font-size: 55px;
 }
 
+.sessionButtons{
+position: absolute;
+right: 1rem;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 1rem;
+
+}
+
+.sessionButtons button{
+    outline: none;
+    border: none;
+    padding: 0.7rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    font-family: Inter;
+    cursor: pointer;
+}
+.login{
+    background-color: white;
+    color: black;
+}
+.signup{
+    background-color: #0C8CE9;
+    color: white;
+}
 @media (width<800px) {
     .mainDiv {
         justify-content: space-between;

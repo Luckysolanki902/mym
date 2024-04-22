@@ -101,7 +101,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             const replyData = {
                 confessionId: confession._id,
                 encryptedEmail,
-                confessionContent: truncateText(confession.confessionContent, 100) || 'confession content',
+                confessionContent: truncateText(confession.confessionContent, 500) || 'confession content',
                 iv,
                 replyContent: { reply: anonymousReplyValue, replierGender: userDetails.gender }, // Modify this line
             };

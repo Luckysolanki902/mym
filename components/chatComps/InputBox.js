@@ -65,6 +65,11 @@ const InputBox = ({
               style={{ width: '100%' }}
               onKeyDown={(e) => handleKeyDown(e)}
               onBlur={() => handleStoppedTyping(socket, typingTimeoutRef, userDetails, hasPaired)}
+              onClick={() => {
+                if (messagesContainerRef.current) {
+                  messagesContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
             />
           </form>
         </div>

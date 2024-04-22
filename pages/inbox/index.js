@@ -3,7 +3,7 @@ import { getSession, useSession } from 'next-auth/react';
 import { Typography, Card, CardContent, Divider } from '@mui/material';
 import Link from 'next/link';
 import styles from '@/components/componentStyles/inboxStyles.module.css'
-
+import Image from 'next/image';
 import InboxCard from '@/components/confessionComps/InboxCard';
 
 
@@ -21,22 +21,23 @@ const InboxPage = ({ personalReplies, userDetails }) => {
       <h1 className={styles.h1}>
         Inbox
       </h1>
-      {repliesArray?.length > 0 ? (
-        repliesArray.map((entry, index) => (
-          <div key={`${entry._id}${index}`}>
-            <InboxCard style={{ marginBottom: '16px' }}
-              entry={entry}
-              userDetails={userDetails}
-            />
+      {repliesArray?.length > 0 ?
+        (
+          repliesArray.map((entry, index) => (
+            <div key={`${entry._id}${index}`} style={{marginBottom:'5rem'}}>
+              <InboxCard style={{ marginBottom: '4.5rem' }}
+                entry={entry}
+                userDetails={userDetails}
+              />
 
-          </div>
-  ))
-      ) : (
-        <InboxCard style={{ marginBottom: '16px' }}
-        entry={noEntry}
-        userDetails={userDetails}
-      />
-)}
+            </div>
+          ))
+        ) : (
+          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign:'center', minHeight:'50vh' }}>
+          <Image style={{ width: '12rem', height: 'auto', opacity: '0.7' }} src={'/images/illustrations/replies.png'} width={960} height={695} alt='start chat'></Image>
+          <div style={{ fontFamily: 'Courgette' }}><span style={{ fontSize: '2rem', margin: '0 0.4rem' }}>Replies</span> to your <span style={{ fontSize: '2rem', margin: '0 0.4rem' }}>confessions</span> will appear here</div>
+        </div>
+        )}
     </div >
   );
 };
@@ -51,17 +52,17 @@ export async function getServerSideProps(context) {
     const email = session?.user?.email;
     if (email) {
       // getting details
-        try {
-          const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
-          if (response.ok) {
-            userDetails = await response.json();
-          } else {
-            console.error('Error fetching user details');
-          }
-        } catch (error) {
-          console.error('Error fetching user details:', error);
+      try {
+        const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
+        if (response.ok) {
+          userDetails = await response.json();
+        } else {
+          console.error('Error fetching user details');
         }
-    // getting personal replies
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+      // getting personal replies
       try {
         const response = await fetch(`${pageurl}/api/inbox/getinbox?email=${email}`);
         if (response.ok) {

@@ -91,6 +91,7 @@ const Sidebar = () => {
             height={512 / 3}
             alt='icon'
             className={styles.iconspng1}
+            title={'home'}
           />
         </div>
         <div
@@ -103,6 +104,7 @@ const Sidebar = () => {
             height={720 / 10}
             alt='icon'
             className={styles.iconspng2}
+            title={'random chat'}
           />
         </div>
         <div
@@ -115,6 +117,7 @@ const Sidebar = () => {
             height={720 / 10}
             alt='icon'
             className={styles.iconspng3}
+            title={'all confessions'}
           />
         </div>
         <div
@@ -127,6 +130,7 @@ const Sidebar = () => {
             height={272 / 2}
             alt='icon'
             className={styles.iconspng4}
+            title={'create confession'}
           />
         </div>
         <div
@@ -140,6 +144,7 @@ const Sidebar = () => {
             height={272 / 2}
             alt='icon'
             className={styles.iconspng4}
+            title={'inbox'}
           />
           </StyledBadge>
         </div>

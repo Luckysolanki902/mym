@@ -128,7 +128,7 @@
   }
 
   .morePadding{
-    padding-bottom: 2.5rem;
+    padding-bottom: 3.5rem;
   }
 }
 
@@ -143,7 +143,7 @@
     max-width: 70%;
   }
   .morePadding{
-    padding-bottom: 1rem;
+    padding-bottom: 2.5rem;
   }
   .right {
     justify-content: right;

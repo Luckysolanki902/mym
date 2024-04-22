@@ -12,7 +12,7 @@ const StyledCopyButton = styled(Button)({
     backgroundColor: 'black',
     color: 'white',
     borderRadius: '2rem',
-    padding:'0.5rem 1rem',
+    padding: '0.5rem 1rem',
 
     ':hover': {
         backgroundColor: 'rgba(0,0,0,0.8)',
@@ -39,7 +39,8 @@ const ShareDialog = ({ open, onClose, shareLink }) => {
     };
 
     const shareOnWhatsApp = () => {
-        const whatsappURL = `https://api.whatsapp.com/send?text=${encodedShareLink}`;
+        const shareDescription = encodeURIComponent("\n\nShh... Have you seen the latest anonymous confession on MyM?\n Click to dive in and spill your thoughts!");
+        const whatsappURL = `https://api.whatsapp.com/send?text=${encodedShareLink}${shareDescription}`;
         window.open(whatsappURL, '_blank');
     };
 
@@ -47,9 +48,9 @@ const ShareDialog = ({ open, onClose, shareLink }) => {
         <Dialog open={open} onClose={onClose} className={styles.main}>
             <DialogTitle sx={{ fontWeight: '600', fontSize: '2rem', marginBottom: '0' }}>Share</DialogTitle>
             <DialogContent style={{ padding: '3rem', paddingTop: '1rem' }}>
-                
+
                 <div style={{ display: 'flex', gap: '2rem', width: '100%', justifyContent: 'center', marginBottom: '2rem' }}>
-                    
+
                     <Button color="primary" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', fontWeight: '600', fontFamily: 'Roboto' }} className={styles.shareButton} onClick={shareOnWhatsApp}>
                         <Image src={'/images/othericons/whatsapp.png'} width={512 / 3} height={512 / 3} alt='whatsapp'></Image>
                         Whatsapp
@@ -58,14 +59,14 @@ const ShareDialog = ({ open, onClose, shareLink }) => {
                 <div className={styles.shareLink}>
                     <div className={styles.shareLinkText}>{plainLink}</div>
                     <div>
-                        <StyledCopyButton color='inherit' onClick={handleCopy} style={{ backgroundColor: copied ? 'gray' : 'black'}} className={styles.copyBtnPc}>
+                        <StyledCopyButton color='inherit' onClick={handleCopy} style={{ backgroundColor: copied ? 'gray' : 'black' }} className={styles.copyBtnPc}>
                             {copied ? 'Copied' : 'Copy'}
                         </StyledCopyButton>
                     </div>
                 </div>
                 <div className={styles.linkButtonForSmallScreen}>
                     <StyledCopyButton color='inherit' className={styles.copyBtnSmall} style={{ textTransform: 'uppercase', padding: '0.5rem 1rem', backgroundColor: copied ? 'gray' : 'black' }} onClick={handleCopy}  >
-                       <ContentCopyIcon style={{marginRight:'1rem'}}/>
+                        <ContentCopyIcon style={{ marginRight: '1rem' }} />
                         {copied ? 'Copied' : ' Copy Link'}
                     </StyledCopyButton>
                 </div>

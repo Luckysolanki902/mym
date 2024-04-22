@@ -6,15 +6,18 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Button from '@mui/material/Button';
 
-
 const GuidelinesDialog = ({ open, onClose }) => {
     const handleBackdropClick = (e) => {
         e.stopPropagation();
     }
     return (
-        <Dialog open={open} onClose={onClose} onClick={handleBackdropClick}>
+        <Dialog open={open} onClose={onClose} onClick={handleBackdropClick}
+        maxWidth={'md'} style={{ backgroundColor:'rgba(0,0,0,0.6)'}}
+        >
             <DialogTitle>Guidelines Before Creating a Confession</DialogTitle>
-            <DialogContent>
+            <DialogContent
+            style={{padding:'2rem'}}
+            >
                 <p style={{ fontFamily: 'Courgette', fontSize: '1.1rem' }}>
                     We understand that confessions can be powerful expressions of emotion. Here are some guidelines to ensure a positive and respectful experience:
                 </p>
