@@ -15,7 +15,7 @@
     height: auto;
     width: 50vw;
     min-height: 40vh;
-    max-height: 80vh;
+    max-height: 60vh;
     /* border: 1px solid red; */
     border-radius: 1.1875rem;
     display: flex;
@@ -160,7 +160,7 @@
 }
 
 .shareIcon{
-    font-size: 2rem;
+    font-size: 1.6rem;
     
 }
 @media(width>800px){

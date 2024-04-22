@@ -1,0 +1,106 @@
+.main {
+    /* padding: 1rem; */
+}
+
+.mainCard {
+    z-index: 1;
+    padding: 2rem 2rem;
+    /* for white space around */
+}
+
+.blurCard {
+    z-index: -1;
+    padding: 1rem 1rem;
+    padding-top: 0;
+    background-color: #83E7FD;
+    box-shadow: 0 0 15px 15px rgba(131, 231, 253, 1);
+    border-radius: 2rem;
+    cursor: pointer;
+}
+
+.card {
+    z-index: 89;
+    padding: 1rem 2rem;
+    background-color: #83E7FD;
+    filter: blur(0px);
+}
+
+.heading {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.heading h3 {
+    background-image: linear-gradient(to right, #f1325f, #65dbf5);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    font-style: italic;
+
+    font-size: 1.2rem;
+}
+
+.card p {
+    font-family: 'Roboto';
+    font-style: italic;
+    text-indent: 2rem;
+    font-size: 0.7rem;
+}
+
+.footer {
+    margin-top: 2rem;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    gap: 1rem;
+    align-items: center;
+    font-size: 1.4rem;
+    color: #F85278;
+}
+
+.footerDiv {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.3rem;
+}
+
+.length {
+    color: rgb(59, 59, 59);
+    font-size: 0.7rem;
+}
+
+
+@media (width>800px){
+    .mainCard {
+        z-index: 1;
+        padding: 2rem 10rem;
+        /* for white space around */
+    }
+    .heading h3{
+        font-size: 2rem;
+    }
+    .card p{
+    font-size: 0.9rem;
+
+    }
+      
+}
+
+
+@media (width>1400px){
+    .mainCard {
+        z-index: 1;
+        padding: 2rem 15rem;
+        /* for white space around */
+    }
+    .heading h3{
+        font-size: 2rem;
+    }
+    .card p{
+        font-size: 1rem;
+    
+        }
+      
+}

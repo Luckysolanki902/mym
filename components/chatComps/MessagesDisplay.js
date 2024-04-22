@@ -12,7 +12,7 @@ const EventsContainerMemoized = React.memo(EventsContainer);
 
 const MessageDisplay = React.memo(({ userDetails }) => {
 
-    const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping,usersOnline } = useTextChat()
+    const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping, usersOnline, isFindingPair } = useTextChat()
 
     const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
     const shouldRenderPaddingDiv = strangerDisconnectedMessageDiv || (hasPaired && strangerIsTyping);
@@ -49,20 +49,36 @@ const MessageDisplay = React.memo(({ userDetails }) => {
     });
 
     return (
-        <div className={`${styles.messCon} ${!hasPaired && !strangerIsTyping && styles.nopadb}`}>
+        <div className={`${styles.messCon}  ${!hasPaired && !strangerIsTyping && styles.nopadb}  ${(shouldRenderPaddingDiv || strangerIsTyping) && styles.morePadding}`}>
             <EventsContainerMemoized />
 
             {/* Padding div with dynamic height based on conditions */}
             <div ref={paddingDivRef} className={styles.paddingDiv} style={{ height: shouldRenderPaddingDiv ? '3rem' : 0, opacity: '0' }}>
                 sdfasdf
             </div>
-
-            {reversedMessages.map((msg, index) => (
-                <animated.div key={index} style={index === 0 && !strangerIsTyping ? messageAnimation : {}}>
+            {reversedMessages?.map((msg, index) => (
+                <animated.div key={index} style={index === 0 && !strangerIsTyping && !strangerDisconnectedMessageDiv ? messageAnimation : {}}>
                     <Message key={index} msg={msg} userDetails={userDetails} receiver={receiver} strangerGender={strangerGender} hasPaired={hasPaired} />
                 </animated.div>
             ))}
             {/* {usersOnline && <>Users: {usersOnline}</>} */}
+
+            {reversedMessages?.length < 1 && hasPaired &&
+                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <Image style={{ width: '15rem', height: 'auto', opacity: '0.7' }} src={'/images/illustrations/messages.png'} width={960} height={695} alt='start chat'></Image>
+                    <div style={{ fontFamily: 'Courgette' }}>Say <span style={{ fontSize: '2rem', margin: '0 0.4rem' }}>hi</span> and see where the conversation takes you!</div>
+                </div>
+            }
+            {/* pairing */}
+            {!hasPaired && isFindingPair &&
+                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ fontFamily: 'Courgette' }}><span style={{ fontSize: '2rem', margin: '0 0.4rem', color:'rgba(0,0,0,0.6)' }}>Pairing</span>
+                    <Image className={styles.dots}  priority src={'/gifs/istyping4.gif'} width={800 / 5} height={600 / 5} alt='' />
+                    </div>
+                </div>
+            }
+
+
             <div className={styles.filterPos}>
                 <FilterOptions
                     userDetails={userDetails}

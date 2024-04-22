@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { IoIosSend } from 'react-icons/io';
@@ -15,12 +15,14 @@ const CommentsDrawer = ({
 }) => {
   const bottomRef = useRef(null);
 
+const reversedComments = useMemo(()=> [...comments].reverse(), [comments]);
+
   useEffect(() => {
     // Scroll to the bottom when the comments change
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [comments]);
+  }, [comments, isOpen]);
 
   return (
     <SwipeableDrawer
@@ -32,8 +34,11 @@ const CommentsDrawer = ({
       <div className={styles.drawerMainContainer}>
         <div className={styles.drawerHeader}>
           <div className={styles.puller}></div>
-          <h2 className={styles.drawerTitle}>
+          <h2 className={styles.drawerTitle} >
             Comments
+            {/* <span style={{ color: 'rgba(0,0,0,0.7)', marginLeft: '1rem',  }}>
+              {comments.length}
+            </span> */}
           </h2>
         </div>
         {/* Comment input and display */}
@@ -41,7 +46,8 @@ const CommentsDrawer = ({
         <div className={styles.drawerContainer}>
           <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
             <div className={styles.comments}>
-              {comments.map((comment, index) => (
+              <div ref={bottomRef}></div>
+              {reversedComments.map((comment, index) => (
                 <div key={comment._id} className={styles.comment}>
                   <div className={comment.gender === 'male' ? styles.maleAvatar : styles.femaleAvatar}>
                     {/* <Avatar
@@ -56,8 +62,7 @@ const CommentsDrawer = ({
                   </div>
                 </div>
               ))}
-              {comments.length < 1 && <>No comments Yet</>}
-              <div ref={bottomRef}></div>
+              {reversedComments.length < 1 && <>No comments Yet</>}
             </div>
           </div>
           {/* Comment input */}

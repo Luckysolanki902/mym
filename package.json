@@ -44,6 +44,7 @@
     "react-top-loading-bar": "^2.3.1",
     "simple-peer": "^9.11.1",
     "socket.io-client": "^4.7.2",
+    "swiper": "^11.1.1",
     "typewriter-effect": "^2.21.0",
     "use-pull-to-refresh": "^2.2.1",
     "uuid": "^9.0.1"

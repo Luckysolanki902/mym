@@ -15,8 +15,6 @@ const TextChatWithout = ({ userDetails }) => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarColor, setSnackbarColor] = useState('');
 
-
-
   const [inpFocus, setInpFocus] = useState(false);
   const typingTimeoutRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -39,7 +37,7 @@ const TextChatWithout = ({ userDetails }) => {
 
   // using filters contexts
   const { preferredCollege, preferredGender } = useFilters();
-  
+
 
   // Provide socket and handle socketEvents___________________________
   useEffect(() => {

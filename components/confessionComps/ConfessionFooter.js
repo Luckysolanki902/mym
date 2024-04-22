@@ -21,7 +21,6 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                 const response = await fetch(
                     `/api/getdetails/getlikes?confessionId=${confession._id}`
                 );
-
                 if (response.ok) {
                     const { likes } = await response.json();
                     setLiked(

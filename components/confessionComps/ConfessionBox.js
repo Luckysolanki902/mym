@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import styles from '../componentStyles/confession.module.css';
 import { useInView } from 'react-intersection-observer'; // Import the useInView hook
@@ -16,6 +16,8 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
     triggerOnce: true,
   });
 
+  const confessionBoxRef = useRef(null)
+
   const handleComplete = () => {
     setCanShowTypingEffect(false)
     setShowCaret(false);
@@ -28,11 +30,14 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
 
 
   useEffect(() => {
+    const confessionBox = confessionBoxRef.current;
     if (inView && canshowTypingEffect) {
       const timer = setTimeout(() => {
         if (index < confession.confessionContent.length) {
           setContent(prevContent => prevContent + confession.confessionContent.charAt(index));
           setIndex(prevIndex => prevIndex + 1);
+          confessionBox.scrollTop = confessionBox.scrollHeight; // Scroll to the bottom
+
         } else {
           setShowCaret(prevShowCaret => !prevShowCaret); // Toggle caret visibility
           handleComplete();
@@ -41,14 +46,14 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
 
       return () => clearTimeout(timer);
     }
-  }, [index, inView, confession.confessionContent.length]);
+  }, [index, inView, confession.confessionContent.length, content]);
 
   return (
-    <div ref={ref} style={{position:'relative'}} className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`} onClick={handleComplete}>
+    <div ref={ref} style={{ position: 'relative' }} className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`} onClick={handleComplete}>
       <Button color='primary' style={{ position: 'absolute', top: '0.5rem', right: '0.5rem' }}>
-        <ReplyIcon onClick={handleShareClick} style={{transform:'scaleX(-1)', color:'white'}} className={styles.shareIcon}/>
+        <ReplyIcon onClick={handleShareClick} style={{ transform: 'scaleX(-1)', color: 'white' }} className={styles.shareIcon} />
       </Button>
-      <div className={styles.textarea} style={{ whiteSpace: 'pre-line' }}>
+      <div className={styles.textarea} style={{ whiteSpace: 'pre-line' }} ref={confessionBoxRef}>
         {inView ? (
           <>
             <span>{content}</span>

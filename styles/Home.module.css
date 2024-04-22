@@ -1,10 +1,12 @@
 .mainContainer {
   width: 100%;
-  background-image: url('/images/patterns/leatherhome2.jpg');
-  background-repeat: repeat;
+  /* background-image: url('/images/patterns/leatherhome2.jpg');
+  background-repeat: repeat; */
   margin: 0;
   padding: 0;
   padding-bottom: 5rem;
+  padding-top: 2rem;
+  overflow-x: hidden;
 }
 
 .hiuser {
@@ -33,10 +35,12 @@
 }
 
 .desc {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1rem;
+  font-family: Jost;
+  font-style: inherit;
+  font-weight: 900;
+  font-size: 1.6rem;
   font-weight: 600;
-  color: #666363;
+  color: #a5a5a5;
   text-align: center;
   /* border: 1px solid rgba(128, 128, 128, 0.399); */
   margin-top: 0;
@@ -74,11 +78,23 @@
   letter-spacing: -2px;
 }
 
+.taglineP span {
+  /* font-weight: 900; */
+  font-size: 2rem;
+  margin-right: 1rem;
+  margin-left: 1rem;
+}
+
 .taglineP {
   font-family: "Courgette", cursive;
   font-weight: 400;
   font-style: normal;
   font-size: 1.2rem;
+}
+
+.map {
+  width: 50%;
+  height: auto;
 }
 
 #taglinePid {
@@ -90,24 +106,93 @@
   height: auto;
   margin-bottom: 2rem;
 }
-.comingsoonCards{
+
+.comingsoonCards {
   width: 100%;
   display: flex;
   justify-content: center;
   padding: 5rem;
 }
 
-.comingsoonCards img{
-  width: 80%; 
+.comingsoonCards img {
+  width: 80%;
   height: auto;
 }
 
-.unlock{
+.unlock {
   font-family: "Trade Winds", system-ui;
   font-size: 3rem;
   text-align: center;
   margin: 3rem 2rem;
   color: #373737;
+}
+
+.friendsTagLine {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  text-align: center;
+}
+
+.first {
+  display: flex;
+  align-items: baseline;
+  /* border: 1px solid red; */
+  text-align: center;
+  justify-content: center;
+
+}
+
+.making {
+  font-family: "Jomhuria", serif;
+  color: #83E7FD;
+  font-size: 7rem;
+  margin-right: 1rem;
+}
+
+.friends {
+  font-size: 1.3rem;
+  font-family: Jost;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.journey {
+  font-family: "Jomhuria", serif;
+  color: #F85279;
+  font-size: 7rem;
+  margin-right: 1rem;
+  /* border: 1px solid black; */
+  transform: translateY(-30%) translateX(40%);
+
+}
+
+.ourgoal {
+  font-family: 'Jomhuria';
+  font-size: 8rem;
+  margin-bottom: -2rem;
+  color: #83E7FD;
+  text-align: center;
+}
+
+.ourgoal span {
+  color: #F85279;
+}
+
+.ourgoalP {
+  padding-left: 1.4rem;
+  padding-right: 1.4rem;
+  font-family: 'Courgette', cursive;
+  /* font-size: 1.5rem; */
+  text-align: center;
+  margin: auto;
+  font-size: 1.3rem;
+}
+.mymcolor{
+  width: 50%;
+  height: auto;
+  margin: auto;
+  margin-top: 3rem;
 }
 
 @media (width<1200px) {
@@ -122,11 +207,12 @@
     letter-spacing: 11px;
     font-weight: 500;
     margin-top: -1rem;
+    margin-bottom: -3rem;
 
   }
 
   .desc {
-    font-size: 0.8rem;
+    font-size: 1.2rem;
   }
 
   #taglinePid {
@@ -165,31 +251,36 @@
     font-size: 0.9rem;
   }
 
-  
-.unlock{
-  font-family: "Trade Winds", system-ui;
-  font-size: 2rem;
-  text-align: center;
-  margin: 3rem 3rem;
-  color: #373737;
-}
 
-.comingsoonCards{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 3rem;
-}
+  .unlock {
+    font-family: "Trade Winds", system-ui;
+    font-size: 2rem;
+    text-align: center;
+    margin: 3rem 3rem;
+    color: #373737;
+  }
 
-.comingsoonCards img{
-  width: 90%; 
-  height: auto;
-}
+  .comingsoonCards {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 3rem;
+  }
+
+  .comingsoonCards img {
+    width: 90%;
+    height: auto;
+  }
 
 }
 
 @media (width<1000px) {
-
+  .mymcolor{
+    width: 60%;
+    height: auto;
+    margin: auto;
+    margin-top: 3rem;
+  }
   .hiuser img {
     width: 15rem;
     transform: translateY(0%);
@@ -204,7 +295,7 @@
   }
 
   .desc {
-    font-size: 0.7rem;
+    font-size: 1rem;
     letter-spacing: 0px;
   }
 
@@ -244,36 +335,73 @@
   #taglinePid {
     max-width: 320px;
   }
-  
-.unlock{
-  font-family: "Trade Winds", system-ui;
-  font-size: 2rem;
-  text-align: center;
-  margin: 3rem 2rem;
-  color: #373737;
-}
+
+  .unlock {
+    font-family: "Trade Winds", system-ui;
+    font-size: 2rem;
+    text-align: center;
+    margin: 3rem 2rem;
+    color: #373737;
+  }
 
 
-.comingsoonCards{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
-}
+  .comingsoonCards {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
 
-.comingsoonCards img{
-  width: 100%; 
-  height: auto;
-}
+  .comingsoonCards img {
+    width: 100%;
+    height: auto;
+  }
 
 
 }
 
 @media (width<600px) {
+  .mymcolor{
+    width: 60%;
+    height: auto;
+    margin: auto;
+    margin-top: 1rem;
+  }
+  .ourgoal {
+    font-family: 'Jomhuria';
+    font-size: 3rem;
+    color: #83E7FD;
+    text-align: center;
+    margin-bottom: 0;
+  }
+
+  .ourgoal span {
+    color: #F85279;
+  }
+
+  .ourgoalP {
+    padding-left: 1.4rem;
+    padding-right: 1.4rem;
+    font-family: 'Courgette', cursive;
+    /* font-size: 1.5rem; */
+    text-align: center;
+    margin: auto;
+    font-size: 1rem;
+
+  }
+
+  .friendsTagLine {
+    transform: scale(0.7);
+    margin-bottom: -5rem;
+  }
 
   .hiuser img {
     width: 12rem;
     transform: translateY(0%);
+  }
+
+  .map {
+    width: 90%;
   }
 
   .fullform {
@@ -286,7 +414,7 @@
 
   .desc {
     padding: 0 4%;
-    font-size: 0.6rem;
+    font-size: 0.9rem;
     letter-spacing: 0px;
   }
 
@@ -333,14 +461,14 @@
     height: auto;
     margin-bottom: 1rem;
   }
-  
-.unlock{
-  font-family: "Trade Winds", system-ui;
-  font-size: 1.4rem;
-  text-align: center;
-  margin: 3rem 2rem;
-  color: #373737;
-}
+
+  .unlock {
+    font-family: "Trade Winds", system-ui;
+    font-size: 1.4rem;
+    text-align: center;
+    margin: 3rem 2rem;
+    color: #373737;
+  }
 
 
 }
@@ -362,7 +490,7 @@
 
   .desc {
     padding: 0 4%;
-    font-size: 0.6rem;
+    font-size: 0.9rem;
     letter-spacing: 0px;
   }
 
@@ -398,23 +526,26 @@
     font-style: normal;
     font-size: 0.6rem;
   }
+
   #taglinePid {
     max-width: 190px;
   }
-  #taglineP2{
+
+  #taglineP2 {
     font-size: 0.4rem;
   }
+
   .arrowSvg {
     width: 50%;
     height: auto;
     margin-bottom: 0.2rem;
   }
-  
-.unlock{
-  font-family: "Trade Winds", system-ui;
-  font-size: 1rem;
-  text-align: center;
-  margin: 3rem 1rem;
-  color: #373737;
-}
+
+  .unlock {
+    font-family: "Trade Winds", system-ui;
+    font-size: 1rem;
+    text-align: center;
+    margin: 3rem 1rem;
+    color: #373737;
+  }
 }

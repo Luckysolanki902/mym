@@ -89,7 +89,7 @@ export default function App({ Component, pageProps }) {
       // Set a timeout to hide the loading indicator after 5 seconds
       timeout = setTimeout(() => {
         setShowLoadingGif(false);
-      }, 5000); // Adjust this timeout duration as needed
+      }, 10000); // Adjust this timeout duration as needed
     });
   
     router.events.on('routeChangeComplete', () => {

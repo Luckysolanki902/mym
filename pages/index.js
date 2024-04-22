@@ -4,9 +4,9 @@ import { getSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import styles from '@/styles/Home.module.css';
 import { useRouter } from 'next/router';
+import TrendingConfessions from '@/components/commonComps/TrendingConfessions';
 
-
-export default function Home({ session }) {
+export default function Home({ session, trendingConfessions }) {
   const containerSpring = useSpring({
     from: { opacity: 0, transform: 'translate3d(0, -50px, 0)' },
     to: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
@@ -32,43 +32,73 @@ export default function Home({ session }) {
           </>
         )}
         {/* Content to show to both */}
-        <div className={styles.hiuser}>
+        {/* <div className={styles.hiuser}>
           <Image src={'/images/large_pngs/hiuser.png'} width={1080 / 3} height={720 / 3} alt='hi user' />
+        </div> */}
+        <p className={styles.desc}>AN INTERCOLLEGE SOCIAL MEDIA  PLATFORM</p>
+
+        <div>
+          <TrendingConfessions trendingConfessions={trendingConfessions} />
         </div>
-        <h2 className={styles.fullform}>Meet.Your.Mate</h2>
-        <p className={styles.desc}>Sign up now and start connecting with students from your college and beyond.</p>
-        <p className={styles.desc}>
-          "Ready to join the conversation? Take your student experience to the next level!”
-        </p>
-        <div className={styles.showcase}>
-          <Image src={'/images/showcase/mymLaptop.png'} width={1280} height={787} alt='showcase' className={styles.showcaseImg}/>
+        {/* <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Image src={'/images/mym_logos/mymshadow.png'} style={{ width: '40%', height: 'auto' }} width={1232 / 2} height={656 / 2} alt='mym'></Image>
+
+        </div>
+        <h2 className={styles.fullform}>Meet.Your.Mate</h2> */}
+        {/* <p style={{ textAlign: 'center', color: 'rgba(0,0,0,0.7)' }} className={styles.taglineP}> <span>Meet</span>  with <span>your</span> <span>mates</span> and friends <span>anonymously</span></p> */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Image src={'/images/mym_logos/mymcolor.png'} width={1174} height={382} alt='mym'  className={styles.mymcolor}></Image>
+
+        </div>
+        <h3 className={styles.unlock}>Unlock the doors of possibility and embrace <br /> the friendships that await</h3>
+
+        {/* <div className={styles.showcase}>
+          <Image src={'/images/showcase/mymLaptop.png'} width={1280} height={787} alt='showcase' className={styles.showcaseImg} />
           <div className={styles.showcaseCont}>
             <div className={styles.tagline}>
-              Connect -&gt; Confess -&gt; Trend
+              Confess Your Feelings Now
             </div>
             <div className={styles.taglineP}>
-              "Your college experience, redefined."
+              "confess what you want to say, anonymously"
             </div>
           </div>
         </div>
         <div className={styles.showcase}>
-          <div className={styles.showcaseCont}  id={styles.taglinePid}>
+          <div className={styles.showcaseCont} id={styles.taglinePid}>
             <img src="/images/showcase/svgs/arrow.svg" alt="" className={styles.arrowSvg} />
             <div className={styles.taglineP} id={styles.taglineP2}>
               The exclusive social platform designed for college students to connect, share, and confess anonymously.
             </div>
           </div>
           <Image src={'/images/showcase/mymFriends.png'} width={1280} height={787} alt='showcase' className={styles.showcaseImg} />
+        </div> */}
+        {/* <div style={{ padding: "2rem", width: "100%", height: "auto" }}>
+          <div style={{ aspectRatio: '1280/720', width: '100%', backgroundColor: "gray" }}></div>
+        </div> */}
+
+        <div className={styles.friendsTagLine}>
+          <div className={styles.first}>
+            <div className={styles.making}>Making</div>
+            <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '0', paddingLeft: '0', transform: 'translateX(-25%)' }}>
+              <div className={styles.friends}>friends is a</div>
+              <div className={styles.journey}>Journey</div>
+            </div>
+          </div>
         </div>
-        <h3 className={styles.unlock}>Unlock the doors of possibility and embrace <br /> the friendships that await</h3>
-        <div style={{padding:"2rem", width:"100%", height:"auto"}}>
-          <div style={{aspectRatio:'1280/720', width:'100%', backgroundColor:"gray"}}></div>
+
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Image src={'/images/roadmap/roadmap.png'} className={styles.map} width={1536 / 3} height={2572 / 3} alt='roadmap'></Image>
         </div>
+
+        <div className={styles.ourgoal}>
+          Our <span>Goal</span>
+        </div>
+        <p className={styles.ourgoalP}>23IITs , 31NITs , and every other bachelor colleges on our platform</p>
         <div className={styles.comingsoonCards}>
-        <Image src={'/images/showcase/cards.png'} width={1348} height={688} alt='cards'  ></Image>
+          <Image src={'/images/showcase/cards.png'} width={1348} height={688} alt='cards'  ></Image>
         </div>
         <div style={{ width: '100%', height: '10em' }}></div>
-      </animated.div>
+      </animated.div >
     </>
   );
 }
@@ -76,18 +106,25 @@ export default function Home({ session }) {
 export async function getServerSideProps(context) {
   // Fetch session and user details
   const session = await getSession(context);
-    // If session is null, return null as session
-    if (!session) {
-      return {
-        props: {
-          session: null,
-        },
-      };
-    }
+  const pageurl = 'https://www.meetyourmate.in'
+  const res = await fetch(pageurl + '/api/confession/gettrendingconfessions');
+  const data = await res.json();
+  // If session is null, return null as session
+  if (!session) {
+    return {
+      props: {
+        session: null,
+        trendingConfessions: data.trendingConfessions,
+      },
+    };
+  }
+
+
 
   return {
     props: {
       session,
+      trendingConfessions: data.trendingConfessions,
     },
   };
 }

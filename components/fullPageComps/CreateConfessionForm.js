@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../componentStyles/createconfessionform.module.css';
 import { CircularProgress, Button } from '@mui/material';
-import WarningDialog from '../confessionComps/WarningDialog';
+import WarningDialog from '../dialogs/WarningDialog';
 
 const CreateConfessionForm = ({ userDetails }) => {
   const [confessionValue, setConfessionValue] = useState('');

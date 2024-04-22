@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from '../componentStyles/confession.module.css';
-import { FaHeart, FaComment, FaTimes } from 'react-icons/fa';
 import { IoIosSend } from 'react-icons/io';
 import { useMediaQuery } from '@mui/material';
 import { useInView } from 'react-intersection-observer';

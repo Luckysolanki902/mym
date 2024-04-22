@@ -69,7 +69,15 @@ const Sidebar = () => {
     setActiveIndex(index);
     router.push(path);
   };
-
+  
+  // useEffect(() => {
+  //   // Check if the path matches any of the sidebar routes and set the active tab accordingly
+  //   const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox'];
+  //   const index = paths.findIndex(path => path === router.pathname);
+  //   if (index !== -1) {
+  //     setActiveIndex(index);
+  //   }
+  // }, [router.pathname]);
   return (
     <div className='sidebarvisibility'>
       <div className={`${styles.mainSidebarDiv} sidebardim`}>
@@ -126,7 +134,13 @@ const Sidebar = () => {
           onClick={() => handleSetActive(4, '/inbox')}
         >
           <StyledBadge badgeContent={unseenCount} color="primary">
-            <MailIcon fontSize='large' />
+          <Image
+            src={'/images/sidebaricons/inbox.png'}
+            width={225 / 2}
+            height={272 / 2}
+            alt='icon'
+            className={styles.iconspng4}
+          />
           </StyledBadge>
         </div>
       </div>

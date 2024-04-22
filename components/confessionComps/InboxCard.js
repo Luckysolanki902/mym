@@ -21,9 +21,7 @@ const InboxCard = ({ entry, userDetails }) => {
 
         const observer = new IntersectionObserver(
             ([entry]) => {
-                console.log("Intersection observed:", entry); // Log intersection entry
                 if (entry.isIntersecting) {
-                    console.log("Component intersecting."); // Log when component is intersecting
                     observer.unobserve(cardRef.current);
                     // Call API to update state to 'seen'
                     setFetchNow(true)
@@ -35,7 +33,6 @@ const InboxCard = ({ entry, userDetails }) => {
 
         if (cardRef.current) {
             observer.observe(cardRef.current);
-            console.log("Observing component.");
         } else {
             console.warn("Card ref is null.");
         }
@@ -43,7 +40,6 @@ const InboxCard = ({ entry, userDetails }) => {
         return () => {
             if (cardRef.current) {
                 observer.unobserve(cardRef.current);
-                console.log("Stop observing component.");
             }
         };
     }, [replySeen]); // Added replySeen as dependency
@@ -51,7 +47,6 @@ const InboxCard = ({ entry, userDetails }) => {
     
             useEffect(() => {
                 if (entry._id) {
-                    console.log("Calling API to update seen state."); // Log API call
                     fetch('/api/inbox/updateseenstateofinbox', {
                         method: 'POST',
                         headers: {
@@ -63,7 +58,6 @@ const InboxCard = ({ entry, userDetails }) => {
                             if (!response.ok) {
                                 throw new Error('Failed to update seen state');
                             }
-                            console.log("API call successful."); // Log successful API call
                         })
                         .catch(error => {
                             console.error('Error updating seen state:', error);
@@ -81,10 +75,9 @@ const InboxCard = ({ entry, userDetails }) => {
                     {truncateText(entry.confessionContent, 100)}
                 </Link>
             </div>
-            <div className={styles.br}></div>
+            <div className={styles.br} style={{opacity:'0.5'}}></div>  
             <div className={styles.repliesBox}>
-                {entry.replies.map((reply, index) => {
-                    console.log(replySeen[index])
+                {entry.replies.filter(reply=>reply.reply !== '').map((reply, index) => {
                     return (
                         <div key={index} className={`${styles.reply} ${replySeen[index] ? styles.seenReply : ''}`}>
                             {(!replySeen[index]) && <div className={styles.greenDot}></div>}
