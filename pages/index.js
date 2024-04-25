@@ -37,7 +37,7 @@ export default function Home({ session, trendingConfessions }) {
         </div> */}
         <p className={styles.desc}>AN INTERCOLLEGE SOCIAL MEDIA  PLATFORM</p>
 
-        <div>
+        <div style={{width:"100%", height:'auto', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
           <TrendingConfessions trendingConfessions={trendingConfessions} />
         </div>
         {/* <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
