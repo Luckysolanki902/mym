@@ -1,11 +1,13 @@
-.main {
+.main *{
     /* padding: 1rem; */
+    box-sizing: border-box;
 }
 
 .mainCard {
     z-index: 1;
     padding: 2rem 2rem;
     /* for white space around */
+    box-sizing: border-box;
 }
 
 .blurCard {
