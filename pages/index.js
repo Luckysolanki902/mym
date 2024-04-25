@@ -5,12 +5,28 @@ import Image from 'next/image';
 import styles from '@/styles/Home.module.css';
 import { useRouter } from 'next/router';
 import TrendingConfessions from '@/components/commonComps/TrendingConfessions';
-
+import Typewriter from 'typewriter-effect';
 export default function Home({ session, trendingConfessions }) {
   const containerSpring = useSpring({
     from: { opacity: 0, transform: 'translate3d(0, -50px, 0)' },
     to: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
   });
+  const router = useRouter()
+
+
+  const chatFeatures = [
+    "Just friends is what we believe, rest you decide.",
+    "RIP Ohmegle, say hi to Mym! Enjoy random chats and laughs with fellow students.",
+    "Customize your chat filters. Talk with students from your college or connect with people from everywhere. Choose to chat with a guy or a girl.",
+    "Start with a hi and see where the conversation takes you."
+  ];
+
+  const confessionFeatures = [
+    "Let your secrets fly free! Anonymously share your thoughts, dreams, and confessions with your college community.",
+    "Like, comment, and share confessions without revealing your identity.",
+    "Send direct replies to confessions, without showing it in public comments.",
+    "Get more likes and comments to make your confession trend."
+  ];
 
   return (
     <>
@@ -31,59 +47,70 @@ export default function Home({ session, trendingConfessions }) {
             {/* Content to be shown only for non-session users */}
           </>
         )}
+
         {/* Content to show to both */}
         {/* <div className={styles.hiuser}>
           <Image src={'/images/large_pngs/hiuser.png'} width={1080 / 3} height={720 / 3} alt='hi user' />
         </div> */}
-        <p className={styles.desc}>AN INTERCOLLEGE SOCIAL MEDIA  PLATFORM</p>
+        <p className={styles.desc}>AN ANONYMOUS INTERCOLLEGE SOCIAL MEDIA PLATFORM</p>
 
-        <div style={{width:"100%", height:'auto', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        {/* Trending Confessions */}
+        <div style={{ width: "100%", height: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <TrendingConfessions trendingConfessions={trendingConfessions} />
         </div>
-        {/* <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Image src={'/images/mym_logos/mymshadow.png'} style={{ width: '40%', height: 'auto' }} width={1232 / 2} height={656 / 2} alt='mym'></Image>
 
+        {/* Buttons for chat page and confession page */}
+        <div className={styles.homepageBtns}>
+          <button className={styles.chatbtn} onClick={() => router.push('/chat')}>CHAT</button>
+          <button className={styles.confessbtn} onClick={() => router.push('/confession')}>CONFESS</button>
         </div>
-        <h2 className={styles.fullform}>Meet.Your.Mate</h2> */}
-        {/* <p style={{ textAlign: 'center', color: 'rgba(0,0,0,0.7)' }} className={styles.taglineP}> <span>Meet</span>  with <span>your</span> <span>mates</span> and friends <span>anonymously</span></p> */}
+
+
+
+
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Image src={'/images/mym_logos/mymcolor.png'} width={1174} height={382} alt='mym'  className={styles.mymcolor}></Image>
-
+          <Image src={'/images/showcase/makingfriends.png'} priority width={1516 / 2} height={511 / 2} alt='notohmegle' className={styles.notohmegle}></Image>
         </div>
-        <h3 className={styles.unlock}>Unlock the doors of possibility and embrace <br /> the friendships that await</h3>
 
-        {/* <div className={styles.showcase}>
-          <Image src={'/images/showcase/mymLaptop.png'} width={1280} height={787} alt='showcase' className={styles.showcaseImg} />
-          <div className={styles.showcaseCont}>
-            <div className={styles.tagline}>
-              Confess Your Feelings Now
+        {/* <h3 className={styles.unlock}>AN ANOYNYMOUS INTERCOLLEGE SOCIAL MEDIA  PLATFORM</h3> */}
+
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '-2.2px', position: 'relative' }}>
+          <Image src={'/images/showcase/confessionfeaturesl.png'} width={1716} height={966} alt='chatfeatures' className={styles.featuresBg}></Image>
+          <div className={styles.chatfeatures}>
+            {/* Chat features */}
+            <div>
+
+              <Typewriter
+                options={{
+                  strings: chatFeatures,
+                  autoStart: true,
+                  loop: true,
+                }}
+              />
             </div>
-            <div className={styles.taglineP}>
-              "confess what you want to say, anonymously"
-            </div>
+
           </div>
         </div>
-        <div className={styles.showcase}>
-          <div className={styles.showcaseCont} id={styles.taglinePid}>
-            <img src="/images/showcase/svgs/arrow.svg" alt="" className={styles.arrowSvg} />
-            <div className={styles.taglineP} id={styles.taglineP2}>
-              The exclusive social platform designed for college students to connect, share, and confess anonymously.
-            </div>
-          </div>
-          <Image src={'/images/showcase/mymFriends.png'} width={1280} height={787} alt='showcase' className={styles.showcaseImg} />
-        </div> */}
-        {/* <div style={{ padding: "2rem", width: "100%", height: "auto" }}>
-          <div style={{ aspectRatio: '1280/720', width: '100%', backgroundColor: "gray" }}></div>
-        </div> */}
 
-        <div className={styles.friendsTagLine}>
-          <div className={styles.first}>
-            <div className={styles.making}>Making</div>
-            <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '0', paddingLeft: '0', transform: 'translateX(-25%)' }}>
-              <div className={styles.friends}>friends is a</div>
-              <div className={styles.journey}>Journey</div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+          <Image src={'/images/showcase/chatfeaturesl.png'} width={1716} height={966} alt='chatfeatures' className={styles.featuresBg}></Image>
+          <div className={styles.confessionfeatures}>
+            <div>
+
+              <Typewriter
+                options={{
+                  strings: confessionFeatures,
+                  autoStart: true,
+                  loop: true,
+                }}
+              />
             </div>
+
           </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Image src={'/images/illustrations/notohmegle.png'} width={1516 / 2} height={511 / 2} alt='notohmegle' className={styles.notohmegle}></Image>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

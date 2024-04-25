@@ -152,7 +152,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                     <input
                         className={styles.anonymInput}
                         type="text"
-                        placeholder='Reply anonymously...'
+                        placeholder='Reply...'
                         value={anonymousReplyValue}
                         onChange={(e) => setAnonymousReplyValue(e.target.value)}
                         onKeyDown={(e) => {
@@ -161,11 +161,11 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                                 handleAnonymousReply();
                             }
                         }}
-                        onClick={() => {
-                            if (isSmallDevice && !isAnonymousReplyDialogOpen) {
-                                setAnonymousReplyDialogOpen(true)
-                            }
-                        }}
+                        // onClick={() => {
+                        //     if (isSmallDevice && !isAnonymousReplyDialogOpen) {
+                        //         setAnonymousReplyDialogOpen(true)
+                        //     }
+                        // }}
                     />
                     <button
                         className={styles.comBtn}

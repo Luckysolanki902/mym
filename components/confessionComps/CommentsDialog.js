@@ -44,29 +44,7 @@ const reversedComments = useMemo(()=> [...comments].reverse(), [comments]);
         {/* Comment input and display */}
         {/* Comment input and display */}
         <div className={styles.drawerContainer}>
-          <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
-            <div className={styles.comments}>
-              <div ref={bottomRef}></div>
-              {reversedComments.map((comment, index) => (
-                <div key={comment._id} className={styles.comment}>
-                  <div className={comment.gender === 'male' ? styles.maleAvatar : styles.femaleAvatar}>
-                    {/* <Avatar
-                    style={{ width: '30px', height: '30px' }}
-                    avatarStyle='Circle'
-                    {...commentAvatars[index]}
-                  /> */}
-                    {comment.gender === 'male' ? 'Some Boy:' : 'Some Girl:'}
-                  </div>
-                  <div className={styles.commentContent}>
-                    {comment.commentContent}
-                  </div>
-                </div>
-              ))}
-              {reversedComments.length < 1 && <>No comments Yet</>}
-            </div>
-          </div>
-          {/* Comment input */}
-          <div className={styles.reply2}>
+        <div className={styles.reply2}>
             <input
               type='text'
               placeholder='Add a comment...'
@@ -91,6 +69,29 @@ const reversedComments = useMemo(()=> [...comments].reverse(), [comments]);
               <IoIosSend style={{ width: '100%', height: 'auto' }} />
             </button>
           </div>
+          <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
+            <div className={styles.comments}>
+              <div ref={bottomRef}></div>
+              {reversedComments.map((comment, index) => (
+                <div key={comment._id} className={styles.comment}>
+                  <div className={comment.gender === 'male' ? styles.maleAvatar : styles.femaleAvatar}>
+                    {/* <Avatar
+                    style={{ width: '30px', height: '30px' }}
+                    avatarStyle='Circle'
+                    {...commentAvatars[index]}
+                  /> */}
+                    {comment.gender === 'male' ? 'Some Boy:' : 'Some Girl:'}
+                  </div>
+                  <div className={styles.commentContent}>
+                    {comment.commentContent}
+                  </div>
+                </div>
+              ))}
+              {reversedComments.length < 1 && <>No comments Yet</>}
+            </div>
+          </div>
+          {/* Comment input */}
+
         </div>
 
       </div>

@@ -9,17 +9,6 @@
   overflow-x: hidden;
 }
 
-.hiuser {
-  display: flex;
-  justify-content: center;
-}
-
-.hiuser img {
-  width: 20rem;
-  height: auto;
-  transform: translateY(10%);
-  /* border: 1px solid rgba(255, 0, 0, 0.408); */
-}
 
 .fullform {
   font-family: "Abhaya Libre", serif;
@@ -45,6 +34,7 @@
   /* border: 1px solid rgba(128, 128, 128, 0.399); */
   margin-top: 0;
   margin-bottom: 0;
+  text-align: center;
 }
 
 .showcase {
@@ -71,41 +61,13 @@
   /* border: 1px solid red; */
 }
 
-.tagline {
-  font-family: "Belgrano", serif;
-  font-weight: 500;
-  font-size: 2.8rem;
-  letter-spacing: -2px;
-}
-
-.taglineP span {
-  /* font-weight: 900; */
-  font-size: 2rem;
-  margin-right: 1rem;
-  margin-left: 1rem;
-}
-
-.taglineP {
-  font-family: "Courgette", cursive;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 1.2rem;
-}
 
 .map {
   width: 50%;
   height: auto;
 }
 
-#taglinePid {
-  max-width: 600px;
-}
 
-.arrowSvg {
-  width: 50%;
-  height: auto;
-  margin-bottom: 2rem;
-}
 
 .comingsoonCards {
   width: 100%;
@@ -127,48 +89,9 @@
   color: #373737;
 }
 
-.friendsTagLine {
-  display: flex;
-  flex-direction: column;
-  /* align-items: center; */
-  text-align: center;
-}
-
-.first {
-  display: flex;
-  align-items: baseline;
-  /* border: 1px solid red; */
-  text-align: center;
-  justify-content: center;
-
-}
-
-.making {
-  font-family: "Jomhuria", serif;
-  color: #83E7FD;
-  font-size: 7rem;
-  margin-right: 1rem;
-}
-
-.friends {
-  font-size: 1.3rem;
-  font-family: Jost;
-  font-style: italic;
-  font-weight: 600;
-}
-
-.journey {
-  font-family: "Jomhuria", serif;
-  color: #F85279;
-  font-size: 7rem;
-  margin-right: 1rem;
-  /* border: 1px solid black; */
-  transform: translateY(-30%) translateX(40%);
-
-}
 
 .ourgoal {
-  font-family: 'Jomhuria';
+  font-family: "Jomhuria", cursive;
   font-size: 8rem;
   margin-bottom: -2rem;
   color: #83E7FD;
@@ -188,19 +111,279 @@
   margin: auto;
   font-size: 1.3rem;
 }
-.mymcolor{
-  width: 50%;
-  height: auto;
-  margin: auto;
-  margin-top: 3rem;
+
+.homepageBtns{
+  display: flex;
+  justify-content: center;
+  gap: 10rem;
+  margin-top: 4rem; 
+margin-bottom: 4rem;
+} 
+
+.homepageBtns button{
+  padding: 1.3rem 3rem;
+  border-radius: 3rem;
+  border: 1px solid white;
+  text-transform: uppercase;
+  color: white;
+  font-size: 1.3rem;
+  box-shadow: 0px 3px 2px 2px rgba(0, 0, 0, 0.2);
+  font-family: Jost;
+  width: 13rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3 cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@media (width<1200px) {
+.homepageBtns button:hover{
+  transform: scale(0.97);
+  filter: hue-rotate(-5deg);
+}
+.chatbtn{
+  background-color: #FF769F;
+}
+.confessbtn{
+  background-color: #83E7FD;
+}
 
-  .hiuser img {
-    width: 15rem;
-    transform: translateY(0%);
+.notohmegle{
+  width: 80%;
+  height: auto;
+}
+
+.featuresBg{
+  width: 100%;
+  height: auto;
+}
+
+.chatfeatures{
+color: white;
+font-family: Jost;
+font-style: italic;
+
+/* border: 1px solid blue; */
+position: absolute;
+top: 0rem;
+left: 0;
+
+}
+  
+.confessionfeatures{
+  color: white;
+  font-family: Jost;
+  font-style: italic;
+  
+  /* border: 1px solid blue; */
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  
   }
+  
+
+
+.chatfeatures div{
+  max-width: 1100px;
+  padding-top: 16rem;
+  padding-left: 4rem;
+  font-size: 3rem;
+}
+.confessionfeatures div{
+  max-width: 1100px;
+  padding-top: 16rem;
+  /* padding-right: 4rem; */
+  font-size: 3rem;
+}
+
+
+/* fixing typing effect position */
+@media(width<1900px){
+  .chatfeatures div{
+    max-width: 1000px;
+    padding-top: 13rem;
+    padding-left: 3rem;
+    font-size: 3rem;
+  }
+  .confessionfeatures div{
+    max-width: 1000px;
+    padding-top: 13rem;
+    /* padding-right: 3rem; */
+    font-size: 3rem;
+  }
+}
+
+@media(width<1600px){
+  .chatfeatures div{
+    max-width: 900px;
+    padding-top: 11rem;
+    padding-left: 2rem;
+    font-size: 2.5rem;
+  }
+  .confessionfeatures div{
+    max-width: 900px;
+    padding-top: 11rem;
+    /* padding-right: 2rem; */
+    font-size: 2.5rem;
+  }
+}
+
+@media(width<1400px){
+  .chatfeatures div{
+    max-width: 900px;
+    padding-top: 10rem;
+    padding-left: 2rem;
+    font-size: 2rem;
+  }
+  .confessionfeatures div{
+    max-width: 900px;
+    padding-top: 10rem;
+    /* padding-right: 2rem; */
+    font-size: 2rem;
+  }
+}
+
+@media(width<1300px){
+  .chatfeatures div{
+    max-width: 800px;
+    padding-top: 9rem;
+    padding-left: 2rem;
+    font-size: 2rem;
+  }
+  .confessionfeatures div{
+    max-width: 800px;
+    padding-top: 9rem;
+    /* padding-right: 2rem; */
+    font-size: 2rem;
+  }
+}
+
+
+@media(width<1100px){
+  .chatfeatures div{
+    max-width: 700px;
+    padding-top: 8rem;
+    padding-left: 2rem;
+    font-size: 2rem;
+  }
+  .confessionfeatures div{
+    max-width: 700px;
+    padding-top: 8rem;
+    /* padding-right: 2rem; */
+    font-size: 2rem;
+  }
+}
+
+@media(width<1000px){
+  .chatfeatures div{
+    max-width: 600px;
+    padding-top: 7rem;
+    padding-left: 2rem;
+    font-size: 1.5rem;
+  }
+  .confessionfeatures div{
+    max-width: 600px;
+    padding-top: 7rem;
+    /* padding-right: 2rem; */
+    font-size: 1.5rem;
+  }
+}
+
+
+@media(width<800px){
+  .chatfeatures div{
+    max-width: 550px;
+    padding-top: 6.5rem;
+    padding-left: 2rem;
+    font-size: 1.4rem;
+  }
+  .confessionfeatures div{
+    max-width: 550px;
+    padding-top: 6.5rem;
+    /* padding-right: 2rem; */
+    font-size: 1.4rem;
+  }
+}
+
+@media(width<700px){
+  .chatfeatures div{
+    max-width: 450px;
+    padding-top: 5.5rem;
+    padding-left: 2rem;
+    font-size: 1.2rem;
+  }
+  .confessionfeatures div{
+    max-width: 450px;
+    padding-top: 5.5rem;
+    /* padding-right: 2rem; */
+    font-size: 1.2rem;
+  }
+}
+
+@media(width<600px){
+  .chatfeatures div{
+    max-width: 350px;
+    padding-top: 5rem;
+    padding-left: 2rem;
+    font-size: 1rem;
+  }
+  .confessionfeatures div{
+    max-width: 350px;
+    padding-top: 5rem;
+    /* padding-right: 2rem; */
+    font-size: 1rem;
+  }
+}
+
+@media(width<500px){
+  .chatfeatures div{
+    max-width: 300px;
+    padding-top: 3.5rem;
+    padding-left: 2rem;
+    font-size: 0.9rem;
+  }
+  .confessionfeatures div{
+    max-width: 300px;
+    padding-top: 3.5rem;
+    /* padding-right: 2rem; */
+    font-size: 0.9rem;
+  }
+}
+
+@media(width<450px){
+  .chatfeatures div{
+    max-width: 260px;
+    padding-top: 3rem;
+    padding-left: 2rem;
+    font-size: 0.9rem;
+  }
+  .confessionfeatures div{
+    max-width: 260px;
+    padding-top: 3rem;
+    /* padding-right: 1rem; */
+    font-size: 0.9rem;
+  }
+}
+
+@media(width<380px){
+  .chatfeatures div{
+    max-width: 260px;
+    padding-top: 2.6rem;
+    padding-left: 2rem;
+    font-size: 0.85rem;
+  }
+  .confessionfeatures div{
+    max-width: 260px;
+    padding-top: 2.6rem;
+    /* padding-right: 0.4rem; */
+    font-size: 0.85rem;
+  }
+}
+
+
+@media (width<1200px) {
 
   .fullform {
     font-size: 1.5rem;
@@ -210,6 +393,11 @@
     margin-bottom: -3rem;
 
   }
+
+
+  /* fixing confesion features________________________________ */
+  
+
 
   .desc {
     font-size: 1.2rem;
@@ -238,19 +426,6 @@
     padding-bottom: 5rem;
   }
 
-  .tagline {
-    font-family: "Belgrano", serif;
-    font-weight: 500;
-    font-size: 1.5rem;
-  }
-
-  .taglineP {
-    font-family: "Courgette", cursive;
-    font-weight: 400;
-    font-style: normal;
-    font-size: 0.9rem;
-  }
-
 
   .unlock {
     font-family: "Trade Winds", system-ui;
@@ -275,16 +450,22 @@
 }
 
 @media (width<1000px) {
-  .mymcolor{
-    width: 60%;
-    height: auto;
-    margin: auto;
-    margin-top: 3rem;
+
+  .homepageBtns{
+    display: flex;
+    justify-content: center;
+    gap: 6rem;
+    margin-top: 2.5rem; 
+  } 
+  
+  .homepageBtns button{
+    padding: 1rem 2.3rem;
+    font-size: 1.15rem;
+    width: 9rem;
   }
-  .hiuser img {
-    width: 15rem;
-    transform: translateY(0%);
-  }
+  
+
+
 
   .fullform {
     font-size: 1.4rem;
@@ -319,22 +500,6 @@
     padding-bottom: 5rem;
   }
 
-  .tagline {
-    font-family: "Belgrano", serif;
-    font-weight: 500;
-    font-size: 1.5rem;
-  }
-
-  .taglineP {
-    font-family: "Courgette", cursive;
-    font-weight: 400;
-    font-style: normal;
-    font-size: 0.9rem;
-  }
-
-  #taglinePid {
-    max-width: 320px;
-  }
 
   .unlock {
     font-family: "Trade Winds", system-ui;
@@ -361,14 +526,24 @@
 }
 
 @media (width<600px) {
-  .mymcolor{
-    width: 60%;
-    height: auto;
-    margin: auto;
-    margin-top: 1rem;
+  .homepageBtns{
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem; 
+  } 
+  
+  .homepageBtns button{
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    width: 9rem;
   }
+  
+  
+  
+
   .ourgoal {
-    font-family: 'Jomhuria';
+    font-family: "Courgette", cursive;
     font-size: 3rem;
     color: #83E7FD;
     text-align: center;
@@ -388,11 +563,6 @@
     margin: auto;
     font-size: 1rem;
 
-  }
-
-  .friendsTagLine {
-    transform: scale(0.7);
-    margin-bottom: -5rem;
   }
 
   .hiuser img {
@@ -436,30 +606,6 @@
     justify-content: flex-end;
     /* border: 1px solid red; */
     padding-bottom: 1.5rem;
-  }
-
-  .tagline {
-    font-family: "Belgrano", serif;
-    font-weight: 500;
-    font-size: 1rem;
-  }
-
-  .taglineP {
-    font-family: "Courgette", cursive;
-    font-weight: 400;
-    font-style: normal;
-    font-size: 0.7rem;
-  }
-
-  #taglinePid {
-    max-width: 250px;
-  }
-
-
-  .arrowSvg {
-    width: 40%;
-    height: auto;
-    margin-bottom: 1rem;
   }
 
   .unlock {
@@ -512,33 +658,6 @@
     justify-content: flex-end;
     /* border: 1px solid red; */
     padding-bottom: 1.5rem;
-  }
-
-  .tagline {
-    font-family: "Belgrano", serif;
-    font-weight: 500;
-    font-size: 0.9rem;
-  }
-
-  .taglineP {
-    font-family: "Courgette", cursive;
-    font-weight: 400;
-    font-style: normal;
-    font-size: 0.6rem;
-  }
-
-  #taglinePid {
-    max-width: 190px;
-  }
-
-  #taglineP2 {
-    font-size: 0.4rem;
-  }
-
-  .arrowSvg {
-    width: 50%;
-    height: auto;
-    margin-bottom: 0.2rem;
   }
 
   .unlock {

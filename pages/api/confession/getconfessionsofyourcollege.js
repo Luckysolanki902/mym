@@ -7,7 +7,7 @@ const handler = async (req, res) => {
     const page = parseInt(req.query.page) || 1; // Parse the page parameter
 
     // Calculate the number of confessions to skip based on the page number
-    const perPage = 20; // Number of confessions per page
+    const perPage = 10; // Number of confessions per page
     const skip = (page - 1) * perPage;
 
     // Prepare the query based on whether college is provided or not
