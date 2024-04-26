@@ -44,6 +44,7 @@ const CommentsDrawer = ({
       open={isOpen}
       onClose={onClose}
       onOpen={() => { }}
+      style={{maxWidth:'100vw', overflowX:'hidden'}}
     >
       <div className={styles.drawerMainContainer}>
         <div className={styles.drawerHeader}>
