@@ -17,7 +17,6 @@ const CommentsDrawer = ({
   const bottomRef = useRef(null);
   const isSmallScreen = useMediaQuery('(max-width:800px)');
   const drawerContainerRef = useRef(null);
-
   const reversedComments = useMemo(() => [...comments].reverse(), [comments]);
 
   useEffect(() => {
@@ -27,17 +26,17 @@ const CommentsDrawer = ({
     }
   }, [comments, isOpen]);
 
-  const handleFocus = () => {
-    if (isSmallScreen && drawerContainerRef.current) {
-      drawerContainerRef.current.classList.add(styles.fullHeight);
-    }
-  };
+  // const handleFocus = () => {
+  //   if (isSmallScreen && drawerContainerRef.current) {
+  //     drawerContainerRef.current.classList.add(styles.fullHeight);
+  //   }
+  // };
 
-  const handleBlur = () => {
-    if (isSmallScreen && drawerContainerRef.current) {
-      drawerContainerRef.current.classList.remove(styles.fullHeight);
-    }
-  };
+  // const handleBlur = () => {
+  //   if (isSmallScreen && drawerContainerRef.current) {
+  //     drawerContainerRef.current.classList.remove(styles.fullHeight);
+  //   }
+  // };
 
   return (
     <SwipeableDrawer
@@ -48,10 +47,39 @@ const CommentsDrawer = ({
     >
       <div className={styles.drawerMainContainer}>
         <div className={styles.drawerHeader}>
-          <div className={styles.puller}></div>
-          <h2 className={styles.drawerTitle} >
-            Comments
-          </h2>
+
+          <div className={styles.reply2}>
+            <div className={styles.puller}></div>
+            <div>
+
+              <input
+                type='text'
+                placeholder='Add a comment...'
+                value={commentValue}
+                onChange={(e) => setCommentValue(e.target.value)}
+                style={{ flex: '1', height: '100%', outline: 'none', border: 'none' }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                    e.preventDefault();
+                    handleCommentSubmit();
+                  }
+                }}
+                autoFocus
+              // onFocus={handleFocus}
+              // onBlur={handleBlur}
+              />
+              {/* <button
+                className={styles.comBtn}
+                variant="contained"
+                color="primary"
+                onClick={handleCommentSubmit}
+                disabled={commentValue.trim() === ''}
+                style={{ height: '100%', cursor: 'pointer' }}
+              >
+                <IoIosSend style={{ width: '100%', height: 'auto' }} />
+              </button> */}
+            </div>
+          </div>
         </div>
         <div
           className={`${styles.drawerContainer} ${isSmallScreen ? styles.smallScreen : ''}`}
@@ -78,36 +106,7 @@ const CommentsDrawer = ({
 
 
         </div>
-        <div className={styles.reply2}>
-            <div>
 
-              <input
-                type='text'
-                placeholder='|Add a comment...'
-                value={commentValue}
-                onChange={(e) => setCommentValue(e.target.value)}
-                style={{ flex: '1', height: '100%', outline: 'none', border: 'none' }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && e.target.value.trim() !== '') {
-                    e.preventDefault();
-                    handleCommentSubmit();
-                  }
-                }}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-              />
-              {/* <button
-                className={styles.comBtn}
-                variant="contained"
-                color="primary"
-                onClick={handleCommentSubmit}
-                disabled={commentValue.trim() === ''}
-                style={{ height: '100%', cursor: 'pointer' }}
-              >
-                <IoIosSend style={{ width: '100%', height: 'auto' }} />
-              </button> */}
-            </div>
-          </div>
       </div>
     </SwipeableDrawer>
   );
