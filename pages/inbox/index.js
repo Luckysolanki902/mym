@@ -7,7 +7,7 @@ import Image from 'next/image';
 import InboxCard from '@/components/confessionComps/InboxCard';
 import { useRouter } from 'next/router';
 import styles2 from './styles/inbox.module.css'
-
+import { useSession } from 'next-auth/react';
 const noEntry = {
   "confessionContent": "Replies to your confessions will appear here",
   "replies": [
@@ -19,12 +19,16 @@ const InboxPage = ({ personalReplies, userDetails }) => {
   const router = useRouter()
   // Extract personalReplies array from the object
   const repliesArray = personalReplies.personalReplies;
+  const { data: session } = useSession();
   useEffect(() => {
     // Redirect to verify/verifyotp if userDetails is not verified
     if (userDetails && !userDetails.isVerified) {
       router.push('/verify/verifyotp');
     }
-  }, [userDetails]);
+    if (!session) {
+      router.push('/auth/signup');
+    }
+  }, [userDetails, router]);
   return (
     <div className={styles.cotainer}>
       <h1 className={styles.h1}>

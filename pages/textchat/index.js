@@ -3,7 +3,7 @@ import TextChat from '@/components/fullPageComps/TextChat';
 import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef } from 'react';
-
+import { useSession } from 'next-auth/react';
 const TextChatPage = ({ userDetails }) => {
   const bottomRef = useRef(null);
   const router = useRouter()
@@ -13,10 +13,14 @@ const TextChatPage = ({ userDetails }) => {
   }, []);
 
 
+  const { data: session } = useSession();
   useEffect(() => {
     // Redirect to verify/verifyotp if userDetails is not verified
     if (userDetails && !userDetails.isVerified) {
       router.push('/verify/verifyotp');
+    }
+    if (!session) {
+      router.push('/auth/signup');
     }
   }, [userDetails, router]);
   return (

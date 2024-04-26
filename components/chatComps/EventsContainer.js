@@ -16,7 +16,7 @@ const EventsContainer = () => {
         <>
             {(strangerDisconnectedMessageDiv && !hasPaired) && (
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <div className={styles.isTyping}>He said “good Bye!!”</div>
+                    <div className={styles.isTyping}>{strangerGender === 'male' ? 'He' : 'She'} said “good Bye!!”</div>
                 </div>
             )}
 

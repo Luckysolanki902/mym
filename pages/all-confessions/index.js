@@ -5,21 +5,24 @@ import CircularProgress from '@mui/material/CircularProgress'; // Import Circula
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import styles from './allconfessions.module.css';
-
+import { useSession } from 'next-auth/react';
 const Index = ({ userDetails, initialConfessions }) => {
   const [confessions, setConfessions] = useState(initialConfessions);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false); // Add loading state
   const sentinelRef = useRef(null);
-
   const router = useRouter();
+  const { data: session } = useSession();
   useEffect(() => {
     // Redirect to verify/verifyotp if userDetails is not verified
     if (userDetails && !userDetails.isVerified) {
       router.push('/verify/verifyotp');
     }
-  }, [userDetails]);
+    if (!session) {
+      router.push('/auth/signup');
+    }
+  }, [userDetails, router]);
 
 
   const fetchMoreConfessions = async () => {
@@ -66,10 +69,10 @@ const Index = ({ userDetails, initialConfessions }) => {
         //   style={{filter: 'grayscale(100%)'}}></Image>
         // </div>
 
-        <div style={{ width: '1oo%', display: 'flex',flexDirection:'column', justifyContent: 'center', marginBottom: '3rem', marginTop: '0', alignItems:'center' }} className={styles.isLoading}>
+        <div style={{ width: '1oo%', display: 'flex', flexDirection: 'column', justifyContent: 'center', marginBottom: '3rem', marginTop: '0', alignItems: 'center' }} className={styles.isLoading}>
           <p >Loading confessions</p>
           <span>
-            <Image  src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt='' />
+            <Image src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt='' />
           </span>{' '}
         </div>
       }
@@ -77,7 +80,7 @@ const Index = ({ userDetails, initialConfessions }) => {
       <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
       {!hasMore &&
         <div style={{ width: '1oo%', display: 'flex', justifyContent: 'center', marginBottom: '3rem', marginTop: '0' }} className={styles.isLoading}>
-          <p style={{padding:'1rem', textAlign:'center'}}>You have seen all available confessions of your college</p>
+          <p style={{ padding: '1rem', textAlign: 'center' }}>You have seen all available confessions of your college</p>
         </div>
 
       }

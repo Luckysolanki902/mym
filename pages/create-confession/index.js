@@ -3,8 +3,9 @@ import CreateConfessionForm from '@/components/fullPageComps/CreateConfessionFor
 import GuidelinesDialog from '@/components/dialogs/GuidelinesDialog';
 import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-
+import { useSession } from 'next-auth/react';
 const CreateConfession = ({ userDetails }) => {
+  const { data: session } = useSession();
   const router = useRouter();
   const [showDialog, setShowDialog] = useState(false); 
   const timeInMinutes = 60; // Set the time threshold in minutes
@@ -13,6 +14,9 @@ const CreateConfession = ({ userDetails }) => {
     // Redirect to verify/verifyotp if userDetails is not verified
     if (userDetails && !userDetails.isVerified) {
       router.push('/verify/verifyotp');
+    }
+    if (!session || !userDetails) {
+      router.push('/auth/signup');
     }
     // Fetch last update time from local storage
     const lastUpdateTime = localStorage.getItem('dialogLastUpdateTime');

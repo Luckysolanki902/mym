@@ -130,7 +130,7 @@ export default function Home({ session, trendingConfessions }) {
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Image src={'/images/illustrations/notOhmegle.png'} width={1516 / 2} height={511 / 2} alt='notohmegle' className={styles.notohmegle}></Image>
+          <Image src={'/images/illustrations/notohmegle.png'} width={1516 / 2} height={511 / 2} alt='notohmegle' className={styles.notohmegle}></Image>
         </div>
         {/* <CollegeCards /> */}
         {/* <div style={{ width: '100%', height: '10em' }}></div> */}
