@@ -83,7 +83,7 @@ const CommentsDrawer = ({
 
               <input
                 type='text'
-                placeholder='Add a comment...'
+                placeholder='|Add a comment...'
                 value={commentValue}
                 onChange={(e) => setCommentValue(e.target.value)}
                 style={{ flex: '1', height: '100%', outline: 'none', border: 'none' }}
@@ -96,7 +96,7 @@ const CommentsDrawer = ({
                 onFocus={handleFocus}
                 onBlur={handleBlur}
               />
-              <button
+              {/* <button
                 className={styles.comBtn}
                 variant="contained"
                 color="primary"
@@ -105,7 +105,7 @@ const CommentsDrawer = ({
                 style={{ height: '100%', cursor: 'pointer' }}
               >
                 <IoIosSend style={{ width: '100%', height: 'auto' }} />
-              </button>
+              </button> */}
             </div>
           </div>
       </div>
