@@ -1,14 +1,24 @@
 // pages/textchat.js
 import TextChat from '@/components/fullPageComps/TextChat';
 import { getSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import React, { useEffect, useRef } from 'react';
 
 const TextChatPage = ({ userDetails }) => {
   const bottomRef = useRef(null);
+  const router = useRouter()
   useEffect(() => {
     // Scroll to the bottom when the component mounts
     bottomRef.current.scrollIntoView({ behavior: 'smooth' });
   }, []);
+
+
+  useEffect(() => {
+    // Redirect to verify/verifyotp if userDetails is not verified
+    if (userDetails && !userDetails.isVerified) {
+      router.push('/verify/verifyotp');
+    }
+  }, [userDetails, router]);
   return (
     <>
       <TextChat userDetails={userDetails} />

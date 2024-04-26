@@ -52,10 +52,8 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             setLiked(!liked);
             if (!liked) {
                 setlikeanimation('likeAnim');
-                console.log('likeAnim');
             } else {
                 setlikeanimation('unlikeAnim');
-                console.log('unlikeAnim');
             }
             setLikesCount((prevCount) => (liked ? prevCount - 1 : prevCount + 1));
 
@@ -115,7 +113,6 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             });
 
             if (response.ok) {
-                console.log('Anonymous reply sent successfully');
                 setAnonymousReplyValue('');
                 // You may want to update the UI or trigger a refresh of the replies
             } else {
@@ -167,7 +164,10 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                         //     }
                         // }}
                     />
-                    <button
+
+
+                    
+                    {/* <button
                         className={styles.comBtn}
                         id={styles.anonsendbtn}
                         variant="text"
@@ -177,7 +177,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                         disabled={anonymousReplyValue.trim() === ''}
                     >
                         <IoIosSend style={{ width: '100%', height: 'auto' }} className={styles.iosendanon} />
-                    </button>
+                    </button> */}
                 </div>
             </div>
             <AnonymDialog

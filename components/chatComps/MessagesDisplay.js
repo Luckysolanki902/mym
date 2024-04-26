@@ -64,16 +64,16 @@ const MessageDisplay = React.memo(({ userDetails }) => {
             {/* {usersOnline && <>Users: {usersOnline}</>} */}
 
             {reversedMessages?.length < 1 && hasPaired &&
-                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                    <Image style={{ width: '15rem', height: 'auto', opacity: '0.7' }} src={'/images/illustrations/messages.png'} width={960} height={695} alt='start chat'></Image>
-                    <div style={{ fontFamily: 'Courgette' }}>Say <span style={{ fontSize: '2rem', margin: '0 0.4rem' }}>hi</span> and see where the conversation takes you!</div>
+                <div className={styles.msgIllustration}>
+                    <Image src={'/images/illustrations/messages.png'} width={960} height={695} alt='start chat'></Image>
+                    <div >Say <span>hi</span> and see where the conversation takes you!</div>
                 </div>
             }
             {/* pairing */}
             {!hasPaired && isFindingPair &&
                 <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                    <div style={{ fontFamily: 'Courgette' }}><span style={{ fontSize: '2rem', margin: '0 0.4rem', color:'rgba(0,0,0,0.6)' }}>Pairing</span>
-                    <Image className={styles.dots}  priority src={'/gifs/istyping4.gif'} width={800 / 5} height={600 / 5} alt='' />
+                    <div style={{ fontFamily: 'Courgette' }}><span >Pairing</span>
+                        <Image className={styles.dots} priority src={'/gifs/istyping4.gif'} width={800 / 5} height={600 / 5} alt='' />
                     </div>
                 </div>
             }

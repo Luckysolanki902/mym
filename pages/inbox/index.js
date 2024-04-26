@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { getSession, useSession } from 'next-auth/react';
 import { Typography, Card, CardContent, Divider } from '@mui/material';
 import Link from 'next/link';
 import styles from '@/components/componentStyles/inboxStyles.module.css'
 import Image from 'next/image';
 import InboxCard from '@/components/confessionComps/InboxCard';
+import { useRouter } from 'next/router';
 
 
 const noEntry = {
@@ -12,10 +13,18 @@ const noEntry = {
   "replies": [
   ],
 }
+
+
 const InboxPage = ({ personalReplies, userDetails }) => {
+  const router = useRouter()
   // Extract personalReplies array from the object
   const repliesArray = personalReplies.personalReplies;
-
+  useEffect(() => {
+    // Redirect to verify/verifyotp if userDetails is not verified
+    if (userDetails && !userDetails.isVerified) {
+      router.push('/verify/verifyotp');
+    }
+  }, [userDetails]);
   return (
     <div className={styles.cotainer}>
       <h1 className={styles.h1}>

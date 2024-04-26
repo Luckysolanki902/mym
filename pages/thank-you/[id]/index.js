@@ -4,6 +4,7 @@ import { getSession } from "next-auth/react";
 import Image from "next/image";
 import styles from './thankyou.module.css'
 import Confession from "@/components/fullPageComps/Confession";
+import { useRouter } from "next/router";
 export async function getServerSideProps(context) {
     const session = await getSession(context);
     const pageurl = 'https://www.meetyourmate.in'
@@ -46,6 +47,7 @@ export async function getServerSideProps(context) {
 }
 
 const ThankYouPage = ({ session, confessionId, userDetails, confession }) => {
+    const router = useRouter()
     return (
         <div>
             {session && (
@@ -53,7 +55,7 @@ const ThankYouPage = ({ session, confessionId, userDetails, confession }) => {
                     <div className={styles.imgDiv}>
                         <Image src={'/images/illustrations/thankyou.png'} width={1650 / 4} height={1275 / 4} alt='thank you'></Image>
                     </div>
-                    <button className={styles.button}>back to home</button>
+                    <button className={styles.button} onClick={() => router.push('/')}>back to home</button>
                     <h2 className={styles.successHeading}>
                         Confessed Successfully
                     </h2>

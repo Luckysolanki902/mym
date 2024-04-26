@@ -117,13 +117,13 @@
 
 
 
-.linkText {
+.sideBarListItem .sideBarLinks .linkText {
     color: white;
     text-decoration: none;
     font-family: 'Krona One', Inter;
     margin: 0;
     font-size: 0.9rem;
-    font-weight: 100;
+    font-weight: 500;
 
 }
 

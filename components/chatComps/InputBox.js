@@ -73,10 +73,10 @@ const InputBox = ({
             />
           </form>
         </div>
-        <button className={`${styles.newButton} ${styles.newButton2}`} onClick={handleSendButton}>
+        {/* <button className={`${styles.newButton} ${styles.newButton2}`} onClick={handleSendButton}>
           <IoIosSend className={styles.sendIcon} />
           <div className={styles.sendTextIcon}>Send</div>
-        </button>
+        </button> */}
       </div>
       {/* This div is used to scroll to the bottom */}
       <div ref={messagesContainerRef} />

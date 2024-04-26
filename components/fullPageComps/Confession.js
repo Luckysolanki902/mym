@@ -94,7 +94,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       });
 
       if (commentResponse.ok) {
-        console.log('Comment submitted successfully');
+        // console.log('Comment submitted successfully');
         // The server has confirmed the operation, you can update the comment with the real ID if needed
       } else {
         console.error('Error submitting comment');
