@@ -12,13 +12,12 @@ const EventsContainerMemoized = React.memo(EventsContainer);
 
 const MessageDisplay = React.memo(({ userDetails }) => {
 
-    const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping, usersOnline, isFindingPair } = useTextChat()
+    const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping, usersOnline, isFindingPair, paddingDivRef } = useTextChat()
 
     const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
     const shouldRenderPaddingDiv = strangerDisconnectedMessageDiv || (hasPaired && strangerIsTyping);
 
     // Create a ref for the padding div
-    const paddingDivRef = useRef(null);
 
     // Function to scroll to the padding div when a new message arrives
     const scrollToPaddingDiv = () => {

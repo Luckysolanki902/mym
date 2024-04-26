@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useRef } from 'react';
 
 const TextChatContext = createContext();
 
@@ -13,6 +13,7 @@ export const TextChatProvider = ({ children }) => {
     const [strangerIsTyping, setStrangerIsTyping] = useState(false);
     const [usersOnline, setUsersOnline] = useState('');
     const [messages, setMessages] = useState([])
+    const paddingDivRef = useRef(null)
     return (
         <TextChatContext.Provider
             value={{
@@ -25,7 +26,8 @@ export const TextChatProvider = ({ children }) => {
                 hasPaired, setHasPaired,
                 strangerIsTyping, setStrangerIsTyping,
                 usersOnline, setUsersOnline,
-                messages, setMessages
+                messages, setMessages,
+                paddingDivRef
             }}
         >
             {children}

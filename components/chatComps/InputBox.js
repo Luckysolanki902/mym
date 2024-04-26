@@ -19,7 +19,7 @@ const InputBox = ({
   inputRef,
   userDetails,
 }) => {
-  const { isFindingPair, socket, hasPaired } = useTextChat();
+  const { isFindingPair, socket, hasPaired, paddingDivRef } = useTextChat();
   const isSmallScreen = useMediaQuery('(max-width:800px)');
   const messagesContainerRef = useRef(null);
 
@@ -68,6 +68,9 @@ const InputBox = ({
               onClick={() => {
                 if (messagesContainerRef.current) {
                   messagesContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                if (paddingDivRef.current) {
+                  paddingDivRef.current.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
             />
