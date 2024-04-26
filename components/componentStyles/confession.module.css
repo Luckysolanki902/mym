@@ -133,6 +133,7 @@
     height: 50vh;
     padding: 1rem;
     transition: all 0.3s ease-in-out;
+    margin-bottom: 1.5rem;
 }
 
 
@@ -288,12 +289,22 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100vw;
+    /* border: 1px solid rgb(0, 255, 132); */
+    position: absolute;
+    bottom: 0;
+    padding: 0.5rem 0.7rem;
+}
+
+.reply2 div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     border-radius: 4rem;
     height: 3rem;
     border: 1px solid rgb(0, 0, 0);
     padding: 0.3rem 0.8rem 0.3rem 1rem;
-    overflow: hidden;
 }
 
 .reply2 input {
@@ -408,6 +419,21 @@
 }
 
 @media (width<800px) {
+
+    .reply2{
+        background-color: rgb(255, 255, 255);
+ 
+
+
+
+
+
+
+
+
+
+        
+    }
     .reply2 input {
 
         font-size: 1rem;

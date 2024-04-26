@@ -18,7 +18,7 @@ const CommentsDrawer = ({
   const isSmallScreen = useMediaQuery('(max-width:800px)');
   const drawerContainerRef = useRef(null);
 
-  const reversedComments = useMemo(()=> [...comments].reverse(), [comments]);
+  const reversedComments = useMemo(() => [...comments].reverse(), [comments]);
 
   useEffect(() => {
     // Scroll to the bottom when the comments change
@@ -75,36 +75,39 @@ const CommentsDrawer = ({
             </div>
           </div>
 
-          <div className={styles.reply2}>
-            <input
-              type='text'
-              placeholder='Add a comment...'
-              value={commentValue}
-              onChange={(e) => setCommentValue(e.target.value)}
-              style={{ flex: '1', height: '100%', outline: 'none', border: 'none' }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && e.target.value.trim() !== '') {
-                  e.preventDefault();
-                  handleCommentSubmit();
-                }
-              }}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-            />
-            <button
-              className={styles.comBtn}
-              variant="contained"
-              color="primary"
-              onClick={handleCommentSubmit}
-              disabled={commentValue.trim() === ''}
-              style={{ height: '100%', cursor: 'pointer' }}
-            >
-              <IoIosSend style={{ width: '100%', height: 'auto' }} />
-            </button>
-          </div>
+
 
         </div>
+        <div className={styles.reply2}>
+            <div>
 
+              <input
+                type='text'
+                placeholder='Add a comment...'
+                value={commentValue}
+                onChange={(e) => setCommentValue(e.target.value)}
+                style={{ flex: '1', height: '100%', outline: 'none', border: 'none' }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                    e.preventDefault();
+                    handleCommentSubmit();
+                  }
+                }}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+              />
+              <button
+                className={styles.comBtn}
+                variant="contained"
+                color="primary"
+                onClick={handleCommentSubmit}
+                disabled={commentValue.trim() === ''}
+                style={{ height: '100%', cursor: 'pointer' }}
+              >
+                <IoIosSend style={{ width: '100%', height: 'auto' }} />
+              </button>
+            </div>
+          </div>
       </div>
     </SwipeableDrawer>
   );

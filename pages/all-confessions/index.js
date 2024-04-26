@@ -67,7 +67,7 @@ const Index = ({ userDetails, initialConfessions }) => {
         // </div>
 
         <div style={{ width: '1oo%', display: 'flex',flexDirection:'column', justifyContent: 'center', marginBottom: '3rem', marginTop: '0', alignItems:'center' }} className={styles.isLoading}>
-          <p >Loading more confessions</p>
+          <p >Loading confessions</p>
           <span>
             <Image  src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt='' />
           </span>{' '}
