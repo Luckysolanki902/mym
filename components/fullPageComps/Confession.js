@@ -81,7 +81,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         gender: userDetails.gender,
       };
 
-      setComments((prevComments) => [...prevComments, optimisticComment]);
+      setComments((prevComments) => [optimisticComment, ...prevComments]);
       setCommentsCount((prevCount) => prevCount + 1);
       setCommentValue('');
 
