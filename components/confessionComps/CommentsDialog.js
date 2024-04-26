@@ -83,9 +83,9 @@ const CommentsDrawer = ({
         </div>
         <div
           className={`${styles.drawerContainer} ${isSmallScreen ? styles.smallScreen : ''}`}
-          ref={drawerContainerRef}
-        >
 
+        >
+          <div ref={drawerContainerRef}></div>
           <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
             <div className={styles.comments}>
               <div ref={bottomRef}></div>
