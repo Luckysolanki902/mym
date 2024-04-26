@@ -30,7 +30,7 @@ const TrendingConfessions = ({ trendingConfessions }) => {
                                 <h3 >Trending Confession #{index+1}</h3>
                             </div>
                             <p>"
-                                {truncateText(confession.confessionContent, 100)}
+                                {truncateText(confession.confessionContent, 200)}
                                 "</p>
                             <div className={styles.footer}>
                                 <div className={styles.footerDiv}>
