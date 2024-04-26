@@ -15,6 +15,7 @@ const CommentsDrawer = ({
   setCommentValue,
 }) => {
   const bottomRef = useRef(null);
+  const inputRef = useRef(null); // Reference to the input element
   const isSmallScreen = useMediaQuery('(max-width:800px)');
   const drawerContainerRef = useRef(null);
   // const reversedComments = useMemo(() => [...comments].reverse(), [comments]);
@@ -24,19 +25,11 @@ const CommentsDrawer = ({
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
+    // Focus the input when the drawer is open
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
   }, [comments, isOpen]);
-
-  // const handleFocus = () => {
-  //   if (isSmallScreen && drawerContainerRef.current) {
-  //     drawerContainerRef.current.classList.add(styles.fullHeight);
-  //   }
-  // };
-
-  // const handleBlur = () => {
-  //   if (isSmallScreen && drawerContainerRef.current) {
-  //     drawerContainerRef.current.classList.remove(styles.fullHeight);
-  //   }
-  // };
 
   return (
     <SwipeableDrawer
@@ -54,6 +47,7 @@ const CommentsDrawer = ({
             <div>
 
               <input
+                ref={inputRef} // Attach the ref to the input element
                 type='text'
                 placeholder='Add a comment...'
                 value={commentValue}
@@ -66,8 +60,6 @@ const CommentsDrawer = ({
                   }
                 }}
                 autoFocus
-              // onFocus={handleFocus}
-              // onBlur={handleBlur}
               />
               {/* <button
                 className={styles.comBtn}
@@ -84,7 +76,6 @@ const CommentsDrawer = ({
         </div>
         <div
           className={`${styles.drawerContainer} ${isSmallScreen ? styles.smallScreen : ''}`}
-
         >
           <div ref={drawerContainerRef}></div>
           <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
@@ -103,11 +94,7 @@ const CommentsDrawer = ({
               {comments.length < 1 && <>No comments Yet</>}
             </div>
           </div>
-
-
-
         </div>
-
       </div>
     </SwipeableDrawer>
   );
