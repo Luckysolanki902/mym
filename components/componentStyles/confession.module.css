@@ -167,9 +167,9 @@
     font-size: 1.6rem;
     
 }
-.fullHeight{
+/* .fullHeight{
     height: 80vh;
-}
+} */
 @media(width>800px){
     .puller{
         display: none;
