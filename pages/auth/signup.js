@@ -33,7 +33,7 @@ const Signup = () => {
   const [allowedEmails, setAllowedEmails] = useState([]);
 
   // admin
-  const allowOnlyCollegeEmails = false;
+  const allowOnlyCollegeEmails = true;
   useEffect(() => {
     const fetchColleges = async () => {
       try {

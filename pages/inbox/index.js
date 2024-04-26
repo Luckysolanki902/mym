@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { getSession, useSession } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 import { Typography, Card, CardContent, Divider } from '@mui/material';
 import Link from 'next/link';
 import styles from '@/components/componentStyles/inboxStyles.module.css'
