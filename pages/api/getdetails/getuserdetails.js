@@ -2,6 +2,7 @@ import connectToMongo from '@/middleware/middleware';
 import User from '@/models/User';
 
 async function handler(req, res) {
+    
     const { userEmail } = req.query;
     try {
         const userDetails = await User.findOne({ email: userEmail });

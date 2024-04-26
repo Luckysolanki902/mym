@@ -77,7 +77,7 @@ const Index = ({ userDetails, initialConfessions }) => {
       <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
       {!hasMore &&
         <div style={{ width: '1oo%', display: 'flex', justifyContent: 'center', marginBottom: '3rem', marginTop: '0' }} className={styles.isLoading}>
-          <p>No more confessions to load</p>
+          <p style={{padding:'1rem', textAlign:'center'}}>You have seen all available confessions of your college</p>
         </div>
 
       }

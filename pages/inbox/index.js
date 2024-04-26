@@ -6,7 +6,7 @@ import styles from '@/components/componentStyles/inboxStyles.module.css'
 import Image from 'next/image';
 import InboxCard from '@/components/confessionComps/InboxCard';
 import { useRouter } from 'next/router';
-
+import styles2 from './styles/inbox.module.css'
 
 const noEntry = {
   "confessionContent": "Replies to your confessions will appear here",
@@ -42,9 +42,9 @@ const InboxPage = ({ personalReplies, userDetails }) => {
             </div>
           ))
         ) : (
-          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign:'center', minHeight:'50vh' }}>
-          <Image style={{ width: '12rem', height: 'auto', opacity: '0.7' }} src={'/images/illustrations/replies.png'} width={960} height={695} alt='start chat'></Image>
-          <div style={{ fontFamily: 'Courgette' }}><span style={{ fontSize: '2rem', margin: '0 0.4rem' }}>Replies</span> to your <span style={{ fontSize: '2rem', margin: '0 0.4rem' }}>confessions</span> will appear here</div>
+          <div className={styles2.msgIllustration}>
+          <Image src={'/images/illustrations/replies.png'} width={960} height={695} alt='start chat'></Image>
+          <div ><span >Replies</span> to your <span >confessions</span> will appear here</div>
         </div>
         )}
     </div >

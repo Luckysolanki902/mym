@@ -8,15 +8,16 @@ import AuthPrompt from '@/components/commonComps/AuthPrompt';
 import CommentsDialog from '../confessionComps/CommentsDialog';
 import ConfessionBox from '../confessionComps/ConfessionBox';
 import ConfessionFooter from '../confessionComps/ConfessionFooter';
-
+// import { getSession } from 'next-auth/react';
 const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => {
+  
   const isSmallDevice = useMediaQuery('(max-width:800px)');
   const [isAnonymousReplyDialogOpen, setAnonymousReplyDialogOpen] = useState(false);
   const [commentAvatars, setCommentAvatars] = useState([]);
   const [comments, setComments] = useState([]);
   const [commentValue, setCommentValue] = useState('');
   const [commentsCount, setCommentsCount] = useState('');
-  
+
   const [isCommentDialogOpen, setCommentDialogOpen] = useState(false);
   const [gender, setGender] = useState('');
   const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
@@ -53,7 +54,6 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
 
 
 
-
   const handleCommentSubmit = async () => {
     try {
       // Check if user is authenticated
@@ -71,7 +71,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         confessionId: confession._id,
         commentContent: commentValue,
       };
-
+      
       // Optimistic UI update
       const optimisticComment = {
         _id: new Date().toISOString(), // Use a temporary ID until the server confirms
@@ -84,7 +84,8 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       setComments((prevComments) => [optimisticComment, ...prevComments]);
       setCommentsCount((prevCount) => prevCount + 1);
       setCommentValue('');
-
+      
+      // const session = await getSession();
       const commentResponse = await fetch('/api/confession/comment', {
         method: 'POST',
         headers: {
@@ -110,28 +111,28 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchComments = async () => {
       try {
-          const response = await fetch(
-              `/api/getdetails/getcomments?confessionId=${confession._id}`
-          );
-          if (response.ok) {
-              const { comments } = await response.json();
-              // const commentAvatars = comments.map((comment) =>
-              //     getRandomCommentAvatar(comment._id, comment.gender)
-              // );
-              // setCommentAvatars(commentAvatars);
-              setComments(comments);
-              setCommentsCount(comments.length);
-          } else {
-              console.error('Error fetching comments:', response.statusText);
-          }
+        const response = await fetch(
+          `/api/getdetails/getcomments?confessionId=${confession._id}`
+        );
+        if (response.ok) {
+          const { comments } = await response.json();
+          // const commentAvatars = comments.map((comment) =>
+          //     getRandomCommentAvatar(comment._id, comment.gender)
+          // );
+          // setCommentAvatars(commentAvatars);
+          setComments(comments);
+          setCommentsCount(comments.length);
+        } else {
+          console.error('Error fetching comments:', response.statusText);
+        }
       } catch (error) {
-          console.error('Error fetching comments:', error);
+        console.error('Error fetching comments:', error);
       }
-  };
-  fetchComments()
+    };
+    fetchComments()
   }, [confession, userDetails])
 
 

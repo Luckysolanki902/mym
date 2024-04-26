@@ -3,6 +3,7 @@ import Like from '@/models/Like';
 import connectToMongo from '@/middleware/middleware';
 
 const handler = async (req, res) => {
+  
   const { confessionId } = req.query;
 
   try {

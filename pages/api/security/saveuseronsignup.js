@@ -3,8 +3,10 @@ import connectToMongo from '@/middleware/middleware';
 import User from '@/models/User';
 
 const handler = async (req, res) => {
+  
   if (req.method === 'POST') {
     try {
+      
       const { email, gender, college } = req.body;
       const lowercaseEmail = email.toString().toLowerCase(); // Converting email to lowercase
 

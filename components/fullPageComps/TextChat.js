@@ -64,7 +64,7 @@ const TextChatWithout = ({ userDetails }) => {
         }
       }
       else {
-        stopFindingPair(socket, { setIsFindingPair })
+        // stopFindingPair(socket, { setIsFindingPair })
       }
     } else {
       initiateSocket(socket, { userDetails, preferredCollege, preferredGender }, hasPaired, { room, setSocket, setUsersOnline, setStrangerIsTyping, setStrangerDisconnectedMessageDiv, setIsFindingPair, setRoom, setReceiver, setStrangerGender, setSnackbarColor, setSnackbarMessage, setSnackbarOpen, setHasPaired, setMessages }, { messagesContainerRef, findingTimeoutRef })

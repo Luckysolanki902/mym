@@ -3,6 +3,7 @@ import connectToMongo from '@/middleware/middleware';
 import User from '@/models/User';
 
 async function handler(req, res) {
+  
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }

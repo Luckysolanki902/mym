@@ -3,6 +3,7 @@ import Comment from '@/models/Comment';
 import Confession from '@/models/Confession';
 
 const handler = async (req, res) => {
+    
     const { email, gender, confessionId, commentContent } = req.body;
 
     try {

@@ -4,6 +4,7 @@ import Confession from '@/models/Confession';
 import Comment from '@/models/Comment';
 
 const handler = async (req, res) => {
+  
   const { id } = req.query;
   console.log(id)
 

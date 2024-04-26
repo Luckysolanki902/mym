@@ -33,9 +33,18 @@ const InputBox = ({
   return (
     <div className={styles.inputContainerMainDiv} ref={inputRef}>
       <div className={`${styles.inputContainer} ${inpFocus ? styles.inpFocus : ''}`}>
-        <button className={styles.newButton} onClick={handleFindNewButton} title={!isFindingPair ? 'Find New' : 'Stop'}>
+        <button disabled={isFindingPair} className={styles.newButton} onClick={handleFindNewButton} title={!isFindingPair ? 'Find New' : 'Find New'}>
           {isFindingPair && !hasPaired ? (
-            <CircularProgress size={24} style={{ color: isSmallScreen ? 'black' : 'white' }} />
+            // <CircularProgress size={24} style={{ color: isSmallScreen ? 'black' : 'white' }} />
+            <Image
+            src={'/images/sidebaricons/randomchat.png'}
+            width={1080 / 10}
+            height={720 / 10}
+            alt="icon"
+            className={styles.randomIcon}
+            style={{transform:'scale(0.96)', opacity:'0.8' }}
+          />
+
           ) : (
             <Image
               src={'/images/sidebaricons/randomchat.png'}

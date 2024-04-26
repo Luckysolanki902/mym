@@ -113,6 +113,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             });
 
             if (response.ok) {
+                console.log('Anonymous reply sent successfully');
                 setAnonymousReplyValue('');
                 // You may want to update the UI or trigger a refresh of the replies
             } else {

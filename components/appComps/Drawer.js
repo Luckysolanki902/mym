@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
@@ -8,12 +8,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import Image from 'next/image';
 import styles from './styles/topbar.module.css';
 import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
 import { styled } from '@mui/material/styles';
+import { useRouter } from 'next/router';
 import { getSession } from 'next-auth/react';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -27,10 +27,11 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 export default function SwipeableTemporaryDrawer(props) {
     const router = useRouter();
-    const [state, setState] = React.useState({
+    const [state, setState] = useState({
         right: false,
         userDetails: null,
         unseenCount: 0,
+        activeIndex: null, // Initially set to null
     });
 
     const toggleDrawer = (anchor, open) => (event) => {
@@ -74,15 +75,22 @@ export default function SwipeableTemporaryDrawer(props) {
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         fetchUserDetails();
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         fetchUnseenCount();
         const intervalId = setInterval(fetchUnseenCount, 30000);
         return () => clearInterval(intervalId);
     }, [state.userDetails]);
+
+    useEffect(() => {
+        // Check if the path matches any of the Drawer items and set the active index accordingly
+        const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox'];
+        const index = paths.findIndex(path => path === router.pathname);
+        setState(prevState => ({ ...prevState, activeIndex: index !== -1 ? index : null }));
+    }, [router.pathname]);
 
     const isActive = (href) => {
         return router.asPath === href;
@@ -108,7 +116,7 @@ export default function SwipeableTemporaryDrawer(props) {
                 ].map((item, index) => (
                     <ListItem
                         key={item.text}
-                        className={`${styles.sideBarListItem} ${isActive(item.href) ? styles.activeListItem : ''}`}
+                        className={`${styles.sideBarListItem} ${state.activeIndex === index ? styles.activeListItem : ''}`}
                     >
                         <Link href={item.href} className={styles.sideBarLinks} passHref>
                             <ListItemButton className={styles.sideBarListItem}>

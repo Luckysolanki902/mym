@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../componentStyles/createconfessionform.module.css';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Snackbar } from '@mui/material';
 import WarningDialog from '../dialogs/WarningDialog';
 import Image from 'next/image';
+
 const CreateConfessionForm = ({ userDetails }) => {
   const [confessionValue, setConfessionValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState({});
+  const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const router = useRouter();
 
   const handleConfessionSubmit = async () => {
@@ -52,6 +54,9 @@ const CreateConfessionForm = ({ userDetails }) => {
 
         const { confessionId } = await confessResponse.json();
 
+        // Show success snackbar
+        setSuccessSnackbarOpen(true);
+
         // Redirect to thank you page with confessionId
         router.push(`/thank-you/${confessionId}`);
       } else {
@@ -73,10 +78,17 @@ const CreateConfessionForm = ({ userDetails }) => {
     setDialogOpen(false);
   };
 
+  const handleSnackbarClose = () => {
+    setSuccessSnackbarOpen(false);
+  };
+
   return (
     <div className={styles.mainDiv}>
       <div className={`${styles.mainContainer} ${userDetails ? styles[`${userDetails.gender}Gradient`] : ''}`}>
         <textarea
+          spellCheck='false'
+          autoCorrect='false'
+          autoComplete='false'
           name="confessionContent"
           id="confessioncontentbox"
           placeholder="Start writing..."
@@ -93,6 +105,16 @@ const CreateConfessionForm = ({ userDetails }) => {
 
       {/* Custom Dialog for displaying warnings and advice */}
       <WarningDialog open={dialogOpen} onClose={handleDialogClose} content={dialogContent} />
+
+      {/* Success Snackbar */}
+      <Snackbar
+        open={successSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message="Confession submitted successfully"
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ backgroundColor: '#43a047' }} // Customizing background color
+      />
     </div>
   );
 };

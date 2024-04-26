@@ -6,6 +6,8 @@ import styles from '@/styles/Home.module.css';
 import { useRouter } from 'next/router';
 import TrendingConfessions from '@/components/commonComps/TrendingConfessions';
 import Typewriter from 'typewriter-effect';
+// import CollegeCards from '@/components/justhomepage/CollegeCards';
+import Footer from '@/components/commonComps/Footer';
 export default function Home({ session, trendingConfessions }) {
   const containerSpring = useSpring({
     from: { opacity: 0, transform: 'translate3d(0, -50px, 0)' },
@@ -61,8 +63,8 @@ export default function Home({ session, trendingConfessions }) {
 
         {/* Buttons for chat page and confession page */}
         <div className={styles.homepageBtns}>
-          <button className={styles.chatbtn} onClick={() => router.push('/chat')}>CHAT</button>
-          <button className={styles.confessbtn} onClick={() => router.push('/confession')}>CONFESS</button>
+          <button className={styles.chatbtn} onClick={() => router.push('/textchat')}>CHAT</button>
+          <button className={styles.confessbtn} onClick={() => router.push('/all-confessions')}>CONFESS</button>
         </div>
 
 
@@ -74,7 +76,7 @@ export default function Home({ session, trendingConfessions }) {
 
         {/* <h3 className={styles.unlock}>AN ANOYNYMOUS INTERCOLLEGE SOCIAL MEDIA  PLATFORM</h3> */}
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '-2.2px', position: 'relative' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
           <Image src={'/images/showcase/confessionfeaturesl.png'} width={1716} height={966} alt='chatfeatures' className={styles.featuresBg}></Image>
           <div className={styles.chatfeatures}>
             {/* Chat features */}
@@ -105,7 +107,7 @@ export default function Home({ session, trendingConfessions }) {
                   autoStart: true,
                   loop: true,
                   delay: 40,
-                  deleteSpeed:10
+                  deleteSpeed: 10
                 }}
               />
             </div>
@@ -113,13 +115,11 @@ export default function Home({ session, trendingConfessions }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Image src={'/images/illustrations/notohmegle.png'} width={1516 / 2} height={511 / 2} alt='notohmegle' className={styles.notohmegle}></Image>
+
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '90%', margin: 'auto', marginTop: '3rem' }} >
+          <Image src={'/images/illustrations/roadmapwide.png'} className={styles.featuresBg} width={5032 / 3} height={3144 / 3} alt='roadmap'></Image>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Image src={'/images/roadmap/roadmap.png'} className={styles.map} width={1536 / 3} height={2572 / 3} alt='roadmap'></Image>
-        </div>
 
         <div className={styles.ourgoal}>
           Our <span>Goal</span>
@@ -128,7 +128,15 @@ export default function Home({ session, trendingConfessions }) {
         <div className={styles.comingsoonCards}>
           <Image src={'/images/showcase/cards.png'} width={1348} height={688} alt='cards'  ></Image>
         </div>
-        <div style={{ width: '100%', height: '10em' }}></div>
+        
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Image src={'/images/illustrations/notohmegle.png'} width={1516 / 2} height={511 / 2} alt='notohmegle' className={styles.notohmegle}></Image>
+        </div>
+        {/* <CollegeCards /> */}
+        {/* <div style={{ width: '100%', height: '10em' }}></div> */}
+        <footer>
+          <Footer />
+        </footer>
       </animated.div >
     </>
   );
@@ -150,7 +158,14 @@ export async function getServerSideProps(context) {
     };
   }
 
-
+  if (session && !data.trendingConfessions) {
+    return {
+      props: {
+        session: null,
+        trendingConfessions: [],
+      },
+    }
+  }
 
   return {
     props: {

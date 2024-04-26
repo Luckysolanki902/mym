@@ -3,6 +3,7 @@ import Confession from '@/models/Confession';
 import connectToMongo from '@/middleware/middleware';
 
 const handler = async (req, res) => {
+  
   const { email, college, gender, confessionContent } = req.body;
   try {
     // Your secret key from environment variables

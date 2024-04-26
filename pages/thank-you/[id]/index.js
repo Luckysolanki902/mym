@@ -52,9 +52,9 @@ const ThankYouPage = ({ session, confessionId, userDetails, confession }) => {
         <div>
             {session && (
                 <div className={styles.main}>
-                    <div className={styles.imgDiv}>
+                    {/* <div className={styles.imgDiv}>
                         <Image src={'/images/illustrations/thankyou.png'} width={1650 / 4} height={1275 / 4} alt='thank you'></Image>
-                    </div>
+                    </div> */}
                     <button className={styles.button} onClick={() => router.push('/')}>back to home</button>
                     <h2 className={styles.successHeading}>
                         Confessed Successfully

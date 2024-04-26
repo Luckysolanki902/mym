@@ -3,6 +3,7 @@ import connectToMongo from '@/middleware/middleware';
 import User from '@/models/User';
 
 const handler = async (req, res) => {
+  
   try {
     // Fetch all user emails from the User model
     const users = await User.find({}, { email: 1 });

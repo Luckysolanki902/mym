@@ -3,6 +3,7 @@ import connectToMongo from '@/middleware/middleware';
 import PersonalReply from '@/models/PersonalReply';
 
 const handler = async (req, res) => {
+  
   const { email } = req.query;
 
   try {

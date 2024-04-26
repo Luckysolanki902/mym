@@ -5,6 +5,7 @@ const insultThreshold = 0.5;
 const threatThreshold = 0.5;
 
 export default async function handler(req, res) {
+    
     const { confessionContent } = req.body;
     if (!confessionContent) {
         return res.status(400).json({ error: 'Missing confession content' });

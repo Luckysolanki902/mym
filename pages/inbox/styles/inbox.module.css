@@ -1,0 +1,35 @@
+.msgIllustration {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.msgIllustration img {
+    width: 12rem;
+    height: auto;
+    opacity: 0.7;
+    margin-bottom: 3rem;
+
+}
+
+.msgIllustration div {
+    font-family: 'Courgette', cursive;
+    margin: 0 1rem;
+    text-align: center;
+}
+
+.msgIllustration div span {
+    font-size: 2rem;
+    margin: 0 0.4rem;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+@media (width<650px) {
+    .msgIllustration img {
+        width: 8rem;
+        margin-bottom: 2rem;
+    }
+}

@@ -18,7 +18,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const Sidebar = () => {
   const router = useRouter();
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(null); // Initially set to null
   const [unseenCount, setUnseenCount] = useState(0);
   const [userDetails, setUserDetails] = useState(null);
 
@@ -65,19 +65,18 @@ const Sidebar = () => {
     return () => clearInterval(intervalId);
   }, [userDetails]);
 
+  useEffect(() => {
+    // Check if the path matches any of the sidebar routes and set the active tab accordingly
+    const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox'];
+    const index = paths.findIndex(path => path === router.pathname);
+    setActiveIndex(index !== -1 ? index : null); // If not found in sidebar routes, set to null
+  }, [router.pathname]);
+
   const handleSetActive = (index, path) => {
     setActiveIndex(index);
     router.push(path);
   };
-  
-  // useEffect(() => {
-  //   // Check if the path matches any of the sidebar routes and set the active tab accordingly
-  //   const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox'];
-  //   const index = paths.findIndex(path => path === router.pathname);
-  //   if (index !== -1) {
-  //     setActiveIndex(index);
-  //   }
-  // }, [router.pathname]);
+
   return (
     <div className='sidebarvisibility'>
       <div className={`${styles.mainSidebarDiv} sidebardim`}>
@@ -138,14 +137,14 @@ const Sidebar = () => {
           onClick={() => handleSetActive(4, '/inbox')}
         >
           <StyledBadge badgeContent={unseenCount} color="primary">
-          <Image
-            src={'/images/sidebaricons/inbox.png'}
-            width={225 / 2}
-            height={272 / 2}
-            alt='icon'
-            className={styles.iconspng4}
-            title={'inbox'}
-          />
+            <Image
+              src={'/images/sidebaricons/inbox.png'}
+              width={225 / 2}
+              height={272 / 2}
+              alt='icon'
+              className={styles.iconspng4}
+              title={'inbox'}
+            />
           </StyledBadge>
         </div>
       </div>
