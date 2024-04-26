@@ -299,9 +299,7 @@
     flex-direction: column;
     /* padding: 0.5rem 0.7rem; */
 }
-.drawerContainer{
-    height: 70vh;
-}
+
 
 .reply2 div{
     display: flex;
@@ -321,7 +319,7 @@
 /* background-color: pink; */
     font-size: 1.2rem;
     color: rgb(50, 50, 50);
-    margin-bottom: 0.6rem;
+    margin-bottom: 0rem;
 }
 
 
@@ -434,17 +432,10 @@
 
     .reply2{
         background-color: rgb(255, 255, 255);
- 
-
-
-
-
-
-
-
-
-
         
+    }
+    .drawerContainer{
+        height: 70vh;
     }
     .reply2 input {
 
