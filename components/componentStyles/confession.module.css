@@ -132,8 +132,10 @@
     flex-direction: column;
     height: 50vh;
     padding: 1rem;
-    padding-bottom: 0.5rem;
+    transition: all 0.3s ease-in-out;
 }
+
+
 .drawerHeader{
     display: flex;
     flex-direction: column;
@@ -146,7 +148,7 @@
 }
 
 .puller{
-    width: 10rem;
+    width: 8rem;
     height: 5px;
     background-color: gray;
     border-radius: 2rem;
@@ -163,6 +165,9 @@
 .shareIcon{
     font-size: 1.6rem;
     
+}
+.fullHeight{
+    height: 80vh;
 }
 @media(width>800px){
     .puller{
@@ -251,12 +256,9 @@
     min-width: 2rem;
     border-radius: 4rem;
     flex: 1;
+    
 
 
-
-}
-.reply input{
-    padding-right: 1rem;
 }
 
 .anonymInput {
@@ -292,9 +294,7 @@
     border: 1px solid rgb(0, 0, 0);
     padding: 0.3rem 0.8rem 0.3rem 1rem;
     overflow: hidden;
-    margin-bottom: 1rem;
 }
-
 
 .reply2 input {
 

@@ -4,6 +4,7 @@ import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { IoIosSend } from 'react-icons/io';
 import Avatar from 'avataaars';
 import styles from '../componentStyles/confession.module.css';
+import { useMediaQuery } from '@mui/material';
 
 const CommentsDrawer = ({
   isOpen,
@@ -14,8 +15,10 @@ const CommentsDrawer = ({
   setCommentValue,
 }) => {
   const bottomRef = useRef(null);
+  const isSmallScreen = useMediaQuery('(max-width:800px)');
+  const drawerContainerRef = useRef(null);
 
-const reversedComments = useMemo(()=> [...comments].reverse(), [comments]);
+  const reversedComments = useMemo(()=> [...comments].reverse(), [comments]);
 
   useEffect(() => {
     // Scroll to the bottom when the comments change
@@ -23,6 +26,18 @@ const reversedComments = useMemo(()=> [...comments].reverse(), [comments]);
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [comments, isOpen]);
+
+  const handleFocus = () => {
+    if (isSmallScreen && drawerContainerRef.current) {
+      drawerContainerRef.current.classList.add(styles.fullHeight);
+    }
+  };
+
+  const handleBlur = () => {
+    if (isSmallScreen && drawerContainerRef.current) {
+      drawerContainerRef.current.classList.remove(styles.fullHeight);
+    }
+  };
 
   return (
     <SwipeableDrawer
@@ -36,15 +51,31 @@ const reversedComments = useMemo(()=> [...comments].reverse(), [comments]);
           <div className={styles.puller}></div>
           <h2 className={styles.drawerTitle} >
             Comments
-            {/* <span style={{ color: 'rgba(0,0,0,0.7)', marginLeft: '1rem',  }}>
-              {comments.length}
-            </span> */}
           </h2>
         </div>
-        {/* Comment input and display */}
-        {/* Comment input and display */}
-        <div className={styles.drawerContainer}>
-        <div className={styles.reply2}>
+        <div
+          className={`${styles.drawerContainer} ${isSmallScreen ? styles.smallScreen : ''}`}
+          ref={drawerContainerRef}
+        >
+
+          <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
+            <div className={styles.comments}>
+              <div ref={bottomRef}></div>
+              {reversedComments.map((comment, index) => (
+                <div key={comment._id} className={styles.comment}>
+                  <div className={comment.gender === 'male' ? styles.maleAvatar : styles.femaleAvatar}>
+                    {comment.gender === 'male' ? 'Some Boy:' : 'Some Girl:'}
+                  </div>
+                  <div className={styles.commentContent}>
+                    {comment.commentContent}
+                  </div>
+                </div>
+              ))}
+              {reversedComments.length < 1 && <>No comments Yet</>}
+            </div>
+          </div>
+
+          <div className={styles.reply2}>
             <input
               type='text'
               placeholder='Add a comment...'
@@ -57,6 +88,8 @@ const reversedComments = useMemo(()=> [...comments].reverse(), [comments]);
                   handleCommentSubmit();
                 }
               }}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
             />
             <button
               className={styles.comBtn}
@@ -69,28 +102,6 @@ const reversedComments = useMemo(()=> [...comments].reverse(), [comments]);
               <IoIosSend style={{ width: '100%', height: 'auto' }} />
             </button>
           </div>
-          <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
-            <div className={styles.comments}>
-              <div ref={bottomRef}></div>
-              {reversedComments.map((comment, index) => (
-                <div key={comment._id} className={styles.comment}>
-                  <div className={comment.gender === 'male' ? styles.maleAvatar : styles.femaleAvatar}>
-                    {/* <Avatar
-                    style={{ width: '30px', height: '30px' }}
-                    avatarStyle='Circle'
-                    {...commentAvatars[index]}
-                  /> */}
-                    {comment.gender === 'male' ? 'Some Boy:' : 'Some Girl:'}
-                  </div>
-                  <div className={styles.commentContent}>
-                    {comment.commentContent}
-                  </div>
-                </div>
-              ))}
-              {reversedComments.length < 1 && <>No comments Yet</>}
-            </div>
-          </div>
-          {/* Comment input */}
 
         </div>
 

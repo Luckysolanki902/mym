@@ -85,6 +85,8 @@ export default function Home({ session, trendingConfessions }) {
                   strings: chatFeatures,
                   autoStart: true,
                   loop: true,
+                  delay: 40,
+                  deleteSpeed: 10
                 }}
               />
             </div>
@@ -102,6 +104,8 @@ export default function Home({ session, trendingConfessions }) {
                   strings: confessionFeatures,
                   autoStart: true,
                   loop: true,
+                  delay: 40,
+                  deleteSpeed:10
                 }}
               />
             </div>
