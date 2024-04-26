@@ -128,7 +128,7 @@ export default function Home({ session, trendingConfessions }) {
         <div className={styles.comingsoonCards}>
           <Image src={'/images/showcase/cards.png'} width={1348} height={688} alt='cards'  ></Image>
         </div>
-        
+
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Image src={'/images/illustrations/notOhmegle.png'} width={1516 / 2} height={511 / 2} alt='notohmegle' className={styles.notohmegle}></Image>
         </div>

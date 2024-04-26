@@ -154,20 +154,23 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                         value={anonymousReplyValue}
                         onChange={(e) => setAnonymousReplyValue(e.target.value)}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter' && e.target.value.trim() !== '') {
+                            if (e.key === 'Enter') {
                                 e.preventDefault();
-                                handleAnonymousReply();
+                                if (anonymousReplyValue.trim() !== '') {
+                                    handleAnonymousReply();
+                                }
                             }
                         }}
-                        // onClick={() => {
-                        //     if (isSmallDevice && !isAnonymousReplyDialogOpen) {
-                        //         setAnonymousReplyDialogOpen(true)
-                        //     }
-                        // }}
+
+                    // onClick={() => {
+                    //     if (isSmallDevice && !isAnonymousReplyDialogOpen) {
+                    //         setAnonymousReplyDialogOpen(true)
+                    //     }
+                    // }}
                     />
 
 
-                    
+
                     {/* <button
                         className={styles.comBtn}
                         id={styles.anonsendbtn}
