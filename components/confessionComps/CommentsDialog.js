@@ -22,7 +22,7 @@ const CommentsDrawer = ({
   useEffect(() => {
     // Scroll to the bottom when the comments change
     if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+      bottomRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   }, [comments, isOpen]);
 
