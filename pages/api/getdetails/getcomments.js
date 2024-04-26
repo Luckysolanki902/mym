@@ -5,7 +5,7 @@ const handler = async (req, res) => {
   const { confessionId } = req.query;
 
   try {
-    const comments = await Comment.find({ confessionId }).sort({ timestamps: 'asc' });
+    const comments = await Comment.find({ confessionId }).sort({ timestamps: -1 });
 
     res.status(200).json({ comments });
   } catch (error) {

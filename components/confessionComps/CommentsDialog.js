@@ -17,7 +17,7 @@ const CommentsDrawer = ({
   const bottomRef = useRef(null);
   const isSmallScreen = useMediaQuery('(max-width:800px)');
   const drawerContainerRef = useRef(null);
-  const reversedComments = useMemo(() => [...comments].reverse(), [comments]);
+  // const reversedComments = useMemo(() => [...comments].reverse(), [comments]);
 
   useEffect(() => {
     // Scroll to the bottom when the comments change
@@ -89,7 +89,7 @@ const CommentsDrawer = ({
           <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
             <div className={styles.comments}>
               <div ref={bottomRef}></div>
-              {reversedComments.map((comment, index) => (
+              {comments.map((comment, index) => (
                 <div key={comment._id} className={styles.comment}>
                   <div className={comment.gender === 'male' ? styles.maleAvatar : styles.femaleAvatar}>
                     {comment.gender === 'male' ? 'Some Boy:' : 'Some Girl:'}
@@ -99,7 +99,7 @@ const CommentsDrawer = ({
                   </div>
                 </div>
               ))}
-              {reversedComments.length < 1 && <>No comments Yet</>}
+              {comments.length < 1 && <>No comments Yet</>}
             </div>
           </div>
 
