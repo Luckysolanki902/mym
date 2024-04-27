@@ -20,7 +20,7 @@ const Topbar = () => {
     };
 
     fetchData();
-  }, []);
+  }, [router]);
 
   const handleSignIn = () => {
     router.push('/auth/signin');
@@ -35,7 +35,7 @@ const Topbar = () => {
       <Image src={'/images/mym_logos/mymlogoinvert2.png'} width={724 / 3} height={338 / 3} alt='mym' style={{ height: '60%', width: 'auto' }} />
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {user && <SwipeableTemporaryDrawer />}
-        {!loading && !user && (
+        {!loading && !user &&  (
           <div className={styles.sessionButtons}>
             <button className={styles.login} onClick={handleSignIn}>Login</button>
             <button className={styles.signup} onClick={handleSignUp}>Sign Up</button>
