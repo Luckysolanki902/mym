@@ -49,6 +49,7 @@ const CommentsDrawer = ({
               <input
                 ref={inputRef} // Attach the ref to the input element
                 type='text'
+                // i want to make browser realize that it's a comment field
                 placeholder='Add a comment...'
                 value={commentValue}
                 onChange={(e) => setCommentValue(e.target.value)}
@@ -60,6 +61,9 @@ const CommentsDrawer = ({
                   }
                 }}
                 autoFocus
+                autoComplete="off"
+                spellCheck="false"
+                autoCorrect='off'
               />
               {/* <button
                 className={styles.comBtn}

@@ -86,9 +86,9 @@ const CreateConfessionForm = ({ userDetails }) => {
     <div className={styles.mainDiv}>
       <div className={`${styles.mainContainer} ${userDetails ? styles[`${userDetails.gender}Gradient`] : ''}`}>
         <textarea
-          spellCheck='false'
-          autoCorrect='false'
-          autoComplete='false'
+          autoComplete="off"
+          spellCheck="false"
+          autoCorrect='off'
           name="confessionContent"
           id="confessioncontentbox"
           placeholder="Start writing..."
