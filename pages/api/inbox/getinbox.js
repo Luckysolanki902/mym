@@ -8,7 +8,7 @@ const handler = async (req, res) => {
 
   try {
     // Find personal replies for the given email
-    const personalReplies = await PersonalReply.find({ confesserEmail: email })
+    const personalReplies = await PersonalReply.find({ confesserEmail: email }).sort({ timestamps: -1 })
     res.status(200).json({ personalReplies });
   } catch (error) {
     console.error('Error fetching personal replies:', error);
