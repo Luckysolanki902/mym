@@ -13,7 +13,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
     const [likesCount, setLikesCount] = useState(confession.likes.length);
     const [isAnonymousReplyDialogOpen, setAnonymousReplyDialogOpen] = useState(false);
     const [anonymousReplyValue, setAnonymousReplyValue] = useState('');
-
+    const [sendingAnonymousReply, setSendingAnonymousReply] = useState(false);
     useEffect(() => {
         // Fetch likes for the confession
         const fetchLikes = async () => {
@@ -94,6 +94,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
 
 
     const handleAnonymousReply = async () => {
+        setSendingAnonymousReply(true)
         try {
             const { encryptedEmail, iv } = confession;
             const replyData = {
@@ -115,6 +116,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             if (response.ok) {
                 console.log('Anonymous reply sent successfully');
                 setAnonymousReplyValue('');
+                setSendingAnonymousReply(false);
                 // You may want to update the UI or trigger a refresh of the replies
             } else {
                 console.error('Error saving anonymous reply');
@@ -123,6 +125,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             console.error('Error saving anonymous reply:', error);
         } finally {
             closeAnonymousReplyDialog();
+            setSendingAnonymousReply(false)
         }
     };
 
@@ -132,7 +135,6 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
 
     return (
         <div>
-
             <div className={styles.confessionfooter}>
                 <div className={styles.likes} onClick={handleLike} style={{ cursor: 'pointer' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -159,6 +161,14 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                                 if (anonymousReplyValue.trim() !== '') {
                                     handleAnonymousReply();
                                 }
+                            }
+                        }}
+                        readOnly={isSmallDevice || sendingAnonymousReply}
+                        disabled={sendingAnonymousReply}
+                        onClick={(e) => {
+
+                            if (isSmallDevice && !isAnonymousReplyDialogOpen) {
+                                setAnonymousReplyDialogOpen(true);
                             }
                         }}
 

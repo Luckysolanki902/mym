@@ -11,13 +11,13 @@ const CustomSnackbar = ({ open, onClose, message, color }) => {
   }, [onClose]);
 
   return (
-    <Snackbar open={open} autoHideDuration={2000} onClose={handleSnackbarClose} anchorOrigin={{horizontal:'center', vertical:'top'}}>
+    <Snackbar open={open} autoHideDuration={2000} onClose={handleSnackbarClose} anchorOrigin={{horizontal:'center', vertical:'bottom'}}>
       <MuiAlert
         elevation={6}
         variant="filled"
         onClose={handleSnackbarClose}
         severity="info"
-        style={{ backgroundColor: color }}
+        style={{ backgroundColor: color, marginBottom:'3.5rem' }}
       >
         {message}
       </MuiAlert>

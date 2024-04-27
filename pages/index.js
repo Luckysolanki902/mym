@@ -64,7 +64,7 @@ export default function Home({ session, trendingConfessions }) {
         {/* Buttons for chat page and confession page */}
         <div className={styles.homepageBtns}>
           <button className={styles.chatbtn} onClick={() => router.push('/textchat')}>CHAT</button>
-          <button className={styles.confessbtn} onClick={() => router.push('/all-confessions')}>CONFESS</button>
+          <button className={styles.confessbtn} onClick={() => router.push('/create-confession')}>CONFESS</button>
         </div>
 
 

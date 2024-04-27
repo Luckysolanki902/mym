@@ -5,7 +5,7 @@ import CircularProgress from '@mui/material/CircularProgress'; // Import Circula
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import styles from './allconfessions.module.css';
-import { useSession } from 'next-auth/react';
+
 const Index = ({ userDetails, initialConfessions }) => {
   const [confessions, setConfessions] = useState(initialConfessions);
   const [hasMore, setHasMore] = useState(true);
@@ -13,14 +13,14 @@ const Index = ({ userDetails, initialConfessions }) => {
   const [loading, setLoading] = useState(false); // Add loading state
   const sentinelRef = useRef(null);
   const router = useRouter();
-  const { data: session } = useSession();
+
   useEffect(() => {
     // Redirect to verify/verifyotp if userDetails is not verified
-    if (userDetails && !userDetails.isVerified) {
-      router.push('/verify/verifyotp');
-    }
-    if (!session) {
+    if (!userDetails) {
       router.push('/auth/signup');
+    }
+    if (userDetails && !userDetails?.isVerified) {
+      router.push('/verify/verifyotp');
     }
   }, [userDetails, router]);
 
@@ -28,7 +28,7 @@ const Index = ({ userDetails, initialConfessions }) => {
   const fetchMoreConfessions = async () => {
     console.log('fetching more...');
     setLoading(true); // Set loading to true while fetching
-    const response = await fetch(`/api/confession/getconfessionsofyourcollege?college=${userDetails.college}&page=${page + 1}`);
+    const response = await fetch(`/api/confession/getconfessionsofyourcollege?college=${userDetails?.college}&page=${page + 1}`);
     if (response.ok) {
       const newConfessionsData = await response.json();
       const newConfessions = newConfessionsData.confessions;
@@ -80,7 +80,7 @@ const Index = ({ userDetails, initialConfessions }) => {
       <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
       {!hasMore &&
         <div style={{ width: '1oo%', display: 'flex', justifyContent: 'center', marginBottom: '3rem', marginTop: '0' }} className={styles.isLoading}>
-          <p style={{ padding: '1rem', textAlign: 'center' }}>You have seen all available confessions of your college</p>
+          <p style={{ padding: '1rem', textAlign: 'center', opacity:'0.7', scale:'0.8' }}>You have seen all available confessions of your college</p>
         </div>
 
       }
@@ -117,9 +117,9 @@ export async function getServerSideProps(context) {
 
   // Fetch initial confessions based on user details
   let initialConfessions = [];
-  if (userDetails?.college) {
+  if (userDetails && userDetails.college) {
     try {
-      const response = await fetch(`${pageurl}/api/confession/getconfessionsofyourcollege?college=${userDetails.college}&page=1`);
+      const response = await fetch(`${pageurl}/api/confession/getconfessionsofyourcollege?college=${userDetails?.college}&page=1`);
       if (response.ok) {
         const data = await response.json();
         initialConfessions = data.confessions;

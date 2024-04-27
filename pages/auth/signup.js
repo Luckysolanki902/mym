@@ -75,6 +75,10 @@ const Signup = () => {
         }
       }
 
+      if (gender === 'Select Gender' || college === 'Select College') {
+        throw new Error('Please fill all the fields');
+      }
+
       // Create user with email and password
       const authResult = await createUserWithEmailAndPassword(auth, email, password);
       await signIn('credentials', {
@@ -166,6 +170,7 @@ const Signup = () => {
               <MenuItem value="female">Female</MenuItem>
             </Select>
             <Select
+              required
               disabled={!collegesLoaded}
               variant='standard'
               value={college}
