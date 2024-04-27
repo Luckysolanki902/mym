@@ -34,7 +34,7 @@ const Topbar = () => {
     <div className={`topbarheight ${styles.mainDiv}`}>
       <Image src={'/images/mym_logos/mymlogoinvert2.png'} width={724 / 3} height={338 / 3} alt='mym' style={{ height: '60%', width: 'auto' }} />
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        {!loading && !user && <SwipeableTemporaryDrawer />}
+        {user && <SwipeableTemporaryDrawer />}
         {!loading && !user && (
           <div className={styles.sessionButtons}>
             <button className={styles.login} onClick={handleSignIn}>Login</button>
