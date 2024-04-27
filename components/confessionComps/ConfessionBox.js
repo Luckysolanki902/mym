@@ -11,7 +11,7 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
   const [canshowTypingEffect, setCanShowTypingEffect] = useState(true)
   const [showCaret, setShowCaret] = useState(true);
   const [isShareDialogOpen, setShareDialogOpen] = useState(false); // State to manage ShareDialog visibility
-
+  const [showFullContent, setShowFullContent] = useState(false)
   const [ref, inView] = useInView({
     triggerOnce: true,
   });
@@ -42,7 +42,7 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
           setShowCaret(prevShowCaret => !prevShowCaret); // Toggle caret visibility
           handleComplete();
         }
-      }, 40); // Adjust the speed here
+      }, 40);
 
       return () => clearTimeout(timer);
     }
@@ -53,8 +53,8 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
       <Button color='primary' style={{ position: 'absolute', top: '0.5rem', right: '0.5rem' }}>
         <ReplyIcon onClick={handleShareClick} style={{ transform: 'scaleX(-1)', color: 'white' }} className={styles.shareIcon} />
       </Button>
-      <div className={styles.textarea} style={{ whiteSpace: 'pre-line' }} ref={confessionBoxRef}>
-        {inView ? (
+      <div onClick={() => setShowFullContent(true)} className={styles.textarea} style={{ whiteSpace: 'pre-line' }} ref={confessionBoxRef}>
+        {inView && !showFullContent ? (
           <>
             <span>{content}</span>
             {showCaret && <span style={{ animation: '1s step-end infinite blink-caret', fontStyle: 'italic' }}> |</span>}
@@ -64,7 +64,7 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
         )}
       </div>
       <div style={{ textAlign: 'right', margin: '1rem 0' }} className={styles.masks}>
-        <Image src={'/images/othericons/masks.png'} width={512} height={512} alt='' />
+        <Image onClick={() => setShowFullContent(true)} src={'/images/othericons/masks.png'} width={512} height={512} alt='' />
       </div>
       <ShareDialog open={isShareDialogOpen} shareLink={confession._id} onClose={() => setShareDialogOpen(false)} />
     </div>
