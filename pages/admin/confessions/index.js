@@ -1,0 +1,111 @@
+import React, { useEffect, useRef, useState } from 'react';
+import Confession from '@/components/fullPageComps/Confession';
+import { getSession } from 'next-auth/react';
+import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress from Material-UI
+import { useRouter } from 'next/router';
+import Image from 'next/image';
+import styles from './allconfessions.module.css';
+
+const Index = ({ userDetails, initialConfessions }) => {
+  const [confessions, setConfessions] = useState(initialConfessions);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false); // Add loading state
+  const sentinelRef = useRef(null);
+  const router = useRouter();
+
+
+
+  const fetchMoreConfessions = async () => {
+    console.log('fetching more...');
+    setLoading(true); // Set loading to true while fetching
+    const response = await fetch(`/api/confession/getconfessionsofyourcollege?college=${userDetails?.college}&page=${page + 1}`);
+    if (response.ok) {
+      const newConfessionsData = await response.json();
+      const newConfessions = newConfessionsData.confessions;
+      if (newConfessions.length === 0) {
+        setHasMore(false); // No more confessions available
+      } else {
+        setConfessions(prevConfessions => [...prevConfessions, ...newConfessions]);
+        setPage(prevPage => prevPage + 1);
+      }
+    } else {
+      console.error('Error fetching more confessions');
+    }
+    setLoading(false); // Set loading to false after fetching
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore && !loading) { // Add loading condition
+        fetchMoreConfessions();
+      }
+    }, { threshold: 0.5 }); // Adjust the threshold as needed
+
+    observer.observe(sentinelRef.current);
+
+    return () => observer.disconnect();
+  }, [hasMore, loading]); // Make sure to run the effect when `hasMore` or `loading` changes
+
+  return (
+    <div style={{ width: '100%', paddingTop: '2rem' }}>
+
+      {confessions.map((confession, index) => (
+        <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
+      ))}
+      {(loading) &&
+        // <div style={{ width: '1oo%', display: 'flex', justifyContent: 'center', marginBottom:'3rem', marginTop:'0' }}>
+        //   {/* <CircularProgress /> */}
+        //   <Image src={'/gifs/loadinghand.gif'} width={498} height={498} alt='loading more' loop={true}
+        //   style={{filter: 'grayscale(100%)'}}></Image>
+        // </div>
+
+        <div style={{ width: '1oo%', display: 'flex', flexDirection: 'column', justifyContent: 'center', marginBottom: '3rem', marginTop: '0', alignItems: 'center' }} className={styles.isLoading}>
+          <p >Loading confessions</p>
+          <span>
+            <Image src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt='' />
+          </span>{' '}
+        </div>
+      }
+      {/* Render CircularProgress while loading */}
+      <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
+      {!hasMore &&
+        <div style={{ width: '1oo%', display: 'flex', justifyContent: 'center', marginBottom: '3rem', marginTop: '0' }} className={styles.isLoading}>
+          <p style={{ padding: '1rem', textAlign: 'center', opacity:'0.7', scale:'0.8' }}>You have seen all available confessions of your college</p>
+        </div>
+
+      }
+    </div>
+  );
+};
+
+export async function getServerSideProps(context) {
+
+  const pageurl = 'https://www.meetyourmate.in';
+
+
+  // Fetch initial confessions based on user details
+  let initialConfessions = [];
+
+    try {
+      const response = await fetch(`${pageurl}/api/admin/confessions/getconfessions?&page=1`);
+      if (response.ok) {
+        const data = await response.json();
+        initialConfessions = data.confessions;
+      } else {
+        console.error('Error fetching initial confessions');
+      }
+    } catch (error) {
+      console.error('Error fetching initial confessions:', error);
+    }
+
+
+  return {
+    props: {
+      userDetails: {},
+      initialConfessions,
+    },
+  };
+}
+
+export default Index;
