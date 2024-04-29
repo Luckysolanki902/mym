@@ -16,7 +16,7 @@ const AddCollege = () => {
     e.preventDefault();
 
     // Call the API to add the college
-    const response = await fetch('/api/admin/addcollege', {
+    const response = await fetch('/api/admin/college/addcollege', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
