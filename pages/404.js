@@ -5,7 +5,7 @@ import Link from 'next/link';
 const ErrorPage = () => {
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}>Oops! Something went wrong.</h1>
+      <h1 style={styles.heading}>Page Not Found</h1>
       <p style={styles.paragraph}>The page you were looking for could not be found. Please return to the home page or enter correct url</p>
       <Link href="/" className='errorbutton'>
         Go to Home
