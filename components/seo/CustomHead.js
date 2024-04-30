@@ -23,7 +23,7 @@ const CustomHead = ({ title, description, keywords, seoImage }) => {
             <meta property="og:image" content={seoImage} />
             <meta property="og:image:width" content="538" />
             <meta property="og:image:height" content="341" />
-
+            <meta name="google-site-verification" content="n1IATAh14MmCQacvLLboLaSlNHgEU2VJ9fR23FYP-sQ" />
 
             <script type="application/ld+json" dangerouslySetInnerHTML={{
     __html: JSON.stringify({
