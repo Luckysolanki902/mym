@@ -151,7 +151,7 @@ const Sidebar = () => {
         <div
           className={`${styles.icons} ${activeIndex === 5 ? styles.active : ''}`}
           onClick={() => handleSetActive(3, '/fill-form')}
-          style={{ position:'absolute', bottom:'3rem'}}
+          style={{ position:'absolute', bottom:'2rem'}}
         >
           <Image
             src={'/images/sidebaricons/bulb.png'}

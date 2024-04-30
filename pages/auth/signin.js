@@ -5,6 +5,8 @@ import Link from "next/link";
 import { createTheme, ThemeProvider, TextField, Button } from '@mui/material';
 import Image from 'next/image';
 import styles from './signup.module.css'
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 
 
@@ -25,12 +27,15 @@ export default function Signin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [signInError, setSignInError] = useState(null); // State to manage sign-in errors
+  const [loading, setLoading] = useState(false);
 
   const handleSignIn = async (e) => {
     e.preventDefault(); // Prevent default form submission
 
     try {
       setSignInError(null); // Clear any previous sign-in errors
+      setLoading(true);
+
       const result = await signIn('credentials', {
         email,
         password,
@@ -53,6 +58,8 @@ export default function Signin() {
     } catch (error) {
       console.error("Error signing in:", error);
       setSignInError(error.message); // Set the sign-in error message
+    }finally {
+      setLoading(false);
     }
   };
 
@@ -100,8 +107,9 @@ export default function Signin() {
               color="primary"
               className={styles.button}
               style={{textTransform:'none'}}
+              disabled={loading}
             >
-              Sign In
+              {loading ? <CircularProgress size={24} color="inherit"/> : 'Sign In'}
             </Button>
           </form>
           <Link href="/auth/forgot-password" className={styles.paraLink2}>

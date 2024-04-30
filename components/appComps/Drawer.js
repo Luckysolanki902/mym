@@ -118,7 +118,7 @@ export default function SwipeableTemporaryDrawer(props) {
                     <ListItem
                         key={item.text}
                         className={`${styles.sideBarListItem} `}
-                        style={index === 5 ? { position: 'absolute', bottom: '2rem' } : null}
+                        style={index === 5 ? { position: 'absolute', bottom: '1rem' } : null}
 
                     >
 

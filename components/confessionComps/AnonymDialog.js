@@ -22,12 +22,25 @@ const AnonymDialog = ({ open, onClose, handleAnonymousReply, anonymousReplyValue
     };
 
     return (
-        <Dialog open={open} onClose={onClose} >
+        <Dialog open={open} onClose={onClose}
+            PaperProps={{
+                style: {
+                    margin: '20px', // Adjust margin as needed
+                    maxHeight: 'calc(100% - 40px)',
+                    width: 'calc(100% - 40px)',
+                    maxWidth: 'none',
+                    position: 'fixed',
+                    top: '3rem',
+                    left: 0,
+                    right: 0,
+                },
+            }}
+        >
             <DialogTitle>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>Reply Anonymously</div>
                     <Button onClick={onClose}>
-                    <CloseRounded />
+                        <CloseRounded />
                     </Button>
                 </div>
             </DialogTitle>
