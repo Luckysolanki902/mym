@@ -26,51 +26,51 @@ const CustomHead = ({ title, description, keywords, seoImage }) => {
             <meta name="google-site-verification" content="n1IATAh14MmCQacvLLboLaSlNHgEU2VJ9fR23FYP-sQ" />
 
             <script type="application/ld+json" dangerouslySetInnerHTML={{
-    __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Meet Your Mate",
-        "url": "https://www.meetyourmate.in",
-        "logo": "https://www.meetyourmate.in/images/mym_logos/mymshadow.png",
-        "contactPoint": [
-            {
-                "@type": "ContactPoint",
-                "telephone": "+91-9027495997",
-                "contactType": "customer service"
-            },
-            {
-                "@type": "ContactPoint",
-                "telephone": "+91-6395809873",
-                "contactType": "customer service"
-            }
-        ]
-    })
-}} />
+                __html: JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "Organization",
+                    "name": "Meet Your Mate",
+                    "url": "https://www.meetyourmate.in",
+                    "logo": "https://www.meetyourmate.in/images/mym_logos/mymshadow.png",
+                    "contactPoint": [
+                        {
+                            "@type": "ContactPoint",
+                            "telephone": "+91-9027495997",
+                            "contactType": "customer service"
+                        },
+                        {
+                            "@type": "ContactPoint",
+                            "telephone": "+91-6395809873",
+                            "contactType": "customer service"
+                        }
+                    ]
+                })
+            }} />
 
-<script type="application/ld+json" dangerouslySetInnerHTML={{
-    __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "url": "https://www.meetyourmate.in",
-        "name": "Meet Your Mate",
-        "description": "Discover a new way to connect with fellow students at Meet Your Mate. Share secrets, chat anonymously, and forge meaningful connections with your college community. Join today and unlock a world of friendships and support.",
-        "publisher": {
-            "@type": "Organization",
-            "name": "Meet Your Mate",
-            "logo": {
-                "@type": "ImageObject",
-                "url": "https://www.meetyourmate.in/images/mym_logos/mymshadow.png"
-            }
-        }
-    })
-}} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "WebSite",
+                    "url": "https://www.meetyourmate.in",
+                    "name": "Meet Your Mate",
+                    "description": "Discover a new way to connect with fellow students at Meet Your Mate. Share secrets, chat anonymously, and forge meaningful connections with your college community. Join today and unlock a world of friendships and support.",
+                    "publisher": {
+                        "@type": "Organization",
+                        "name": "Meet Your Mate",
+                        "logo": {
+                            "@type": "ImageObject",
+                            "url": "https://www.meetyourmate.in/images/mym_logos/mymshadow.png"
+                        }
+                    }
+                })
+            }} />
 
         </Head>
     );
 };
 
 CustomHead.defaultProps = {
-    title: 'Share Your Secrets Anonymously | MYM',
+    title: 'MYM',
     description: "Join the anonymous community at MyM and share your deepest confessions with fellow students. Discover the thrill of chatting with random classmates and students from other colleges too and explore a world of secrets and connections.",
     keywords: ['omegle', 'omegle.com', 'confessions', 'college confessions', 'hbtu', 'hbtu confessions', 'anonymous confessions', 'chat with classmates', 'student community', 'secret sharing', 'anonymous messaging', 'college secrets'],
     seoImage: 'https://www.meetyourmate.in/images/mym_logos/mymshadow.png',

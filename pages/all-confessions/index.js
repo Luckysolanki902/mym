@@ -5,6 +5,7 @@ import CircularProgress from '@mui/material/CircularProgress'; // Import Circula
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import styles from './allconfessions.module.css';
+import CustomHead from '@/components/seo/CustomHead';
 
 const Index = ({ userDetails, initialConfessions }) => {
   const [confessions, setConfessions] = useState(initialConfessions);
@@ -57,34 +58,37 @@ const Index = ({ userDetails, initialConfessions }) => {
   }, [hasMore, loading]); // Make sure to run the effect when `hasMore` or `loading` changes
 
   return (
-    <div style={{ width: '100%', paddingTop: '2rem' }}>
+    <>
+      <CustomHead title={'Read Confessions of your College | MYM'} />
+      <div style={{ width: '100%', paddingTop: '2rem' }}>
 
-      {confessions.map((confession, index) => (
-        <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
-      ))}
-      {(loading) &&
-        // <div style={{ width: '1oo%', display: 'flex', justifyContent: 'center', marginBottom:'3rem', marginTop:'0' }}>
-        //   {/* <CircularProgress /> */}
-        //   <Image src={'/gifs/loadinghand.gif'} width={498} height={498} alt='loading more' loop={true}
-        //   style={{filter: 'grayscale(100%)'}}></Image>
-        // </div>
+        {confessions.map((confession, index) => (
+          <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
+        ))}
+        {(loading) &&
+          // <div style={{ width: '1oo%', display: 'flex', justifyContent: 'center', marginBottom:'3rem', marginTop:'0' }}>
+          //   {/* <CircularProgress /> */}
+          //   <Image src={'/gifs/loadinghand.gif'} width={498} height={498} alt='loading more' loop={true}
+          //   style={{filter: 'grayscale(100%)'}}></Image>
+          // </div>
 
-        <div style={{ width: '1oo%', display: 'flex', flexDirection: 'column', justifyContent: 'center', marginBottom: '3rem', marginTop: '0', alignItems: 'center' }} className={styles.isLoading}>
-          <p >Loading confessions</p>
-          <span>
-            <Image src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt='' />
-          </span>{' '}
-        </div>
-      }
-      {/* Render CircularProgress while loading */}
-      <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
-      {!hasMore &&
-        <div style={{ width: '1oo%', display: 'flex', justifyContent: 'center', marginBottom: '3rem', marginTop: '0' }} className={styles.isLoading}>
-          <p style={{ padding: '1rem', textAlign: 'center', opacity:'0.7', scale:'0.8' }}>You have seen all available confessions of your college</p>
-        </div>
+          <div style={{ width: '1oo%', display: 'flex', flexDirection: 'column', justifyContent: 'center', marginBottom: '3rem', marginTop: '0', alignItems: 'center' }} className={styles.isLoading}>
+            <p >Loading confessions</p>
+            <span>
+              <Image src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt='' />
+            </span>{' '}
+          </div>
+        }
+        {/* Render CircularProgress while loading */}
+        <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
+        {!hasMore &&
+          <div style={{ width: '1oo%', display: 'flex', justifyContent: 'center', marginBottom: '3rem', marginTop: '0' }} className={styles.isLoading}>
+            <p style={{ padding: '1rem', textAlign: 'center', opacity: '0.7', scale: '0.8' }}>You have seen all available confessions of your college</p>
+          </div>
 
-      }
-    </div>
+        }
+      </div>
+    </>
   );
 };
 
