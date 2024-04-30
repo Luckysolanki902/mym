@@ -48,17 +48,22 @@ const FillForm = () => {
           <MenuItem value="Other">Other</MenuItem>
         </Select>
       </FormControl>
-      <TextField
-        label="Description"
-        multiline
-        maxRows={5}
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        fullWidth
-        required
-        sx={{ maxWidth: '700px' }}
-        variant='standard'
-      />
+      {category === 'Confession Delete Request' && (
+        <TextField
+          label="Paste the confession link"
+          value={collegeId}
+          multiline
+          rows={2}
+          onChange={(e) => setCollegeId(e.target.value)}
+          fullWidth
+          required
+          sx={{ maxWidth: '700px' }}
+          variant='standard'
+          placeholder='just click on the share icon on the confession and click on copy link'
+        />
+      )}
+
+
       {category === 'Bug Report' && (
         <TextField
           label="How can we recreate the bug?"
@@ -92,6 +97,19 @@ const FillForm = () => {
           variant='standard'
         />
       )}
+
+      <TextField
+        label="Description"
+        multiline
+        minRows={2}
+        maxRows={5}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        fullWidth
+        required
+        sx={{ maxWidth: '700px' }}
+        variant='standard'
+      />
       <Button fullWidth sx={{ maxWidth: '300px' }} type="submit" variant="contained" color="primary" disabled={loading}>
         {loading ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
       </Button>
