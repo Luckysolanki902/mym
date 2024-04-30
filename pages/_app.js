@@ -10,6 +10,7 @@ import Sidebar from '@/components/appComps/Sidebar';
 import '@/styles/globals.css';
 import PageRefresh from '@/components/loadings/PageRefresh';
 import Image from 'next/image';
+import CustomHead from '@/components/seo/CustomHead';
 
 const mymtheme = createTheme({
   palette: {
@@ -38,7 +39,7 @@ export default function App({ Component, pageProps }) {
   const [showLoadingGif, setShowLoadingGif] = useState(false)
   // const isAuthRoute = router.pathname.startsWith('/auth') || router.pathname.startsWith('/verify');
 
-  
+
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -83,7 +84,7 @@ export default function App({ Component, pageProps }) {
 
   useEffect(() => {
     let timeout;
-  
+
     router.events.on('routeChangeStart', () => {
       setShowLoadingGif(true);
       // Set a timeout to hide the loading indicator after 5 seconds
@@ -91,28 +92,24 @@ export default function App({ Component, pageProps }) {
         setShowLoadingGif(false);
       }, 10000); // Adjust this timeout duration as needed
     });
-  
+
     router.events.on('routeChangeComplete', () => {
       // Clear the timeout and hide the loading indicator
       clearTimeout(timeout);
       setShowLoadingGif(false);
     });
-  
+
     return () => {
       clearTimeout(timeout); // Clear the timeout on component unmount
     };
   }, [router.events]);
-  
+
 
 
 
   return (
     <>
-      <Head>
-        <title>MYM</title>
-        <meta name="description" content={`Meet Your Mate`} />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      </Head>
+      <CustomHead />
       {/* <LoadingBar
         height={2}
         color='rgb(45, 45, 45)'
@@ -143,12 +140,12 @@ export default function App({ Component, pageProps }) {
             {/* {!isAuthRoute && <Topbar />} */}
             <Topbar />
             <Sidebar />
-            <div style={{ display: 'flex', flex: 1, overflowY: 'scroll', position:'relative' }} className='remcheight'>
+            <div style={{ display: 'flex', flex: 1, overflowY: 'scroll', position: 'relative' }} className='remcheight'>
               <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
-                {showLoadingGif  && 
-                <div style={{width:'var(--remwidth)', height:'100%',display:'flex', position:'absolute', top:'0', right:'0', justifyContent:'center', alignItems:'center', backgroundColor:'white', zIndex:'999'}}>
-                  <Image src={'/gifs/rhombus.gif'} priority width={800 / 3} height={800 / 3} className='loadingGif' alt='loading'></Image>
-                </div> 
+                {showLoadingGif &&
+                  <div style={{ width: 'var(--remwidth)', height: '100%', display: 'flex', position: 'absolute', top: '0', right: '0', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', zIndex: '999' }}>
+                    <Image src={'/gifs/rhombus.gif'} priority width={800 / 3} height={800 / 3} className='loadingGif' alt='loading'></Image>
+                  </div>
                 }
                 <Component {...pageProps} />
               </div>

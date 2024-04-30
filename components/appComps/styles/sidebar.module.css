@@ -8,6 +8,8 @@
     align-items: flex-end;
     gap: 2rem;
     z-index: 999;
+    /* position: relative; */
+    /* border: 1px solid red; */
 }
 
 .iconspng1 {
@@ -26,6 +28,10 @@
 }
 
 .iconspng4 {
+    width: 2rem;
+    height: auto;
+}
+.iconspng5 {
     width: 2rem;
     height: auto;
 }

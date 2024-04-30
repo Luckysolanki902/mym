@@ -36,7 +36,6 @@ yarn-error.log*
 next-env.d.ts
 
 generatesc.js
-
-# firebase admin and other confidentials
-meetyourmate-c3b29-firebase-adminsdk-13pod-320e67f3e1.json
 /confidentials
+/pages/admin/confessions
+/pages/api/admin/security/decrypt

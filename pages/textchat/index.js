@@ -4,6 +4,7 @@ import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
+import CustomHead from '@/components/seo/CustomHead';
 const TextChatPage = ({ userDetails }) => {
   const bottomRef = useRef(null);
   const router = useRouter()
@@ -25,6 +26,7 @@ const TextChatPage = ({ userDetails }) => {
   }, [userDetails, router]);
   return (
     <>
+      <CustomHead title={'Connect Anonymously: Chat with Your College Peers | MyM TextChat'} description={"Experience the buzz of anonymous chatting with MyM TextChat! Say goodbye to the usual small talk and dive into genuine conversations with your fellow college mates. It's like Omegle, but exclusive to your campus. Filter your matches by gender, college, and more, ensuring every chat is tailored to your preferences. Unveil the excitement of anonymous connections, share stories, and forge bonds—all within the safe confines of your college community. Join MyM TextChat today and let the conversations begin!"}/>
       <TextChat userDetails={userDetails} />
       <div ref={bottomRef}></div>
     </>

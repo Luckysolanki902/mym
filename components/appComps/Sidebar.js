@@ -67,7 +67,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     // Check if the path matches any of the sidebar routes and set the active tab accordingly
-    const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox'];
+    const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox', '/fill-form'];
     const index = paths.findIndex(path => path === router.pathname);
     setActiveIndex(index !== -1 ? index : null); // If not found in sidebar routes, set to null
   }, [router.pathname]);
@@ -146,6 +146,21 @@ const Sidebar = () => {
               title={'inbox'}
             />
           </StyledBadge>
+        </div>
+
+        <div
+          className={`${styles.icons} ${activeIndex === 5 ? styles.active : ''}`}
+          onClick={() => handleSetActive(3, '/fill-form')}
+          style={{ position:'absolute', bottom:'3rem'}}
+        >
+          <Image
+            src={'/images/sidebaricons/bulb.png'}
+            width={225 / 2}
+            height={272 / 2}
+            alt='icon'
+            className={styles.iconspng4}
+            title={'Suggestions'}
+          />
         </div>
       </div>
     </div>

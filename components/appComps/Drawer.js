@@ -17,12 +17,12 @@ import { useRouter } from 'next/router';
 import { getSession } from 'next-auth/react';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    right: -3,
-    top: 13,
-    border: `2px solid ${theme.palette.background.paper}`,
-    padding: '0 4px',
-  },
+    '& .MuiBadge-badge': {
+        right: -3,
+        top: 13,
+        border: `2px solid ${theme.palette.background.paper}`,
+        padding: '0 4px',
+    },
 }));
 
 export default function SwipeableTemporaryDrawer(props) {
@@ -87,7 +87,7 @@ export default function SwipeableTemporaryDrawer(props) {
 
     useEffect(() => {
         // Check if the path matches any of the Drawer items and set the active index accordingly
-        const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox'];
+        const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox', '/fill-form'];
         const index = paths.findIndex(path => path === router.pathname);
         setState(prevState => ({ ...prevState, activeIndex: index !== -1 ? index : null }));
     }, [router.pathname]);
@@ -106,19 +106,23 @@ export default function SwipeableTemporaryDrawer(props) {
             <div className={styles.imageCont}>
                 <Image className={styles.logoImage} src={'/images/mym_logos/mymlogoinvert2.png'} width={724 / 2} height={338 / 2} alt="mym" title='maddy logo' />
             </div>
-            <List className={styles.list}>
+            <List className={styles.list} style={{ height: '100%' }}>
                 {[
                     { text: 'Home', href: '/' },
                     { text: 'Random Chat', href: '/textchat' },
-                    { text: 'Confessions', href: '/all-confessions' },
+                    { text: 'Confessions ', href: '/all-confessions' },
                     { text: 'Write Confession', href: '/create-confession' },
                     { text: 'Inbox', href: '/inbox' },
+                    { text: 'Suggestions', href: '/fill-form' }, // New option added
                 ].map((item, index) => (
                     <ListItem
                         key={item.text}
-                        className={`${styles.sideBarListItem} ${state.activeIndex === index ? styles.activeListItem : ''}`}
+                        className={`${styles.sideBarListItem} `}
+                        style={index === 5 ? { position: 'absolute', bottom: '2rem' } : null}
+
                     >
-                        <Link href={item.href} className={styles.sideBarLinks} passHref>
+
+                        <Link href={item.href} className={`${styles.sideBarLinks} ${state.activeIndex === index ? styles.activeListItem : ''}`} passHref>
                             <ListItemButton className={styles.sideBarListItem}>
                                 <ListItemIcon className={styles.listItemIcon}>
                                     {index === 0 ? (
@@ -128,34 +132,44 @@ export default function SwipeableTemporaryDrawer(props) {
                                             height={512 / 3}
                                             alt='icon'
                                             className={`${styles.iconspng1} ${styles.sideIcon}`}
-                                        />) : index === 1 ? (
-                                            <Image
-                                                src={'/images/sidebaricons/randomchat.png'}
-                                                width={1080 / 10}
-                                                height={720 / 10}
-                                                alt='icon'
-                                                className={`${styles.iconspng2} ${styles.sideIcon}`}
-                                            />
-                                        ) : index === 2 ? (
-                                            <Image
-                                                src={'/images/sidebaricons/confessions.png'}
-                                                width={545 / 10}
-                                                height={720 / 10}
-                                                alt='icon'
-                                                className={`${styles.iconspng3} ${styles.sideIcon}`}
-                                            />) : index === 3 ? (
-                                                <Image
-                                                    src={'/images/sidebaricons/createconfession.png'}
-                                                    width={225 / 2}
-                                                    height={272 / 2}
-                                                    alt='icon'
-                                                    className={`${styles.iconspng4} ${styles.sideIcon}`}
-                                                />
-                                            ) : (
-                                                <StyledBadge badgeContent={state.unseenCount} color="primary">
-                                                    <MailIcon fontSize='medium' style={{ color: 'white' }} />
-                                                </StyledBadge>
-                                            )}
+                                        />
+                                    ) : index === 1 ? (
+                                        <Image
+                                            src={'/images/sidebaricons/randomchat.png'}
+                                            width={1080 / 10}
+                                            height={720 / 10}
+                                            alt='icon'
+                                            className={`${styles.iconspng2} ${styles.sideIcon}`}
+                                        />
+                                    ) : index === 2 ? (
+                                        <Image
+                                            src={'/images/sidebaricons/confessions.png'}
+                                            width={545 / 10}
+                                            height={720 / 10}
+                                            alt='icon'
+                                            className={`${styles.iconspng3} ${styles.sideIcon}`}
+                                        />
+                                    ) : index === 3 ? (
+                                        <Image
+                                            src={'/images/sidebaricons/createconfession.png'}
+                                            width={225 / 2}
+                                            height={272 / 2}
+                                            alt='icon'
+                                            className={`${styles.iconspng4} ${styles.sideIcon}`}
+                                        />
+                                    ) : index === 4 ? (
+                                        <StyledBadge badgeContent={state.unseenCount} color="primary">
+                                            <MailIcon fontSize='medium' style={{ color: 'white' }} />
+                                        </StyledBadge>
+                                    ) : (
+                                        <Image
+                                            src={'/images/sidebaricons/bulb.png'}
+                                            width={300 / 2}
+                                            height={272 / 2}
+                                            alt='icon'
+                                            className={`${styles.iconspng5} ${styles.sideIcon}`}
+                                        />
+                                    )}
                                 </ListItemIcon>
                                 <ListItemText
                                     primary={
@@ -172,6 +186,7 @@ export default function SwipeableTemporaryDrawer(props) {
             </List>
         </div>
     );
+
 
     return (
         <div className={styles.drawermain}>

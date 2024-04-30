@@ -4,12 +4,13 @@ import GuidelinesDialog from '@/components/dialogs/GuidelinesDialog';
 import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
+import CustomHead from '@/components/seo/CustomHead';
 const CreateConfession = ({ userDetails }) => {
   const { data: session } = useSession();
   const router = useRouter();
-  const [showDialog, setShowDialog] = useState(false); 
+  const [showDialog, setShowDialog] = useState(false);
   const timeInMinutes = 60; // Set the time threshold in minutes
-  
+
   useEffect(() => {
     // Redirect to verify/verifyotp if userDetails is not verified
     if (userDetails && !userDetails.isVerified) {
@@ -33,7 +34,7 @@ const CreateConfession = ({ userDetails }) => {
         localStorage.setItem('dialogLastUpdateTime', currentTime.toString());
       }
     }
-    
+
   }, [userDetails, router]);
 
   const handleCloseDialog = () => {
@@ -41,13 +42,16 @@ const CreateConfession = ({ userDetails }) => {
   };
 
   return (
-    <div style={{ height: '80%' }}>
-      <h1 style={{ textAlign: 'center', fontFamily: 'ITC Kristen', fontWeight: '100', marginTop: '2rem' }}>Create Confession</h1>
-      <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'hidden', alignItems: 'center', height: '100%' }} className='remcomponents'>
-        <CreateConfessionForm userDetails={userDetails} />
-        <GuidelinesDialog open={showDialog} onClose={handleCloseDialog} />
+    <>
+      <CustomHead title={'Share Your Secrets Anonymously | Create Confession | MyM'} description={"Ready to unload your thoughts? Create your confession anonymously on MyM and join a community of secret-sharers. No judgments, no worries—just pure anonymity. Pour your heart out, get it off your chest, and experience the liberating feeling of unburdening yourself. Plus, get more likes and comments to make your confession trend and spark conversations. Start sharing your secrets today with MyM's Create Confession feature."} keywords={ ['share secrets anonymously', 'confession creation', 'anonymous sharing', 'college confessions', 'unburden yourself', 'confession community', 'secret sharing platform', 'trending confessions']}/>
+      <div style={{ height: '80%' }}>
+        <h1 style={{ textAlign: 'center', fontFamily: 'ITC Kristen', fontWeight: '100', marginTop: '2rem' }}>Create Confession</h1>
+        <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'hidden', alignItems: 'center', height: '100%' }} className='remcomponents'>
+          <CreateConfessionForm userDetails={userDetails} />
+          <GuidelinesDialog open={showDialog} onClose={handleCloseDialog} />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -7,7 +7,8 @@ const FillForm = () => {
   const [recreateBug, setRecreateBug] = useState('');
   const [loading, setLoading] = useState(false);
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
-
+  const [collegeName, setCollegeName] = useState('');
+  const [collegeId, setCollegeId] = useState('');
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -36,10 +37,11 @@ const FillForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{width:'100%',padding:'4rem', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', gap:'3rem'}}>
-      <FormControl fullWidth  sx={{maxWidth:'700px'}}>
+    <form onSubmit={handleSubmit} style={{ width: '100%', padding: '4rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '3rem' }}>
+      <FormControl fullWidth sx={{ maxWidth: '700px' }}>
         <InputLabel>Select Category</InputLabel>
         <Select variant='standard' value={category} onChange={(e) => setCategory(e.target.value)} required>
+          <MenuItem value="Add My College">Add My College</MenuItem>
           <MenuItem value="Bug Report">Bug Report</MenuItem>
           <MenuItem value="Suggestion">Suggestion</MenuItem>
           <MenuItem value="Confession Delete Request">Confession Delete Request</MenuItem>
@@ -54,7 +56,7 @@ const FillForm = () => {
         onChange={(e) => setDescription(e.target.value)}
         fullWidth
         required
-        sx={{ maxWidth:'700px'}}
+        sx={{ maxWidth: '700px' }}
         variant='standard'
       />
       {category === 'Bug Report' && (
@@ -63,11 +65,34 @@ const FillForm = () => {
           value={recreateBug}
           onChange={(e) => setRecreateBug(e.target.value)}
           fullWidth
-          sx={{maxWidth:'700px'}}
+          sx={{ maxWidth: '700px' }}
           variant='standard'
         />
       )}
-      <Button fullWidth sx={{maxWidth:'300px'}} type="submit" variant="contained" color="primary" disabled={loading}>
+
+      {category === 'Add My College' && (
+        <TextField
+          label="Name of Your college"
+          value={collegeName}
+          onChange={(e) => setCollegeName(e.target.value)}
+          fullWidth
+          required
+          sx={{ maxWidth: '700px' }}
+          variant='standard'
+        />
+      )}
+      {category === 'Add My College' && (
+        <TextField
+          label="What's your college id?"
+          value={collegeId}
+          onChange={(e) => setCollegeId(e.target.value)}
+          fullWidth
+          required
+          sx={{ maxWidth: '700px' }}
+          variant='standard'
+        />
+      )}
+      <Button fullWidth sx={{ maxWidth: '300px' }} type="submit" variant="contained" color="primary" disabled={loading}>
         {loading ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
       </Button>
       <Snackbar

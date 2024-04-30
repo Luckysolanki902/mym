@@ -76,21 +76,29 @@
     align-items: center;
     overflow: hidden;
     width: 100%;
+    border-radius: 1rem;
+    padding: 0.4rem;
     
-}
-
-.sideBarListItem {
     display: flex;
     align-items: center;
     background-color: transparent;
     border-radius: 1rem;
     overflow: hidden;
     padding: 0.3rem 0.5rem;
+    width: 100%;
+    
+}
+
+.sideBarListItem {
+    
 }
 
 .activeListItem {
     background-color: rgba(211, 211, 211, 0.3);
     text-decoration: none;
+
+
+    /* margin: 1rem; */
 }
 
 .sideIcon {
