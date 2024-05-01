@@ -150,7 +150,7 @@ const Sidebar = () => {
 
         <div
           className={`${styles.icons} ${activeIndex === 5 ? styles.active : ''}`}
-          onClick={() => handleSetActive(3, '/fill-form')}
+          onClick={() => handleSetActive(5, '/fill-form')}
           style={{ position:'absolute', bottom:'2rem'}}
         >
           <Image
