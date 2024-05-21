@@ -76,15 +76,13 @@
     align-items: center;
     overflow: hidden;
     width: 100%;
-    border-radius: 1rem;
-    padding: 0.4rem;
-    
+    border-radius: 1rem;    
     display: flex;
     align-items: center;
     background-color: transparent;
     border-radius: 1rem;
     overflow: hidden;
-    padding: 0.3rem 0.5rem;
+    padding: 0.1rem 0.5rem;
     width: 100%;
     
 }
@@ -132,6 +130,7 @@
     margin: 0;
     font-size: 0.9rem;
     font-weight: 500;
+    font-size: 0.8rem;
 
 }
 

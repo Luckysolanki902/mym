@@ -106,11 +106,11 @@ export default function SwipeableTemporaryDrawer(props) {
             <div className={styles.imageCont}>
                 <Image className={styles.logoImage} src={'/images/mym_logos/mymlogoinvert2.png'} width={724 / 2} height={338 / 2} alt="mym" title='maddy logo' />
             </div>
-            <List className={styles.list} style={{ height: '100%' }}>
+            <List className={styles.list} style={{ height: '100%' , }}>
                 {[
                     { text: 'Home', href: '/' },
                     { text: 'Random Chat', href: '/textchat' },
-                    { text: 'Confessions ', href: '/all-confessions' },
+                    { text: 'Read Confessions ', href: '/all-confessions' },
                     { text: 'Write Confession', href: '/create-confession' },
                     { text: 'Inbox', href: '/inbox' },
                     { text: 'Suggestions', href: '/fill-form' }, // New option added
@@ -118,7 +118,7 @@ export default function SwipeableTemporaryDrawer(props) {
                     <ListItem
                         key={item.text}
                         className={`${styles.sideBarListItem} `}
-                        style={index === 5 ? { position: 'absolute', bottom: '1rem' } : null}
+                        style={index === 5 ? { position: 'absolute', bottom: '1rem', } : null}
 
                     >
 

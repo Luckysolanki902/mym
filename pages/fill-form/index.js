@@ -52,8 +52,6 @@ const FillForm = () => {
         <TextField
           label="Paste the confession link"
           value={collegeId}
-          multiline
-          rows={2}
           onChange={(e) => setCollegeId(e.target.value)}
           fullWidth
           required

@@ -83,6 +83,8 @@ const Sidebar = () => {
         <div
           className={`${styles.icons} ${activeIndex === 0 ? styles.activeAndAtHome : ''}`}
           onClick={() => handleSetActive(0, '/')}
+          data-title="Home"
+
         >
           <Image
             src={'/images/sidebaricons/home.png'}
@@ -90,12 +92,12 @@ const Sidebar = () => {
             height={512 / 3}
             alt='icon'
             className={styles.iconspng1}
-            title={'home'}
           />
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 1 ? styles.active : ''}`}
           onClick={() => handleSetActive(1, '/textchat')}
+          data-title="Random Chat"
         >
           <Image
             src={'/images/sidebaricons/randomchat.png'}
@@ -103,12 +105,12 @@ const Sidebar = () => {
             height={720 / 10}
             alt='icon'
             className={styles.iconspng2}
-            title={'random chat'}
           />
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 2 ? styles.active : ''}`}
           onClick={() => handleSetActive(2, '/all-confessions')}
+          data-title="Read Confessions"
         >
           <Image
             src={'/images/sidebaricons/confessions.png'}
@@ -116,12 +118,12 @@ const Sidebar = () => {
             height={720 / 10}
             alt='icon'
             className={styles.iconspng3}
-            title={'all confessions'}
           />
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 3 ? styles.active : ''}`}
           onClick={() => handleSetActive(3, '/create-confession')}
+          data-title="Create Confession"
         >
           <Image
             src={'/images/sidebaricons/createconfession.png'}
@@ -129,12 +131,12 @@ const Sidebar = () => {
             height={272 / 2}
             alt='icon'
             className={styles.iconspng4}
-            title={'create confession'}
           />
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 4 ? styles.active : ''}`}
           onClick={() => handleSetActive(4, '/inbox')}
+          data-title="Inbox"
         >
           <StyledBadge badgeContent={unseenCount} color="primary">
             <Image
@@ -143,7 +145,6 @@ const Sidebar = () => {
               height={272 / 2}
               alt='icon'
               className={styles.iconspng4}
-              title={'inbox'}
             />
           </StyledBadge>
         </div>
@@ -151,6 +152,7 @@ const Sidebar = () => {
         <div
           className={`${styles.icons} ${activeIndex === 5 ? styles.active : ''}`}
           onClick={() => handleSetActive(5, '/fill-form')}
+          data-title="Suggestions"
           style={{ position:'absolute', bottom:'2rem'}}
         >
           <Image
@@ -159,7 +161,6 @@ const Sidebar = () => {
             height={272 / 2}
             alt='icon'
             className={styles.iconspng4}
-            title={'Suggestions'}
           />
         </div>
       </div>

@@ -31,6 +31,7 @@
     width: 2rem;
     height: auto;
 }
+
 .iconspng5 {
     width: 2rem;
     height: auto;
@@ -65,8 +66,40 @@
 
 .activeAndAtHome {
     background-color: white;
-    background-image: url('/images/patterns/leatherhome2.jpg');
+    /* background-image: url('/images/patterns/leatherhome2.jpg'); */
     box-shadow: -2px 4px 4px 0px rgba(0, 0, 0, 0.5);
     filter: invert(0);
     transition: width 0.3s, height 0.3s;
+}
+
+.icons {
+    position: relative;
+    /* cursor: pointer; */
+}
+
+.icons::after {
+    content: attr(data-title);
+    position: absolute;
+    left: 110%;
+    /* Adjust this value as needed */
+    padding: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 0.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 100;
+    white-space: nowrap;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    scale: 0.7;
+    border-bottom-left-radius: 0;
+    font-family: 'Roboto';
+    font-weight: 100;
+}
+
+.icons:hover::after {
+    opacity: 1;
+    border: 1px solid white;
+    scale: 1;
 }
