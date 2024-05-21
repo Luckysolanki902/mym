@@ -94,7 +94,7 @@
     transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
     scale: 0.7;
     border-bottom-left-radius: 0;
-    font-family: 'Roboto';
+    font-family: 'Roboto', sans-serif;
     font-weight: 100;
 }
 
