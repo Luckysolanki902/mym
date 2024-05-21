@@ -87,9 +87,7 @@
     
 }
 
-.sideBarListItem {
-    
-}
+
 
 .activeListItem {
     background-color: rgba(211, 211, 211, 0.3);
@@ -130,7 +128,7 @@
     margin: 0;
     font-size: 0.9rem;
     font-weight: 500;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
 
 }
 
