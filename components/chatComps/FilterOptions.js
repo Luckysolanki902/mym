@@ -34,9 +34,14 @@ const FilterOptions = ({ userDetails }) => {
 
   useEffect(() => {
     if (userDetails) {
+      console.log(userDetails)
       setPreferredCollege('any');
       setPreferredGender(userDetails.gender === 'male' ? 'female' : 'male');
     }
+    else{
+      console.log('no user')
+    }
+
   }, [userDetails]);
 
   useEffect(() => {
