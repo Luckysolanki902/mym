@@ -44,12 +44,19 @@
 
 }
 
-.chip {
-    font-size: 0.8rem;
-}
+
 
 .chipDefault {
     background-color: white;
+    font-size: 0.8rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.3rem 0.6rem;
+    border-radius: 10%;
+    cursor: pointer;
+
     color: black;
     transition: all 0.3s ease-in-out;
   }
@@ -59,7 +66,16 @@
   }
   
   .chipSelected {
-    background-color: #2D2D2D;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.3rem 0.6rem;
+    border-radius: 10%;
+
+    background-color: #494949;
+    font-size: 0.8rem;
+
     color: white;
     pointer-events: none; /* Prevent hover effects on selected chips */
   }
@@ -68,6 +84,13 @@
     background-color: rgb(64, 165, 223);
     color: white;
     pointer-events: none; /* Prevent hover effects on selected chips */
+    font-size: 0.8rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.3rem 0.6rem;
+    border-radius: 10%;
   }
 
   
@@ -75,6 +98,13 @@
     background-color: #df2c7a;
     color: white;
     pointer-events: none; /* Prevent hover effects on selected chips */
+    font-size: 0.8rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.3rem 0.6rem;
+    border-radius: 10%;
   }
   
 
