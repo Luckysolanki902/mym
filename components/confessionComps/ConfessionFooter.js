@@ -1,10 +1,12 @@
 // ConfessionFooter.js
 import React, { useEffect, useState } from 'react';
-import { FaHeart, FaComment } from 'react-icons/fa';
+import { FaHeart, FaComment, FaRegHeart,  } from 'react-icons/fa';
 import { IoIosSend } from 'react-icons/io';
 import styles from '../componentStyles/confession.module.css';
 import AnonymDialog from './AnonymDialog';
 import { useMediaQuery } from '@mui/material';
+import Image from 'next/image';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommentsDialog, handleClick, handleOpenAuthPrompt }) => {
     const [liked, setLiked] = useState(false);
@@ -60,7 +62,6 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             const likeOperation = {
                 email: userDetails?.email,
                 confessionId: confession._id,
-                liked: !liked,
             };
 
             // Save like operation locally (for offline support)
@@ -94,6 +95,11 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
 
 
     const handleAnonymousReply = async () => {
+        if (!userDetails) {
+            // Open the authentication prompt
+            handleOpenAuthPrompt(true)
+            return;
+        }
         setSendingAnonymousReply(true)
         try {
             const { encryptedEmail, iv } = confession;
@@ -138,21 +144,24 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             <div className={styles.confessionfooter}>
                 <div className={styles.likes} onClick={handleLike} style={{ cursor: 'pointer' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <FaHeart className={`${styles.iconm} ${liked ? styles.redheart : ''} ${likeanimation ? styles[likeanimation] : ''}`} />
-                    </div>
-                    <div>{likesCount}</div>
+                    {liked ? (
+                            <FaHeart className={`${styles.iconm} ${styles.redheart} ${likeanimation ? styles[likeanimation] : ''}`} />
+                        ) : (
+                            <Image src={'/images/othericons/heart.png'} width={50} height={50} alt='' className={`${styles.iconm} ${likeanimation ? styles[likeanimation] : ''}`} style={{color:'black'}} />
+                        )}                    </div>
+                    <div  >{likesCount}</div>
                 </div>
-                <div className={styles.likes} onClick={toggleCommentsDialog} style={{ cursor: 'pointer' }}>
+                <div className={styles.commentsiconinfooter} onClick={toggleCommentsDialog} style={{ cursor: 'pointer' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <FaComment style={{ color: 'white' }} className={styles.iconm} />
+                        <Image src={'/images/othericons/comment.png'} width={50} height={50} alt='' style={{ color: 'white' }} className={styles.iconm} />
                     </div>
-                    <div>{commentsCount}</div>
+                    <div >{commentsCount}</div>
                 </div>
                 <div className={styles.reply} onClick={handleClick}>
                     <input
                         className={styles.anonymInput}
                         type="text"
-                        placeholder='Reply...'
+                        placeholder='Reply anonymously...'
                         value={anonymousReplyValue}
                         onChange={(e) => setAnonymousReplyValue(e.target.value)}
                         onKeyDown={(e) => {

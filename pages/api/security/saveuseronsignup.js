@@ -1,17 +1,19 @@
-// pages/api/signup.js
 import connectToMongo from '@/middleware/middleware';
 import User from '@/models/User';
 
 const handler = async (req, res) => {
-  
   if (req.method === 'POST') {
     try {
-      
-      const { email, gender, college } = req.body;
+      const { email, gender, college, isTestId } = req.body;
       const lowercaseEmail = email.toString().toLowerCase(); // Converting email to lowercase
 
+      let isVerified = false; // By default, not verified
+      
+      if (isTestId) {
+        isVerified = true; // If test ID, mark as verified
+      }
 
-      const user = new User({ email: lowercaseEmail, gender, college, isVerified: false });
+      const user = new User({ email: lowercaseEmail, gender, college, isVerified });
       await user.save();
 
       console.log('User saved successfully.');

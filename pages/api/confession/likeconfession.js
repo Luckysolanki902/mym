@@ -5,7 +5,7 @@ import Confession from '@/models/Confession';
 
 const handler = async (req, res) => {
     try {
-        const { email, confessionId, liked } = req.body;
+        const { email, confessionId } = req.body;
 
         // Find the confession
         const confession = await Confession.findById(confessionId);

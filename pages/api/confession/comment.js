@@ -4,7 +4,7 @@ import Confession from '@/models/Confession';
 
 const handler = async (req, res) => {
     
-    const { email, gender, confessionId, commentContent } = req.body;
+    const {  gender, confessionId, commentContent } = req.body;
 
     try {
         // Check if the confession exists
@@ -16,7 +16,6 @@ const handler = async (req, res) => {
 
         // Create a new comment
         const newComment = new Comment({
-            userEmail: email,
             gender,
             confessionId,
             commentContent,

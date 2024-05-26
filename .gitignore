@@ -39,3 +39,4 @@ generatesc.js
 /confidentials
 /pages/admin/confessions
 /pages/api/admin/security/decrypt
+/pages/testing

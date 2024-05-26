@@ -1,68 +1,64 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import "swiper/css/effect-cards";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { register } from "swiper/element/bundle";
-import Image from "next/image";
-import "swiper/css/effect-cards";
 import { EffectCards } from "swiper/modules";
-import style from './styles/collegecards.module.css'
-// import Card from "./Card";
+import { register } from "swiper/element/bundle";
+import CollegeCard from "./CollegeCard";
+
 register();
 
-const teamMembers = [
+const colleges = [
   {
-    NAME: "John Doe",
-    Position: "President",
-    updatedImageUrl: "/team/JohnDoe.jpg",
+    firstname: "IIT",
+    lastname: "KANPUR",
+    live: false,
   },
   {
-    NAME: "Jane Doe",
-    Position: "Vice President",
-    updatedImageUrl: "/team/JaneDoe.jpg",
-  }
-]
+    firstname: "PSIT",
+    lastname: "KANPUR",
+    live: false,
+  },
+  {
+    firstname: "HBTU",
+    lastname: "KANPUR",
+    live: true,
+  },
+  {
+    firstname: "CSA",
+    lastname: "KANPUR",
+    live: false,
+  },
+  {
+    firstname: "CSJMU",
+    lastname: "KANPUR",
+    live: false,
+  },
+];
 
 const CollegeCards = () => {
-  const isMultipleImages = teamMembers.length > 1;
-
   return (
-    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+    <div style={{ width: "100%", display: "flex", justifyContent: "center"}}>
       <Swiper
         style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          // backgroundColor: 'black'
+          height: "auto", // Corrected the typo
+          width: "100%",
+          margin: "auto",
         }}
+        cardsEffect={{ slideShadows: false, rotate: false, perSlideOffset:12 }}
         effect="cards"
         modules={[EffectCards]}
-        loop={!isMultipleImages}
+        loop={true}
         speed={500}
         simulateTouch={true}
-        autoplay={{ delay: 1500, disableOnInteraction: false }}
+        // autoplay={{ delay: 1500, disableOnInteraction: false }}
+        initialSlide={2}
       >
-        {teamMembers.map((member, index) => (
-          <SwiperSlide key={index}>
-            <div className={style.pro}>
-              <div className={style.in}>
-                <div className={style.proin}>
-                  {/* <Image
-                    src={`/local_images/imagestsc/${member.updatedImageUrl}`}
-                    height={960}
-                    width={1280}
-                    quality={70}
-                    // objectFit="contain"
-                    alt={'member'}
-                    className={style.proimg}
-                  /> */}
-                  <div className={style.imgOver}></div>
-                </div>
-                <div className={`${style.protxt}`}>{member.NAME}</div>
-                <div className={style.pos}>{member.Position}</div>
-              </div>
-            </div>
+        {colleges.map((college, index) => (
+          <SwiperSlide key={index} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <CollegeCard firstname={college.firstname} lastname={college.lastname} live={college.live} />
           </SwiperSlide>
         ))}
       </Swiper>

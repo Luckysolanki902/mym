@@ -58,7 +58,7 @@ export default function Signin() {
     } catch (error) {
       console.error("Error signing in:", error);
       setSignInError(error.message); // Set the sign-in error message
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -106,27 +106,27 @@ export default function Signin() {
               variant="contained"
               color="primary"
               className={styles.button}
-              style={{textTransform:'none'}}
+              style={{ textTransform: 'none' }}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} color="inherit"/> : 'Sign In'}
+              {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
             </Button>
           </form>
           <Link href="/auth/forgot-password" className={styles.paraLink2}>
             Forgot Password?
-          </Link> 
+          </Link>
           <div className={styles.line}></div>
-          <Button
+          <div
             type="submit"
             variant="contained"
             color="primary"
             onClick={() => router.push('/auth/signup')}
-            className={`${styles.button} ${styles.button2}`}
-            style={{textTransform:'none'}}
+            className={styles.paraLink}
+            style={{ textTransform: 'none', cursor: 'pointer' }}
 
           >
             {'Create New Account'}
-          </Button>
+          </div>
         </div>
       </div>
     </ThemeProvider>

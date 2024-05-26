@@ -1,0 +1,59 @@
+.main {
+    width: 20rem;
+    height: 27rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    /* background-color: black; */
+    /* border: 1px solid red; */
+    border-radius: 2rem;
+    background-image: url('/images/showcase/cardbg.jpg');
+    background-size: cover;
+    /* Ensures the image covers the entire element */
+    background-position: center;
+    /* Centers the image */
+    padding-left: 2rem;
+    box-shadow: 0.2rem 0 0.1remrem rgba(0, 0, 0, 0.5);
+}
+
+.center {
+    height: 50%;
+    text-align: left;
+}
+
+.center h1 {
+    font-family: Jost, sans-serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+}
+
+.liveParent {
+    margin-top: 3rem;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-transform: uppercase;
+    font-size: 2.2rem;
+    font-weight: 500;
+}
+
+.csParent {
+    margin-top: 2rem;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-transform: uppercase;
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+.circle {
+    width: 0.7rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: #24FF00;
+    margin-right: 1rem;
+
+}

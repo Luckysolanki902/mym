@@ -31,9 +31,26 @@ const Signup = () => {
   const [colleges, setColleges] = useState([]);
   const [collegesLoaded, setCollegesLoaded] = useState(false);
   const [allowedEmails, setAllowedEmails] = useState([]);
+  const [testIds, setTestIds] = useState([]);
 
   // admin
   const allowOnlyCollegeEmails = true;
+
+  useEffect(() => {
+    // Fetch test IDs
+    const fetchTestIds = async () => {
+      try {
+        const response = await fetch('/api/admin/testids/get');
+        const data = await response.json();
+        setTestIds(data.map(test => test.email));
+      } catch (error) {
+        console.error('Error fetching test IDs:', error);
+      }
+    };
+
+    fetchTestIds();
+  }, []);
+
   useEffect(() => {
     const fetchColleges = async () => {
       try {
@@ -65,12 +82,13 @@ const Signup = () => {
     try {
       setError(null);
       setLoading(true);
-
+      let isTestId = false;
       if (allowOnlyCollegeEmails) {
         const isEmailAllowed = allowedEmails.some((allowedEmail) =>
           email.endsWith(allowedEmail)
         );
-        if (!isEmailAllowed) {
+        isTestId = testIds.includes(email); // Check if email is one of the test IDs
+        if (!isEmailAllowed && !isTestId) {
           throw new Error('Your college is not on mym yet.');
         }
       }
@@ -95,7 +113,7 @@ const Signup = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email, gender, college }),
+          body: JSON.stringify({ email, gender, college, isTestId }),
         });
 
         if (!responseSaving.ok) {
@@ -105,7 +123,13 @@ const Signup = () => {
         console.log('Successful signup');
 
         // Redirect to verifyotp page with the entered email
-        router.push(`/verify/verifyotp`);
+        if (isTestId) {
+          router.push(`/`);
+        }
+        else {
+          router.push(`/verify/verifyotp`);
+
+        }
       }
     } catch (error) {
       console.error('Error signing up:', error);
@@ -202,19 +226,19 @@ const Signup = () => {
             </Button>
           </form>
           <div className={styles.line}></div>
-          <a href="/auth/signin" className={styles.paraLink}>
+          {/* <a href="/auth/signin" className={styles.paraLink}>
             Already have an account?
-          </a>
+          </a> */}
 
-          <Button
+          <div
             type="submit"
             variant="contained"
             color="primary"
             onClick={() => router.push('/auth/signin')}
-            className={`${styles.button} ${styles.button2}`}
-          >
+            className={styles.paraLink}
+            style={{ cursor: 'pointer' }}         >
             {'Sign In Instead'}
-          </Button>
+          </div>
         </div>
       </div>
     </ThemeProvider>

@@ -8,6 +8,7 @@ import TrendingConfessions from '@/components/commonComps/TrendingConfessions';
 import Typewriter from 'typewriter-effect';
 // import CollegeCards from '@/components/justhomepage/CollegeCards';
 import Footer from '@/components/commonComps/Footer';
+import CollegeCards from '@/components/justhomepage/CollegeCards';
 export default function Home({ session, trendingConfessions }) {
   const containerSpring = useSpring({
     from: { opacity: 0, transform: 'translate3d(0, -50px, 0)' },
@@ -120,7 +121,8 @@ export default function Home({ session, trendingConfessions }) {
         </div>
         <p className={styles.ourgoalP}>23IITs , 31NITs , and every other bachelor colleges on our platform</p>
         <div className={styles.comingsoonCards}>
-          <Image src={'/images/showcase/cards.png'} width={1348} height={688} alt='cards'  ></Image>
+          {/* <Image src={'/images/showcase/cards.png'} width={1348} height={688} alt='cards'  ></Image> */}
+          <CollegeCards/>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

@@ -1,40 +1,40 @@
 import React, { useEffect, useState, useRef } from 'react';
-import styles from '../componentStyles/filteroptions.module.css';
+import styles from './styles/filteroptions.module.css';
 import { IoFilterSharp } from 'react-icons/io5';
-import { MenuItem, Button, FormControl, createTheme, ThemeProvider, Menu } from '@mui/material';
-import { FaChevronDown } from "react-icons/fa";
+import { Chip, createTheme, ThemeProvider } from '@mui/material';
 import { useFilters } from '@/context/FiltersContext';
-
+import { useSpring, animated } from 'react-spring';
 const darkTheme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: 'light',
     primary: {
-      main: '#FFFFFF', // Set the color you want for the selected item
+      main: '#000000', // Ensure contrast for the chip text
     },
   },
 });
 
 const FilterOptions = ({ userDetails }) => {
-  const [openFilterIcon, setOpenFilterIcon] = useState(false);
-  const [collegeMenuAnchor, setCollegeMenuAnchor] = useState(null);
-  const [genderMenuAnchor, setGenderMenuAnchor] = useState(null);
-  const [collegeMenuWidth, setCollegeMenuWidth] = useState(null);
-  const [genderMenuWidth, setGenderMenuWidth] = useState(null);
+  const [openFilterMenu, setOpenFilterMenu] = useState(false);
   const mainFilterContainerRef = useRef(null);
+  const filterContentAnimation = useSpring({
+    transform: openFilterMenu ? 'translateX(0%) scale(1)' : 'translateX(100%) scale(0.6)',
+    opacity: openFilterMenu ? 1 : 0,
 
+    config: { tension: 220, friction: 20 }
+  });
   // filters contexts
   const { preferredGender, setPreferredGender, preferredCollege, setPreferredCollege } = useFilters();
 
-  const handlefilterToggle = () => {
+  const handleFilterToggle = () => {
     if (!userDetails) {
       return;
     }
-    setOpenFilterIcon(!openFilterIcon);
+    setOpenFilterMenu(!openFilterMenu);
   };
 
   useEffect(() => {
     if (userDetails) {
-      setPreferredCollege('any')
+      setPreferredCollege('any');
       setPreferredGender(userDetails.gender === 'male' ? 'female' : 'male');
     }
   }, [userDetails]);
@@ -43,10 +43,9 @@ const FilterOptions = ({ userDetails }) => {
     const handleClickOutside = (event) => {
       if (
         mainFilterContainerRef.current &&
-        !mainFilterContainerRef.current.contains(event.target) &&
-        !event.target.closest('[role="menuitem"]')
+        !mainFilterContainerRef.current.contains(event.target)
       ) {
-        setOpenFilterIcon(false);
+        setOpenFilterMenu(false);
       }
     };
 
@@ -58,106 +57,83 @@ const FilterOptions = ({ userDetails }) => {
   }, [mainFilterContainerRef]);
 
   const handleCollegeChange = (value) => {
-    setCollegeMenuAnchor(null);
     setPreferredCollege(value);
   };
 
   const handleGenderChange = (value) => {
-    setGenderMenuAnchor(null);
-    setPreferredGender(value)
+    setPreferredGender(value);
   };
-
-  const handleCollegeMenuOpen = (event) => {
-    setCollegeMenuAnchor(event.currentTarget);
-    setCollegeMenuWidth(event.currentTarget.offsetWidth);
-  };
-
-  const handleGenderMenuOpen = (event) => {
-    setGenderMenuAnchor(event.currentTarget);
-    setGenderMenuWidth(event.currentTarget.offsetWidth);
-  };
-
-  const isCollegeSelected = (value) => preferredCollege === value;
-  const isGenderSelected = (value) => preferredGender === value;
 
   return (
     <ThemeProvider theme={darkTheme}>
       <div className={styles.mainfiltercont} ref={mainFilterContainerRef}>
-        {openFilterIcon && <div className={styles.backdrop} />}
-        <div className={styles.filterContentWrapper}>
+        {!openFilterMenu && (
           <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}>
-            {openFilterIcon && (
-              <div
-                className={styles.cancelDiv}
-                style={{ width: '100%', opacity: '0' }}
-                onClick={() => setOpenFilterIcon(false)}
-              ></div>
-            )}
             <IoFilterSharp
               className={styles.filterIcon}
-              onClick={handlefilterToggle}
+              onClick={handleFilterToggle}
               style={{ backgroundColor: 'white', borderRadius: '1rem', padding: '0.3rem' }}
             />
           </div>
-  
-          <div className={`${styles.closedFilters} ${openFilterIcon && styles.openFilters}`}>
-            <FormControl className={styles.FormControl}>
-              <Button onClick={handleCollegeMenuOpen}>
-                <div className={styles.toggleMenu}>
-                  <div>College Preference</div>
-                  <div>
-                    <FaChevronDown />
-                  </div>
+        )}
+        {(openFilterMenu || !openFilterMenu) && (
+          <animated.div style={filterContentAnimation} className={styles.filterContentWrapper}>
+            <div className={styles.filterMenu}>
+              <div className={styles.filterSection}>
+                <div className={styles.filterLabel}>College Preference</div>
+                <div className={styles.chipsContainer}>
+                  <Chip
+                    label="Any"
+                    onClick={() => handleCollegeChange('any')}
+                    className={preferredCollege === 'any' ? styles.chipSelected : styles.chipDefault}
+                    clickable
+                  />
+                  <Chip
+                    label="Same College"
+                    onClick={() => handleCollegeChange(userDetails?.college)}
+                    className={preferredCollege === userDetails?.college ? styles.chipSelected : styles.chipDefault}
+                    clickable
+                  />
+                  {/* Add other college options if needed */}
                 </div>
-              </Button>
-              <Menu
-                anchorEl={collegeMenuAnchor}
-                open={Boolean(collegeMenuAnchor)}
-                onClose={() => setCollegeMenuAnchor(null)}
-                slotProps={{ paper: { style: { width: collegeMenuWidth } } }}
-              >
-                <MenuItem onClick={() => handleCollegeChange('any')} selected={isCollegeSelected('any')}>
-                  Any
-                </MenuItem>
-                <MenuItem onClick={() => handleCollegeChange(userDetails.college)} selected={isCollegeSelected(userDetails.college)}>
-                  Same College
-                </MenuItem>
-                {/* Add other college options if needed */}
-              </Menu>
-            </FormControl>
-  
-            <FormControl className={styles.FormControl}>
-              <Button onClick={handleGenderMenuOpen}>
-                <div className={styles.toggleMenu}>
-                  <div>Meet With</div>
-                  <div>
-                    <FaChevronDown />
-                  </div>
+              </div>
+              <div className={styles.filterSection}>
+                <div className={styles.filterLabel}>Meet With</div>
+                <div className={styles.chipsContainer}>
+
+                  <Chip
+                    label="Male"
+                    onClick={() => handleGenderChange('male')}
+                    className={preferredGender === 'male' ? styles.chipMale : styles.chipDefault}
+                    clickable
+                  />
+                  <Chip
+                    label="Female"
+                    onClick={() => handleGenderChange('female')}
+                    className={preferredGender === 'female' ? styles.chipFemale : styles.chipDefault}
+                    clickable
+                  />
+                  <Chip
+                    label="Any"
+                    onClick={() => handleGenderChange('any')}
+                    className={preferredGender === 'any' ? styles.chipSelected : styles.chipDefault}
+                    clickable
+                  />
                 </div>
-              </Button>
-              <Menu
-                anchorEl={genderMenuAnchor}
-                open={Boolean(genderMenuAnchor)}
-                onClose={() => setGenderMenuAnchor(null)}
-                slotProps={{ paper: { style: { width: genderMenuWidth } } }}
-              >
-                <MenuItem selected={isGenderSelected('male')} onClick={() => handleGenderChange('male')}>
-                  Male
-                </MenuItem>
-                <MenuItem selected={isGenderSelected('female')} onClick={() => handleGenderChange('female')}>
-                  Female
-                </MenuItem>
-                <MenuItem selected={isGenderSelected('any')} onClick={() => handleGenderChange('any')}>
-                  Any
-                </MenuItem>
-              </Menu>
-            </FormControl>
-          </div>
-        </div>
+              </div>
+            </div>
+            <p className={styles.note}>
+            Filters will be applied in the next chat. If no preferred match is found, you will be paired with a random user.
+            </p>
+            {/* <p className={styles.note}>
+              If the preferred match not found in queue, you will be paired to any one.
+            </p> */}
+          </animated.div>
+        )}
+
       </div>
     </ThemeProvider>
   );
-  
 };
 
 export default FilterOptions;
