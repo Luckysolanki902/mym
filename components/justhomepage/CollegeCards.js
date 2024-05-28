@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/effect-cards";
@@ -7,6 +7,7 @@ import "swiper/css/navigation";
 import { EffectCards } from "swiper/modules";
 import { register } from "swiper/element/bundle";
 import CollegeCard from "./CollegeCard";
+import { useMediaQuery } from "@mui/material";
 
 register();
 
@@ -15,30 +16,43 @@ const colleges = [
     firstname: "IIT",
     lastname: "KANPUR",
     live: false,
+    position: 'left',
   },
   {
     firstname: "PSIT",
     lastname: "KANPUR",
     live: false,
+    position: 'left',
   },
   {
     firstname: "HBTU",
     lastname: "KANPUR",
     live: true,
+    position: 'center',
   },
   {
     firstname: "CSA",
     lastname: "KANPUR",
     live: false,
+    position: 'right',
   },
   {
     firstname: "CSJMU",
     lastname: "KANPUR",
     live: false,
+    position: 'right',
   },
 ];
 
 const CollegeCards = () => {
+  const [pso, setPso] = useState(12)
+const islessthan800 = useMediaQuery('(max-width:800px)')
+useEffect(()=>{
+  if(islessthan800){
+    setPso(20)
+  }
+},[islessthan800])
+
   return (
     <div style={{ width: "100%", display: "flex", justifyContent: "center"}}>
       <Swiper
@@ -47,7 +61,7 @@ const CollegeCards = () => {
           width: "100%",
           margin: "auto",
         }}
-        cardsEffect={{ slideShadows: false, rotate: false, perSlideOffset:12 }}
+        cardsEffect={{ slideShadows: false, rotate: false, perSlideOffset:pso }}
         effect="cards"
         modules={[EffectCards]}
         loop={true}
@@ -58,7 +72,7 @@ const CollegeCards = () => {
       >
         {colleges.map((college, index) => (
           <SwiperSlide key={index} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <CollegeCard firstname={college.firstname} lastname={college.lastname} live={college.live} />
+            <CollegeCard firstname={college.firstname} lastname={college.lastname} live={college.live} position={college.position} />
           </SwiperSlide>
         ))}
       </Swiper>
