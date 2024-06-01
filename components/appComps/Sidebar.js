@@ -31,8 +31,6 @@ const Sidebar = () => {
           if (response.ok) {
             const data = await response.json();
             setUserDetails(data);
-          } else {
-            console.error('Failed to fetch user details');
           }
         }
       } catch (error) {

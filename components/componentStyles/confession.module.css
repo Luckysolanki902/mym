@@ -114,6 +114,7 @@
     display: flex;
     justify-content: space-between;
     gap: 2rem;
+    /* background-color: blue; */
 }
 
 .likes {
@@ -129,6 +130,7 @@
     font-size: 1.6rem;
     color: black;
 }
+
 .commentsiconinfooter {
     display: flex;
     align-items: center;
@@ -157,18 +159,18 @@
 }
 
 
-.drawerHeader{
+.drawerHeader {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 0.4rem;
     /* padding-left: 1rem; */
-    box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
     /* border-radius: 3rem; */
 
 }
 
-.reply2 .puller{
+.reply2 .puller {
     width: 8rem;
     height: 2px;
     min-height: 2px;
@@ -177,22 +179,24 @@
     margin-bottom: 0.8rem;
     margin-top: 0.5rem;
 }
-.drawerTitle{
+
+.drawerTitle {
     font-weight: 600;
     margin: 0;
     text-align: left;
     align-self: start;
 }
 
-.shareIcon{
+.shareIcon {
     font-size: 1.6rem;
-    
+
 }
+
 /* .fullHeight{
     height: 80vh;
 } */
-@media(width>800px){
-    .reply2 .puller{
+@media(width>800px) {
+    .reply2 .puller {
         display: none;
     }
 }
@@ -273,18 +277,17 @@
 
 .reply {
     /* background-color: var(--mymblack); */
-
     display: flex;
     justify-content: center;
     align-items: center;
-    min-width: 2rem;
     border-radius: 4rem;
     flex: 1;
     border: 1px solid black;
     color: black;
+    min-width: 2rem;
+    margin: 0.4rem 0;
     
-
-
+    
 }
 
 .anonymInput {
@@ -292,13 +295,15 @@
     height: 100%;
     width: 100%;
     color: black;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-family: Roboto;
     font-weight: 300;
     padding-left: 2rem;
     border-radius: 3rem;
     border: none;
     outline: none;
+    /* background-color: black; */
+ 
 }
 
 
@@ -327,7 +332,7 @@
 }
 
 
-.reply2 div{
+.reply2 div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -341,11 +346,11 @@
 }
 
 .reply2 input {
-    
-/* background-color: pink; */
+
+    /* background-color: pink; */
     font-size: 1.2rem;
     color: rgb(50, 50, 50);
-padding-top: 0.5rem;
+    padding-top: 0.5rem;
 
 }
 
@@ -401,7 +406,7 @@ padding-top: 0.5rem;
 }
 
 .iosendanon {
-    font-size: 40px; 
+    font-size: 40px;
 }
 
 
@@ -456,24 +461,28 @@ padding-top: 0.5rem;
 }
 
 @media (width<800px) {
-.mainDiv {
-    margin-bottom: 4rem;
-}
-    .reply2{
-        background-color: rgb(255, 255, 255);
-        
+    .mainDiv {
+        margin-bottom: 4rem;
     }
-    .drawerContainer{
+
+    .reply2 {
+        background-color: rgb(255, 255, 255);
+
+    }
+
+    .drawerContainer {
         height: 70vh;
     }
+
     .reply2 input {
 
         font-size: 1rem;
         color: rgb(50, 50, 50);
     }
-    .shareIcon{
+
+    .shareIcon {
         font-size: 1.5rem;
-        
+
     }
 
     .comBtn {
@@ -482,8 +491,9 @@ padding-top: 0.5rem;
         margin-left: 0.5rem;
         border-radius: 1.4rem;
     }
+
     .iosendanon {
-        font-size: 40px; 
+        font-size: 40px;
     }
 
     .mainContainer {
@@ -502,6 +512,7 @@ padding-top: 0.5rem;
         gap: 0.3rem;
         font-size: 1.3rem;
     }
+
     .commentsiconinfooter {
         min-width: 1rem;
         padding: 0.5rem 0rem;
@@ -510,9 +521,10 @@ padding-top: 0.5rem;
         font-size: 1.3rem;
     }
 
-    .counting{
+    .counting {
         color: black;
     }
+
     .iconm {
         width: 1.6rem;
     }

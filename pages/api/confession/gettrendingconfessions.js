@@ -23,7 +23,7 @@ const getTrendingConfessions = (confessions) => {
 
   const trendingConfessions = weightedConfessions
     .sort((a, b) => b.score - a.score)
-    .slice(0, Math.min(5, confessions.length));
+    .slice(0, Math.min(3, confessions.length));
 
   return trendingConfessions.map((weightedConfession) => weightedConfession.confession);
 };

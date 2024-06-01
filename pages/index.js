@@ -6,6 +6,7 @@ import styles from '@/styles/Home.module.css';
 import { useRouter } from 'next/router';
 import TrendingConfessions from '@/components/commonComps/TrendingConfessions';
 import Typewriter from 'typewriter-effect';
+import { Skeleton } from '@mui/material';
 // import CollegeCards from '@/components/justhomepage/CollegeCards';
 import Footer from '@/components/commonComps/Footer';
 import CollegeCards from '@/components/justhomepage/CollegeCards';
@@ -30,6 +31,7 @@ export default function Home({ session, trendingConfessions }) {
     "Send direct replies to confessions, without showing it in public comments.",
     "Get more likes and comments to make your confession trend."
   ];
+  
 
   return (
     <>
