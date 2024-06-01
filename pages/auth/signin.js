@@ -2,11 +2,12 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import Link from "next/link";
-import { createTheme, ThemeProvider, TextField, Button } from '@mui/material';
+import { createTheme, ThemeProvider, TextField, Button, InputAdornment, IconButton } from '@mui/material';
 import Image from 'next/image';
 import styles from './signup.module.css'
 import CircularProgress from '@mui/material/CircularProgress';
-
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 
 
@@ -28,7 +29,7 @@ export default function Signin() {
   const [password, setPassword] = useState('');
   const [signInError, setSignInError] = useState(null); // State to manage sign-in errors
   const [loading, setLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const handleSignIn = async (e) => {
     e.preventDefault(); // Prevent default form submission
 
@@ -63,6 +64,10 @@ export default function Signin() {
     }
   };
 
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
     <ThemeProvider theme={mymtheme}>
 
@@ -89,7 +94,7 @@ export default function Signin() {
             />
             <TextField
               variant='standard'
-              type="password"
+              type={showPassword ? "text" : "password"}
               label="Password"
               autoComplete="current-password"
               required
@@ -100,6 +105,18 @@ export default function Signin() {
               }}
               className={styles.input}
 
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               type="submit"

@@ -11,6 +11,7 @@ import '@/styles/globals.css';
 import PageRefresh from '@/components/loadings/PageRefresh';
 import Image from 'next/image';
 import CustomHead from '@/components/seo/CustomHead';
+import { Analytics } from "@vercel/analytics/react"
 
 const mymtheme = createTheme({
   palette: {
@@ -117,6 +118,7 @@ export default function App({ Component, pageProps }) {
         waitingTime={600}
         onLoaderFinished={() => setProgress(0)}
       /> */}
+      <Analytics/>
       {isAdminPage ? (
         <ThemeProvider theme={mymthemeDark}>
           <CssBaseline />
