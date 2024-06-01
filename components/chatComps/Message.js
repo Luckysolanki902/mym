@@ -27,11 +27,11 @@ const Message = ({ msg, userDetails }) => {
 
   return (
     <div
-      className={`${styles.message} ${
-        msg.sender === userDetails?.email ? styles.right : styles.left
-      }`}
+      className={`${styles.message} ${msg.sender === userDetails?.email ? styles.right : styles.left
+        }`}
     >
-      <div className={`${styles.text} ${msg.sender === userDetails?.email ? senderClass : receiverClass}`}>
+      <div className={`${styles.text} ${msg.sender === userDetails?.email ? senderClass : receiverClass} 
+       ${msg.sender === userDetails?.email ? styles.rightB : styles.leftB}`}>
         {msg.message}
       </div>
     </div>

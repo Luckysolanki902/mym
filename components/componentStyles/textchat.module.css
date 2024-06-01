@@ -46,6 +46,7 @@
 
 .maleMsg {
   border-radius: 2.625rem;
+  border-bottom-right-radius: 0;
 
   background: linear-gradient(180deg, #ADF0FF 0%, #90B3F6 99.99%);
 }
@@ -53,11 +54,13 @@
 .sMsg {
   border-radius: 2.625rem;
   background: linear-gradient(180deg, #6AE9D9 0%, #B4EEFF 100%);
+  border-bottom-right-radius: 0;
 
 }
 
 .femaleMsg {
   border-radius: 2.625rem;
+  border-bottom-right-radius: 0;
 
   background: linear-gradient(180deg, #EFADFF 0%, #ED70EF 99.99%);
 }
@@ -177,8 +180,36 @@
     min-width: 30%;
     text-align: left;
     max-width: 70%;
+    
 
   }
+
+
+  
+.maleMsg {
+  background: linear-gradient(180deg, #ADF0FF 0%, #90B3F6 99.99%);
+  border-radius: 2.625rem;
+}
+
+.sMsg {
+  background: linear-gradient(180deg, #6AE9D9 0%, #B4EEFF 100%);
+  border-radius: 2.625rem;
+
+}
+
+.femaleMsg {
+  border-radius: 2.625rem;
+  background: linear-gradient(180deg, #EFADFF 0%, #ED70EF 99.99%);
+}
+
+.rightB{
+  border-bottom-left-radius: 0;
+}
+
+.leftB{
+  border-bottom-right-radius: 0;
+
+}
 
 }
 

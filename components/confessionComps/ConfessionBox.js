@@ -80,7 +80,7 @@ const getTimeAgo = (timestamp) => {
 
 
   return (
-    <div ref={ref} style={{ position: 'relative' }} className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}aGradient`] : ''}`} onClick={handleComplete}>
+    <div ref={ref} style={{ position: 'relative' }} className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`} onClick={handleComplete}>
       <Button color='primary' style={{ position: 'absolute', top: '0.5rem', right: '0.5rem' }}>
         <ReplyIcon onClick={handleShareClick} style={{ transform: 'scaleX(-1)', color: 'white' }} className={styles.shareIcon} />
       </Button>
