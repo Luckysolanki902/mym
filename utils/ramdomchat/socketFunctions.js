@@ -141,14 +141,7 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions,
         preferredCollege: preferredCollege,
         pageType: 'textchat'
     });
-    console.log('Finding new pair with:', {
-        userEmail: userDetails?.email,
-        userGender: userDetails?.gender,
-        userCollege: userDetails?.college,
-        preferredGender: preferredGender,
-        preferredCollege: preferredCollege,
-        pageType: 'textchat'
-    });
+
 
     // const timeout = 10000;
     // clearTimeout(findingTimeoutRef.current); // Clear previous timeout
