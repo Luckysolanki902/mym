@@ -53,9 +53,9 @@ const TrendingConfessions = ({ trendingConfessions }) => {
                             <div className={styles.heading}>
                                 <h3 >Trending Confession #{index + 1}</h3>
                             </div>
-                            <p>"
+                            <p style={{ whiteSpace: 'pre-line' }}>
                                 {truncateText(confession.confessionContent, 200)}
-                                "</p>
+                                </p>
                             <div className={styles.footer}>
                                 <div className={styles.footerDiv}>
                                     <FaHeart />
