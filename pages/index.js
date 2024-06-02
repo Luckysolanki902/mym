@@ -114,7 +114,7 @@ export default function Home({ session, trendingConfessions }) {
         </div>
 
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '90%', margin: 'auto', marginTop: '3rem' }} >
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '90%', margin: 'auto', marginTop: '3rem', marginBottom:'3rem' }} >
           <Image src={'/images/illustrations/roadmapforphone.png'} className={styles.featuresBg} width={5032 / 3} height={3144 / 3} alt='roadmap'></Image>
         </div>
 
