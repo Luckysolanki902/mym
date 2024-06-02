@@ -177,13 +177,13 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <FaHeart className={`${styles.iconm} ${liked ? styles.redheart : ''} ${likeAnimation ? styles[likeAnimation] : ''}`} />
                     </div>
-                    <div>{likesCount}</div>
+                    <div style={{color:'white'}}>{likesCount}</div>
                 </div>
-                <div className={styles.likes} onClick={toggleCommentsDialog} style={{ cursor: 'pointer' }}>
+                <div className={styles.likes} style={{ cursor: 'pointer' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <FaComment style={{ color: 'white' }} className={styles.iconm} />
                     </div>
-                    <div>{commentsCount}</div>
+                    <div style={{color:'white'}}>{commentsCount}</div>
                 </div>
                 <Button variant="contained" style={{ backgroundColor: 'inherit', color: 'inherit' }} className={styles.reply} onClick={handleDetailsClick}>
                     <div>Show Details</div>

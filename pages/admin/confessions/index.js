@@ -87,6 +87,8 @@ const Index = ({ userDetails, initialConfessions, colleges }) => {
 
     return (
         <div style={{ width: '100%', paddingTop: '2rem' }}>
+            <h1 style={{textAlign:'center'}}>Confessions</h1>
+
             {/* <Button onClick={handleDrawerOpen} variant="contained" color="primary">Filter Options</Button> */}
             <Drawer
                 anchor="bottom"

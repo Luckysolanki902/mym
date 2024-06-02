@@ -5,7 +5,6 @@ import { useMediaQuery } from '@mui/material';
 import { useInView } from 'react-intersection-observer';
 import AuthPrompt from '@/components/commonComps/AuthPrompt';
 // import { getRandomCommentAvatar } from '@/utils/avtarUtils';
-import CommentsDialog from './CommentsDialog';
 import ConfessionBox from './ConfessionBox';
 import ConfessionFooter from './ConfessionFooter';
 // import { getSession } from 'next-auth/react';
@@ -167,15 +166,6 @@ const ConfessionForAdmin = ({ confession, userDetails, applyGenderBasedGrandient
       <AuthPrompt open={isAuthPromptOpen} onClose={handleCloseAuthPrompt} />
 
 
-      <CommentsDialog
-        isOpen={isCommentDialogOpen}
-        onClose={() => setCommentDialogOpen(false)}
-        comments={comments}
-        // commentAvatars={commentAvatars}
-        commentValue={commentValue}
-        handleCommentSubmit={handleCommentSubmit}
-        setCommentValue={setCommentValue}
-      />
 
       {/* Anon. dialog________________ */}
 
