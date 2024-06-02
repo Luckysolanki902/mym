@@ -52,8 +52,8 @@ const Index = () => {
                     <ListItem button component={Link} href="/admin/testids">
                         <ListItemText primary="Test Ids" />
                     </ListItem>
-                    <ListItem button component={Link} href="/admin/chatpagestats">
-                        <ListItemText primary="Chat Page Stats" />
+                    <ListItem button component={Link} href="/admin/user-stats">
+                        <ListItemText primary="User Stats" />
                     </ListItem>
                 </List>
             </div>
