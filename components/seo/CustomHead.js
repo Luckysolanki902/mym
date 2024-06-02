@@ -71,8 +71,8 @@ const CustomHead = ({ title, description, keywords, seoImage }) => {
 
 CustomHead.defaultProps = {
     title: 'MYM',
-    description: "Join the anonymous community at MyM and share your deepest confessions with fellow students. Discover the thrill of chatting with random classmates and students from other colleges too and explore a world of secrets and connections.",
-    keywords: ['omegle', 'omegle.com', 'confessions', 'college confessions', 'hbtu', 'hbtu confessions', 'anonymous confessions', 'chat with classmates', 'student community', 'secret sharing', 'anonymous messaging', 'college secrets'],
+    description: "Meet Your Mate (MYM) is your ultimate destination for anonymous chats and heartfelt confessions. Connect with college students nationwide, share stories, and explore new friendships—all while maintaining your privacy. Join us now for an unforgettable online experience!",
+    keywords: ['omegle', 'omegle.com', 'confessions', 'college confessions', 'hbtu', 'hbtu confessions', 'anonymous confessions', 'chat with classmates', 'student community', 'secret sharing', 'anonymous messaging', 'college secrets', 'mym', 'meetyourmate'],
     seoImage: 'https://www.meetyourmate.in/images/mym_logos/mymshadow.png',
 };
 
