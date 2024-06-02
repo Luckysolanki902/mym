@@ -254,8 +254,35 @@
   border-radius: 1.0625rem;
   height: calc(var(--inputboxheight) + 1rem);
   padding: 0rem;
-  padding-left: 1rem;
+  /* padding-left: 1rem; */
   transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@media (width> 800px){
+.inputContainer {
+  height: calc(var(--inputboxheight) + 0.6rem);
+
+}
+
+
+.inputContainerMainDiv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  width: calc(100vw - var(--sidebarwidth));
+  /* transition: all 0.3s ease-out; */
+
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 99;
+  margin-top: 6px;
+  margin-bottom: 6px;
+
+}
 }
 
 /* New button */
@@ -299,7 +326,9 @@
   min-width: 7rem;
   cursor: pointer;
   transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
+  height: 100%;
+  border-top-right-radius: 0;
+  
 }
 
 .textBox::selection {
@@ -364,20 +393,23 @@
   }
 
   .newButton {
-    background: none;
+    /* background: none; */
     min-width: 5rem;
-    margin-right: 0rem;
+    margin-right: 1rem;
     /* border: 1px solid red; */
     padding: 0;
+    height: 100%;
+    border-top-right-radius: 0;
+    
 
   }
 
   .randomIcon {
     width: 3.5rem;
     height: auto;
-    filter: invert(0);
+    /* filter: invert(0); */
     opacity: 0.8;
-    filter: drop-shadow(5px 2px 2px gray);
+    /* filter: drop-shadow(5px 2px 2px gray); */
   }
 
 
@@ -404,9 +436,9 @@
   .randomIcon {
     width: 3rem;
     height: auto;
-    filter: invert(0);
     opacity: 0.8;
-    filter: drop-shadow(5px 2px 2px gray);
+    /* filter: drop-shadow(5px 2px 2px gray); */
+    filter: invert(1);
   }
 
   .textBox {

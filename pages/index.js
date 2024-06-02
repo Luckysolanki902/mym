@@ -11,10 +11,12 @@ import { Skeleton } from '@mui/material';
 import Footer from '@/components/commonComps/Footer';
 import CollegeCards from '@/components/justhomepage/CollegeCards';
 export default function Home({ session, trendingConfessions }) {
+
   const containerSpring = useSpring({
     from: { opacity: 0, transform: 'translate3d(0, -50px, 0)' },
     to: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
   });
+
   const router = useRouter()
 
 
@@ -32,7 +34,6 @@ export default function Home({ session, trendingConfessions }) {
     "Get more likes and comments to make your confession trend."
   ];
   
-
   return (
     <>
       <animated.div style={containerSpring} className={styles.mainContainer}>
@@ -73,7 +74,7 @@ export default function Home({ session, trendingConfessions }) {
 
         {/* <h3 className={styles.unlock}>AN ANOYNYMOUS INTERCOLLEGE SOCIAL MEDIA  PLATFORM</h3> */}
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+        <div onClick={()=>router.push('/textchat')} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
           <Image src={'/images/showcase/confessionfeaturesl.png'} width={1716} height={966} alt='chatfeatures' className={styles.featuresBg}></Image>
           <div className={styles.chatfeatures}>
             {/* Chat features */}
@@ -93,7 +94,7 @@ export default function Home({ session, trendingConfessions }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+        <div onClick={()=>router.push('/all-confessions')} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
           <Image src={'/images/showcase/chatfeaturesl.png'} width={1716} height={966} alt='chatfeatures' className={styles.featuresBg}></Image>
           <div className={styles.confessionfeatures}>
             <div>
@@ -114,7 +115,7 @@ export default function Home({ session, trendingConfessions }) {
 
 
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '90%', margin: 'auto', marginTop: '3rem' }} >
-          <Image src={'/images/illustrations/roadmapwide.png'} className={styles.featuresBg} width={5032 / 3} height={3144 / 3} alt='roadmap'></Image>
+          <Image src={'/images/illustrations/roadmapforphone.png'} className={styles.featuresBg} width={5032 / 3} height={3144 / 3} alt='roadmap'></Image>
         </div>
 
 

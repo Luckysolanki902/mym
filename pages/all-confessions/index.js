@@ -94,16 +94,17 @@ const Index = ({ userDetails, initialConfessions }) => {
 
 export async function getServerSideProps(context) {
   // Fetch session and user details
-  const session = await getSession(context);
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/auth/signup',
-        permanent: false,
-      },
-    };
-  }
-
+  let session = null;
+  session = await getSession(context);
+  // if (!session) {
+  //   return {
+  //     redirect: {
+  //       destination: '/auth/signup',
+  //       permanent: false,
+  //     },
+  //   };
+  // }
+  let college = ''
   const pageurl = 'https://www.meetyourmate.in';
   let userDetails = null;
   if (session?.user?.email) {
@@ -111,6 +112,7 @@ export async function getServerSideProps(context) {
       const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
       if (response.ok) {
         userDetails = await response.json();
+
       } else {
         console.error('Error fetching user details');
       }
@@ -122,18 +124,28 @@ export async function getServerSideProps(context) {
   // Fetch initial confessions based on user details
   let initialConfessions = [];
   if (userDetails && userDetails.college) {
-    try {
-      const response = await fetch(`${pageurl}/api/confession/getconfessionsofyourcollege?college=${userDetails?.college}&page=1`);
-      if (response.ok) {
-        const data = await response.json();
-        initialConfessions = data.confessions;
-      } else {
-        console.error('Error fetching initial confessions');
-      }
-    } catch (error) {
-      console.error('Error fetching initial confessions:', error);
-    }
+    college = userDetails.college;
   }
+
+  try {
+    let apiurl;
+    if(college && session){
+      apiurl = `${pageurl}/api/confession/getconfessionsofyourcollege?college=${college}&page=1`;
+    }else{
+      apiurl = `${pageurl}/api/confession/getconfessionsofyourcollege?page=1`;
+    }
+    const response = await fetch(apiurl);
+    if (response.ok) {
+      const data = await response.json();
+      initialConfessions = data.confessions;
+    } else {
+      console.error('Error fetching initial confessions');
+    }
+  } catch (error) {
+    console.error('Error fetching initial confessions:', error);
+  }
+
+
 
   return {
     props: {

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
+import Tooltip from '@mui/material/Tooltip';
 import Image from 'next/image';
 import { IoIosSend } from 'react-icons/io';
 import styles from '../componentStyles/textchat.module.css';
@@ -33,28 +33,22 @@ const InputBox = ({
   return (
     <div className={styles.inputContainerMainDiv} ref={inputRef}>
       <div className={`${styles.inputContainer} ${inpFocus ? styles.inpFocus : ''}`}>
-        <button disabled={isFindingPair} className={styles.newButton} onClick={handleFindNewButton} title={!isFindingPair ? 'Find New' : 'Find New'}>
-          {isFindingPair && !hasPaired ? (
-            // <CircularProgress size={24} style={{ color: isSmallScreen ? 'black' : 'white' }} />
-            <Image
-            src={'/images/sidebaricons/randomchat.png'}
-            width={1080 / 10}
-            height={720 / 10}
-            alt="icon"
-            className={styles.randomIcon}
-            style={{transform:'scale(0.96)', opacity:'0.8' }}
-          />
-
-          ) : (
+        <Tooltip title={!isFindingPair ? 'Find New' : 'Finding...'} placement="top" arrow >
+          <button
+            disabled={isFindingPair}
+            className={styles.newButton}
+            onClick={handleFindNewButton}
+          >
             <Image
               src={'/images/sidebaricons/randomchat.png'}
               width={1080 / 10}
               height={720 / 10}
               alt="icon"
               className={styles.randomIcon}
+              style={isFindingPair && !hasPaired ? { transform: 'scale(0.96)', opacity: '0.8' } : {}}
             />
-          )}
-        </button>
+          </button>
+        </Tooltip>
         <div className={styles.textBox}>
           <form onSubmit={handleSendButton}>
             <input
@@ -85,10 +79,6 @@ const InputBox = ({
             />
           </form>
         </div>
-        {/* <button className={`${styles.newButton} ${styles.newButton2}`} onClick={handleSendButton}>
-          <IoIosSend className={styles.sendIcon} />
-          <div className={styles.sendTextIcon}>Send</div>
-        </button> */}
       </div>
       {/* This div is used to scroll to the bottom */}
       <div ref={messagesContainerRef} />

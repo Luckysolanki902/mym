@@ -46,15 +46,21 @@ const AnonymDialog = ({ open, onClose, handleAnonymousReply, anonymousReplyValue
             </DialogTitle>
             <DialogContent>
                 <TextField
-                    multiline
-                    rows={4}
+                    // multiline
+                    // rows={4}
                     fullWidth
                     autoFocus
-                    variant="outlined"
+                    variant="standard"
                     placeholder="Type your anonymous reply here..."
                     style={{ marginTop: '0.1rem' }}
                     value={anonymousReplyValue}
                     onChange={(e) => setAnonymousReplyValue(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendReply();
+                        }
+                    }}
                 />
                 <Button
                     variant="contained"

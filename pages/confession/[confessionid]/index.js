@@ -1,11 +1,15 @@
 import React from 'react';
 import Confession from '@/components/fullPageComps/Confession';
 import { getSession } from 'next-auth/react';
+import Link from 'next/link';
 
 const ConfessionPage = ({ confession, userDetails }) => {
   return (
     <>
         {confession && <Confession confession={confession} userDetails={userDetails || null} />}
+        <div style={{width:"100%", display:'flex', justifyContent:'center', alignItems:'center'}}>
+        <Link style={{margin:'auto', textDecoration:'none'}} href={'/all-confessions'}>click to see all confessions</Link>
+        </div>
     </>
   );
 };
