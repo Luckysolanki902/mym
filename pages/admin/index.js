@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Container, Typography, Button, Grid, Card, CardContent, ListItem, List, ListItemText } from '@mui/material';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Container, Typography, ListItem, List, ListItemText } from '@mui/material';
 
 const Index = () => {
     const [userStats, setUserStats] = useState({
@@ -43,9 +42,6 @@ const Index = () => {
             </Typography>
             <div style={{ marginTop: '2rem' }}>
                 <List>
-                    <ListItem button component={Link} href="/admin/confessions">
-                        <ListItemText primary="Confessions" />
-                    </ListItem>
                     <ListItem button component={Link} href="/admin/addcollege">
                         <ListItemText primary="Add College" />
                     </ListItem>
@@ -54,6 +50,9 @@ const Index = () => {
                     </ListItem>
                     <ListItem button component={Link} href="/admin/user-stats">
                         <ListItemText primary="User Stats" />
+                    </ListItem>
+                    <ListItem button component={Link} href="/admin/feedbacks-and-suggestions">
+                        <ListItemText primary="Feedback and Suggestions" />
                     </ListItem>
                 </List>
             </div>

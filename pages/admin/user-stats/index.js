@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Grid, Card, CardContent } from '@mui/material';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {AppBar, Toolbar,  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const Index = () => {
     const [chatStats, setChatStats] = useState({
@@ -104,125 +104,136 @@ const Index = () => {
     };
 
     return (
-        <Container maxWidth="lg" style={{ paddingTop: '2rem' }}>
-            <Typography variant="h2" gutterBottom>
-                User Stats
-            </Typography>
-            
-            <Typography variant="h4" gutterBottom>
-                Chat Page Stats
-            </Typography>
-            <Button variant="outlined" onClick={refreshChatStats} style={{ marginBottom: '1rem' }}>
-                {fetchingChatStats ? 'Loading...' : 'Refresh Stats'}
-            </Button>
-            <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h5" component="h2" gutterBottom>
-                                Total Users: {chatStats.totalUsers}
-                            </Typography>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart
-                                    data={[
-                                        { name: 'Male', users: chatStats.maleUsers },
-                                        { name: 'Female', users: chatStats.femaleUsers }
-                                    ]}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Bar dataKey="users" fill="#8884d8" />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
+        <div>
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="h6" component="div" style={{ flexGrow: 1, textAlign: 'center', cursor: 'pointer' }}>
+                        <Link href="/admin" style={{ color: 'inherit', textDecoration: 'none' }}>
+                            Admin Panel
+                        </Link>
+                    </Typography>
+                </Toolbar>
+            </AppBar>
+            <Container maxWidth="lg" style={{ paddingTop: '2rem' }}>
+                <Typography variant="h2" gutterBottom>
+                    User Stats
+                </Typography>
 
-            <Typography variant="h4" gutterBottom style={{ marginTop: '2rem' }}>
-                Auth Stats
-            </Typography>
-            <Button variant="outlined" onClick={refreshAuthStats} style={{ marginBottom: '1rem' }}>
-                {fetchingAuthStats ? 'Loading...' : 'Refresh Stats'}
-            </Button>
-            <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h5" component="h2" gutterBottom>
-                                Total Users: {authStats.totalUsers}
-                            </Typography>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart
-                                    data={[
-                                        { name: 'Male', users: authStats.maleUsers },
-                                        { name: 'Female', users: authStats.femaleUsers }
-                                    ]}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Bar dataKey="users" fill="#82ca9d" />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
+                <Typography variant="h4" gutterBottom>
+                    Chat Page Stats
+                </Typography>
+                <Button variant="outlined" onClick={refreshChatStats} style={{ marginBottom: '1rem' }}>
+                    {fetchingChatStats ? 'Loading...' : 'Refresh Stats'}
+                </Button>
+                <Grid container spacing={3}>
+                    <Grid item xs={12} sm={6}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h5" component="h2" gutterBottom>
+                                    Total Users: {chatStats.totalUsers}
+                                </Typography>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart
+                                        data={[
+                                            { name: 'Male', users: chatStats.maleUsers },
+                                            { name: 'Female', users: chatStats.femaleUsers }
+                                        ]}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Bar dataKey="users" fill="#8884d8" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                    </Grid>
                 </Grid>
-            </Grid>
 
-            <Typography variant="h4" gutterBottom style={{ marginTop: '2rem' }}>
-                Confession Stats
-            </Typography>
-            <Button variant="outlined" onClick={refreshConfessionStats} style={{ marginBottom: '1rem' }}>
-                {fetchingConfessionStats ? 'Loading...' : 'Refresh Stats'}
-            </Button>
-            <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h5" component="h2" gutterBottom>
-                                Total Confessions: {confessionStats.totalConfessions}
-                            </Typography>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart
-                                    data={[
-                                        { name: 'Male', confessions: confessionStats.maleConfessions },
-                                        { name: 'Female', confessions: confessionStats.femaleConfessions }
-                                    ]}
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Bar dataKey="confessions" fill="#ffc658" />
-                                </BarChart>
-                            </ResponsiveContainer>
-                            <Typography variant="h6" component="p" style={{ marginTop: '1rem' }}>
-                                Total Comments: {confessionStats.totalComments}
-                            </Typography>
-                            <Typography variant="body1" component="p">
-                                Male Comments: {confessionStats.maleComments}
-                            </Typography>
-                            <Typography variant="body1" component="p">
-                                Female Comments: {confessionStats.femaleComments}
-                            </Typography>
-                            <Typography variant="h6" component="p" style={{ marginTop: '1rem' }}>
-                                Total Likes: {confessionStats.totalLikes}
-                            </Typography>
-                            <Typography variant="h6" component="p" style={{ marginTop: '1rem' }}>
-                                Total Personal Replies: {confessionStats.totalPersonalReplies}
-                            </Typography>
-                        </CardContent>
-                    </Card>
+                <Typography variant="h4" gutterBottom style={{ marginTop: '2rem' }}>
+                    Auth Stats
+                </Typography>
+                <Button variant="outlined" onClick={refreshAuthStats} style={{ marginBottom: '1rem' }}>
+                    {fetchingAuthStats ? 'Loading...' : 'Refresh Stats'}
+                </Button>
+                <Grid container spacing={3}>
+                    <Grid item xs={12} sm={6}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h5" component="h2" gutterBottom>
+                                    Total Users: {authStats.totalUsers}
+                                </Typography>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart
+                                        data={[
+                                            { name: 'Male', users: authStats.maleUsers },
+                                            { name: 'Female', users: authStats.femaleUsers }
+                                        ]}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Bar dataKey="users" fill="#82ca9d" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Container>
+
+                <Typography variant="h4" gutterBottom style={{ marginTop: '2rem' }}>
+                    Confession Stats
+                </Typography>
+                <Button variant="outlined" onClick={refreshConfessionStats} style={{ marginBottom: '1rem' }}>
+                    {fetchingConfessionStats ? 'Loading...' : 'Refresh Stats'}
+                </Button>
+                <Grid container spacing={3}>
+                    <Grid item xs={12} sm={6}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h5" component="h2" gutterBottom>
+                                    Total Confessions: {confessionStats.totalConfessions}
+                                </Typography>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart
+                                        data={[
+                                            { name: 'Male', confessions: confessionStats.maleConfessions },
+                                            { name: 'Female', confessions: confessionStats.femaleConfessions }
+                                        ]}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Bar dataKey="confessions" fill="#ffc658" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                                <Typography variant="h6" component="p" style={{ marginTop: '1rem' }}>
+                                    Total Comments: {confessionStats.totalComments}
+                                </Typography>
+                                <Typography variant="body1" component="p">
+                                    Male Comments: {confessionStats.maleComments}
+                                </Typography>
+                                <Typography variant="body1" component="p">
+                                    Female Comments: {confessionStats.femaleComments}
+                                </Typography>
+                                <Typography variant="h6" component="p" style={{ marginTop: '1rem' }}>
+                                    Total Likes: {confessionStats.totalLikes}
+                                </Typography>
+                                <Typography variant="h6" component="p" style={{ marginTop: '1rem' }}>
+                                    Total Personal Replies: {confessionStats.totalPersonalReplies}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
+            </Container>
+        </div>
     );
 };
 

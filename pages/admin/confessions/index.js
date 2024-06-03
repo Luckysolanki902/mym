@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Confession from '@/components/fullPageComps/Confession';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Drawer, Select, MenuItem, Button, TextField } from '@mui/material'; // Import Drawer, Select, MenuItem, and Button from Material-UI
+import { AppBar, Toolbar, Typography, Drawer, Select, MenuItem, Button, TextField } from '@mui/material'; // Import Drawer, Select, MenuItem, and Button from Material-UI
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './allconfessions.module.css';
 import ConfessionForAdmin from '@/components/adminComps/Confessions/ConfessionForAdmin';
 
@@ -86,76 +87,87 @@ const Index = ({ userDetails, initialConfessions, colleges }) => {
     }, [hasMore, loading]);
 
     return (
-        <div style={{ width: '100%', paddingTop: '2rem' }}>
-            <h1 style={{textAlign:'center'}}>Confessions</h1>
+        <div>
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="h6" component="div" style={{ flexGrow: 1, textAlign: 'center', cursor: 'pointer' }}>
+                        <Link href="/admin" style={{ color: 'inherit', textDecoration: 'none' }}>
+                            Admin Panel
+                        </Link>
+                    </Typography>
+                </Toolbar>
+            </AppBar>
+            <div style={{ width: '100%', paddingTop: '2rem' }}>
+                <h1 style={{ textAlign: 'center' }}>Confessions</h1>
 
-            {/* <Button onClick={handleDrawerOpen} variant="contained" color="primary">Filter Options</Button> */}
-            <Drawer
-                anchor="bottom"
-                open={drawerOpen}
-                onClose={handleDrawerClose}
+                {/* <Button onClick={handleDrawerOpen} variant="contained" color="primary">Filter Options</Button> */}
+                <Drawer
+                    anchor="bottom"
+                    open={drawerOpen}
+                    onClose={handleDrawerClose}
 
-            >
-                <div style={{ padding: '1rem', minHeight: '50vh', display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'flex-start', maxWidth:'1000px', padding:'2rem' }}>
-                    <h2>Filters</h2>
-                    <Select
-                        value={selectedOption}
-                        onChange={handleOptionChange}
-                        fullWidth
-                        displayEmpty
-                        // variant='standard'
-
-                    >
-                        <MenuItem value="" disabled>Select Option</MenuItem>
-                        <MenuItem value="college">Find by College</MenuItem>
-                        <MenuItem value="email">Find by Email</MenuItem>
-                    </Select>
-                    {selectedOption === 'college' && (
+                >
+                    <div style={{ padding: '1rem', minHeight: '50vh', display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'flex-start', maxWidth: '1000px', padding: '2rem' }}>
+                        <h2>Filters</h2>
                         <Select
-                            value={selectedCollege}
-                            onChange={handleCollegeChange}
-                            // variant='standard'
-
+                            value={selectedOption}
+                            onChange={handleOptionChange}
                             fullWidth
                             displayEmpty
-                        >
-                            <MenuItem value="" disabled>Select College</MenuItem>
-                            {colleges?.map(college => (
-                                <MenuItem key={college._id} value={college.college}>{college.college}</MenuItem>
-                            ))}
-                        </Select>
-                    )}
-                    {selectedOption === 'email' && (
-                        <TextField
-                            variant='standard'
-                            type="email"
-                            placeholder="Enter Email"
-                            value={selectedEmail}
-                            onChange={handleEmailChange}
-                            style={{ marginTop: '1rem', width: '100%', padding: '0.5rem' }}
-                        />
-                    )}
-                    <Button onClick={handleSubmit} variant="contained" color="primary" style={{ marginTop: '1rem' }}>Submit</Button>
-                </div>
-            </Drawer>
+                        // variant='standard'
 
-            {confessions.map((confession, index) => (
-                <ConfessionForAdmin key={confession._id} confession={confession} applyGenderBasedGrandients={true} />
-            ))}
-            {(loading) &&
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginBottom: '3rem', marginTop: '0' }} className={styles.isLoading}>
-                    <p >Loading confessions</p>
-                    <span>
-                        <Image src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt='' />
-                    </span>
-                </div>
-            }
-            <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
-            {!hasMore &&
-                <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '3rem', marginTop: '0' }} className={styles.isLoading}>
-                    <p style={{ padding: '1rem', textAlign: 'center', opacity: '0.7', scale: '0.8' }}>You have seen all available confessions of your college</p>
-                </div>
-            }
+                        >
+                            <MenuItem value="" disabled>Select Option</MenuItem>
+                            <MenuItem value="college">Find by College</MenuItem>
+                            <MenuItem value="email">Find by Email</MenuItem>
+                        </Select>
+                        {selectedOption === 'college' && (
+                            <Select
+                                value={selectedCollege}
+                                onChange={handleCollegeChange}
+                                // variant='standard'
+
+                                fullWidth
+                                displayEmpty
+                            >
+                                <MenuItem value="" disabled>Select College</MenuItem>
+                                {colleges?.map(college => (
+                                    <MenuItem key={college._id} value={college.college}>{college.college}</MenuItem>
+                                ))}
+                            </Select>
+                        )}
+                        {selectedOption === 'email' && (
+                            <TextField
+                                variant='standard'
+                                type="email"
+                                placeholder="Enter Email"
+                                value={selectedEmail}
+                                onChange={handleEmailChange}
+                                style={{ marginTop: '1rem', width: '100%', padding: '0.5rem' }}
+                            />
+                        )}
+                        <Button onClick={handleSubmit} variant="contained" color="primary" style={{ marginTop: '1rem' }}>Submit</Button>
+                    </div>
+                </Drawer>
+
+                {confessions.map((confession, index) => (
+                    <ConfessionForAdmin key={confession._id} confession={confession} applyGenderBasedGrandients={true} />
+                ))}
+                {(loading) &&
+                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginBottom: '3rem', marginTop: '0' }} className={styles.isLoading}>
+                        <p >Loading confessions</p>
+                        <span>
+                            <Image src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt='' />
+                        </span>
+                    </div>
+                }
+                <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
+                {!hasMore &&
+                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '3rem', marginTop: '0' }} className={styles.isLoading}>
+                        <p style={{ padding: '1rem', textAlign: 'center', opacity: '0.7', scale: '0.8' }}>You have seen all available confessions of your college</p>
+                    </div>
+                }
+            </div>
         </div>
     );
 };

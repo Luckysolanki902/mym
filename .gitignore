@@ -40,3 +40,6 @@ generatesc.js
 /pages/admin/confessions
 /pages/api/admin/security/decrypt
 /pages/testing
+/pages/admin/confessions
+/components/adminComps
+/api/admin/security/decrypt

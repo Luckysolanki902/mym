@@ -48,7 +48,7 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
   }, [index, inView, confession.confessionContent.length, content]);
 
   return (
-    <div ref={ref} style={{ position: 'relative' }} className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}aGradient`] : ''}`} onClick={handleComplete}>
+    <div ref={ref} style={{ position: 'relative' }} className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`} onClick={handleComplete}>
       <div onClick={() => setShowFullContent(true)} className={styles.textarea} style={{ whiteSpace: 'pre-line' }} ref={confessionBoxRef}>
         {inView && !showFullContent ? (
           <>

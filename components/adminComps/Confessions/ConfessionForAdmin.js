@@ -149,7 +149,7 @@ const ConfessionForAdmin = ({ confession, userDetails, applyGenderBasedGrandient
 
       <ConfessionBox
         gender={gender}
-        applyGenderBasedGrandients={applyGenderBasedGrandients}
+        applyGenderBasedGrandients={true}
         confession={confession}
       />
 

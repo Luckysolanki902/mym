@@ -1,15 +1,39 @@
-import React from 'react'
-import Link from 'next/link'
-const index = () => {
+import React from 'react';
+import Link from 'next/link';
+import { AppBar, Toolbar, Typography, Container, List, ListItem, ListItemText } from '@mui/material';
+
+const Index = () => {
     return (
-        <div style={{ padding: '1rem', display: 'flex', maxWidth: '1000px', justifyContent: 'flex-start', flexDirection:'column', margin:'auto' }}>
-            <h1>Test Ids</h1>
-           <section style={{padding:"1rem", display:'flex', flexDirection:'column', gap:'1rem'}}>
-            <Link style={{ color: 'white', textDecoration: 'none' }} href={'/admin/testids/add'}>Add TestId</Link>
-            <Link style={{ color: 'white', textDecoration: 'none' }} href={'/admin/testids/editdetails'}>Edit Details</Link>
-            </section> 
+        <div>
+
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="h6" component="div" style={{ flexGrow: 1, textAlign:'center', cursor:'pointer' }}>
+                        <Link href="/admin" style={{ color: 'inherit', textDecoration: 'none' }}>
+                            Admin Panel
+                        </Link>
+                    </Typography>
+                </Toolbar>
+            </AppBar>
+        <div style={{ padding: '1rem', display: 'flex', maxWidth: '1000px', justifyContent: 'flex-start', flexDirection: 'column', margin: 'auto' }}>
+            <Container maxWidth="lg" style={{ paddingTop: '2rem' }}>
+                <Typography variant="h3" gutterBottom>
+                    Admin TestIds
+                </Typography>
+                <div style={{ marginTop: '2rem' }}>
+                    <List>
+                        <ListItem button component={Link} href="/admin/testids/add">
+                            <ListItemText primary="Add TestId" />
+                        </ListItem>
+                        <ListItem button component={Link} href="/admin/testids/editdetails">
+                            <ListItemText primary="Edit Details" />
+                        </ListItem>
+                    </List>
+                </div>
+            </Container>
         </div>
-    )
+        </div>
+    );
 }
 
-export default index
+export default Index;
