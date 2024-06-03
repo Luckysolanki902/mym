@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Grid, Card, CardContent } from '@mui/material';
-import {AppBar, Toolbar,  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Container, Typography, Button, Grid, Card, CardContent, AppBar, Toolbar } from '@mui/material';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import Link from 'next/link';
 
 const Index = () => {
     const [chatStats, setChatStats] = useState({
