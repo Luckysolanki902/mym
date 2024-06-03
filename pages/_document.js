@@ -5,20 +5,8 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          {/* Clarity Analytics */}
-          <script
-            type="text/javascript"
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function(c,l,a,r,i,t,y){
-                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-                })(window, document, "clarity", "script", "ml5g8sw1gh");
-              `
-            }}
-          />
-          {/* Google Fonts */}
+        {/* <link rel="icon" href="/images/mym_logos/mymlogoinvert.png" /> */}
+          {/* Link to Google Fonts for Inter font */}
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Dancing+Script&display=swap"/>
           {/* Other head elements can be added here */}
         </Head>

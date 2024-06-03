@@ -1,4 +1,16 @@
 import { scrollToBottom } from "../generalUtilities";
+import CryptoJS from 'crypto-js';
+const secretKey = process.env.NEXT_PUBLIC_SECRET_KEY;
+const encryptMessage = (message, secretKey) => {
+    return CryptoJS.AES.encrypt(message, secretKey).toString();
+};
+
+const decryptMessage = (encryptedMessage, secretKey) => {
+    const bytes = CryptoJS.AES.decrypt(encryptedMessage, secretKey);
+    return bytes.toString(CryptoJS.enc.Utf8);
+};
+
+
 
 export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef) => {
     const { setIsFindingPair } = stateFunctions;
@@ -62,15 +74,17 @@ export const handlePairingSuccess = (data, hasPaired, stateFunctions, findingTim
 };
 
 
+
+// Your handleReceivedMessage function
 export const handleReceivedMessage = (data, stateFunctions, messagesContainerRef) => {
-
     const { setStrangerIsTyping, setMessages } = stateFunctions;
-
     setStrangerIsTyping(false);
+
     const { sender, content } = data;
+    const decryptedMessage = decryptMessage(content, secretKey);
     setMessages((prevMessages) => [
         ...prevMessages,
-        { sender: sender, message: content },
+        { sender: sender, message: decryptedMessage },
     ]);
     scrollToBottom(messagesContainerRef);
 };
@@ -85,14 +99,13 @@ export const handlePairDisconnected = (stateFunctions, messagesContainerRef) => 
     scrollToBottom(messagesContainerRef);
 };
 
+// Your handleSend function
 export const handleSend = (socket, textValue, stateFunctions, messagesContainerRef, userDetails, hasPaired) => {
-
     const { setTextValue, setMessages, setStrangerIsTyping } = stateFunctions;
-
     const message = textValue.trim();
-
     if (message !== '' && socket && hasPaired) {
-        socket.emit('message', { type: 'message', content: message, userEmail: userDetails?.email, pageType: 'textchat' });
+        const encryptedMessage = encryptMessage(message, secretKey);
+        socket.emit('message', { type: 'message', content: encryptedMessage, userEmail: userDetails?.email, pageType: 'textchat' });
         setTextValue('');
         setMessages(prevMessages => [
             ...prevMessages,
@@ -102,6 +115,7 @@ export const handleSend = (socket, textValue, stateFunctions, messagesContainerR
     }
     scrollToBottom(messagesContainerRef);
 };
+
 
 export const handleTyping = (e, socket, typingTimeoutRef, userDetails, hasPaired) => {
     if (e.key !== 'Enter' && socket && hasPaired) {

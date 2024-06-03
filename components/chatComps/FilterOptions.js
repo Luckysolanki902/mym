@@ -24,7 +24,6 @@ const FilterOptions = ({ userDetails }) => {
   });
   // filters contexts
   const { preferredGender, setPreferredGender, preferredCollege, setPreferredCollege } = useFilters();
-console.log({preferredCollege, preferredGender})
   const handleFilterToggle = () => {
     if (!userDetails) {
       return;
