@@ -23,8 +23,7 @@ const Footer = () => {
                 </div>
 
                 <div className={styles.tnc}>
-                     <Link href={'/about-us'} style={{color:'white', textDecoration:'none'}}>About Us</Link>  | <Link href={'/termsandconditions'} style={{color:'white', textDecoration:'none'}}>Terms and Conditions</Link> </div>
-
+                     <Link href={'/about-us'} style={{color:'white', textDecoration:'none'}}>About Us</Link>  | <Link href={'/how-we-protect-anonymity'} style={{color:'white', textDecoration:'none'}}>How We Protect Anonymity</Link> </div>
             </div>
         </div>
     )
