@@ -10,6 +10,8 @@ import { Skeleton } from '@mui/material';
 // import CollegeCards from '@/components/justhomepage/CollegeCards';
 import Footer from '@/components/commonComps/Footer';
 import CollegeCards from '@/components/justhomepage/CollegeCards';
+import InstagramCard from '@/components/justhomepage/InstagramCard';
+import Link from 'next/link';
 export default function Home({ session, trendingConfessions }) {
 
   const containerSpring = useSpring({
@@ -33,7 +35,7 @@ export default function Home({ session, trendingConfessions }) {
     "Send direct replies to confessions, without showing it in public comments.",
     "Get more likes and comments to make your confession trend."
   ];
-  
+
   return (
     <>
       <animated.div style={containerSpring} className={styles.mainContainer}>
@@ -74,7 +76,7 @@ export default function Home({ session, trendingConfessions }) {
 
         {/* <h3 className={styles.unlock}>AN ANOYNYMOUS INTERCOLLEGE SOCIAL MEDIA  PLATFORM</h3> */}
 
-        <div onClick={()=>router.push('/textchat')} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+        <div onClick={() => router.push('/textchat')} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
           <Image src={'/images/showcase/confessionfeaturesl.png'} width={1716} height={966} alt='chatfeatures' className={styles.featuresBg}></Image>
           <div className={styles.chatfeatures}>
             {/* Chat features */}
@@ -94,7 +96,7 @@ export default function Home({ session, trendingConfessions }) {
           </div>
         </div>
 
-        <div onClick={()=>router.push('/all-confessions')} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+        <div onClick={() => router.push('/all-confessions')} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
           <Image src={'/images/showcase/chatfeaturesl.png'} width={1716} height={966} alt='chatfeatures' className={styles.featuresBg}></Image>
           <div className={styles.confessionfeatures}>
             <div>
@@ -114,10 +116,15 @@ export default function Home({ session, trendingConfessions }) {
         </div>
 
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '90%', margin: 'auto', marginTop: '3rem', marginBottom:'3rem' }} >
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '90%', margin: 'auto', marginTop: '3rem', marginBottom: '3rem' }} >
           <Image src={'/images/illustrations/roadmapforphone.png'} className={styles.featuresBg} width={5032 / 3} height={3144 / 3} alt='roadmap'></Image>
         </div>
 
+        <Link href={'https://www.instagram.com/_mym_official/'} target="_blank" rel="noopener noreferrer" style={{ width: '100%', marginTop: '1rem', marginBottom: '2rem' }}>
+          <Image src={'/images/showcase/follow2.png'} className={styles.featuresBg} width={5120 / 4} height={470 / 4} alt='instagram_link'></Image>
+        </Link>
+
+        {/* <InstagramCard /> */}
 
         <div className={styles.ourgoal}>
           Our <span>Goal</span>
@@ -125,7 +132,7 @@ export default function Home({ session, trendingConfessions }) {
         <p className={styles.ourgoalP}>23IITs , 31NITs , and every other bachelor colleges on our platform</p>
         <div className={styles.comingsoonCards}>
           {/* <Image src={'/images/showcase/cards.png'} width={1348} height={688} alt='cards'  ></Image> */}
-          <CollegeCards/>
+          <CollegeCards />
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
