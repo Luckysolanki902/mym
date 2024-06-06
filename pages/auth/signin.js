@@ -126,7 +126,7 @@ export default function Signin() {
               style={{ textTransform: 'none' }}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
+              {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
             </Button>
           </form>
           <Link href="/auth/forgot-password" className={styles.paraLink2}>

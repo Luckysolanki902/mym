@@ -1,4 +1,3 @@
-// pages/api/security/sendotp.js
 import connectToMongo from '@/middleware/middleware';
 import User from '@/models/User';
 import nodemailer from 'nodemailer';
@@ -8,28 +7,26 @@ async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  
-
   const { email } = req.body;
 
-  // Check if user exists
-  const existingUser = await User.findOne({ email });
-
-  if (!existingUser) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-
-  // Generate a random 6-digit OTP
-  const generatedOTP = Math.floor(100000 + Math.random() * 900000);
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-
   try {
+    // Check if user exists
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Generate a random 6-digit OTP
+    const generatedOTP = Math.floor(100000 + Math.random() * 900000);
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
     // Update the user's OTP in the database
     existingUser.otp = generatedOTP;
     await existingUser.save();

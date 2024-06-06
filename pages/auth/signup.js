@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { signIn } from 'next-auth/react';
-import { createTheme, ThemeProvider, Select, MenuItem, TextField, Button, InputLabel, InputAdornment, IconButton  } from '@mui/material';
+import { createTheme, ThemeProvider, Select, MenuItem, TextField, Button, InputLabel, InputAdornment, IconButton } from '@mui/material';
 import Image from 'next/image';
 import styles from './signup.module.css'
 import Visibility from '@mui/icons-material/Visibility';
@@ -33,7 +33,7 @@ const Signup = () => {
   const [collegesLoaded, setCollegesLoaded] = useState(false);
   const [allowedEmails, setAllowedEmails] = useState([]);
   const [testIds, setTestIds] = useState([]);
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   // admin
   const allowOnlyCollegeEmails = true;
 
@@ -133,7 +133,6 @@ const Signup = () => {
         }
         else {
           router.push(`/verify/verifyotp`);
-
         }
       }
     } catch (error) {
@@ -255,7 +254,7 @@ const Signup = () => {
             onClick={() => router.push('/auth/signin')}
             className={styles.paraLink}
             style={{ cursor: 'pointer' }}         >
-            {'Sign In Instead'}
+            {'Login Instead'}
           </div>
         </div>
       </div>
