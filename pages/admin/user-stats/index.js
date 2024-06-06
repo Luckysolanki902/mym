@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Grid, Card, CardContent, AppBar, Toolbar } from '@mui/material';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import Link from 'next/link';
 
 const Index = () => {
     const [chatStats, setChatStats] = useState({
         totalUsers: 0,
         maleUsers: 0,
-        femaleUsers: 0
+        femaleUsers: 0,
+        collegeStats: []
     });
+    
 
     const [authStats, setAuthStats] = useState({
         totalUsers: 0,
         maleUsers: 0,
-        femaleUsers: 0
+        femaleUsers: 0,
+        collegeStats: []
     });
 
     const [confessionStats, setConfessionStats] = useState({
@@ -24,7 +27,8 @@ const Index = () => {
         maleComments: 0,
         femaleComments: 0,
         totalLikes: 0,
-        totalPersonalReplies: 0
+        totalPersonalReplies: 0,
+        collegeStats: []
     });
 
     const [fetchingChatStats, setFetchingChatStats] = useState(false);
@@ -39,7 +43,7 @@ const Index = () => {
             fetchChatStats();
             fetchAuthStats();
             fetchConfessionStats();
-        }, 60000);
+        }, 5000);
 
         return () => clearInterval(interval);
     }, []);
@@ -59,6 +63,7 @@ const Index = () => {
             setFetchingChatStats(false);
         }
     };
+    
 
     const fetchAuthStats = async () => {
         try {
@@ -104,6 +109,8 @@ const Index = () => {
         fetchConfessionStats();
     };
 
+    const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
     return (
         <div>
             <AppBar position="static">
@@ -121,37 +128,66 @@ const Index = () => {
                 </Typography>
 
                 <Typography variant="h4" gutterBottom>
-                    Chat Page Stats
+    Chat Page Stats
+</Typography>
+<Button variant="outlined" onClick={refreshChatStats} style={{ marginBottom: '1rem' }}>
+    {fetchingChatStats ? 'Loading...' : 'Refresh Stats'}
+</Button>
+<Grid container spacing={3}>
+    <Grid item xs={12} sm={6}>
+        <Card>
+            <CardContent>
+                <Typography variant="h5" component="h2" gutterBottom>
+                    Live Users: {chatStats.totalUsers}
                 </Typography>
-                <Button variant="outlined" onClick={refreshChatStats} style={{ marginBottom: '1rem' }}>
-                    {fetchingChatStats ? 'Loading...' : 'Refresh Stats'}
-                </Button>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6}>
-                        <Card>
-                            <CardContent>
-                                <Typography variant="h5" component="h2" gutterBottom>
-                                    Total Users: {chatStats.totalUsers}
-                                </Typography>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <BarChart
-                                        data={[
-                                            { name: 'Male', users: chatStats.maleUsers },
-                                            { name: 'Female', users: chatStats.femaleUsers }
-                                        ]}
-                                    >
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Legend />
-                                        <Bar dataKey="users" fill="#8884d8" />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                </Grid>
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart
+                        data={[
+                            { name: 'Male', users: chatStats.maleUsers },
+                            { name: 'Female', users: chatStats.femaleUsers }
+                        ]}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="users" fill="#8884d8" />
+                    </BarChart>
+                </ResponsiveContainer>
+            </CardContent>
+        </Card>
+    </Grid>
+    <Grid item xs={12} sm={6}>
+        <Card>
+            <CardContent>
+                <Typography variant="h5" component="h2" gutterBottom>
+                    College-wise Distribution
+                </Typography>
+                <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                        <Pie
+                            data={Object.entries(chatStats.collegeStats).map(([name, value]) => ({ name, value }))}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="value"
+                            label
+                        >
+                            {Object.keys(chatStats.collegeStats).map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                    </PieChart>
+                </ResponsiveContainer>
+            </CardContent>
+        </Card>
+    </Grid>
+</Grid>
+
 
                 <Typography variant="h4" gutterBottom style={{ marginTop: '2rem' }}>
                     Auth Stats
@@ -180,6 +216,36 @@ const Index = () => {
                                         <Legend />
                                         <Bar dataKey="users" fill="#82ca9d" />
                                     </BarChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h5" component="h2" gutterBottom>
+                                    College-wise Distribution
+                                </Typography>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <PieChart>
+                                        <Pie
+                                            data={authStats.collegeStats.map(college => ({ name: college._id, value: college.count }))}
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={80}
+                                            fill="#8884d8"
+                                            dataKey="value"
+                                            label
+                                        >
+                                            {
+                                                authStats.collegeStats.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                ))
+                                            }
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend />
+                                    </PieChart>
                                 </ResponsiveContainer>
                             </CardContent>
                         </Card>
@@ -214,18 +280,73 @@ const Index = () => {
                                         <Bar dataKey="confessions" fill="#ffc658" />
                                     </BarChart>
                                 </ResponsiveContainer>
-                                <Typography variant="h6" component="p" style={{ marginTop: '1rem' }}>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h5" component="h2" gutterBottom>
+                                    College-wise Distribution
+                                </Typography>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <PieChart>
+                                        <Pie
+                                            data={confessionStats.collegeStats.map(college => ({ name: college._id, value: college.count }))}
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={80}
+                                            fill="#8884d8"
+                                            dataKey="value"
+                                            label
+                                        >
+                                            {
+                                                confessionStats.collegeStats.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                ))
+                                            }
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
+
+                <Grid container spacing={3} style={{ marginTop: '2rem' }}>
+                    <Grid item xs={12} sm={6}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6" component="p">
                                     Total Comments: {confessionStats.totalComments}
                                 </Typography>
-                                <Typography variant="body1" component="p">
-                                    Male Comments: {confessionStats.maleComments}
-                                </Typography>
-                                <Typography variant="body1" component="p">
-                                    Female Comments: {confessionStats.femaleComments}
-                                </Typography>
-                                <Typography variant="h6" component="p" style={{ marginTop: '1rem' }}>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart
+                                        data={[
+                                            { name: 'Male', comments: confessionStats.maleComments },
+                                            { name: 'Female', comments: confessionStats.femaleComments }
+                                        ]}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Bar dataKey="comments" fill="#8884d8" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6" component="p">
                                     Total Likes: {confessionStats.totalLikes}
                                 </Typography>
+
                                 <Typography variant="h6" component="p" style={{ marginTop: '1rem' }}>
                                     Total Personal Replies: {confessionStats.totalPersonalReplies}
                                 </Typography>

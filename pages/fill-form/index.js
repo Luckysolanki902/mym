@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FormControl, InputLabel, Select, MenuItem, TextField, Button, CircularProgress, Snackbar } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, TextField, Button, CircularProgress, Snackbar,  InputAdornment } from '@mui/material';
 
 const FillForm = () => {
   const [category, setCategory] = useState('');
@@ -48,6 +48,21 @@ const FillForm = () => {
           <MenuItem value="Other">Other</MenuItem>
         </Select>
       </FormControl>
+
+      
+      <TextField
+        label={category === 'Add My College' ? "Any Message For Us" : "Description"}
+        multiline
+        minRows={2}
+        maxRows={5}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        fullWidth
+        required={category !== 'Add My College'}
+        sx={{ maxWidth: '700px' }}
+        variant='standard'
+      />
+
       {category === 'Confession Delete Request' && (
         <TextField
           label="Paste the confession link"
@@ -86,28 +101,21 @@ const FillForm = () => {
       )}
       {category === 'Add My College' && (
         <TextField
-          label="What's your college id?"
+          label="What your college id ends with?"
           value={collegeId}
           onChange={(e) => setCollegeId(e.target.value)}
           fullWidth
           required
           sx={{ maxWidth: '700px' }}
           variant='standard'
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">@</InputAdornment>
+            ),
+          }}
         />
       )}
 
-      <TextField
-        label="Description"
-        multiline
-        minRows={2}
-        maxRows={5}
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        fullWidth
-        required
-        sx={{ maxWidth: '700px' }}
-        variant='standard'
-      />
       <Button fullWidth sx={{ maxWidth: '300px' }} type="submit" variant="contained" color="primary" disabled={loading}>
         {loading ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
       </Button>

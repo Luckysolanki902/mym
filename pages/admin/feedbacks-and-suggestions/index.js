@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Chip, Typography, Paper, Snackbar, CircularProgress } from '@mui/material';
+import { AppBar, Toolbar, Chip, Typography, Paper, Snackbar, Skeleton } from '@mui/material';
 import Link from 'next/link';
 
 const UserFeedbacksAndSuggestions = () => {
@@ -12,7 +12,6 @@ const UserFeedbacksAndSuggestions = () => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
     useEffect(() => {
-        // Fetch all feedback and suggestion forms
         const fetchForms = async () => {
             try {
                 const response = await fetch('/api/admin/getdetails/getfeedbacksandsuggestions');
@@ -60,56 +59,74 @@ const UserFeedbacksAndSuggestions = () => {
                 <div style={{ padding: '20px' }}>
                     <h2 style={{ margin: '0', marginBottom: '1rem', marginLeft: '1rem', color: 'white' }}>Feedback and Suggestions</h2>
                     <div style={{ display: 'flex', overflow: 'auto', padding: '0 1rem', gap: '1rem' }}>
-                        {categories.map((category) => (
-                            <Chip
-                                key={category}
-                                label={category}
-                                clickable
-                                color={category === selectedCategory ? 'primary' : 'default'}
-                                onClick={() => handleCategoryChange(category)}
-                            />
-                        ))}
+                        {loading ? (
+                            Array.from(new Array(5)).map((_, index) => (
+                                <Skeleton
+                                    key={index}
+                                    variant="rectangular"
+                                    width={100}
+                                    height={32}
+                                    animation="wave"
+                                    style={{ backgroundColor: 'rgb(55, 55, 55)', borderRadius: '16px' }}
+                                />
+                            ))
+                        ) : (
+                            categories.map((category) => (
+                                <Chip
+                                    key={category}
+                                    label={category}
+                                    clickable
+                                    color={category === selectedCategory ? 'primary' : 'default'}
+                                    onClick={() => handleCategoryChange(category)}
+                                />
+                            ))
+                        )}
                     </div>
 
                     <div style={{ marginTop: '2rem', padding: '0 1rem' }}>
                         {loading ? (
-                            <CircularProgress color="primary" />
+                            Array.from(new Array(3)).map((_, index) => (
+                                <Paper key={index} style={{ marginBottom: '1rem', padding: '1rem', backgroundColor: 'rgb(45, 45, 45)' }}>
+                                    <Skeleton animation="wave" variant="text" height={40} width="60%" style={{ backgroundColor: 'rgb(55, 55, 55)' }} />
+                                    <Skeleton animation="wave" variant="text" height={20} width="80%" style={{ backgroundColor: 'rgb(55, 55, 55)' }} />
+                                    <Skeleton animation="wave" variant="text" height={20} width="80%" style={{ backgroundColor: 'rgb(55, 55, 55)', marginBottom: '1rem' }} />
+                                    <Skeleton animation="wave" variant="rectangular" height={20} width="90%" style={{ backgroundColor: 'rgb(55, 55, 55)' }} />
+                                    <Skeleton animation="wave" variant="rectangular" height={20} width="90%" style={{ backgroundColor: 'rgb(55, 55, 55)', marginBottom: '1rem' }} />
+                                </Paper>
+                            ))
                         ) : (
                             filteredForms.map((form) => (
                                 <Paper key={form._id} style={{ marginBottom: '1rem', padding: '1rem', backgroundColor: 'rgb(45, 45, 45)', color: 'white' }}>
                                     <Typography variant="h6">{form.category}</Typography>
                                     <Typography variant="body1" style={{ marginBottom: '2rem' }}>{form.description}</Typography>
 
-                                    {(form.recreateBug ) && (
+                                    {form.recreateBug && (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1rem' }}>
-                                            <Typography variant="body2" >
-                                                <div style={{ fontSize: '0.9rem', backgroundColor: 'rgb(33, 33, 33)', padding: '0.5rem 1rem', borderRadius: '3rem', display: 'inline', marginBottom: '1rem' }}>Recreate Bug </div>
+                                            <Typography variant="body2">
+                                                <div style={{ fontSize: '0.9rem', backgroundColor: 'rgb(33, 33, 33)', padding: '0.5rem 1rem', borderRadius: '3rem', display: 'inline', marginBottom: '1rem' }}>Recreate Bug</div>
                                             </Typography>
-                                            <Typography variant='body2' sx={{marginLeft:'1rem'}}>
-                                                {form.recreateBug} 
+                                            <Typography variant='body2' sx={{ marginLeft: '1rem' }}>
+                                                {form.recreateBug}
                                             </Typography>
                                         </div>
                                     )}
-                                    {(form.collegeName ) && (
+                                    {form.collegeName && (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.5rem' }}>
-
                                             <Typography variant="body2">
-                                                <div style={{ fontSize: '0.9rem', backgroundColor: 'rgb(33, 33, 33)', padding: '0.5rem 1rem', borderRadius: '3rem', display: 'inline', marginBottom: '1rem' }}>College Name </div>
+                                                <div style={{ fontSize: '0.9rem', backgroundColor: 'rgb(33, 33, 33)', padding: '0.5rem 1rem', borderRadius: '3rem', display: 'inline', marginBottom: '1rem' }}>College Name</div>
                                             </Typography>
-                                            <Typography variant='body2' sx={{marginLeft:'1rem'}}>
-                                                {form.collegeName} 
+                                            <Typography variant='body2' sx={{ marginLeft: '1rem' }}>
+                                                {form.collegeName}
                                             </Typography>
-
                                         </div>
                                     )}
-                                    {(form.collegeId ) && (
+                                    {form.collegeId && (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1rem' }}>
-
                                             <Typography variant="body2">
-                                                <div style={{ fontSize: '0.9rem', backgroundColor: 'rgb(33, 33, 33)', padding: '0.5rem 1rem', borderRadius: '3rem', display: 'inline', marginBottom: '1rem' }}>College ID </div>
+                                                <div style={{ fontSize: '0.9rem', backgroundColor: 'rgb(33, 33, 33)', padding: '0.5rem 1rem', borderRadius: '3rem', display: 'inline', marginBottom: '1rem' }}>College ID</div>
                                             </Typography>
-                                            <Typography variant='body2' sx={{marginLeft:'1rem'}}>
-                                                {form.collegeId} 
+                                            <Typography variant='body2' sx={{ marginLeft: '1rem' }}>
+                                                {form.collegeId}
                                             </Typography>
                                         </div>
                                     )}

@@ -1,4 +1,3 @@
-// pages/api/confession/stats.js
 import Confession from '@/models/Confession';
 import Comment from '@/models/Comment';
 import Like from '@/models/Like';
@@ -22,6 +21,10 @@ const handler = async (req, res) => {
     ]);
     const totalPersonalReplies = totalReplies.length > 0 ? totalReplies[0].totalReplies : 0;
 
+    const collegeStats = await Confession.aggregate([
+      { $group: { _id: "$college", count: { $sum: 1 } } }
+    ]);
+
     res.status(200).json({
       totalConfessions,
       maleConfessions,
@@ -30,7 +33,8 @@ const handler = async (req, res) => {
       maleComments,
       femaleComments,
       totalLikes,
-      totalPersonalReplies
+      totalPersonalReplies,
+      collegeStats
     });
   } catch (error) {
     console.error('Error fetching confession stats:', error);

@@ -59,7 +59,8 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
           <span>{confession.confessionContent}</span>
         )}
       </div>
-      <div style={{ textAlign: 'right', margin: '1rem 0' }} className={styles.masks}>
+      <div style={{ display:'flex', justifyContent:'space-between', fontWeight:'100',alignItems:'flex-end'  }} className={styles.masks}>
+        <div>{confession.college}</div>
         <Image onClick={() => setShowFullContent(true)} src={'/images/othericons/masks.png'} width={512} height={512} alt='' />
       </div>
     </div>

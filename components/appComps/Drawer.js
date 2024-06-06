@@ -81,7 +81,7 @@ export default function SwipeableTemporaryDrawer(props) {
 
     useEffect(() => {
         fetchUnseenCount();
-        const intervalId = setInterval(fetchUnseenCount, 30000);
+        const intervalId = setInterval(fetchUnseenCount, 10000);
         return () => clearInterval(intervalId);
     }, [state.userDetails]);
 
