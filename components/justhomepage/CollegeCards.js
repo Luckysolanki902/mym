@@ -19,9 +19,9 @@ const colleges = [
     position: 'left',
   },
   {
-    firstname: "PSIT",
-    lastname: "KANPUR",
-    live: false,
+    firstname: "RGIPT",
+    lastname: "Amethi",
+    live: true,
     position: 'left',
   },
   {
@@ -31,37 +31,37 @@ const colleges = [
     position: 'center',
   },
   {
-    firstname: "CSA",
-    lastname: "KANPUR",
-    live: false,
+    firstname: "NIT",
+    lastname: "Jalandhar",
+    live: true,
     position: 'right',
   },
   {
-    firstname: "CSJMU",
-    lastname: "KANPUR",
-    live: false,
+    firstname: "NIT",
+    lastname: "Kurukshetra",
+    live: true,
     position: 'right',
   },
 ];
 
 const CollegeCards = () => {
   const [pso, setPso] = useState(12)
-const islessthan800 = useMediaQuery('(max-width:800px)')
-useEffect(()=>{
-  if(islessthan800){
-    setPso(20)
-  }
-},[islessthan800])
+  const islessthan800 = useMediaQuery('(max-width:800px)')
+  useEffect(() => {
+    if (islessthan800) {
+      setPso(20)
+    }
+  }, [islessthan800])
 
   return (
-    <div style={{ width: "100%", display: "flex", justifyContent: "center"}}>
+    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
       <Swiper
         style={{
           height: "auto", // Corrected the typo
           width: "100%",
           margin: "auto",
         }}
-        cardsEffect={{ slideShadows: false, rotate: false, perSlideOffset:pso }}
+        cardsEffect={{ slideShadows: false, rotate: false, perSlideOffset: pso }}
         effect="cards"
         modules={[EffectCards]}
         loop={true}

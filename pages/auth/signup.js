@@ -1,4 +1,3 @@
-// pages/signup.js
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/firebase';
 import { useRouter } from 'next/router';
@@ -7,7 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { signIn } from 'next-auth/react';
 import { createTheme, ThemeProvider, Select, MenuItem, TextField, Button, InputLabel, InputAdornment, IconButton } from '@mui/material';
 import Image from 'next/image';
-import styles from './signup.module.css'
+import styles from './signup.module.css';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
@@ -20,13 +19,12 @@ const mymtheme = createTheme({
   },
 });
 
-
 const Signup = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [gender, setGender] = useState('Select Gender');
-  const [college, setCollege] = useState('Select College');
+  const [college, setCollege] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [colleges, setColleges] = useState([]);
@@ -80,6 +78,20 @@ const Signup = () => {
     setShowPassword((prev) => !prev);
   };
 
+  const handleEmailChange = (e) => {
+    const emailValue = e.target.value;
+    setEmail(emailValue);
+
+    const emailDomain = emailValue.split('@')[1];
+
+    const matchedCollege = allowedEmails.find((allowedEmail) => emailDomain === allowedEmail);
+    if (matchedCollege) {
+      const collegeIndex = allowedEmails.indexOf(matchedCollege);
+      setCollege(colleges[collegeIndex]);
+    } else {
+      setCollege('');
+    }
+  };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -98,7 +110,7 @@ const Signup = () => {
         }
       }
 
-      if (gender === 'Select Gender' || college === 'Select College') {
+      if (gender === 'Select Gender' || college === '') {
         throw new Error('Please fill all the fields');
       }
 
@@ -159,13 +171,12 @@ const Signup = () => {
               autoComplete="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               variant='standard'
               InputLabelProps={{
                 required: false, // Remove the asterisk for the Email field
               }}
               className={styles.input}
-
             />
             <TextField
               variant='standard'
@@ -179,7 +190,6 @@ const Signup = () => {
                 required: false, // Remove the asterisk for the Email field
               }}
               className={styles.input}
-
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -192,7 +202,6 @@ const Signup = () => {
                   </InputAdornment>
                 ),
               }}
-
             />
             <Select
               variant='standard'
@@ -210,56 +219,41 @@ const Signup = () => {
               <MenuItem value="male">Male</MenuItem>
               <MenuItem value="female">Female</MenuItem>
             </Select>
-            <Select
-              required
-              disabled={!collegesLoaded}
+            <TextField
               variant='standard'
+              required
               value={college}
-              onChange={(e) => setCollege(e.target.value)}
-              label="Select College"
+              label="College"
+              placeholder='fill valid college id first'
               inputProps={{
-                name: 'college',
-                id: 'college-select',
+                readOnly: true,
               }}
-              className={`${styles.selectInput} ${college === 'Select College' ? `${styles.placeholder}` : ''}`}
-
-            >
-              <MenuItem value="Select College">Select College</MenuItem>
-              {colleges.map((collegeOption) => (
-                <MenuItem key={collegeOption} value={collegeOption}>
-                  {collegeOption}
-                </MenuItem>
-              ))}
-            </Select>
+              className={styles.input}
+            />
             <Button
               disabled={!collegesLoaded || loading}
               type="submit"
               variant="contained"
               color="primary"
-
               className={styles.button}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Send OTP'}
             </Button>
           </form>
           <div className={styles.line}></div>
-          {/* <a href="/auth/signin" className={styles.paraLink}>
-            Already have an account?
-          </a> */}
-
           <div
             type="submit"
             variant="contained"
             color="primary"
             onClick={() => router.push('/auth/signin')}
             className={styles.paraLink}
-            style={{ cursor: 'pointer' }}         >
+            style={{ cursor: 'pointer' }}
+          >
             {'Login Instead'}
           </div>
         </div>
       </div>
     </ThemeProvider>
-
   );
 };
 
