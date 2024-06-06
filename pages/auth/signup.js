@@ -171,7 +171,7 @@ const Signup = () => {
             <TextField
               variant='standard'
               type={showPassword ? "text" : "password"}
-              label="Password"
+              label="Create Password"
               autoComplete="current-password"
               required
               value={password}
