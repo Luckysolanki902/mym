@@ -24,12 +24,12 @@ const VerifyOTP = ({ session }) => {
   const [wait30sec, setWait30sec] = useState(false);
 
   useEffect(() => {
-    // Send OTP when the component mounts
     sendOTP();
   }, []);
 
   const sendOTP = async () => {
     try {
+      setError(null);  // Clear any existing errors
       const resendResponse = await fetch('/api/security/sendotp', {
         method: 'POST',
         headers: {
@@ -52,7 +52,11 @@ const VerifyOTP = ({ session }) => {
       }, 30000);
     } catch (error) {
       console.error('Error sending OTP:', error);
-      setError('Failed to send OTP. Please try again.');
+      if (error.message.includes('Failed to fetch')) {
+        setError('Network error: Please check your connection.');
+      } else {
+        setError(error.message || 'Failed to send OTP. Please try again.');
+      }
     }
   };
 
@@ -88,7 +92,15 @@ const VerifyOTP = ({ session }) => {
       router.push('/');
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      setError(error.message || 'Failed to verify OTP. Please try again.');
+      if (error.message.includes('NetworkError')) {
+        setError('Network error: Please check your connection.');
+      } else if (error.message.includes('User not found')) {
+        setError('User not found: Please check your email and try again.');
+      } else if (error.message.includes('Invalid OTP')) {
+        setError('Invalid OTP: Please check the OTP and try again.');
+      } else {
+        setError(error.message || 'Failed to verify OTP. Please try again.');
+      }
       setLoading(false);
     }
   };
