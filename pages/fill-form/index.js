@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FormControl, InputLabel, Select, MenuItem, TextField, Button, CircularProgress, Snackbar,  InputAdornment } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, TextField, Button, CircularProgress, Snackbar, InputAdornment } from '@mui/material';
 
 const FillForm = () => {
   const [category, setCategory] = useState('');
@@ -9,6 +9,8 @@ const FillForm = () => {
   const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
   const [collegeName, setCollegeName] = useState('');
   const [collegeId, setCollegeId] = useState('');
+  const [confessionLink, setConfessionLink] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -18,13 +20,16 @@ const FillForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ category, description, recreateBug }),
+        body: JSON.stringify({ category, description, recreateBug, collegeName, collegeId, confessionLink }),
       });
       setSuccessSnackbarOpen(true);
       // Reset form fields after successful submission
       setCategory('');
       setDescription('');
       setRecreateBug('');
+      setCollegeName('');
+      setCollegeId('');
+      setConfessionLink('');
     } catch (error) {
       // Handle error
     } finally {
@@ -49,10 +54,9 @@ const FillForm = () => {
         </Select>
       </FormControl>
 
-      
       <TextField
-        label={category === 'Add My College' ? "Any Message For Us" : "Description"}
-        multiline
+label={category === 'Add My College' ? "Any Message For Us" : category === 'Confession Delete Request' ? "Reason" : "Description"}
+multiline
         minRows={2}
         maxRows={5}
         value={description}
@@ -66,16 +70,15 @@ const FillForm = () => {
       {category === 'Confession Delete Request' && (
         <TextField
           label="Paste the confession link"
-          value={collegeId}
-          onChange={(e) => setCollegeId(e.target.value)}
+          value={confessionLink}
+          onChange={(e) => setConfessionLink(e.target.value)}
           fullWidth
           required
           sx={{ maxWidth: '700px' }}
           variant='standard'
-          placeholder='just click on the share icon on the confession and click on copy link'
+          placeholder='Just click on the share icon on the confession and click on copy link'
         />
       )}
-
 
       {category === 'Bug Report' && (
         <TextField
@@ -89,31 +92,31 @@ const FillForm = () => {
       )}
 
       {category === 'Add My College' && (
-        <TextField
-          label="Name of Your college"
-          value={collegeName}
-          onChange={(e) => setCollegeName(e.target.value)}
-          fullWidth
-          required
-          sx={{ maxWidth: '700px' }}
-          variant='standard'
-        />
-      )}
-      {category === 'Add My College' && (
-        <TextField
-          label="What your college id ends with?"
-          value={collegeId}
-          onChange={(e) => setCollegeId(e.target.value)}
-          fullWidth
-          required
-          sx={{ maxWidth: '700px' }}
-          variant='standard'
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">@</InputAdornment>
-            ),
-          }}
-        />
+        <>
+          <TextField
+            label="Name of Your College"
+            value={collegeName}
+            onChange={(e) => setCollegeName(e.target.value)}
+            fullWidth
+            required
+            sx={{ maxWidth: '700px' }}
+            variant='standard'
+          />
+          <TextField
+            label="What your college ID ends with?"
+            value={collegeId}
+            onChange={(e) => setCollegeId(e.target.value)}
+            fullWidth
+            required
+            sx={{ maxWidth: '700px' }}
+            variant='standard'
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">@</InputAdornment>
+              ),
+            }}
+          />
+        </>
       )}
 
       <Button fullWidth sx={{ maxWidth: '300px' }} type="submit" variant="contained" color="primary" disabled={loading}>
