@@ -6,7 +6,7 @@ import Link from 'next/link';
 const ConfessionPage = ({ confession, userDetails }) => {
   return (
     <>
-        {confession && <Confession confession={confession} userDetails={userDetails || null} />}
+        {confession && <Confession confession={confession} userDetails={userDetails || null} applyGenderBasedGrandients={true}/>}
         <div style={{width:"100%", display:'flex', justifyContent:'center', alignItems:'center'}}>
         <Link style={{margin:'auto', textDecoration:'none'}} href={'/all-confessions'}>click to see all confessions</Link>
         </div>
