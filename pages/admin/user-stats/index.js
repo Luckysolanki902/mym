@@ -43,7 +43,7 @@ const Index = () => {
             fetchChatStats();
             fetchAuthStats();
             fetchConfessionStats();
-        }, 5000);
+        }, 30000);
 
         return () => clearInterval(interval);
     }, []);
