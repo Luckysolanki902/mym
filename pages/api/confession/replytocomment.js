@@ -1,11 +1,30 @@
-// Import necessary modules and models
+// pages/api/comment/replytocomment.js
+
+import crypto from 'crypto';
+import CryptoJS from 'crypto-js';
 import connectToMongo from '@/middleware/middleware';
 import Comment from '@/models/Comment';
 
 const handler = async (req, res) => {
     const { commentId, replyContent, gender } = req.body;
 
+    if (!commentId || !replyContent || !gender) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
     try {
+        // Your secret key from environment variables
+        const secretKeyHex = process.env.ENCRYPTION_SECRET_KEY;
+
+        if (!secretKeyHex) {
+            throw new Error('Encryption secret key is not defined in environment variables');
+        }
+
+        const secretKey = Buffer.from(secretKeyHex, 'hex');
+
+        // Encrypt the reply content using CryptoJS
+        const encryptedReplyContent = CryptoJS.AES.encrypt(replyContent, secretKeyHex).toString();
+
         // Find the comment by ID
         const comment = await Comment.findById(commentId);
 
@@ -15,7 +34,7 @@ const handler = async (req, res) => {
 
         // Create a new reply
         const newReply = {
-            replyContent,
+            replyContent: encryptedReplyContent,
             gender,
         };
 
