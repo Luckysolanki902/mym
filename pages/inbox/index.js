@@ -7,11 +7,6 @@ import Image from 'next/image';
 import InboxCard from '@/components/confessionComps/InboxCard';
 import { useRouter } from 'next/router';
 import styles2 from './styles/inbox.module.css'
-const noEntry = {
-  "confessionContent": "Replies to your confessions will appear here",
-  "replies": [
-  ],
-}
 
 
 const InboxPage = ({ personalReplies, userDetails }) => {
