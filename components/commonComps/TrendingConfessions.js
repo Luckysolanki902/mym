@@ -47,7 +47,7 @@ const TrendingConfessions = ({ trendingConfessions }) => {
         <Swiper className={styles.main} loop={true} speed={500} simulateTouch={true} autoplay={{ delay: 3000, pauseOnMouseEnter: true, disableOnInteraction: false }}
         >
             {!loading && trendingConfessions.map((confession, index) => (
-                <SwiperSlide key={confession._id} className={styles.mainCard}>
+                <SwiperSlide key={index} className={styles.mainCard}>
                     <div className={styles.blurCard} onClick={() => router.push(`/confession/${confession._id}`)} style={{ zIndex: "-1" }}>
                         <div className={styles.card}>
                             <div className={styles.heading}>
@@ -76,7 +76,7 @@ const TrendingConfessions = ({ trendingConfessions }) => {
                 </SwiperSlide>
             ))}
             {loading && loadingConfessions.map((confession, index) => (
-                <SwiperSlide key={confession._id} className={styles.mainCard}>
+                <SwiperSlide key={index} className={styles.mainCard}>
                     <div className={styles.blurCard} onClick={() => router.push(`/confession/${confession._id}`)} style={{ zIndex: "-1" }}>
                         <div className={styles.card}>
                             <div className={styles.heading}>

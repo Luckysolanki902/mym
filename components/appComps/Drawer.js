@@ -33,6 +33,8 @@ export default function SwipeableTemporaryDrawer(props) {
         unseenCount: 0,
         activeIndex: null, // Initially set to null
     });
+  const [fetching, setFetching]  = useState(false)
+
 
     const toggleDrawer = (anchor, open) => (event) => {
         if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -62,15 +64,21 @@ export default function SwipeableTemporaryDrawer(props) {
         const { userDetails } = state;
         if (userDetails && userDetails.email) {
             try {
+                if (fetching) return;
+                setFetching(true);
                 const response = await fetch(`/api/inbox/unseen-count?email=${userDetails.email}`);
                 if (response.ok) {
                     const data = await response.json();
-                    setState((prevState) => ({ ...prevState, unseenCount: data.count }));
+                    const totalCount = data.totalUnseenCount1 + data.totalUnseenCount2;
+                    setState((prevState) => ({ ...prevState, unseenCount: totalCount }));
                 } else {
                     console.error('Failed to fetch unseen count');
                 }
             } catch (error) {
                 console.error('Error fetching unseen count:', error);
+            }
+            finally{
+                setFetching(false);
             }
         }
     };
@@ -106,7 +114,7 @@ export default function SwipeableTemporaryDrawer(props) {
             <div className={styles.imageCont}>
                 <Image className={styles.logoImage} src={'/images/mym_logos/mymlogoinvert2.png'} width={724 / 2} height={338 / 2} alt="mym" title='maddy logo' />
             </div>
-            <List className={styles.list} style={{ height: '100%' , }}>
+            <List className={styles.list} style={{ height: '100%', }}>
                 {[
                     { text: 'Home', href: '/' },
                     { text: 'Random Chat', href: '/textchat' },

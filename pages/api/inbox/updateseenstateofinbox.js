@@ -1,3 +1,4 @@
+// pages/api/getdetails/personalreplies.js
 import PersonalReply from '@/models/PersonalReply';
 import connectToMongo from '@/middleware/middleware';
 

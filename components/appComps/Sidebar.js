@@ -21,10 +21,12 @@ const Sidebar = () => {
   const [activeIndex, setActiveIndex] = useState(null); // Initially set to null
   const [unseenCount, setUnseenCount] = useState(0);
   const [userDetails, setUserDetails] = useState(null);
+  const [fetching, setFetching]  = useState(false)
 
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
+
         const session = await getSession();
         if (session?.user?.email) {
           const response = await fetch(`/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
@@ -45,21 +47,26 @@ const Sidebar = () => {
     const fetchUnseenCount = async () => {
       if (userDetails && userDetails.email) {
         try {
-          const response = await fetch(`/api/inbox/unseen-count?email=${userDetails.email}`);
+          if (fetching) return;
+          setFetching(true);
+          const response = await fetch(`/api/inbox/unseen-count?email=${userDetails?.email}`);
           if (response.ok) {
             const data = await response.json();
-            setUnseenCount(data.count);
+            const totalCount = data.totalUnseenCount1 + data.totalUnseenCount2;
+            setUnseenCount(totalCount);
           } else {
             console.error('Failed to fetch unseen count');
           }
         } catch (error) {
           console.error('Error fetching unseen count:', error);
+        } finally {
+          setFetching(false);
         }
       }
     };
 
     fetchUnseenCount();
-    const intervalId = setInterval(fetchUnseenCount, 10000);
+    const intervalId = setInterval(fetchUnseenCount, 5000);
     return () => clearInterval(intervalId);
   }, [userDetails]);
 

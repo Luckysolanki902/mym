@@ -1,6 +1,6 @@
 // ConfessionFooter.js
 import React, { useEffect, useState } from 'react';
-import { FaHeart, FaComment, FaRegHeart,  } from 'react-icons/fa';
+import { FaHeart, FaComment, FaRegHeart, } from 'react-icons/fa';
 import { IoIosSend } from 'react-icons/io';
 import styles from '../componentStyles/confession.module.css';
 import AnonymDialog from './AnonymDialog';
@@ -96,19 +96,25 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
 
     const handleAnonymousReply = async () => {
         if (!userDetails) {
-            // Open the authentication prompt
-            handleOpenAuthPrompt(true)
+            handleOpenAuthPrompt(true);
             return;
         }
-        setSendingAnonymousReply(true)
+        setSendingAnonymousReply(true);
         try {
             const { encryptedEmail, iv } = confession;
             const replyData = {
                 confessionId: confession._id,
                 encryptedEmail,
+                confessorGender: confession.gender,
                 confessionContent: truncateText(confession.confessionContent, 500) || 'confession content',
                 iv,
-                replyContent: { reply: anonymousReplyValue, replierGender: userDetails.gender }, // Modify this line
+                replyContent: {
+                    reply: anonymousReplyValue,
+                    replierGender: userDetails?.gender,
+                    replierEmail: userDetails?.email,
+                    seen: 'replier',
+                },
+                seen: 'replier',
             };
 
             const response = await fetch('/api/confession/saveanonymousreply', {
@@ -123,7 +129,6 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                 console.log('Anonymous reply sent successfully');
                 setAnonymousReplyValue('');
                 setSendingAnonymousReply(false);
-                // You may want to update the UI or trigger a refresh of the replies
             } else {
                 console.error('Error saving anonymous reply');
             }
@@ -131,9 +136,10 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             console.error('Error saving anonymous reply:', error);
         } finally {
             closeAnonymousReplyDialog();
-            setSendingAnonymousReply(false)
+            setSendingAnonymousReply(false);
         }
     };
+
 
     const closeAnonymousReplyDialog = () => {
         setAnonymousReplyDialogOpen(false);
@@ -144,10 +150,10 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             <div className={styles.confessionfooter}>
                 <div className={styles.likes} onClick={handleLike} style={{ cursor: 'pointer' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {liked ? (
+                        {liked ? (
                             <FaHeart className={`${styles.iconm} ${styles.redheart} ${likeanimation ? styles[likeanimation] : ''}`} />
                         ) : (
-                            <Image src={'/images/othericons/heart.png'} width={50} height={50} alt='' className={`${styles.iconm} ${likeanimation ? styles[likeanimation] : ''}`} style={{color:'black'}} />
+                            <Image src={'/images/othericons/heart.png'} width={50} height={50} alt='' className={`${styles.iconm} ${likeanimation ? styles[likeanimation] : ''}`} style={{ color: 'black' }} />
                         )}                    </div>
                     <div  >{likesCount}</div>
                 </div>
