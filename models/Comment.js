@@ -10,6 +10,10 @@ const replySchema = new Schema({
     type: String,
     required: true,
   },
+  mid:{
+    type:String,
+    required:true
+  },
   likes: [{ type: String }],
   timestamps: {
     type: Date,
@@ -30,6 +34,10 @@ const commentSchema = new Schema({
   gender: {
     type: String,
     required: true,
+  },
+  mid:{
+    type:String,
+    required:true
   },
   likes: [{ type: String }],
   replies: [replySchema], // Array of replies

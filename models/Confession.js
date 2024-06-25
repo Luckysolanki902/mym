@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const confessionSchema = new mongoose.Schema({
-  encryptedEmail: {
+  encryptedMid: {
     type: String,
     required: true,
   },

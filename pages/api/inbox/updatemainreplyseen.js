@@ -5,12 +5,12 @@ import connectToMongo from '@/middleware/middleware';
 
 const updateMainReplySeen = async (req, res) => {
     if (req.method === 'POST') {
-        const { confessionId, confessorEmail, replierEmail, userEmail } = req.body;
+        const { confessionId, confessorMid, replierMid, userMid } = req.body;
 
         try {
             const personalReply = await PersonalReply.findOneAndUpdate(
-                { confessionId, confessorEmail, 'replies.replierEmail': replierEmail },
-                { $addToSet: { 'replies.$.seen': userEmail } },
+                { confessionId, confessorMid, 'replies.replierMid': replierMid },
+                { $addToSet: { 'replies.$.seen': userMid } },
                 { new: true } // To return the updated document
             );
 

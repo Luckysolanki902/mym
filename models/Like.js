@@ -8,7 +8,7 @@ const likeSchema = new Schema({
         ref: 'Confession',
         required: true,
     },
-    userEmail: {
+    mid: {
         type: String,
         required: true,
     },

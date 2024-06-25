@@ -17,9 +17,9 @@ const CreateConfessionForm = ({ userDetails }) => {
     try {
       setLoading(true);
 
-      const { email, college, gender } = userDetails;
+      const { college, gender, mid } = userDetails;
       const dataToSend = {
-        email: email,
+        mid: mid,
         college,
         gender,
         confessionContent: confessionValue,

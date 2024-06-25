@@ -7,7 +7,7 @@ import Confession from "@/components/fullPageComps/Confession";
 import { useRouter } from "next/router";
 export async function getServerSideProps(context) {
     const session = await getSession(context);
-    const pageurl = 'https://www.meetyourmate.in'
+    const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
     const confessionId = context.params.id; // Get the confession ID from params
     let userDetails = null;
     if (session?.user?.email) {

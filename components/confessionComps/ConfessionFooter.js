@@ -26,7 +26,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                 if (response.ok) {
                     const { likes } = await response.json();
                     setLiked(
-                        likes.some((like) => like.userEmail === userDetails?.email)
+                        likes.some((like) => like.mid === userDetails?.mid)
                     );
                     setLikesCount(likes.length);
                 } else {
@@ -60,7 +60,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             setLikesCount((prevCount) => (liked ? prevCount - 1 : prevCount + 1));
 
             const likeOperation = {
-                email: userDetails?.email,
+                mid: userDetails?.mid,
                 confessionId: confession._id,
             };
 
@@ -101,20 +101,18 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
         }
         setSendingAnonymousReply(true);
         try {
-            const { encryptedEmail, iv } = confession;
+            const { encryptedMid, iv } = confession;
             const replyData = {
                 confessionId: confession._id,
-                encryptedEmail,
+                encryptedMid,
                 confessorGender: confession.gender,
                 confessionContent: truncateText(confession.confessionContent, 500) || 'confession content',
                 iv,
                 replyContent: {
                     reply: anonymousReplyValue,
+                    replierMid: userDetails?.mid,
                     replierGender: userDetails?.gender,
-                    replierEmail: userDetails?.email,
-                    seen: 'replier',
                 },
-                seen: 'replier',
             };
 
             const response = await fetch('/api/confession/saveanonymousreply', {

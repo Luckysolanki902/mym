@@ -4,7 +4,7 @@ import Comment from '@/models/Comment';
 
 const handler = async (req, res) => {
     try {
-        const { email, commentId } = req.body;
+        const { mid, commentId } = req.body;
 
         // Find the comment
         const comment = await Comment.findById(commentId);
@@ -14,13 +14,13 @@ const handler = async (req, res) => {
         }
 
         // Check if the user already liked the comment
-        const existingLikeIndex = comment.likes.indexOf(email);
+        const existingLikeIndex = comment.likes.indexOf(mid);
         if (existingLikeIndex !== -1) {
             // User already liked the comment, so unlike it
             comment.likes.splice(existingLikeIndex, 1);
         } else {
             // User hasn't liked the comment, so like it
-            comment.likes.push(email);
+            comment.likes.push(mid);
         }
 
         // Save the updated comment

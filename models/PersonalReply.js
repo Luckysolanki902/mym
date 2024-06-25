@@ -23,7 +23,7 @@ const SecondaryReplySchema = new mongoose.Schema({
     required: true,
   },
   seen: {
-    type: [String],  // Array of strings to hold email addresses
+    type: [String],  // Array of strings to hold mid addresses
     default: [],
   },
 });
@@ -34,7 +34,7 @@ const PersonalReplySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  confessorEmail: {
+  confessorMid: {
     type: String,
     required: true,
   },
@@ -52,7 +52,7 @@ const PersonalReplySchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      replierEmail: {
+      replierMid: {
         type: String,
         required: true,
       },
@@ -61,7 +61,7 @@ const PersonalReplySchema = new mongoose.Schema({
         required: true,
       },
       seen: {
-        type: [String],  // Array of strings to hold email addresses
+        type: [String],  // Array of strings to hold mid addresses
         default: [],
       },
       timestamps: {

@@ -3,11 +3,11 @@ import connectToMongo from '@/middleware/middleware';
 import CryptoJS from 'crypto-js';
 
 const handler = async (req, res) => {
-  const { email } = req.query;
+  const { mid } = req.query;
   
   try {
-    // Find personal replies for the given email
-    const personalReplies = await PersonalReply.find({ confessorEmail: email }).sort({ timestamps: -1 });
+    // Find personal replies for the given mid
+    const personalReplies = await PersonalReply.find({ confessorMid: mid }).sort({ timestamps: -1 });
 
     // Decrypt the replies and secondary replies
     const decryptedReplies = personalReplies.map(reply => {
@@ -24,13 +24,13 @@ const handler = async (req, res) => {
                 ...secondary.toObject(),
                 content: CryptoJS.AES.decrypt(secondary.content, process.env.ENCRYPTION_SECRET_KEY).toString(CryptoJS.enc.Utf8)
               };
-              if (!secondary.seen.includes(email)) {
+              if (!secondary.seen.includes(mid)) {
                 unseenSecondaryCount++;
               }
               return decryptedSecondary;
             })
           };
-          if (!primary.seen.includes(email)) {
+          if (!primary.seen.includes(mid)) {
             unseenMainCount++;
           }
           return decryptedPrimary;
@@ -38,7 +38,7 @@ const handler = async (req, res) => {
       };
 
       decryptedReply.unseenMainCount = unseenMainCount;
-      decryptedReply.unseenSecondaryCount = decryptedReply.replies.reduce((acc, primary) => acc + primary.secondaryReplies.filter(sec => !sec.seen.includes(email)).length, 0);
+      decryptedReply.unseenSecondaryCount = decryptedReply.replies.reduce((acc, primary) => acc + primary.secondaryReplies.filter(sec => !sec.seen.includes(mid)).length, 0);
 
       return decryptedReply;
     });

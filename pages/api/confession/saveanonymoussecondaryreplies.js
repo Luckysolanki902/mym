@@ -6,12 +6,12 @@ import CryptoJS from 'crypto-js';
 const handler = async (req, res) => {
   const { 
     confessionId,
-    confessorEmail,
-    replierEmail,
+    confessorMid,
+    replierMid,
     secondaryReplyContent,
     sentByConfessor,
     replierGender ,
-    userEmail,
+    userMid,
   } = req.body;
 
 
@@ -19,15 +19,15 @@ const handler = async (req, res) => {
     // Find the PersonalReply entry for the confessor
     const personalReply = await PersonalReply.findOne({
       confessionId,
-      confessorEmail,
+      confessorMid,
     });
 
     if (!personalReply) {
       return res.status(404).json({ error: 'Confession not found' });
     }
 
-    // Find the specific primary reply based on the replier's email
-    const primaryReply = personalReply.replies.find(reply => reply.replierEmail === replierEmail);
+    // Find the specific primary reply based on the replier's mid
+    const primaryReply = personalReply.replies.find(reply => reply.replierMid === replierMid);
 
     if (!primaryReply) {
       return res.status(404).json({ error: 'Primary reply not found' });
@@ -38,10 +38,10 @@ const handler = async (req, res) => {
     // Add the secondary reply to the primary reply
     primaryReply.secondaryReplies.push({
       content: encryptedReplyContent,
-      sentBy: userEmail,
+      sentBy: userMid,
       sentByConfessor: sentByConfessor,
       replierGender,
-      seen: [userEmail], // Initialize the seen array with the replier email
+      seen: [userMid], // Initialize the seen array with the replier mid
     });
 
     // Save the updated entry

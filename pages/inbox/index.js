@@ -34,6 +34,7 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
 
     const session = await getSession();
     const email = session?.user?.email;
+    let mid = userDetails?.mid;
 
     const fetchUnseenCounts = async (email) => {
       try {
@@ -55,7 +56,7 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
   
       await fetchUnseenCounts(email);
 
-      const response1 = await fetch(`/api/inbox/get-replies-to-confessions?email=${email}`);
+      const response1 = await fetch(`/api/inbox/get-replies-to-confessions?mid=${mid}`);
       if (response1.ok) {
         const responseData = await response1.json();
         setPersonalRepliesLatest(responseData.personalReplies);
@@ -63,7 +64,7 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
         console.log('Error fetching replies:', response1.statusText);
       }
 
-      const response2 = await fetch(`/api/inbox/get-replies-to-replies?email=${email}`);
+      const response2 = await fetch(`/api/inbox/get-replies-to-replies?mid=${mid}`);
       if (response2.ok) {
         const responseData = await response2.json();
         setRepliesToRepliesLatest(responseData.personalReplies);
@@ -149,6 +150,8 @@ export async function getServerSideProps(context) {
   let personalReplies = {};
   let repliesToReplies = {};
   let userDetails = null;
+  let mid = null;
+
 
   if (session) {
     const email = session?.user?.email;
@@ -157,6 +160,7 @@ export async function getServerSideProps(context) {
         const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
         if (response.ok) {
           userDetails = await response.json();
+          mid = userDetails?.mid;
         } else {
           console.error('Error fetching user details');
         }
@@ -165,7 +169,7 @@ export async function getServerSideProps(context) {
       }
 
       try {
-        const response = await fetch(`${pageurl}/api/inbox/get-replies-to-confessions?email=${email}`);
+        const response = await fetch(`${pageurl}/api/inbox/get-replies-to-confessions?mid=${mid}`);
         if (response.ok) {
           personalReplies = await response.json();
         } else {
@@ -176,7 +180,7 @@ export async function getServerSideProps(context) {
       }
 
       try {
-        const response = await fetch(`${pageurl}/api/inbox/get-replies-to-replies?email=${email}`);
+        const response = await fetch(`${pageurl}/api/inbox/get-replies-to-replies?mid=${mid}`);
         if (response.ok) {
           repliesToReplies = await response.json();
         } else {

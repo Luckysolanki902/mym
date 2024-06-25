@@ -5,13 +5,13 @@ import connectToMongo from '@/middleware/middleware';
 
 const updateSecondaryRepliesSeen = async (req, res) => {
     if (req.method === 'POST') {
-        const { confessionId, confessorEmail, primaryReplyId, userEmail } = req.body;
+        const { confessionId, confessorMid, primaryReplyId, userMid } = req.body;
 
         try {
             // Find the PersonalReply entry for the confessor
             const personalReply = await PersonalReply.findOne({
                 confessionId,
-                confessorEmail,
+                confessorMid,
             });
 
             if (!personalReply) {
@@ -25,8 +25,8 @@ const updateSecondaryRepliesSeen = async (req, res) => {
             }
             // Update seen state for all secondary replies of the primary reply
             primaryReply.secondaryReplies.forEach(secondaryReply => {
-                if (!secondaryReply.seen.includes(userEmail)) {
-                    secondaryReply.seen.push(userEmail);
+                if (!secondaryReply.seen.includes(userMid)) {
+                    secondaryReply.seen.push(userMid);
                 }
             });
 

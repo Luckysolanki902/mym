@@ -6,7 +6,7 @@ import connectToMongo from '@/middleware/middleware';
 import Comment from '@/models/Comment';
 
 const handler = async (req, res) => {
-    const { commentId, replyContent, gender } = req.body;
+    const { commentId, replyContent, gender, mid } = req.body;
 
     if (!commentId || !replyContent || !gender) {
         return res.status(400).json({ error: 'All fields are required' });
@@ -36,6 +36,7 @@ const handler = async (req, res) => {
         const newReply = {
             replyContent: encryptedReplyContent,
             gender,
+            mid,
         };
 
         // Push the new reply to the comment's replies array

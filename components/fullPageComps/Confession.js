@@ -83,12 +83,13 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         return;
       }
 
-      const { gender } = userDetails;
+      const { gender, mid } = userDetails;
 
       const dataToSend = {
         gender,
         confessionId: confession._id,
         commentContent: commentValue,
+        mid: mid,
       };
 
       // Optimistic UI update
@@ -97,6 +98,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         confessionId: confession._id,
         commentContent: commentValue,
         gender: userDetails.gender,
+        mid: mid,
       };
 
       setComments((prevComments) => [optimisticComment, ...prevComments]);
@@ -147,13 +149,14 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         alert('You can only make 1 reply per comment.');
         return;
       }
-      const { gender } = userDetails;
+      const { gender, mid } = userDetails;
   
       // Optimistic update: Add reply to the comments array immediately
       const optimisticReply = {
         _id: new Date().toISOString(),
         gender,
         replyContent,
+        mid,
         likes: [], // Assuming you have a likes array for replies
       };
   
@@ -172,6 +175,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         commentId,
         replyContent,
         gender,
+        mid,
       };
   
       // Send the reply data to the server
@@ -210,26 +214,26 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       }
 
       // Check if the user has already liked the comment
-      const likedIndex = comments.findIndex(comment => comment._id === id && comment?.likes?.includes(userDetails.email));
+      const likedIndex = comments.findIndex(comment => comment._id === id && comment?.likes?.includes(userDetails.mid));
 
       if (likedIndex !== -1) {
         // User already liked the comment, so unlike it
         const updatedLikes = [...comments[likedIndex].likes];
-        updatedLikes.splice(updatedLikes.indexOf(userDetails.email), 1);
+        updatedLikes.splice(updatedLikes.indexOf(userDetails.mid), 1);
         const updatedComment = { ...comments[likedIndex], likes: updatedLikes };
         const updatedComments = [...comments];
         updatedComments[likedIndex] = updatedComment;
         setComments(updatedComments);
       } else {
         // User hasn't liked the comment, so like it
-        const updatedLikes = [...comments.find(comment => comment._id === id).likes, userDetails.email];
+        const updatedLikes = [...comments.find(comment => comment._id === id).likes, userDetails.mid];
         const updatedComment = { ...comments.find(comment => comment._id === id), likes: updatedLikes };
         const updatedComments = comments.map(comment => (comment._id === id ? updatedComment : comment));
         setComments(updatedComments);
       }
 
       // Save like operation locally (for offline support)
-      localStorage.setItem('pendingLikeOperation', JSON.stringify({ email: userDetails.email, commentId: id }));
+      localStorage.setItem('pendingLikeOperation', JSON.stringify({ mid: userDetails.mid, commentId: id }));
 
       // Call API to like comment
       const response = await fetch('/api/confession/likecomment', {
@@ -237,7 +241,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: userDetails.email, commentId: id }),
+        body: JSON.stringify({ mid: userDetails.mid, commentId: id }),
       });
 
       if (!response.ok) {
@@ -248,8 +252,8 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       // Revert the optimistic update if there was an error
       const updatedComments = comments.map(comment => {
         if (comment._id === id) {
-          // Remove the user's email from the likes array
-          comment?.likes?.splice(comment.likes.indexOf(userDetails.email), 1);
+          // Remove the user's mid from the likes array
+          comment?.likes?.splice(comment.likes.indexOf(userDetails.mid), 1);
         }
         return comment;
       });
@@ -266,13 +270,13 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       }
 
       // Check if the user has already liked the reply
-      const likedIndex = comments.findIndex(comment => comment._id === commentId && comment?.replies?.some(reply => reply._id === replyId && reply.likes.includes(userDetails.email)));
+      const likedIndex = comments.findIndex(comment => comment._id === commentId && comment?.replies?.some(reply => reply._id === replyId && reply.likes.includes(userDetails.mid)));
 
       if (likedIndex !== -1) {
         // User already liked the reply, so unlike it
         const updatedReplies = [...comments[likedIndex].replies];
         const replyIndex = updatedReplies.findIndex(reply => reply._id === replyId);
-        updatedReplies[replyIndex] = { ...updatedReplies[replyIndex], likes: updatedReplies[replyIndex].likes.filter(email => email !== userDetails.email) };
+        updatedReplies[replyIndex] = { ...updatedReplies[replyIndex], likes: updatedReplies[replyIndex].likes.filter(mid => mid !== userDetails.mid) };
         const updatedComment = { ...comments[likedIndex], replies: updatedReplies };
         const updatedComments = [...comments];
         updatedComments[likedIndex] = updatedComment;
@@ -281,14 +285,14 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         // User hasn't liked the reply, so like it
         const updatedReplies = [...comments.find(comment => comment._id === commentId).replies];
         const replyIndex = updatedReplies.findIndex(reply => reply._id === replyId);
-        updatedReplies[replyIndex] = { ...updatedReplies[replyIndex], likes: [...updatedReplies[replyIndex].likes, userDetails.email] };
+        updatedReplies[replyIndex] = { ...updatedReplies[replyIndex], likes: [...updatedReplies[replyIndex].likes, userDetails.mid] };
         const updatedComment = { ...comments.find(comment => comment._id === commentId), replies: updatedReplies };
         const updatedComments = comments.map(comment => (comment._id === commentId ? updatedComment : comment));
         setComments(updatedComments);
       }
 
       // Save like operation locally (for offline support)
-      localStorage.setItem('pendingReplyLikeOperation', JSON.stringify({ email: userDetails.email, commentId, replyId }));
+      localStorage.setItem('pendingReplyLikeOperation', JSON.stringify({ mid: userDetails.mid, commentId, replyId }));
 
       // Call API to like reply
       const response = await fetch('/api/confession/likereply', {
@@ -296,7 +300,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: userDetails.email, commentId, replyId }),
+        body: JSON.stringify({ mid: userDetails.mid, commentId, replyId }),
       });
 
       if (!response.ok) {
@@ -308,8 +312,8 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       const updatedComments = comments.map(comment => {
         const updatedReplies = comment?.replies?.map(reply => {
           if (reply._id === replyId) {
-            // Remove the user's email from the likes array
-            reply?.likes?.splice(reply.likes.indexOf(userDetails.email), 1);
+            // Remove the user's mid from the likes array
+            reply?.likes?.splice(reply.likes.indexOf(userDetails.mid), 1);
           }
           return reply;
         });

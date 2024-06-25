@@ -5,34 +5,34 @@ import crypto from 'crypto';
 import CryptoJS from 'crypto-js';
 
 const handler = async (req, res) => {
-  const { confessionId, encryptedEmail, confessionContent, iv, replyContent } = req.body;
+  const { confessionId, encryptedMid, confessorGender, confessionContent, iv, replyContent } = req.body;
 
   try {
     // Decrypt the encrypted email using the secret key from .env
     const secretKey = process.env.ENCRYPTION_SECRET_KEY;
     const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(secretKey, 'hex'), Buffer.from(iv, 'hex'));
-    let decryptedEmail = decipher.update(encryptedEmail, 'hex', 'utf-8');
-    decryptedEmail += decipher.final('utf-8');
+    let decryptedMid = decipher.update(encryptedMid, 'hex', 'utf-8');
+    decryptedMid += decipher.final('utf-8');
 
     // Find the PersonalReply entry for the confessor
     let personalReply = await PersonalReply.findOne({
       confessionId,
-      confessorEmail: decryptedEmail,
+      confessorMid: decryptedMid,
     });
 
     if (!personalReply) {
       // If no entry exists, create a new one
       personalReply = new PersonalReply({
         confessionId,
-        confessorEmail: decryptedEmail,
+        confessorMid: decryptedMid,
         confessionContent,
-        confessorGender: req.body.confessorGender
+        confessorGender,
       });
     }
 
     // Check if the replier has already replied
     const existingReplyIndex = personalReply.replies.findIndex(
-      (reply) => reply.replierEmail === replyContent.replierEmail
+      (reply) => reply.replierMid === replyContent.replierMid
     );
 
     const encryptedReplyContent = CryptoJS.AES.encrypt(replyContent.reply, secretKey).toString();
@@ -41,17 +41,17 @@ const handler = async (req, res) => {
       // If the replier has already replied, add the new reply as a secondary reply
       personalReply.replies[existingReplyIndex].secondaryReplies.push({
         content: encryptedReplyContent,
-        sentBy: replyContent.replierEmail,
+        sentBy: replyContent.replierMid,
         sentByConfessor: false,
         replierGender: replyContent.replierGender,
-        seen: [replyContent.replierEmail], // Push the replier email into seen
+        seen: [replyContent.replierMid], // Push the replier email into seen
       });
     } else {
       // Add the reply to the array
       personalReply.replies.push({
         ...replyContent,
         reply: encryptedReplyContent,
-        seen: [replyContent.replierEmail], // Initialize the seen array with replier email
+        seen: [replyContent.replierMid], // Initialize the seen array with replier email
       });
     }
 

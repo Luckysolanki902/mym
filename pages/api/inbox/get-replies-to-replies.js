@@ -3,12 +3,12 @@ import connectToMongo from '@/middleware/middleware';
 import CryptoJS from 'crypto-js';
 
 const handler = async (req, res) => {
-  const { email } = req.query;
+  const { mid } = req.query;
 
   try {
-    // Find personal replies where any reply's replierEmail matches the query email
+    // Find personal replies where any reply's replierMid matches the query mid
     const personalReplies = await PersonalReply.find({ 
-      "replies.replierEmail": email 
+      "replies.replierMid": mid 
     }).sort({ timestamps: -1 });
 
     // Decrypt the replies and their secondary replies
@@ -16,7 +16,7 @@ const handler = async (req, res) => {
       let unseenMainCount = 0;
       const decryptedReply = {
         ...reply.toObject(),
-        replies: reply.replies.filter(primary => primary.replierEmail === email).map(primary => {
+        replies: reply.replies.filter(primary => primary.replierMid === mid).map(primary => {
           let unseenSecondaryCount = 0;
           const decryptedPrimary = {
             ...primary.toObject(),
@@ -26,13 +26,13 @@ const handler = async (req, res) => {
                 ...secondary.toObject(),
                 content: CryptoJS.AES.decrypt(secondary.content, process.env.ENCRYPTION_SECRET_KEY).toString(CryptoJS.enc.Utf8)
               };
-              if (!secondary.seen.includes(email)) {
+              if (!secondary.seen.includes(mid)) {
                 unseenSecondaryCount++;
               }
               return decryptedSecondary;
             })
           };
-          if (!primary.seen.includes(email)) {
+          if (!primary.seen.includes(mid)) {
             unseenMainCount++;
           }
           return decryptedPrimary;
@@ -40,7 +40,7 @@ const handler = async (req, res) => {
       };
 
       decryptedReply.unseenMainCount = unseenMainCount;
-      decryptedReply.unseenSecondaryCount = decryptedReply.replies.reduce((acc, primary) => acc + primary.secondaryReplies.filter(sec => !sec.seen.includes(email)).length, 0);
+      decryptedReply.unseenSecondaryCount = decryptedReply.replies.reduce((acc, primary) => acc + primary.secondaryReplies.filter(sec => !sec.seen.includes(mid)).length, 0);
 
       return decryptedReply;
     });

@@ -5,7 +5,7 @@ import Confession from '@/models/Confession';
 
 const handler = async (req, res) => {
     try {
-        const { email, confessionId } = req.body;
+        const { mid, confessionId } = req.body;
 
         // Find the confession
         const confession = await Confession.findById(confessionId);
@@ -17,7 +17,7 @@ const handler = async (req, res) => {
         // Check if the user already liked the confession
         const existingLike = await Like.findOneAndDelete({
             confessionId: confessionId,
-            userEmail: email,
+            mid: mid,
         });
 
         if (existingLike) {
@@ -28,7 +28,7 @@ const handler = async (req, res) => {
             // If the user hasn't liked, create a new Like document
             const newLike = new Like({
                 confessionId: confessionId,
-                userEmail: email,
+                mid: mid,
             });
 
             // Save the new like
