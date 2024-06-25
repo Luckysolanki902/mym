@@ -45,7 +45,6 @@ const handler = async (req, res) => {
 
     const trendingConfessions = getTrendingConfessions(decryptedConfessions);
     res.status(200).json({ trendingConfessions });
-    console.log(trendingConfessions.length);
   } catch (error) {
     console.error('Error fetching trending confessions:', error);
     res.status(500).json({ error: 'Internal Server Error' });

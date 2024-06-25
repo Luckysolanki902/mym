@@ -22,6 +22,14 @@ const FilterOptions = ({ userDetails }) => {
 
     config: { tension: 220, friction: 20 }
   });
+  const [chatStats, setChatStats] = useState({
+    totalUsers: 0,
+    maleUsers: 0,
+    femaleUsers: 0,
+    collegeStats: []
+  });
+  const [fetchingChatStats, setFetchingChatStats] = useState(false);
+
   // filters contexts
   const { preferredGender, setPreferredGender, preferredCollege, setPreferredCollege } = useFilters();
   const handleFilterToggle = () => {
@@ -33,11 +41,10 @@ const FilterOptions = ({ userDetails }) => {
 
   useEffect(() => {
     if (userDetails) {
-      console.log(userDetails)
       setPreferredCollege('any');
       setPreferredGender(userDetails.gender === 'male' ? 'female' : 'male');
     }
-    else{
+    else {
       console.log('no user')
     }
 
@@ -68,6 +75,30 @@ const FilterOptions = ({ userDetails }) => {
     setPreferredGender(value);
   };
 
+
+  const fetchChatStats = async () => {
+    try {
+      if (fetchingChatStats) return;
+      setFetchingChatStats(true);
+      const response = await fetch('https://hostedmymserver.onrender.com/api/user-stats');
+      if (!response.ok) {
+        throw new Error('Failed to fetch chat stats');
+      }
+      const data = await response.json();
+      setChatStats(data.textChatStats);
+    } catch (error) {
+      console.error('Error fetching chat stats:', error);
+    } finally {
+      setFetchingChatStats(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchChatStats()
+    const intervalId = setInterval(fetchChatStats, 3000);
+    return () => clearInterval(intervalId);
+  }, [userDetails])
+
   return (
     <ThemeProvider theme={darkTheme}>
       <div className={styles.mainfiltercont} ref={mainFilterContainerRef}>
@@ -84,21 +115,24 @@ const FilterOptions = ({ userDetails }) => {
           <animated.div style={filterContentAnimation} className={styles.filterContentWrapper}>
             <div className={styles.filterMenu}>
               <div className={styles.filterSection}>
+              <div className={styles.filterLabel} style={{float:'right'}}>Users Online: {chatStats.totalUsers}</div>
+              </div>
+              <div className={styles.filterSection}>
                 <div className={styles.filterLabel}>College Preference</div>
                 <div className={styles.chipsContainer}>
                   <div
                     label="Any"
                     onClick={() => handleCollegeChange('any')}
                     className={preferredCollege === 'any' ? styles.chipSelected : styles.chipDefault}
-                    clickable
+                    
                   >
-Any
+                    Any
                   </div>
                   <div
                     label="Same College"
                     onClick={() => handleCollegeChange(userDetails?.college)}
                     className={preferredCollege === userDetails?.college ? styles.chipSelected : styles.chipDefault}
-                    clickable
+                    
                   >Same College</div>
                   {/* Add other college options if needed */}
                 </div>
@@ -111,25 +145,25 @@ Any
                     label="Male"
                     onClick={() => handleGenderChange('male')}
                     className={preferredGender === 'male' ? styles.chipMale : styles.chipDefault}
-                    clickable
+                    
                   >Male</div>
                   <div
                     label="Female"
                     onClick={() => handleGenderChange('female')}
                     className={preferredGender === 'female' ? styles.chipFemale : styles.chipDefault}
-                    clickable
+                    
                   >Female</div>
                   <div
                     label="Any"
                     onClick={() => handleGenderChange('any')}
                     className={preferredGender === 'any' ? styles.chipSelected : styles.chipDefault}
-                    clickable
+                    
                   >Any</div>
                 </div>
               </div>
             </div>
             <p className={styles.note}>
-            Filters will be applied in the next chat. If no preferred match is found, you will be paired with a random user.
+              Filters will be applied in the next chat. If no preferred match is found, you will be paired with a random user.
             </p>
             {/* <p className={styles.note}>
               If the preferred match not found in queue, you will be paired to any one.
