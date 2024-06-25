@@ -52,6 +52,8 @@ const Topbar = () => {
                 <button className={styles.signup} onClick={handleSignUp}>Sign Up</button>
               </>
             )}
+            {<SwipeableTemporaryDrawer />}
+
           </div>
         )}
       </div>
