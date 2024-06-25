@@ -20,7 +20,7 @@ export async function getServerSideProps(context) {
 
   // Fetch session and user details
   const session = await getSession(context);
-  const pageurl = 'https://www.meetyourmate.in'
+  const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
 
   let userDetails = null;
   if (session?.user?.email) {

@@ -67,7 +67,7 @@ export async function getServerSideProps(context) {
     };
   }
 
-  const pageurl = 'https://www.meetyourmate.in';
+  const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
 
   let userDetails = null;
   if (session?.user?.email) {

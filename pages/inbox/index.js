@@ -144,8 +144,7 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  const pageurl = 'http://localhost:3000';
-  // const pageurl = 'https://www.meetyourmate.in';
+  const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
 
   let personalReplies = {};
   let repliesToReplies = {};

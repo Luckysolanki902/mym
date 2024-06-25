@@ -35,7 +35,7 @@ const TextChatPage = ({ userDetails }) => {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  const pageurl = 'https://www.meetyourmate.in'
+  const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
 
   if (!session) {
     return {
