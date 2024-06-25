@@ -13,7 +13,7 @@ const truncateText = (text, maxLength) => {
 const InboxCard = ({ entry, userDetails }) => {
     const cardRef = useRef(null);
     const [inputValues, setInputValues] = useState([]);
-    const [showInputIndex, setShowInputIndex] = useState(-1); 
+    const [showInputIndex, setShowInputIndex] = useState(-1);
     const [showAllRepliesState, setShowAllRepliesState] = useState([]);
 
     const disabled = entry?.confessionId === undefined;
@@ -33,8 +33,18 @@ const InboxCard = ({ entry, userDetails }) => {
         }
     };
 
+    const justShowThemAll = (index) => {
+        const newShowAllRepliesState = [...showAllRepliesState];
+        newShowAllRepliesState[index] = true;
+        setShowAllRepliesState(newShowAllRepliesState);
+    };
+
+
+
+
     const handleInputKeyDown = (event, index, primaryReplierMid) => {
         if (event.key === 'Enter' && inputValues[index] !== '') {
+            justShowThemAll(index);
             handleInputSubmit(index, primaryReplierMid);
         }
     };
@@ -47,7 +57,7 @@ const InboxCard = ({ entry, userDetails }) => {
         const newShowAllRepliesState = [...showAllRepliesState];
         newShowAllRepliesState[index] = !newShowAllRepliesState[index];
         setShowAllRepliesState(newShowAllRepliesState);
-    
+
         if (newShowAllRepliesState[index]) {
 
             try {
@@ -63,11 +73,11 @@ const InboxCard = ({ entry, userDetails }) => {
                         userMid: userDetails?.mid,
                     }),
                 });
-    
+
                 if (!response.ok) {
                     throw new Error('Failed to update all secondary replies seen state');
                 }
-    
+
                 // Update local state optimistically if needed
                 // For example:
                 // const updatedEntry = { ...entry };
@@ -77,13 +87,13 @@ const InboxCard = ({ entry, userDetails }) => {
                 //     }
                 // });
                 // setEntry(updatedEntry);
-    
+
             } catch (error) {
                 console.error('Error updating all secondary replies seen state:', error);
             }
         }
     };
-    
+
 
 
 
@@ -175,7 +185,7 @@ const InboxCard = ({ entry, userDetails }) => {
     useEffect(() => {
         observer.current = new IntersectionObserver(handleObserver, {
             threshold: 0.1,
-        });observer
+        }); observer
 
         const elements = document.querySelectorAll('.reply-observer');
         elements.forEach(element => {
