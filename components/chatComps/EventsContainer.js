@@ -1,35 +1,55 @@
 // EventsContainer.js
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useTransition, animated } from 'react-spring';
 import Image from 'next/image';
 import styles from '../componentStyles/textchat.module.css';
 import { useTextChat } from '@/context/TextChatContext';
 
 const EventsContainer = () => {
-    const { strangerDisconnectedMessageDiv, strangerIsTyping, hasPaired, strangerGender } = useTextChat()
+    const { strangerDisconnectedMessageDiv, strangerIsTyping, hasPaired, strangerGender } = useTextChat();
 
-    // console.log({strangerGender})
-    // useEffect(() => {
-    //     console.log('stranger is typing');
-    // }, [strangerIsTyping, strangerGender]); // Include strangerGender as a dependency
+    // Transition configuration
+    const transitionConfig = {
+        from: { opacity: 0, height: 0 },
+        enter: { opacity: 1, height: 'auto' },
+        leave: { opacity: 0, height: 0, duration: 200 }, // Adjust duration for smoother exit
+        config: { tension: 120, friction: 18 }
+    };
+
+    // Define transitions for stranger typing and goodbye message
+    const transitions = useTransition(
+        [strangerDisconnectedMessageDiv, strangerIsTyping],
+        {
+            ...transitionConfig,
+            keys: item => item === strangerDisconnectedMessageDiv ? 'goodbye' : 'typing'
+        }
+    );
 
     return (
         <>
-            {(strangerDisconnectedMessageDiv && !hasPaired) && (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <div className={styles.isTyping}>{strangerGender === 'male' ? 'He' : 'She'} said “good Bye!!”</div>
-                </div>
-            )}
+            {transitions((style, item) =>
+                item && (
+                    <animated.div style={style}>
+                        {item === strangerDisconnectedMessageDiv && !hasPaired && (
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <div className={styles.isTyping}>
+                                    {strangerGender === 'male' ? 'He' : 'She'} said “goodbye!!”
+                                </div>
+                            </div>
+                        )}
 
-            {hasPaired && strangerIsTyping && (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <div className={`${styles.isTyping}`}>
-                        {strangerGender === 'male' ? 'He' : 'She'} is typing{' '}
-                        <span>
-                            <Image priority src={'/gifs/istyping4.gif'} width={800 / 5} height={600 / 5} alt='' />
-                        </span>{' '}
-                    </div>
-                </div>
-
+                        {item === strangerIsTyping && hasPaired && (
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <div className={styles.isTyping}>
+                                    {strangerGender === 'male' ? 'He' : 'She'} is typing{' '}
+                                    <span>
+                                        <Image priority src={'/gifs/istyping4.gif'} width={800 / 5} height={600 / 5} alt='' />
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </animated.div>
+                )
             )}
         </>
     );

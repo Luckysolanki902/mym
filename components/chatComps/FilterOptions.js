@@ -111,11 +111,11 @@ const FilterOptions = ({ userDetails }) => {
             />
           </div>
         )}
-        {(openFilterMenu || !openFilterMenu) && (
+        {(openFilterMenu) && (
           <animated.div style={filterContentAnimation} className={styles.filterContentWrapper}>
             <div className={styles.filterMenu}>
               <div className={styles.filterSection}>
-              <div className={styles.filterLabel} style={{float:'right'}}>Users Online: {chatStats.totalUsers}</div>
+                <div className={styles.filterLabel} style={{ float: 'right' }}>Users Online: {chatStats.totalUsers}</div>
               </div>
               <div className={styles.filterSection}>
                 <div className={styles.filterLabel}>College Preference</div>
@@ -124,7 +124,7 @@ const FilterOptions = ({ userDetails }) => {
                     label="Any"
                     onClick={() => handleCollegeChange('any')}
                     className={preferredCollege === 'any' ? styles.chipSelected : styles.chipDefault}
-                    
+
                   >
                     Any
                   </div>
@@ -132,7 +132,7 @@ const FilterOptions = ({ userDetails }) => {
                     label="Same College"
                     onClick={() => handleCollegeChange(userDetails?.college)}
                     className={preferredCollege === userDetails?.college ? styles.chipSelected : styles.chipDefault}
-                    
+
                   >Same College</div>
                   {/* Add other college options if needed */}
                 </div>
@@ -145,19 +145,19 @@ const FilterOptions = ({ userDetails }) => {
                     label="Male"
                     onClick={() => handleGenderChange('male')}
                     className={preferredGender === 'male' ? styles.chipMale : styles.chipDefault}
-                    
+
                   >Male</div>
                   <div
                     label="Female"
                     onClick={() => handleGenderChange('female')}
                     className={preferredGender === 'female' ? styles.chipFemale : styles.chipDefault}
-                    
+
                   >Female</div>
                   <div
                     label="Any"
                     onClick={() => handleGenderChange('any')}
                     className={preferredGender === 'any' ? styles.chipSelected : styles.chipDefault}
-                    
+
                   >Any</div>
                 </div>
               </div>

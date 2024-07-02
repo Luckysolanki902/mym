@@ -1,4 +1,3 @@
-// MessageContainer.js
 import React, { useRef, useEffect, useMemo } from 'react';
 import { useSpring, animated } from 'react-spring';
 import Image from 'next/image';
@@ -11,15 +10,14 @@ import { useTextChat } from '@/context/TextChatContext';
 const EventsContainerMemoized = React.memo(EventsContainer);
 
 const MessageDisplay = React.memo(({ userDetails }) => {
-
-    const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping, usersOnline, isFindingPair, paddingDivRef } = useTextChat()
+    const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping, usersOnline, isFindingPair, paddingDivRef } = useTextChat();
 
     const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
     const shouldRenderPaddingDiv = strangerDisconnectedMessageDiv || (hasPaired && strangerIsTyping);
 
-    // Create a ref for the padding div
+    const prevMessageCountRef = useRef(messages.length);
 
-    // Function to scroll to the padding div when a new message arrives
+    // Create a ref for the padding div
     const scrollToPaddingDiv = () => {
         if (paddingDivRef.current) {
             paddingDivRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -29,6 +27,7 @@ const MessageDisplay = React.memo(({ userDetails }) => {
     // Scroll to the padding div on component mount or when a new message arrives
     useEffect(() => {
         scrollToPaddingDiv();
+        prevMessageCountRef.current = messages.length;
     }, [messages]);
 
     // Animation config for the latest message
@@ -39,49 +38,54 @@ const MessageDisplay = React.memo(({ userDetails }) => {
         to: { rotateX: 0, translateX: 0, opacity: 1 }
     };
 
+    // Determine if a new message has arrived
+    const isNewMessage = messages.length > prevMessageCountRef.current;
 
     // Animation for the latest message
     const messageAnimation = useSpring({
         ...messageAppearConfig,
-        reset: true,
-        reverse: shouldRenderPaddingDiv && messages.length > 1, // Only reverse when new message arrives, isTyping is false, and there is more than one message
+        reset: isNewMessage,
+        reverse: !isNewMessage,
+    });
+
+    // Animation for padding div
+    const paddingDivAnimation = useSpring({
+        height: shouldRenderPaddingDiv ? '3rem' : '0rem',
+        opacity: 0,
+        config: { tension: 220, friction: 20 }
     });
 
     return (
-        <div className={`${styles.messCon}  ${!hasPaired && !strangerIsTyping && styles.nopadb}  ${(shouldRenderPaddingDiv || strangerIsTyping) && styles.morePadding}`}>
+        <div className={`${styles.messCon}`}>
             <EventsContainerMemoized />
 
-            {/* Padding div with dynamic height based on conditions */}
-            <div ref={paddingDivRef} className={styles.paddingDiv} style={{ height: shouldRenderPaddingDiv ? '3rem' : 0, opacity: '0' }}>
+            {/* Animated padding div */}
+            <animated.div ref={paddingDivRef} className={styles.paddingDiv} style={paddingDivAnimation}>
                 sdfasdf
-            </div>
+            </animated.div>
+
             {reversedMessages?.map((msg, index) => (
-                <animated.div key={index} style={index === 0 && !strangerIsTyping && !strangerDisconnectedMessageDiv ? messageAnimation : {}}>
+                <animated.div key={index} style={index === 0 && isNewMessage ? messageAnimation : {}}>
                     <Message key={index} msg={msg} userDetails={userDetails} receiver={receiver} strangerGender={strangerGender} hasPaired={hasPaired} />
                 </animated.div>
             ))}
-            {/* {usersOnline && <>Users: {usersOnline}</>} */}
 
             {reversedMessages?.length < 1 && hasPaired &&
                 <div className={styles.msgIllustration}>
-                    <Image src={'/images/illustrations/messages.png'} width={960} height={695} alt='start chat'></Image>
-                    <div >Say <span>hi</span> and see where the conversation takes you!</div>
+                    <Image src={'/images/illustrations/messages.png'} width={960} height={695} alt='start chat' />
+                    <div>Say <span>hi</span> and see where the conversation takes you!</div>
                 </div>
             }
-            {/* pairing */}
             {!hasPaired && isFindingPair &&
                 <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                    <div style={{ fontFamily: 'Courgette' }}><span >Pairing</span>
+                    <div style={{ fontFamily: 'Courgette' }}><span>Pairing</span>
                         <Image className={styles.dots} priority src={'/gifs/istyping4.gif'} width={800 / 5} height={600 / 5} alt='' />
                     </div>
                 </div>
             }
 
-
             <div className={styles.filterPos}>
-                <FilterOptions
-                    userDetails={userDetails}
-                />
+                <FilterOptions userDetails={userDetails} />
             </div>
         </div>
     );

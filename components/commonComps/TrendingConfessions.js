@@ -22,24 +22,24 @@ const templateConfession = {
     comments: [],
     likes: [],
     // gender: "",
-  };
-  
-  // Function to alternate gender between "male" and "female"
-  const alternateGender = (index) => (index % 2 === 0 ? "male" : "female");
-  
-  // Create an array of 5 elements, filling with the template object and alternating gender
-  const loadingConfessions = Array.from({ length: 5 }, (_, index) => ({
+};
+
+// Function to alternate gender between "male" and "female"
+const alternateGender = (index) => (index % 2 === 0 ? "male" : "female");
+
+// Create an array of 5 elements, filling with the template object and alternating gender
+const loadingConfessions = Array.from({ length: 5 }, (_, index) => ({
     ...templateConfession,
     gender: alternateGender(index)
-  }));
-  
+}));
+
 register();
 const TrendingConfessions = ({ trendingConfessions }) => {
     const router = useRouter()
     const [loading, setLoading] = useState(true)
 
     useEffect(()=>{
-        if(TrendingConfessions.length > 0)
+        if(trendingConfessions.length > 0)
             setLoading(false)
     },[trendingConfessions])
 
@@ -47,44 +47,73 @@ const TrendingConfessions = ({ trendingConfessions }) => {
         <Swiper className={styles.main} loop={true} speed={500} simulateTouch={true} autoplay={{ delay: 3000, pauseOnMouseEnter: true, disableOnInteraction: false }}
         >
             {!loading && trendingConfessions.map((confession, index) => (
-                <SwiperSlide key={index} className={styles.mainCard}>
-                    <div className={styles.blurCard} onClick={() => router.push(`/confession/${confession._id}`)} style={{ zIndex: "-1" }}>
-                        <div className={styles.card}>
-                            <div className={styles.heading}>
-                                <h3 >Trending Confession #{index + 1}</h3>
-                            </div>
-                            <p style={{ whiteSpace: 'pre-line' }}>
-                                {truncateText(confession.confessionContent, 200)}
+                <React.Fragment key={index}>
+                    <SwiperSlide className={styles.mainCard} key={`confession-${index}`}>
+                        <div className={styles.blurCard} onClick={() => router.push(`/confession/${confession._id}`)} style={{ zIndex: "-1" }}>
+                            <div className={styles.card}>
+                                <div className={styles.heading}>
+                                    <h3>Trending Confession #{index + 1}</h3>
+                                </div>
+                                <p style={{ whiteSpace: 'pre-line' }}>
+                                    {truncateText(confession.confessionContent, 200)}
                                 </p>
-                            <div className={styles.footer}>
-                                <div className={styles.footerDiv}>
-                                    <FaHeart />
-                                    <div className={styles.length}>
-                                        {confession.likes.length}
+                                <div className={styles.footer}>
+                                    <div className={styles.footerDiv}>
+                                        <FaHeart />
+                                        <div className={styles.length}>
+                                            {confession.likes.length}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className={styles.footerDiv}>
-                                    <FaComment style={{ color: '#545454' }} />
-                                    <div className={styles.length}>
-                                        {confession.comments.length}
+                                    <div className={styles.footerDiv}>
+                                        <FaComment style={{ color: '#545454' }} />
+                                        <div className={styles.length}>
+                                            {confession.comments.length}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            {/* <p>Date: {new Date(confession.timestamps).toLocaleDateString()}</p> */}
                         </div>
-                    </div>
-                </SwiperSlide>
+                    </SwiperSlide>
+                    {(index + 1) % 3 === 0 && (
+                        <SwiperSlide key={`explore-${index}`} className={styles.mainCard}>
+                            <div className={styles.blurCard} onClick={() => router.push(`/all-confessions`)} style={{ zIndex: "-1" }}>
+                                <div className={styles.card}>
+                                    <div className={styles.heading}>
+                                        <h3>See All Confessions</h3>
+                                    </div>
+                                    <p style={{ whiteSpace: 'pre-line' }}>
+                                        Click here to explore all confessions
+                                    </p>
+                                    <div className={styles.footer}>
+                                        <div className={styles.footerDiv}>
+                                            <FaHeart />
+                                            <div className={styles.length}>
+                                                199+
+                                            </div>
+                                        </div>
+                                        <div className={styles.footerDiv}>
+                                            <FaComment style={{ color: '#545454' }} />
+                                            <div className={styles.length}>
+                                                99+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </SwiperSlide>
+                    )}
+                </React.Fragment>
             ))}
             {loading && loadingConfessions.map((confession, index) => (
-                <SwiperSlide key={index} className={styles.mainCard}>
+                <SwiperSlide key={`loading-${index}`} className={styles.mainCard}>
                     <div className={styles.blurCard} onClick={() => router.push(`/confession/${confession._id}`)} style={{ zIndex: "-1" }}>
                         <div className={styles.card}>
                             <div className={styles.heading}>
-                                <h3 >Trending Confession #{index + 1}</h3>
+                                <h3>Trending Confession #{index + 1}</h3>
                             </div>
-                            <p>"
+                            <p>
                                 {truncateText(confession.confessionContent, 200)}
-                                "</p>
+                            </p>
                             <div className={styles.footer}>
                                 <div className={styles.footerDiv}>
                                     <FaHeart />
@@ -99,7 +128,6 @@ const TrendingConfessions = ({ trendingConfessions }) => {
                                     </div>
                                 </div>
                             </div>
-                            {/* <p>Date: {new Date(confession.timestamps).toLocaleDateString()}</p> */}
                         </div>
                     </div>
                 </SwiperSlide>

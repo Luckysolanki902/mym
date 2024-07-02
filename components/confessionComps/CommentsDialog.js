@@ -75,6 +75,7 @@ const CommentsDrawer = ({
       anchor="bottom"
       open={isOpen}
       onClose={onClose}
+      onOpen={() => {}} // Add an empty function for onOpen
       style={{ maxWidth: '100vw', overflowX: 'hidden' }}
     >
       <div className={styles.drawerMainContainer}>
@@ -116,14 +117,12 @@ const CommentsDrawer = ({
           <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
             <div className={styles.comments}>
               <div ref={bottomRef}></div>
-
               {comments.map((comment) => (
-                <div style={{display:'flex', flexDirection:'column'}}>
-                  <div key={comment._id} className={styles.comment}>
-                    <div className={comment.gender === 'male' ? styles.maleAvatar : styles.femaleAvatar}>
+                <div key={`${comment._id}${Math.random()}`} style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div className={styles.comment}>
+                    <div className={styles.commentContent}>     <span className={comment.gender === 'male' ? styles.maleAvatar : styles.femaleAvatar}>
                       {comment.gender === 'male' ? 'Some Boy:' : 'Some Girl:'}
-                    </div>
-                    <div className={styles.commentContent}>{comment.commentContent}</div>
+                    </span>{comment.commentContent}</div>
 
                     {/* <div style={{ display: 'flex', gap: '1rem' }}>
                       <Button onClick={() => handleLikeClickOnComment(comment._id)} style={{ textTransform: 'none' }}>
@@ -134,7 +133,7 @@ const CommentsDrawer = ({
                         Reply
                       </Button>
                     </div> */}
-                    
+
                   </div>
 
                   {/* <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginLeft:'2rem' }}>
