@@ -47,7 +47,7 @@ const Index = ({ userDetails }) => {
 
   useEffect(() => {
     fetchConfessions();
-  }, [filters]); // Fetch confessions when filters change
+  }, [filters, userDetails]); // Fetch confessions when filters change
 
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
@@ -68,9 +68,11 @@ const Index = ({ userDetails }) => {
     setHasMore(true);
   };
 
+
+
   return (
     <>
-      <CustomHead title={'Read Confessions of your College | MYM'} />
+      <CustomHead title={'Read Confessions | MYM'} />
       <div style={{ width: '100%', paddingTop: '2rem' }}>
         <div className={styles.chipContainer}>
           <h1 className={styles.mainHeading}>Confessions</h1>
