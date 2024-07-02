@@ -49,7 +49,7 @@ const Sidebar = () => {
         try {
           if (fetching) return;
           setFetching(true);
-          const response = await fetch(`/api/inbox/unseen-count?email=${userDetails?.email}`);
+          const response = await fetch(`/api/inbox/unseen-count?mid=${userDetails?.mid}`);
           if (response.ok) {
             const data = await response.json();
             const totalCount = data.totalUnseenCount1 + data.totalUnseenCount2;

@@ -70,9 +70,7 @@ const Index = ({ userDetails }) => {
     setHasMore(true);
   };
 
-  useEffect(() => {
-    console.log(confessions.length)
-  }, [confessions])
+
 
   return (
     <>
