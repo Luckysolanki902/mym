@@ -145,11 +145,19 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
           <span>{confession.confessionContent}</span>
         )}
       </div>
-      <div style={{ textAlign: 'right', margin: '1rem 0' }} className={styles.masks}>
+      <div style={{display:'flex', alignItems:'flex-end', justifyContent:'space-between', width:'100%'}}>
+
+      <div style={{ fontSize: '0.8rem', fontFamily: 'Roboto', fontWeight: '100', color: 'white', opacity: '0.8', display:'flex', flexDirection:'column' }}>
+        <div>
+        confessed {getTimeAgo(confession.timestamps)}
+        </div>
+        <div>From {confession?.college}</div>
+      </div>
+
+      <div style={{ textAlign: 'right', margin: '0' }} className={styles.masks}>
         <Image onClick={handleBoxClick} src={'/images/othericons/masks.png'} width={512} height={512} alt='' />
       </div>
-      <div style={{ fontSize: '0.8rem', fontFamily: 'Roboto', fontWeight: '100', color: 'white', opacity: '0.8' }}>
-        confessed {getTimeAgo(confession.timestamps)}
+
       </div>
       <ShareDialog open={isShareDialogOpen} shareLink={confession._id} onClose={() => setShareDialogOpen(false)} />
     </div>

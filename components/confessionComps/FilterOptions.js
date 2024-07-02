@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styles from './styles/filteroptions.module.css';
 import { IoFilterSharp } from 'react-icons/io5';
-import { Chip, createTheme, ThemeProvider } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material';
 import { useSpring, animated } from 'react-spring';
 
 const darkTheme = createTheme({
@@ -78,34 +78,45 @@ const FilterOptions = ({ userDetails, onChange }) => {
                 <div className={styles.heading}>Filters</div>
                 <div className={styles.filterLabel}>From</div>
                 <div className={styles.chipsContainer}>
-                  <Chip
-                    label="All Colleges"
+                  <div
                     className={filters.college === 'all' ? styles.chipSelected : styles.chipDefault}
                     onClick={() => handleFilterChange('college', 'all')}
-                  />
-                  <Chip
-                    label="Your College"
+                  >
+                    All Colleges
+                  </div>
+                  <div
                     className={filters.college === 'yourCollege' ? styles.chipSelected : styles.chipDefault}
                     onClick={() => handleFilterChange('college', 'yourCollege')}
-                  />
-                  <Chip
-                    label="Other Colleges"
+                  >
+                    Your College
+                  </div>
+                  <div
                     className={filters.college === 'otherColleges' ? styles.chipSelected : styles.chipDefault}
                     onClick={() => handleFilterChange('college', 'otherColleges')}
-                  />
+                  >
+                    Other Colleges
+                  </div>
                 </div>
                 <div className={styles.filterLabel}>Gender</div>
                 <div className={styles.chipsContainer}>
-                  <Chip
-                    label="Male"
+                  <div
                     className={filters.gender === 'male' ? styles.chipSelected : styles.chipDefault}
                     onClick={() => handleFilterChange('gender', 'male')}
-                  />
-                  <Chip
-                    label="Female"
+                  >
+                    Male
+                  </div>
+                  <div
                     className={filters.gender === 'female' ? styles.chipSelected : styles.chipDefault}
                     onClick={() => handleFilterChange('gender', 'female')}
-                  />
+                  >
+                    Female
+                  </div>
+                  <div
+                    className={filters.gender === '' ? styles.chipSelected : styles.chipDefault}
+                    onClick={() => handleFilterChange('gender', '')}
+                  >
+                    Any
+                  </div>
                 </div>
               </div>
             </div>

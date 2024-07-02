@@ -80,6 +80,9 @@
 
     color: white;
     pointer-events: none; /* Prevent hover effects on selected chips */
+    background: linear-gradient(to right, rgba(218, 9, 197, 0.7), rgba(0, 186, 244, 0.7));
+
+    
   }
   
   .chipMale {
