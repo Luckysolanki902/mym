@@ -24,7 +24,7 @@ const FilterOptions = ({ userDetails, onChange }) => {
 
   const [filters, setFilters] = useState({
     college: 'all',
-    gender: '',
+    gender: 'any',
   });
 
   const handleFilterToggle = () => {
@@ -112,8 +112,8 @@ const FilterOptions = ({ userDetails, onChange }) => {
                     Female
                   </div>
                   <div
-                    className={filters.gender === '' ? styles.chipSelected : styles.chipDefault}
-                    onClick={() => handleFilterChange('gender', '')}
+                    className={filters.gender === 'any' ? styles.chipSelected : styles.chipDefault}
+                    onClick={() => handleFilterChange('gender', 'any')}
                   >
                     Any
                   </div>

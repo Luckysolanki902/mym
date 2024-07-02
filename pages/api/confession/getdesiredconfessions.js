@@ -19,7 +19,7 @@ const handler = async (req, res) => {
     }
   }
 
-  if (gender) {
+  if (gender && gender!='any') {
     query.gender = gender;
   }
 

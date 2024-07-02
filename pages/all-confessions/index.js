@@ -13,7 +13,7 @@ const Index = ({ userDetails }) => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({ college: 'all', gender: '' });
+  const [filters, setFilters] = useState({ college: 'all', gender: 'any' });
   const sentinelRef = useRef(null);
   const router = useRouter();
 
@@ -46,12 +46,14 @@ const Index = ({ userDetails }) => {
   };
 
   useEffect(() => {
-    fetchConfessions();
-  }, [filters, userDetails]); // Fetch confessions when filters change
+    if (!loading && hasMore) {
+      fetchConfessions();
+    }
+  }, [filters]); // Fetch confessions when filters change
 
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore && !loading) {
+      if (entries[0].isIntersecting && hasMore && !loading && page !== 1) {
         fetchConfessions();
       }
     }, { threshold: 0.5 });
@@ -68,7 +70,9 @@ const Index = ({ userDetails }) => {
     setHasMore(true);
   };
 
-
+  useEffect(() => {
+    console.log(confessions.length)
+  }, [confessions])
 
   return (
     <>

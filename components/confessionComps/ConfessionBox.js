@@ -38,7 +38,7 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
   useEffect(() => {
     if (inView && isTyping && !showFullContent) {
       const timer = setTimeout(() => {
-        if (index < confession.confessionContent.length) {
+        if (index < confession?.confessionContent?.length) {
           setContent(prevContent => prevContent + confession.confessionContent.charAt(index));
           setIndex(prevIndex => prevIndex + 1);
           confessionBoxRef.current.scrollTop = confessionBoxRef.current.scrollHeight; // Scroll to the bottom
@@ -50,7 +50,7 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession }) => {
 
       return () => clearTimeout(timer);
     }
-  }, [index, inView, isTyping, showFullContent, confession.confessionContent.length]);
+  }, [index, inView, isTyping, showFullContent, confession?.confessionContent?.length]);
 
   const getTimeAgo = (timestamp) => {
     const now = new Date();
