@@ -101,7 +101,7 @@ const TextChatWithout = ({ userDetails }) => {
   }
 
   return (
-    <div className={styles.mainC}>
+    <div className={styles.mainC} >
       {!isChatAvailable && <TimerPopup open={!isChatAvailable} />}
       {isChatAvailable && (
         <>
