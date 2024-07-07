@@ -52,6 +52,7 @@
 }
 .colon{
     font-size: 2rem;
+    transform: translateY(-30%);
 }
 @media (width > 800px){
     .main img{
