@@ -5,7 +5,7 @@ import Image from 'next/image';
 import styles from './styles/timerpopup.module.css'
 
 const TimerPopup = ({ open, onClose }) => {
-    const [timeLeft, setTimeLeft] = useState({ h: '', m: '', s: '' });
+    const [timeLeft, setTimeLeft] = useState({ h: '00', m: '00', s: '00' });
 
     useEffect(() => {
         const calculateTimeLeft = () => {
