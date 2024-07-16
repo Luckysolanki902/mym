@@ -40,7 +40,7 @@ const TimerPopup = ({ open, onClose }) => {
             <div className={styles.overlay}></div>
             <div className={styles.main}>
                 <Image src={'/images/large_pngs/hiuser.png'} width={1080 / 3} height={720 / 3} alt='hi' loading='eager'></Image>
-                <div className={styles.text}>This feature is enabled daily @10pm for an hour</div>
+                <div className={styles.text}>This feature is enabled daily @10pm for two hours</div>
                 <div className={styles.timer}>
                     <div className={styles.timeBox}>
                         <div className={styles.time}>{timeLeft.h}</div>

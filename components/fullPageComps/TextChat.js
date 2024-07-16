@@ -48,7 +48,7 @@ const TextChatWithout = ({ userDetails }) => {
       const start = new Date();
       start.setHours(22, 0, 0, 0); // 10 PM today
       const end = new Date(start);
-      end.setHours(23, 0, 0, 0); // 11 PM today
+      end.setHours(23, 59, 0, 0); // 11 PM today
 
       if (now >= start && now < end) {
         setIsChatAvailable(true);
