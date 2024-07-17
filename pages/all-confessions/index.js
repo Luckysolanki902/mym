@@ -74,7 +74,7 @@ const Index = ({ userDetails }) => {
 
   return (
     <>
-      <CustomHead title={'Read Confessions | MYM'} />
+      <CustomHead title={'Read Confessions from Various Colleges| MYM - Meet Your Mate'} />
       <div style={{ width: '100%', paddingTop: '2rem' }}>
         <div className={styles.chipContainer}>
           <h1 className={styles.mainHeading}>Confessions</h1>

@@ -1,4 +1,5 @@
 User-agent: *
 Disallow: /admin/
+Disallow: /inbox/
 
 Sitemap: https://www.meetyourmate.in/sitemap.xml
