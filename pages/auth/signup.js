@@ -9,6 +9,7 @@ import Image from 'next/image';
 import styles from './signup.module.css';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import CustomHead from '@/components/seo/CustomHead';
 
 const mymtheme = createTheme({
   palette: {
@@ -156,6 +157,9 @@ const Signup = () => {
   };
 
   return (
+    <>
+    <CustomHead title={'Signup to MYM - Meet Your Mate'}/>
+
     <ThemeProvider theme={mymtheme}>
       <div className={styles.mainContainer}>
         <div className={styles.macpng}>
@@ -177,7 +181,7 @@ const Signup = () => {
                 required: false, // Remove the asterisk for the Email field
               }}
               className={styles.input}
-            />
+              />
             <TextField
               variant='standard'
               type={showPassword ? "text" : "password"}
@@ -196,7 +200,7 @@ const Signup = () => {
                     <IconButton
                       onClick={handleClickShowPassword}
                       edge="end"
-                    >
+                      >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -254,6 +258,7 @@ const Signup = () => {
         </div>
       </div>
     </ThemeProvider>
+              </>
   );
 };
 

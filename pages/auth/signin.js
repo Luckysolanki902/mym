@@ -8,6 +8,7 @@ import styles from './signup.module.css'
 import CircularProgress from '@mui/material/CircularProgress';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import CustomHead from "@/components/seo/CustomHead";
 
 
 
@@ -69,6 +70,8 @@ export default function Signin() {
   };
 
   return (
+    <>
+    <CustomHead title={'Login to MYM - Meet Your Mate'}/>
     <ThemeProvider theme={mymtheme}>
 
       <div className={styles.mainContainer}>
@@ -111,7 +114,7 @@ export default function Signin() {
                     <IconButton
                       onClick={handleClickShowPassword}
                       edge="end"
-                    >
+                      >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -125,7 +128,7 @@ export default function Signin() {
               className={styles.button}
               style={{ textTransform: 'none' }}
               disabled={loading}
-            >
+              >
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
             </Button>
           </form>
@@ -147,6 +150,7 @@ export default function Signin() {
         </div>
       </div>
     </ThemeProvider>
+            </>
 
   );
 }
