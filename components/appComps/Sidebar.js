@@ -72,7 +72,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     // Check if the path matches any of the sidebar routes and set the active tab accordingly
-    const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox', '/fill-form'];
+    const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion'];
     const index = paths.findIndex(path => path === router.pathname);
     setActiveIndex(index !== -1 ? index : null); // If not found in sidebar routes, set to null
   }, [router.pathname]);
@@ -156,7 +156,7 @@ const Sidebar = () => {
 
         <div
           className={`${styles.icons} ${activeIndex === 5 ? styles.active : ''}`}
-          onClick={() => handleSetActive(5, '/fill-form')}
+          onClick={() => handleSetActive(5, '/give-your-suggestion')}
           data-title="Suggestions"
           style={{ position:'absolute', bottom:'2rem'}}
         >

@@ -95,7 +95,7 @@ export default function SwipeableTemporaryDrawer(props) {
 
     useEffect(() => {
         // Check if the path matches any of the Drawer items and set the active index accordingly
-        const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox', '/fill-form'];
+        const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion'];
         const index = paths.findIndex(path => path === router.pathname);
         setState(prevState => ({ ...prevState, activeIndex: index !== -1 ? index : null }));
     }, [router.pathname]);
@@ -121,7 +121,7 @@ export default function SwipeableTemporaryDrawer(props) {
                     { text: 'Read Confessions ', href: '/all-confessions' },
                     { text: 'Write Confession', href: '/create-confession' },
                     { text: 'Inbox', href: '/inbox' },
-                    { text: 'Suggestions', href: '/fill-form' }, // New option added
+                    { text: 'Suggestions', href: '/give-your-suggestion' }, // New option added
                 ].map((item, index) => (
                     <ListItem
                         key={item.text}
