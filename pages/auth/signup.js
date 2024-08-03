@@ -10,6 +10,7 @@ import styles from './signup.module.css';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CustomHead from '@/components/seo/CustomHead';
+import Link from 'next/link';
 
 const mymtheme = createTheme({
   palette: {
@@ -83,14 +84,26 @@ const Signup = () => {
     const emailValue = e.target.value;
     setEmail(emailValue);
 
-    const emailDomain = emailValue.split('@')[1];
+    const emailDomain = emailValue.split('@')[1] || '';
 
-    const matchedCollege = allowedEmails.find((allowedEmail) => emailDomain === allowedEmail);
+    // Check if any allowed email domain starts with the entered domain
+    const matchedCollege = allowedEmails.find((allowedEmail) => allowedEmail.startsWith(emailDomain));
     if (matchedCollege) {
       const collegeIndex = allowedEmails.indexOf(matchedCollege);
-      setCollege(colleges[collegeIndex]);
+      setCollege('');
+      const matchedCollege2 = allowedEmails.find((allowedEmail) => allowedEmail === emailDomain)
+      if(matchedCollege2){
+        const collegeIndex2 = allowedEmails.indexOf(matchedCollege2);
+        setCollege(colleges[collegeIndex2]);
+      }
+      setError(null); // Clear error if email is valid
     } else {
       setCollege('');
+      if (emailValue.includes('@') && emailValue.includes('.'))  {
+        setError('Your college is not on mym yet.');
+      } else {
+        setError(null); // Clear error if email is empty
+      }
     }
   };
 
@@ -158,107 +171,108 @@ const Signup = () => {
 
   return (
     <>
-    <CustomHead title={'Signup to MYM - Meet Your Mate'}/>
+      <CustomHead title={'Signup to MYM - Meet Your Mate'} />
 
-    <ThemeProvider theme={mymtheme}>
-      <div className={styles.mainContainer}>
-        <div className={styles.macpng}>
-          <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview'></Image>
-        </div>
-        <div className={styles.mainBox}>
-          <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
-          {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
-          <form onSubmit={handleSignUp} className={styles.form}>
-            <TextField
-              type="email"
-              label="College Id"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={handleEmailChange}
-              variant='standard'
-              InputLabelProps={{
-                required: false, // Remove the asterisk for the Email field
-              }}
-              className={styles.input}
+      <ThemeProvider theme={mymtheme}>
+        <div className={styles.mainContainer}>
+          <div className={styles.macpng}>
+            <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview'></Image>
+          </div>
+          <div className={styles.mainBox}>
+            <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
+            {error && <p style={{ color: 'red', marginBottom: '15px',textAlign:'center' }}>{error} <br /> {error === 'Your college is not on mym yet.'? <Link style={{color:'rgb()', textDecoration:'none', marginTop:'-1rem'}} href={'/give-your-suggestion?category=add-college'}>Click here to get your college added.</Link> : null}</p>}
+           
+            <form onSubmit={handleSignUp} className={styles.form}>
+              <TextField
+                type="email"
+                label="College Id"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={handleEmailChange}
+                variant='standard'
+                InputLabelProps={{
+                  required: false, // Remove the asterisk for the Email field
+                }}
+                className={styles.input}
               />
-            <TextField
-              variant='standard'
-              type={showPassword ? "text" : "password"}
-              label="Create Password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              InputLabelProps={{
-                required: false, // Remove the asterisk for the Email field
-              }}
-              className={styles.input}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      edge="end"
+              <TextField
+                variant='standard'
+                type={showPassword ? "text" : "password"}
+                label="Create Password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                InputLabelProps={{
+                  required: false, // Remove the asterisk for the Email field
+                }}
+                className={styles.input}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClickShowPassword}
+                        edge="end"
                       >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Select
-              variant='standard'
-              required
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              label="Select Gender"
-              inputProps={{
-                name: 'gender',
-                id: 'gender-select',
-              }}
-              className={`${styles.selectInput} ${gender === 'Select Gender' ? `${styles.placeholder}` : ''}`}
-            >
-              <MenuItem value="Select Gender">Select Gender</MenuItem>
-              <MenuItem value="male">Male</MenuItem>
-              <MenuItem value="female">Female</MenuItem>
-            </Select>
-            <TextField
-              variant='standard'
-              required
-              value={college}
-              label="College"
-              placeholder='fill valid college id first'
-              inputProps={{
-                readOnly: true,
-              }}
-              className={styles.input}
-            />
-            <Button
-              disabled={!collegesLoaded || loading}
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Select
+                variant='standard'
+                required
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                label="Select Gender"
+                inputProps={{
+                  name: 'gender',
+                  id: 'gender-select',
+                }}
+                className={`${styles.selectInput} ${gender === 'Select Gender' ? `${styles.placeholder}` : ''}`}
+              >
+                <MenuItem value="Select Gender">Select Gender</MenuItem>
+                <MenuItem value="male">Male</MenuItem>
+                <MenuItem value="female">Female</MenuItem>
+              </Select>
+              <TextField
+                variant='standard'
+                required
+                value={college}
+                label="College"
+                placeholder='fill valid college id first'
+                inputProps={{
+                  readOnly: true,
+                }}
+                className={styles.input}
+              />
+              <Button
+                disabled={!collegesLoaded || loading}
+                type="submit"
+                variant="contained"
+                color="primary"
+                className={styles.button}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Send OTP'}
+              </Button>
+            </form>
+            <div className={styles.line}></div>
+            <div
               type="submit"
               variant="contained"
               color="primary"
-              className={styles.button}
+              onClick={() => router.push('/auth/signin')}
+              className={styles.paraLink}
+              style={{ cursor: 'pointer' }}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Send OTP'}
-            </Button>
-          </form>
-          <div className={styles.line}></div>
-          <div
-            type="submit"
-            variant="contained"
-            color="primary"
-            onClick={() => router.push('/auth/signin')}
-            className={styles.paraLink}
-            style={{ cursor: 'pointer' }}
-          >
-            {'Login Instead'}
+              {'Login Instead'}
+            </div>
           </div>
         </div>
-      </div>
-    </ThemeProvider>
-              </>
+      </ThemeProvider>
+    </>
   );
 };
 

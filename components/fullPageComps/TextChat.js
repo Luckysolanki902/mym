@@ -128,7 +128,7 @@ const TextChatWithout = ({ userDetails }) => {
             color={snackbarColor}
           />
         </>
-      )}
+      )}   
     </div>
   );
 };

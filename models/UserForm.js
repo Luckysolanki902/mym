@@ -7,6 +7,7 @@ const userFormSchema = new mongoose.Schema({
   collegeName: { type: String },
   collegeId: { type: String },
   confessionLink: { type: String },
+  email: {type: String}
 });
 
 mongoose.models = {};

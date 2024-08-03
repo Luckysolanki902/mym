@@ -1,8 +1,11 @@
-import { useState } from 'react';
-import { FormControl, InputLabel, Select, MenuItem, TextField, Button, CircularProgress, Snackbar, InputAdornment } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { FormControl, InputLabel, Select, MenuItem, TextField, Button, CircularProgress, Snackbar, InputAdornment, Typography } from '@mui/material';
 import CustomHead from '@/components/seo/CustomHead';
+import { useRouter } from 'next/router';
 
 const FillForm = () => {
+  const router = useRouter()
+  const queryCategory = router.query.category || '';
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [recreateBug, setRecreateBug] = useState('');
@@ -11,6 +14,13 @@ const FillForm = () => {
   const [collegeName, setCollegeName] = useState('');
   const [collegeId, setCollegeId] = useState('');
   const [confessionLink, setConfessionLink] = useState('');
+  const [email, setEmail] = useState('');
+
+useEffect(()=>{
+if(queryCategory === 'add-college'){
+  setCategory('Add My College')
+}
+},[queryCategory])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +31,7 @@ const FillForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ category, description, recreateBug, collegeName, collegeId, confessionLink }),
+        body: JSON.stringify({ category, description, recreateBug, collegeName, collegeId, confessionLink, }),
       });
       setSuccessSnackbarOpen(true);
       // Reset form fields after successful submission
@@ -57,18 +67,7 @@ const FillForm = () => {
           </Select>
         </FormControl>
 
-        <TextField
-          label={category === 'Add My College' ? "Any Message For Us" : category === 'Confession Delete Request' ? "Reason" : "Description"}
-          multiline
-          minRows={2}
-          maxRows={5}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          fullWidth
-          required={category !== 'Add My College'}
-          sx={{ maxWidth: '700px' }}
-          variant='standard'
-        />
+
 
         {category === 'Confession Delete Request' && (
           <TextField
@@ -114,13 +113,38 @@ const FillForm = () => {
               sx={{ maxWidth: '700px' }}
               variant='standard'
               InputProps={{
+                placeholder:'iitk.ac.in',
                 startAdornment: (
                   <InputAdornment position="start">@</InputAdornment>
                 ),
               }}
             />
+
+            <TextField
+              label="Your Email (Optional)"
+              value={email}
+              type='email'
+              onChange={(e) => setEmail(e.target.value)}
+              fullWidth
+              sx={{ maxWidth: '700px' }}
+              variant='standard'
+              helperText="Get notified, when it's added"
+            />
           </>
         )}
+
+        <TextField
+          label={category === 'Add My College' ? "Any Message For Us (Optional)" : category === 'Confession Delete Request' ? "Reason" : "Description"}
+          multiline
+          minRows={1}
+          maxRows={5}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          fullWidth
+          required={category !== 'Add My College'}
+          sx={{ maxWidth: '700px' }}
+          variant='standard'
+        />
 
         <Button fullWidth sx={{ maxWidth: '300px' }} type="submit" variant="contained" color="primary" disabled={loading}>
           {loading ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
