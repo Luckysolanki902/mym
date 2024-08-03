@@ -7,11 +7,10 @@ import { handleSend, handleTyping, handleStoppedTyping, handleFindNew, stopFindi
 import CustomSnackbar from '../commonComps/Snackbar';
 import InputBox from '../chatComps/InputBox';
 import MessageDisplay from '../chatComps/MessagesDisplay';
-import EventsContainer from '../chatComps/EventsContainer';
 import { useTextChat, TextChatProvider } from '@/context/TextChatContext';
 import { useFilters, FiltersProvider } from '@/context/FiltersContext';
 import TimerPopup from '@/components/chatComps/TimerPopup';
-
+ 
 const TextChatWithout = ({ userDetails }) => {
   const [textValue, setTextValue] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -23,6 +22,7 @@ const TextChatWithout = ({ userDetails }) => {
   const messagesContainerRef = useRef(null);
   const inputRef = useRef(null);
   const findingTimeoutRef = useRef(null);
+  const neverShowTimer = useRef(true);
 
   // using textchat contexts
   const {
@@ -43,6 +43,7 @@ const TextChatWithout = ({ userDetails }) => {
 
   // Check if the current time is between 10 PM and 11 PM
   useEffect(() => {
+
     const checkChatAvailability = () => {
       const now = new Date();
       const start = new Date();
@@ -57,19 +58,20 @@ const TextChatWithout = ({ userDetails }) => {
       }
     };
 
-    checkChatAvailability();
-    const interval = setInterval(checkChatAvailability, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+    if (!neverShowTimer.current) {
+      checkChatAvailability();
+      const interval = setInterval(checkChatAvailability, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [neverShowTimer.current]);
 
   useEffect(() => {
-    if (isChatAvailable) {
+    if (isChatAvailable || neverShowTimer.current) {
       initiateSocket(socket, { userDetails, preferredCollege, preferredGender }, hasPaired, { room, setSocket, setUsersOnline, setStrangerIsTyping, setStrangerDisconnectedMessageDiv, setIsFindingPair, setRoom, setReceiver, setStrangerGender, setSnackbarColor, setSnackbarMessage, setSnackbarOpen, setHasPaired, setMessages }, { messagesContainerRef, findingTimeoutRef });
     } else if (socket) {
       socket.disconnect();
     }
-  }, [isChatAvailable]);
+  }, [isChatAvailable, neverShowTimer.current]);
 
   const handleSendButton = () => {
     handleSend(socket, textValue, { setTextValue, setMessages, setStrangerIsTyping }, messagesContainerRef, userDetails, hasPaired)
@@ -102,8 +104,8 @@ const TextChatWithout = ({ userDetails }) => {
 
   return (
     <div className={styles.mainC} >
-      {!isChatAvailable && <TimerPopup open={!isChatAvailable} />}
-      {isChatAvailable && (
+      {(!isChatAvailable && !neverShowTimer.current) && <TimerPopup open={!isChatAvailable} />}
+      {(isChatAvailable || neverShowTimer.current) && (
         <>
           <MessageDisplay userDetails={userDetails} />
           <InputBox

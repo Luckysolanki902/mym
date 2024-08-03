@@ -30,13 +30,28 @@ const MessageDisplay = React.memo(({ userDetails }) => {
         prevMessageCountRef.current = messages.length;
     }, [messages]);
 
-    // Animation config for the latest message
-    const messageAppearConfig = {
-        tension: 120,
-        friction: 18,
-        from: { rotateX: 90, translateX: -30, opacity: 0 },
-        to: { rotateX: 0, translateX: 0, opacity: 1 }
-    };
+// This animation makes the message slide in from the bottom with a spring effect.
+
+const messageAppearConfig = {
+    tension: 180,
+    friction: 12,
+    from: { translateY: 100, opacity: 0 },
+    to: { translateY: 0, opacity: 1 }
+};
+
+
+const messageAppearConfig2 = {
+    tension: 170,
+    friction: 20,
+    from: { scale: 0.5, opacity: 0 },
+    to: { scale: 1, opacity: 1 }
+};
+
+
+
+
+
+
 
     // Determine if a new message has arrived
     const isNewMessage = messages.length > prevMessageCountRef.current;
@@ -50,7 +65,7 @@ const MessageDisplay = React.memo(({ userDetails }) => {
 
     // Animation for padding div
     const paddingDivAnimation = useSpring({
-        height: shouldRenderPaddingDiv ? '3rem' : '0rem',
+        height: shouldRenderPaddingDiv ? '4rem' : '0rem',
         opacity: 0,
         config: { tension: 220, friction: 20 }
     });
@@ -73,7 +88,8 @@ const MessageDisplay = React.memo(({ userDetails }) => {
             {reversedMessages?.length < 1 && hasPaired &&
                 <div className={styles.msgIllustration}>
                     <Image src={'/images/illustrations/messages.png'} width={960} height={695} alt='start chat' />
-                    <div>Say <span>hi</span> and see where the conversation takes you!</div>
+                    <div><span style={{color: strangerGender === 'female' ? '#FFA0BC' : '#79EAF7'}}>{strangerGender === 'male' ? 'Boy': 'Girl'}</span> connected</div>
+                    <div style={{fontSize:'0.84rem'}}>Say <span >hi</span> and see where the conversation takes you!</div>
                 </div>
             }
             {!hasPaired && isFindingPair &&
@@ -83,7 +99,6 @@ const MessageDisplay = React.memo(({ userDetails }) => {
                     </div>
                 </div>
             }
-
             <div className={styles.filterPos}>
                 <FilterOptions userDetails={userDetails} />
             </div>
