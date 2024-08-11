@@ -52,7 +52,7 @@ const ShareDialog = ({ open, onClose, shareLink }) => {
                 <div style={{ display: 'flex', gap: '2rem', width: '100%', justifyContent: 'center', marginBottom: '2rem' }}>
 
                     <Button color="primary" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', fontWeight: '600', fontFamily: 'Roboto' }} className={styles.shareButton} onClick={shareOnWhatsApp}>
-                        <Image src={'/images/othericons/whatsapp.png'} width={512 / 3} height={512 / 3} alt='whatsapp'></Image>
+                        <Image src={'/images/othericons/whatsapp.png'} width={512 / 3} height={512 / 3} alt='whatsapp' loading='eager'></Image>
                         Whatsapp
                     </Button>
                 </div>
