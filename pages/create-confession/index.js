@@ -12,26 +12,19 @@ const CreateConfession = ({ userDetails }) => {
   const timeInMinutes = 60; // Set the time threshold in minutes
 
   useEffect(() => {
-    // Redirect to verify/verifyotp if userDetails is not verified
-    if (userDetails && !userDetails.isVerified) {
-      router.push('/verify/verifyotp');
-    }
-    if (!session || !userDetails) {
-      router.push('/auth/signup');
-    }
     // Fetch last update time from local storage
-    const lastUpdateTime = localStorage.getItem('dialogLastUpdateTime');
+    const lastUpdateTime = localStorage.getItem('maddydialogLastUpdateTime');
     if (!lastUpdateTime) {
       // If last update time is not available, set the dialog to true and update the time
       setShowDialog(true);
-      localStorage.setItem('dialogLastUpdateTime', Date.now().toString());
+      localStorage.setItem('maddydialogLastUpdateTime', Date.now().toString());
     } else {
       const currentTime = Date.now();
       const elapsedTime = (currentTime - parseInt(lastUpdateTime)) / (1000 * 60); // Convert milliseconds to minutes
       if (elapsedTime >= timeInMinutes) {
         // If elapsed time exceeds the threshold, set the dialog to true and update the time
         setShowDialog(true);
-        localStorage.setItem('dialogLastUpdateTime', currentTime.toString());
+        localStorage.setItem('maddydialogLastUpdateTime', currentTime.toString());
       }
     }
 

@@ -115,10 +115,10 @@ const FilterOptions = ({ userDetails }) => {
           <animated.div style={filterContentAnimation} className={styles.filterContentWrapper}>
             <div className={styles.filterMenu}>
               <div className={styles.filterSection}>
-                <div className={styles.filterLabel} style={{ float: 'right' }}>Users Online: {chatStats.totalUsers}</div>
+                <div className={styles.filterLabel} style={{ float: 'right' }}>Online: {chatStats.totalUsers + 4}</div>
               </div>
               <div className={styles.filterSection}>
-                <div className={styles.filterLabel}>College Preference</div>
+                <div className={styles.filterLabel} style={{minWidth:'15rem'}}>College Preference</div>
                 <div className={styles.chipsContainer}>
                   <div
                     label="Any"
@@ -162,12 +162,10 @@ const FilterOptions = ({ userDetails }) => {
                 </div>
               </div>
             </div>
-            <p className={styles.note}>
-              Filters will be applied in the next chat. If no preferred match is found, you will be paired with a random user.
-            </p>
             {/* <p className={styles.note}>
-              If the preferred match not found in queue, you will be paired to any one.
+              Filters will be applied in the next chat. If no preferred match is found, you will be paired with a random user.
             </p> */}
+
           </animated.div>
         )}
 

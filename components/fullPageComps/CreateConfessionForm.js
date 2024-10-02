@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import styles from '../componentStyles/createconfessionform.module.css';
 import { CircularProgress, Snackbar } from '@mui/material';
 import WarningDialog from '../dialogs/WarningDialog';
-import Image from 'next/image';
 
 const CreateConfessionForm = ({ userDetails }) => {
   const [confessionValue, setConfessionValue] = useState('');
