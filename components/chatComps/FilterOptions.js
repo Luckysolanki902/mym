@@ -115,7 +115,7 @@ const FilterOptions = ({ userDetails }) => {
           <animated.div style={filterContentAnimation} className={styles.filterContentWrapper}>
             <div className={styles.filterMenu}>
               <div className={styles.filterSection}>
-                <div className={styles.filterLabel} style={{ float: 'right' }}>Online: {chatStats.totalUsers + 4}</div>
+                <div className={styles.filterLabel} style={{ float: 'right' }}>Online: {chatStats.totalUsers}</div>
               </div>
               <div className={styles.filterSection}>
                 <div className={styles.filterLabel} style={{minWidth:'15rem'}}>College Preference</div>
