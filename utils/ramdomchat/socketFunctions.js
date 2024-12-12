@@ -61,10 +61,10 @@ export const handlePairingSuccess = (data, hasPaired, stateFunctions, findingTim
         const snackbarColor = strangerGender === 'male' ? '#0094d4' : '#e3368d';
         setSnackbarColor(snackbarColor);
 
-        const snackbarMessage = `A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`;
-        setSnackbarMessage(snackbarMessage);
+        // const snackbarMessage = `A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`;
+        // setSnackbarMessage(snackbarMessage);
 
-        setSnackbarOpen(true); // Show the Snackbar
+        // setSnackbarOpen(true);
         setHasPaired(true);
     }
 

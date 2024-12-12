@@ -79,6 +79,7 @@ const InputBox = ({
             />
           </form>
         </div>
+        <Image src={'/images/othericons/sendFill.png'} width={1080 / 10} height={720 / 10} alt="icon" className={styles.sendIconPhone} onClick={handleSendButton}/>
       </div>
       {/* This div is used to scroll to the bottom */}
       <div ref={messagesContainerRef} />

@@ -86,10 +86,10 @@
   margin-bottom: 0rem;
   color: #2D2D2D;
   text-align: center;
-  font-family: "Inknut Antiqua";
+  font-family: "Jost";
   font-size: 1rem;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 400;
   line-height: normal;
   /* background-color: rgba(255, 255, 255, 0.834); */
   transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -355,6 +355,14 @@
   display: none;
 }
 
+.sendIconPhone{
+  width: 1.8rem;
+  height: auto;
+  margin-right: 1rem;
+  filter: drop-shadow(2px 2px 2px gray);
+  opacity: 0.9;
+}
+
 /* .inpFocus {
   scale: 0.995;
 } */
@@ -485,4 +493,10 @@
 
 .isTypinghz {
   height: 0;
+}
+
+@media (width>600px){
+  .sendIconPhone{
+    display: none;
+  }
 }
