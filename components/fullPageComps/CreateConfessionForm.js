@@ -100,7 +100,7 @@ const CreateConfessionForm = ({ userDetails }) => {
           <button
            className={`${styles.confessButton} ${userDetails ? styles[`${userDetails.gender}Button`] : styles.maleButton}`} 
            onClick={handleConfessionSubmit} 
-          disabled={confessionValue.trim().length < 50}>
+          disabled={confessionValue.trim().length < 5}>
             {loading ? <CircularProgress sx={{color:'white'}} size={20} /> : 'Confess'}
           </button>
         </div>
