@@ -163,7 +163,7 @@ export default function SwipeableTemporaryDrawer(props) {
                         className={`${styles.sideBarListItem}`}
                         style={index === 5 ? null : null}
                     >
-                        <Link href={item.href} passHref>
+                        <Link href={item.href} passHref style={{width: '100%', textDecoration:'none'}}>
                             <ListItemButton
                                 className={`${styles.sideBarLinks} ${
                                     state.activeIndex === index ? styles.activeListItem : ''

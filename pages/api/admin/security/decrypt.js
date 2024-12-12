@@ -13,7 +13,6 @@ export default async function handler(req, res) {
       if (!confession) {
         return res.status(404).json({ message: 'Confession not found' });
       }
-      console.log(confession)
 
       const { encryptedEmail, iv } = confession;
       const key = process.env.ENCRYPTION_SECRET_KEY;

@@ -88,6 +88,7 @@
     overflow: hidden;
     padding: 0.5rem 0.8rem;
     width: 100%;
+    flex: 1;
     
 }
 
@@ -96,7 +97,7 @@
 .activeListItem {
     background-color: rgba(211, 211, 211, 0.3);
     text-decoration: none;
-
+width: 100%;
 
     /* margin: 1rem; */
 }
@@ -133,6 +134,7 @@
     font-size: 0.9rem;
     font-weight: 500;
     font-size: 0.9rem;
+    width: 100%;
 
 }
 

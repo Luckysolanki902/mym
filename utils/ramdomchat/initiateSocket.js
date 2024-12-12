@@ -20,12 +20,9 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
         setSocket(newSocket)
 
     } catch (error) {
-        console.log('error setting newsocket', error)
     }
 
     newSocket.on('connect', () => {
-        console.log('Connected to server');
-        console.log('calling handleIdentify')
         // sending your preferences to server
         handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef)
 

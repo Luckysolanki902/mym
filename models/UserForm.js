@@ -19,8 +19,8 @@ const userFormSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-mongoose.models = {};
 
-const UserForm = mongoose.model('UserForm', userFormSchema);
+
+const UserForm = mongoose.models.UserForm || mongoose.model('UserForm', userFormSchema);
 
 export default UserForm;

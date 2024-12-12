@@ -1,3 +1,4 @@
+// pages/api/inbox/get-replies-to-replies.js
 import PersonalReply from '@/models/PersonalReply';
 import connectToMongo from '@/middleware/middleware';
 import CryptoJS from 'crypto-js';
@@ -5,44 +6,72 @@ import CryptoJS from 'crypto-js';
 const handler = async (req, res) => {
   const { mid } = req.query;
 
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  if (!mid) {
+    return res.status(400).json({ error: 'Missing mid parameter' });
+  }
+
   try {
     // Find personal replies where any reply's replierMid matches the query mid
-    const personalReplies = await PersonalReply.find({ 
-      "replies.replierMid": mid 
-    }).sort({ timestamps: -1 });
+    // and exclude confessions authored by the user
+    const personalReplies = await PersonalReply.find({
+      'replies.replierMid': mid,
+      confessorMid: { $ne: mid }, // Exclude user's own confessions
+    }).sort({ createdAt: -1 });
 
     // Decrypt the replies and their secondary replies
-    const decryptedReplies = personalReplies.map(reply => {
+    const decryptedReplies = personalReplies.map((reply) => {
       let unseenMainCount = 0;
-      const decryptedReply = {
-        ...reply.toObject(),
-        replies: reply.replies.filter(primary => primary.replierMid === mid).map(primary => {
-          let unseenSecondaryCount = 0;
-          const decryptedPrimary = {
-            ...primary.toObject(),
-            reply: CryptoJS.AES.decrypt(primary.reply, process.env.ENCRYPTION_SECRET_KEY).toString(CryptoJS.enc.Utf8),
-            secondaryReplies: primary.secondaryReplies.map(secondary => {
-              const decryptedSecondary = {
-                ...secondary.toObject(),
-                content: CryptoJS.AES.decrypt(secondary.content, process.env.ENCRYPTION_SECRET_KEY).toString(CryptoJS.enc.Utf8)
-              };
-              if (!secondary.seen.includes(mid)) {
-                unseenSecondaryCount++;
-              }
-              return decryptedSecondary;
-            })
-          };
-          if (!primary.seen.includes(mid)) {
-            unseenMainCount++;
+      let unseenSecondaryCount = 0;
+
+      const decryptedConfessionContent = CryptoJS.AES.decrypt(
+        reply.confessionContent,
+        process.env.ENCRYPTION_SECRET_KEY
+      ).toString(CryptoJS.enc.Utf8);
+
+      // Filter replies where replierMid matches the query mid
+      const filteredReplies = reply.replies.filter((primary) => primary.replierMid === mid);
+
+      const decryptedFilteredReplies = filteredReplies.map((primary) => {
+        const decryptedPrimaryReply = CryptoJS.AES.decrypt(primary.reply, process.env.ENCRYPTION_SECRET_KEY).toString(CryptoJS.enc.Utf8);
+
+        const decryptedSecondaryReplies = primary.secondaryReplies.map((secondary) => {
+          const decryptedSecondaryContent = CryptoJS.AES.decrypt(
+            secondary.content,
+            process.env.ENCRYPTION_SECRET_KEY
+          ).toString(CryptoJS.enc.Utf8);
+
+          if (!secondary.seen.includes(mid)) {
+            unseenSecondaryCount++;
           }
-          return decryptedPrimary;
-        })
+
+          return {
+            ...secondary.toObject(),
+            content: decryptedSecondaryContent,
+          };
+        });
+
+        if (!primary.seen.includes(mid)) {
+          unseenMainCount++;
+        }
+
+        return {
+          ...primary.toObject(),
+          reply: decryptedPrimaryReply,
+          secondaryReplies: decryptedSecondaryReplies,
+        };
+      });
+
+      return {
+        ...reply.toObject(),
+        confessionContent: decryptedConfessionContent,
+        replies: decryptedFilteredReplies,
+        unseenMainCount,
+        unseenSecondaryCount,
       };
-
-      decryptedReply.unseenMainCount = unseenMainCount;
-      decryptedReply.unseenSecondaryCount = decryptedReply.replies.reduce((acc, primary) => acc + primary.secondaryReplies.filter(sec => !sec.seen.includes(mid)).length, 0);
-
-      return decryptedReply;
     });
 
     res.status(200).json({ personalReplies: decryptedReplies });

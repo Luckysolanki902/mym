@@ -27,7 +27,6 @@ export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions
                 preferredCollege: preferredCollege,
                 pageType: 'textchat'
             });
-            console.log('Finding first pair');
         }
     } catch (error) {
         console.error('Error in handleIdentify:', error.message);
@@ -93,7 +92,6 @@ export const handlePairDisconnected = (stateFunctions, messagesContainerRef) => 
 
     const { setStrangerDisconnectedMessageDiv, setHasPaired } = stateFunctions;
 
-    console.log('Partner disconnected');
     setStrangerDisconnectedMessageDiv(true);
     setHasPaired(false);
     scrollToBottom(messagesContainerRef);

@@ -208,7 +208,6 @@ const Confession = ({
 
       if (replyResponse.ok) {
         // Reply submitted successfully
-        console.log('Reply submitted successfully');
         // Optionally, you can update the UI to reflect the new reply
       } else {
         console.error('Error submitting reply');

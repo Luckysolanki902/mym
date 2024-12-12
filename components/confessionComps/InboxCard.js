@@ -1,3 +1,5 @@
+// components/confessionComps/InboxCard.js
+
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import styles from '../componentStyles/inboxStyles.module.css';
@@ -39,9 +41,6 @@ const InboxCard = ({ entry, userDetails }) => {
         setShowAllRepliesState(newShowAllRepliesState);
     };
 
-
-
-
     const handleInputKeyDown = (event, index, primaryReplierMid) => {
         if (event.key === 'Enter' && inputValues[index] !== '') {
             justShowThemAll(index);
@@ -59,7 +58,6 @@ const InboxCard = ({ entry, userDetails }) => {
         setShowAllRepliesState(newShowAllRepliesState);
 
         if (newShowAllRepliesState[index]) {
-
             try {
                 const response = await fetch('/api/inbox/updatesecondaryrepliesseen', {
                     method: 'POST',
@@ -78,24 +76,13 @@ const InboxCard = ({ entry, userDetails }) => {
                     throw new Error('Failed to update all secondary replies seen state');
                 }
 
-                // Update local state optimistically if needed
-                // For example:
-                // const updatedEntry = { ...entry };
-                // updatedEntry.replies[index].secondaryReplies.forEach(reply => {
-                //     if (!reply.seen.includes(userDetails.mid)) {
-                //         reply.seen.push(userDetails.mid);
-                //     }
-                // });
-                // setEntry(updatedEntry);
+                // Optionally, handle response or update local state if needed
 
             } catch (error) {
                 console.error('Error updating all secondary replies seen state:', error);
             }
         }
     };
-
-
-
 
     const handleInputSubmit = async (index, primaryReplierMid) => {
         const { confessionId, confessorMid } = entry;
@@ -119,6 +106,7 @@ const InboxCard = ({ entry, userDetails }) => {
         setInputValues(newInputValues);
 
         try {
+            // Simulate API call delay
             await new Promise(resolve => setTimeout(resolve, 1000));
             const response = await fetch('/api/confession/saveanonymoussecondaryreplies', {
                 method: 'POST',
@@ -175,7 +163,11 @@ const InboxCard = ({ entry, userDetails }) => {
             if (entry.isIntersecting) {
                 const replierMid = entry.target.getAttribute('data-replier-mid');
                 if (replierMid && !entry.target.getAttribute('data-seen')) {
-                    updateMainReplySeen(entry.target.getAttribute('data-confession-id'), entry.target.getAttribute('data-confessor-mid'), replierMid);
+                    updateMainReplySeen(
+                        entry.target.getAttribute('data-confession-id'),
+                        entry.target.getAttribute('data-confessor-mid'),
+                        replierMid
+                    );
                     entry.target.setAttribute('data-seen', 'true');
                 }
             }
@@ -185,7 +177,7 @@ const InboxCard = ({ entry, userDetails }) => {
     useEffect(() => {
         observer.current = new IntersectionObserver(handleObserver, {
             threshold: 0.1,
-        }); observer
+        });
 
         const elements = document.querySelectorAll('.reply-observer');
         elements.forEach(element => {
@@ -232,16 +224,14 @@ const InboxCard = ({ entry, userDetails }) => {
         reversedReplies.map(() => React.createRef())
     ), [reversedReplies]);
 
-
-
     return (
         <div ref={cardRef} className={`${styles.box} ${entry?.confessorGender === 'female' ? styles.femaleBox : styles.maleBox}`}>
             <div className={styles.confession} id={entry?.confessorGender === 'male' ? styles.maleConfession : styles.femaleConfession}>
-                <Link href={disabled ? '' : `/confession/${entry?.confessionId}`}  passHref>
+                <Link href={disabled ? '' : `/confession/${entry?.confessionId}`} passHref>
                     {truncateText(entry?.confessionContent, 200)}
                 </Link>
             </div>
-            {/* <div className={styles.br} style={{ opacity: '0.5' }}></div> */}
+
             <div className={styles.repliesBox}>
                 {reversedReplies.filter(reply => reply?.reply !== '').map((reply, index) => {
                     const isUnseen = !reply.seen.includes(userDetails.mid);
@@ -265,15 +255,17 @@ const InboxCard = ({ entry, userDetails }) => {
                             )}
                             <div className={`reply-observer ${styles.reply}`} data-confession-id={entry?.confessionId} data-confessor-mid={entry?.confessorMid} data-replier-mid={reply?.replierMid} data-seen={isUnseen ? '' : 'true'}>
                                 <div className={styles.markup} id={reply?.replierGender === 'male' ? styles.maleReply : styles.femaleReply}></div>
-                                <div className={styles.replyContent}>{reply?.reply ? reply.reply[0].toUpperCase() + reply.reply.slice(1) : ''}</div>
+                                <div className={styles.replyContent}>{reply?.reply ? reply.reply.charAt(0).toUpperCase() + reply.reply.slice(1) : ''}</div>
                             </div>
 
+                            {/* Reply Button for Primary Replies */}
                             {reply?.secondaryReplies?.length === 0 && (
                                 <button className={styles.replyButton} onClick={() => handleReplyButtonClick(index)}>
                                     Reply
                                 </button>
                             )}
 
+                            {/* View All Replies Button */}
                             {reply?.secondaryReplies?.length > 0 && (
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <button className={styles.replyButton} onClick={() => handleViewAllReplies(index, reply?._id)}>
@@ -294,6 +286,8 @@ const InboxCard = ({ entry, userDetails }) => {
                                     )}
                                 </div>
                             )}
+
+                            {/* Secondary Replies */}
                             <div className={styles.secRepMainCont}>
                                 {showAllRepliesState[index] && reply?.secondaryReplies?.map((secondaryReply, secIndex) => {
                                     const isSecUnseen = !secondaryReply.seen.includes(userDetails?.mid);
@@ -310,16 +304,18 @@ const InboxCard = ({ entry, userDetails }) => {
                                                     borderRadius: '50%',
                                                 }}></div>
                                             )}
-                                            {/* <div className={styles.markup} id={secondaryReply?.replierGender === 'male' ? styles.maleReply : styles.femaleReply}></div> */}
-                                            <div className={styles.replyContent} style={{display:'flex', gap:'0.6rem'}}>
+                                            <div className={styles.replyContent} style={{ display: 'flex', gap: '0.6rem' }}>
                                                 <div>
                                                     {secondaryReply?.sentByConfessor ? 'You:' :
                                                         secondaryReply?.replierGender === 'female' ? 'Her:' : 'Him:'}
                                                 </div>
-                                                {secondaryReply?.content}</div>
+                                                {secondaryReply?.content}
+                                            </div>
                                         </div>
                                     );
                                 })}
+
+                                {/* Reply Input Field */}
                                 {showInputIndex === index && (
                                     <div className={styles.secRep}>
                                         <div className={styles.markup} id={userDetails.gender === 'male' ? styles.maleReply : styles.femaleReply}></div>
@@ -335,6 +331,8 @@ const InboxCard = ({ entry, userDetails }) => {
                                         />
                                     </div>
                                 )}
+
+                                {/* Reply Button for Secondary Replies */}
                                 {showInputIndex !== index && reply?.secondaryReplies?.length > 0 && showAllRepliesState[index] && (
                                     <button className={styles.replyButton} onClick={() => handleReplyButtonClick(index)}>
                                         Reply

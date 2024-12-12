@@ -1,3 +1,5 @@
+// components/confessionComps/ConfessionBox.js
+
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import styles from '../componentStyles/confession.module.css';
@@ -147,7 +149,7 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession, userDet
 
         <div className={styles.timestamp}>
           <div style={{fontSize:'0.7rem', color:'rgb(120, 120, 120)'}}>
-            {getTimeAgo(confession.timestamps)}
+            {getTimeAgo(confession.createdAt)}
           </div>
           <div style={{fontSize:'0.7rem', color:'rgb(120, 120, 120)'}}>From {confession?.college}</div>
         </div>

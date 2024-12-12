@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const confessionSchema = new mongoose.Schema({
+const confessionSchema = new Schema({
   encryptedMid: {
     type: String,
     required: true,
@@ -37,12 +37,10 @@ const confessionSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: 'Comment',
   }],
-  timestamps: {
-    type: Date,
-    default: Date.now,
-  },
-});
+}, { timestamps: true }); // Enable built-in timestamps
 
-mongoose.models = {};
-const Confession = mongoose.model('Confession', confessionSchema);
+
+// Create the model
+const Confession =  mongoose.models.Confession || mongoose.model('Confession', confessionSchema);
+
 module.exports = Confession;

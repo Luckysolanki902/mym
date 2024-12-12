@@ -1,8 +1,13 @@
+// pages/api/confession/getconfessionsofyourcollege.js
 import CryptoJS from 'crypto-js';
 import Confession from '@/models/Confession';
 import connectToMongo from '@/middleware/middleware';
 
 const handler = async (req, res) => {
+    if (req.method !== 'GET') {
+        return res.status(405).json({ error: 'Method not allowed. Use GET.' });
+    }
+
     const college = req.query.college || '';
     const decCollege = decodeURIComponent(college);
     const page = parseInt(req.query.page) || 1; // Parse the page parameter
@@ -12,8 +17,11 @@ const handler = async (req, res) => {
     const query = college ? { college: decCollege } : {};
 
     try {
-        // Fetch confessions with pagination
-        const confessions = await Confession.find(query).sort({ timestamps: -1 }).skip(skip).limit(perPage);
+        // Fetch confessions with pagination, sorted by createdAt descending
+        const confessions = await Confession.find(query)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(perPage);
 
         // Decrypt the confession content
         const secretKeyHex = process.env.ENCRYPTION_SECRET_KEY;

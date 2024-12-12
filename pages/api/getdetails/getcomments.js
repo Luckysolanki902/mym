@@ -1,12 +1,19 @@
 // pages/api/comment/getcomments.js
 
-import crypto from 'crypto';
 import CryptoJS from 'crypto-js';
 import Comment from '@/models/Comment';
 import connectToMongo from '@/middleware/middleware';
 
 const handler = async (req, res) => {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed. Use GET.' });
+  }
+
   const { confessionId } = req.query;
+
+  if (!confessionId) {
+    return res.status(400).json({ error: 'Missing confessionId parameter' });
+  }
 
   try {
     const secretKeyHex = process.env.ENCRYPTION_SECRET_KEY;
@@ -15,7 +22,9 @@ const handler = async (req, res) => {
       throw new Error('Encryption secret key is not defined in environment variables');
     }
 
-    const comments = await Comment.find({ confessionId }).sort({ timestamps: -1 });
+    // Find comments by confessionId, sorted by createdAt descending
+    const comments = await Comment.find({ confessionId })
+      .sort({ createdAt: -1 });
 
     // Decrypt commentContent and replyContent
     const decryptedComments = comments.map(comment => {

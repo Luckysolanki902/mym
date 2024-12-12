@@ -44,9 +44,7 @@ const FilterOptions = ({ userDetails }) => {
       setPreferredCollege('any');
       setPreferredGender(userDetails.gender === 'male' ? 'female' : 'male');
     }
-    else {
-      console.log('no user')
-    }
+
 
   }, [userDetails]);
 

@@ -1,60 +1,130 @@
+// pages/api/inbox/unseen-count.js
 import PersonalReply from '@/models/PersonalReply';
 import connectToMongo from '@/middleware/middleware';
 
 const countUnseenHandler = async (req, res) => {
+
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed. Use GET.' });
+  }
+
   const { mid } = req.query;
+
+  if (!mid) {
+    return res.status(400).json({ error: 'Missing user mid' });
+  }
+
+  // Normalize mid (optional but recommended)
+  const normalizedMid = mid.trim().toLowerCase();
+
   try {
-    // Find personal replies for the given mid
-    const personalReplies = await PersonalReply.find({ confessorMid: mid }).sort({ timestamps: -1 });
+    // Initial Aggregation Stages
+    const matchStage = { confessorMid: normalizedMid };
 
-    // Calculate total unseen counts
-    let totalUnseenCount1 = 0;
-    let totalUnseenCount2 = 0;
+    const unwindReplies = { $unwind: "$replies" };
 
-    // Iterate through personal replies to count unseen replies
-    personalReplies.forEach(reply => {
-      reply.replies.forEach(primary => {
-        if (!primary.seen.includes(mid)) {
-          totalUnseenCount1++;
+    const initialAggregation = [
+      { $match: matchStage },
+      unwindReplies
+    ];
+
+    const initialResults = await PersonalReply.aggregate(initialAggregation);
+
+    if (!initialResults.length) {
+      return res.status(200).json({ totalUnseenCount1: 0, totalUnseenCount2: 0 });
+    }
+
+    // Full Aggregation with Facets
+    const aggregation = [
+      { $match: { confessorMid: normalizedMid } },
+      { $unwind: { path: "$replies", preserveNullAndEmptyArrays: false } },
+      {
+        $facet: {
+          totalUnseenPrimary: [
+            {
+              $match: {
+                "replies.seen": { $nin: [normalizedMid] }
+              }
+            },
+            {
+              $count: "count"
+            }
+          ],
+          totalUnseenSecondary: [
+            { $unwind: { path: "$replies.secondaryReplies", preserveNullAndEmptyArrays: false } },
+            {
+              $match: {
+                "replies.secondaryReplies.seen": { $nin: [normalizedMid] }
+              }
+            },
+            {
+              $count: "count"
+            }
+          ],
+          userUnseenPrimary: [
+            {
+              $match: {
+                "replies.replierMid": normalizedMid,
+                "replies.seen": { $nin: [normalizedMid] }
+              }
+            },
+            {
+              $count: "count"
+            }
+          ],
+          userUnseenSecondary: [
+            { $unwind: { path: "$replies.secondaryReplies", preserveNullAndEmptyArrays: false } },
+            {
+              $match: {
+                "replies.secondaryReplies.sentBy": normalizedMid,
+                "replies.secondaryReplies.seen": { $nin: [normalizedMid] }
+              }
+            },
+            {
+              $count: "count"
+            }
+          ]
         }
-        if (primary.replierMid === mid && !primary.seen.includes(mid)) {
-          totalUnseenCount2++;
+      },
+      {
+        $project: {
+          totalUnseenPrimary: 1,
+          totalUnseenSecondary: 1,
+          userUnseenPrimary: 1,
+          userUnseenSecondary: 1,
+          totalUnseenCount1: { $add: [
+            { $ifNull: [ { $arrayElemAt: ["$totalUnseenPrimary.count", 0] }, 0 ] },
+            { $ifNull: [ { $arrayElemAt: ["$totalUnseenSecondary.count", 0] }, 0 ] }
+          ] },
+          totalUnseenCount2: { $add: [
+            { $ifNull: [ { $arrayElemAt: ["$userUnseenPrimary.count", 0] }, 0 ] },
+            { $ifNull: [ { $arrayElemAt: ["$userUnseenSecondary.count", 0] }, 0 ] }
+          ] }
         }
+      }
+    ];
 
-        primary.secondaryReplies.forEach(secondary => {
-          if (!secondary.seen.includes(mid)) {
-            totalUnseenCount1++;
-          }
-          if (secondary.replierMid === mid && !secondary.seen.includes(mid)) {
-            totalUnseenCount2++;
-          }
-        });
-      });
+    const results = await PersonalReply.aggregate(aggregation);
+
+    if (!results.length) {
+      return res.status(200).json({ totalUnseenCount1: 0, totalUnseenCount2: 0 });
+    }
+
+    const {
+      totalUnseenPrimary,
+      totalUnseenSecondary,
+      userUnseenPrimary,
+      userUnseenSecondary,
+      totalUnseenCount1,
+      totalUnseenCount2
+    } = results[0];
+
+
+
+    res.status(200).json({ 
+      totalUnseenCount1,
+      totalUnseenCount2
     });
-
-
-    const personalReplies2 = await PersonalReply.find({ 
-      "replies.replierMid": mid 
-    }).sort({ timestamps: -1 });
-
-    let totalUnseenCount3 = 0;
-    let totalUnseenCount4 = 0;
-
-    personalReplies2.map(mainreply =>{
-      mainreply.replies.filter(primary => primary.replierMid === mid).map(primary =>{
-        primary.secondaryReplies.map(secondary => {
-          if(!secondary.seen.includes(mid)){
-            totalUnseenCount3++
-          }
-        })
-      })
-    })
-
-    
-
-
-
-    res.status(200).json({ totalUnseenCount1: totalUnseenCount1 + totalUnseenCount2, totalUnseenCount2: totalUnseenCount3 + totalUnseenCount4 });
   } catch (error) {
     console.error('Error counting unseen replies:', error);
     res.status(500).json({ error: 'Unable to count unseen replies', detailedError: error.message });

@@ -160,7 +160,6 @@ const Signup = ({userDetails}) => {
           throw new Error('Failed to save user data.');
         }
 
-        console.log('Successful signup');
 
         // Redirect to verifyotp page with the entered email
         if (isTestId) {

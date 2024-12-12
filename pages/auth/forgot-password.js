@@ -24,7 +24,6 @@ export default function ForgotPassword() {
         setLoading(true);
         sendPasswordResetEmail(auth, email)
             .then(() => {
-                console.log("Password reset email sent to your email");
                 setEmailSent(true);
             })
             .catch((error) => {

@@ -8,7 +8,6 @@ export default function handler(req, res) {
 
       const adminPassword1 = process.env.ADMIN_PASSWORD1;
       const adminPassword2 = process.env.ADMIN_PASSWORD2;
-      console.log(adminPassword1, adminPassword2, 'passwords');
 
       if (password1 === adminPassword1 && password2 === adminPassword2) {
         const secretKey = process.env.JWT_SECRET_KEY || 'default_secret_key'; // Use a default if not set

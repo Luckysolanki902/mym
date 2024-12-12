@@ -1,3 +1,4 @@
+// pages/inbox.js
 import React, { useEffect, useState } from 'react';
 import { getSession } from 'next-auth/react';
 import { Typography, Card, CardContent, Divider, Tabs, Tab, Button, CircularProgress } from '@mui/material';
@@ -16,7 +17,8 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
   const [personalRepliesLatest, setPersonalRepliesLatest] = useState(personalReplies?.personalReplies || []);
   const [repliesToRepliesLatest, setRepliesToRepliesLatest] = useState(repliesToReplies?.personalReplies || []);
   const [fetchingData, setFetchingData] = useState(false); // State to track fetching status
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+
   useEffect(() => {
     if (!userDetails) {
       router.push('/auth/signup');
@@ -26,7 +28,24 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
     }
   }, [userDetails, router]);
 
-  // Interval for fetching data every 15 seconds
+  // Function to fetch unseen counts
+  const fetchUnseenCounts = async (email) => {
+    try {
+      const unseenCountResponse = await fetch(`/api/inbox/unseen-count?email=${email}`);
+
+      if (unseenCountResponse.ok) {
+        const data = await unseenCountResponse.json();
+        const totalCount = data.totalUnseenCount1 + data.totalUnseenCount2;
+        setCount(totalCount);
+      } else {
+        console.error('Error fetching unseen count:', unseenCountResponse.statusText);
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
+  };
+
+  // Function to fetch data
   const fetchData = async () => {
     if (fetchingData) return; // If already fetching, return early
 
@@ -34,26 +53,9 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
 
     const session = await getSession();
     const email = session?.user?.email;
-    let mid = userDetails?.mid;
-
-    const fetchUnseenCounts = async (email) => {
-      try {
-        const unseenCountResponse = await fetch(`/api/inbox/unseen-count?email=${email}`);
-
-        if (unseenCountResponse.ok) {
-          const data = await unseenCountResponse.json();
-          const totalCount = data.totalUnseenCount1 + data.totalUnseenCount2;
-          setCount(totalCount); // Assuming setCount is a state updater function in React or similar
-        } else {
-          console.error('Error fetching unseen count:', unseenCountResponse.statusText);
-        }
-      } catch (error) {
-        console.error('Fetch error:', error);
-      }
-    };
+    const mid = userDetails?.mid;
 
     try {
-
       await fetchUnseenCounts(email);
 
       const response1 = await fetch(`/api/inbox/get-replies-to-confessions?mid=${mid}`);
@@ -61,7 +63,6 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
         const responseData = await response1.json();
         setPersonalRepliesLatest(responseData.personalReplies);
       } else {
-        console.log('Error fetching replies:', response1.statusText);
       }
 
       const response2 = await fetch(`/api/inbox/get-replies-to-replies?mid=${mid}`);
@@ -69,7 +70,6 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
         const responseData = await response2.json();
         setRepliesToRepliesLatest(responseData.personalReplies);
       } else {
-        console.log('Error fetching replies to replies:', response2.statusText);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -78,19 +78,15 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
     }
   };
 
-
   const handleTabChange = (event, newIndex) => {
     setTabIndex(newIndex);
     fetchData();
   };
 
-
-
   return (
     <div className={styles.container} style={{ position: 'relative' }}>
-      <Button style={{ position: 'fixed', right: '1rem', backgroundColor: 'white', color: 'black', zIndex: '19' }} variant='contained' onClick={() => fetchData()}>
+      <Button style={{ position: 'fixed', right: '1rem', backgroundColor: 'white', color: 'black', zIndex: '19', marginTop: '1rem' }} variant='contained' onClick={() => fetchData()}>
         <span style={{ marginRight: '0.5rem' }}>Refresh</span>
-        {/* mui refresh icon */}
         {fetchingData ? <CircularProgress size={20} /> : <RefreshIcon />}
       </Button>
       <div style={{ display: 'flex', justifyContent: 'center', width: '100%', maxWidth: '100vw' }}>
@@ -152,44 +148,46 @@ export async function getServerSideProps(context) {
   let userDetails = null;
   let mid = null;
 
-
   if (session) {
     const email = session?.user?.email;
     if (email) {
       try {
-        const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
+        const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${encodeURIComponent(session.user.email)}`);
         if (response.ok) {
           userDetails = await response.json();
           mid = userDetails?.mid;
         } else {
-          console.error('Error fetching user details');
+          console.error('Error fetching user details:', response.statusText);
         }
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
 
-      try {
-        const response = await fetch(`${pageurl}/api/inbox/get-replies-to-confessions?mid=${mid}`);
-        if (response.ok) {
-          personalReplies = await response.json();
-        } else {
-          console.log('Error fetching replies:', response.statusText);
+      if (mid) {
+        try {
+          const response1 = await fetch(`${pageurl}/api/inbox/get-replies-to-confessions?mid=${mid}`);
+          if (response1.ok) {
+            personalReplies = await response1.json();
+          } else {
+            console.error('Error fetching personal replies:', response1.statusText);
+          }
+        } catch (error) {
+          console.error('Error fetching personal replies:', error);
         }
-      } catch (error) {
-        console.log('Error fetching replies:', error);
-      }
 
-      try {
-        const response = await fetch(`${pageurl}/api/inbox/get-replies-to-replies?mid=${mid}`);
-        if (response.ok) {
-          repliesToReplies = await response.json();
-        } else {
-          console.log('Error fetching replies to replies:', response.statusText);
+        try {
+          const response2 = await fetch(`${pageurl}/api/inbox/get-replies-to-replies?mid=${mid}`);
+          if (response2.ok) {
+            repliesToReplies = await response2.json();
+          } else {
+            console.error('Error fetching replies to replies:', response2.statusText);
+          }
+        } catch (error) {
+          console.error('Error fetching replies to replies:', error);
         }
-      } catch (error) {
-        console.log('Error fetching replies to replies:', error);
       }
     }
+  } else {
   }
 
   return {
@@ -200,5 +198,6 @@ export async function getServerSideProps(context) {
     },
   };
 }
+
 
 export default InboxPage;

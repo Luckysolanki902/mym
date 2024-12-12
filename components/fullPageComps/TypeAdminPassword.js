@@ -24,9 +24,7 @@ const TypeAdminPassword = ({ onLogin }) => {
       const data = await response.json();
       if (data.success) {
         const { token } = data;
-        console.log(token)
         localStorage.setItem('adminAuthToken', token);
-        console.log('Logged in successfully');
         onLogin(); // Invoke the login function passed as a prop
       } else {
         setErrorMessage(data.message || 'Error granting admin access.');

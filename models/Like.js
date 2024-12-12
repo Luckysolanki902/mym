@@ -7,17 +7,16 @@ const likeSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Confession',
         required: true,
+        index: true, // Add index for faster queries
     },
     mid: {
         type: String,
         required: true,
+        index: true, // Add index if frequently queried
     },
-    timestamps: {
-        type: Date,
-        default: Date.now,
-    },
-});
-mongoose.models = {}
-const Like = mongoose.model('Like', likeSchema);
+}, { timestamps: true }); // Enable built-in timestamps
+
+
+const Like =  mongoose.models.Like ||  mongoose.model('Like', likeSchema);
 
 module.exports = Like;

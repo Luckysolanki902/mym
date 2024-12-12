@@ -4,18 +4,23 @@ import connectToMongo from '@/middleware/middleware';
 import CryptoJS from 'crypto-js';
 
 const handler = async (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   const { 
     confessionId,
     confessorMid,
     replierMid,
     secondaryReplyContent,
     sentByConfessor,
-    replierGender ,
+    replierGender,
     userMid,
   } = req.body;
 
-
   try {
+    const secretKeyHex = process.env.ENCRYPTION_SECRET_KEY;
+
     // Find the PersonalReply entry for the confessor
     const personalReply = await PersonalReply.findOne({
       confessionId,
@@ -33,7 +38,8 @@ const handler = async (req, res) => {
       return res.status(404).json({ error: 'Primary reply not found' });
     }
 
-    const encryptedReplyContent = CryptoJS.AES.encrypt(secondaryReplyContent, process.env.ENCRYPTION_SECRET_KEY).toString();
+    // Encrypt the secondary reply content
+    const encryptedReplyContent = CryptoJS.AES.encrypt(secondaryReplyContent, secretKeyHex).toString();
 
     // Add the secondary reply to the primary reply
     primaryReply.secondaryReplies.push({
@@ -41,13 +47,13 @@ const handler = async (req, res) => {
       sentBy: userMid,
       sentByConfessor: sentByConfessor,
       replierGender,
-      seen: [userMid], // Initialize the seen array with the replier mid
+      seen: [userMid], // Initialize the seen array with the user mid
     });
 
     // Save the updated entry
     await personalReply.save();
 
-    res.status(200).json({ success: true });
+    res.status(201).json({ success: true, message: 'Secondary reply saved successfully' });
   } catch (error) {
     console.error('Error saving secondary reply:', error);
     res.status(500).json({ error: 'Unable to save secondary reply', detailedError: error.message });

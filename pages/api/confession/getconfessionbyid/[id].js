@@ -5,8 +5,11 @@ import Comment from '@/models/Comment';
 import CryptoJS from 'crypto-js';
 
 const handler = async (req, res) => {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed. Use GET.' });
+  }
+
   const { id } = req.query;
-  console.log(id);
 
   try {
     const confession = await Confession.findById(id);
@@ -20,13 +23,33 @@ const handler = async (req, res) => {
     const decryptedContent = bytes.toString(CryptoJS.enc.Utf8);
     confession.confessionContent = decryptedContent;
 
-    // Fetch comments for the confession and sort them by timestamp in descending order
-    const comments = await Comment.find({ confessionId: id }).sort({ timestamps: -1 });
+    // Fetch comments for the confession and sort them by createdAt in descending order
+    const comments = await Comment.find({ confessionId: id }).sort({ createdAt: -1 });
 
-    // Attach the sorted comments to the confession object
-    confession.comments = comments;
+    // Decrypt comments and their replies
+    const decryptedComments = comments.map(comment => {
+      const decryptedCommentContent = CryptoJS.AES.decrypt(comment.commentContent, secretKeyHex).toString(CryptoJS.enc.Utf8);
+      
+      const decryptedReplies = comment.replies.map(reply => {
+        const decryptedReplyContent = CryptoJS.AES.decrypt(reply.replyContent, secretKeyHex).toString(CryptoJS.enc.Utf8);
+        return {
+          ...reply.toObject(),
+          replyContent: decryptedReplyContent,
+        };
+      });
 
-    res.status(200).json(confession);
+      return {
+        ...comment.toObject(),
+        commentContent: decryptedCommentContent,
+        replies: decryptedReplies,
+      };
+    });
+
+    // Attach the sorted and decrypted comments to the confession object
+    const confessionObject = confession.toObject();
+    confessionObject.comments = decryptedComments;
+
+    res.status(200).json(confessionObject);
   } catch (error) {
     console.error('Error fetching confession by ID:', error);
     res.status(500).json({ error: 'Unable to fetch confession', detailedError: error.message });

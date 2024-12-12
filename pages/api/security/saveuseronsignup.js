@@ -16,7 +16,6 @@ const handler = async (req, res) => {
       const user = new User({ email: lowercaseEmail, gender, college, isVerified });
       await user.save();
 
-      console.log('User saved successfully.');
 
       res.status(201).json({ message: 'User registered successfully.' });
     } catch (error) {

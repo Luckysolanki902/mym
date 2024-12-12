@@ -1,3 +1,4 @@
+// models/PersonalReply.js
 import mongoose from 'mongoose';
 
 // Define the schema for secondary replies
@@ -14,9 +15,25 @@ const SecondaryReplySchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
-  timestamps: {
-    type: Date,
-    default: Date.now,
+  replierGender: {
+    type: String,
+    required: true,
+  },
+  seen: {
+    type: [String],  // Array of strings to hold mid addresses
+    default: [],
+  },
+}, { timestamps: true }); // Use Mongoose's timestamps
+
+// Define the schema for primary replies
+const PrimaryReplySchema = new mongoose.Schema({
+  reply: {
+    type: String,
+    required: true,
+  },
+  replierMid: {
+    type: String,
+    required: true,
   },
   replierGender: {
     type: String,
@@ -26,17 +43,20 @@ const SecondaryReplySchema = new mongoose.Schema({
     type: [String],  // Array of strings to hold mid addresses
     default: [],
   },
-});
+  secondaryReplies: [SecondaryReplySchema],
+}, { timestamps: true }); // Use Mongoose's timestamps
 
 // Define the schema for personal replies
 const PersonalReplySchema = new mongoose.Schema({
   confessionId: {
     type: String,
     required: true,
+    index: true, // Adding index for faster queries
   },
   confessorMid: {
     type: String,
     required: true,
+    index: true, // Adding index for faster queries
   },
   confessorGender: {
     type: String,
@@ -46,38 +66,12 @@ const PersonalReplySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  replies: [
-    {
-      reply: {
-        type: String,
-        required: true,
-      },
-      replierMid: {
-        type: String,
-        required: true,
-      },
-      replierGender: {
-        type: String,
-        required: true,
-      },
-      seen: {
-        type: [String],  // Array of strings to hold mid addresses
-        default: [],
-      },
-      timestamps: {
-        type: Date,
-        default: Date.now,
-      },
-      secondaryReplies: [SecondaryReplySchema],
-    },
-  ],
-  timestamps: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  replies: [PrimaryReplySchema],
+}, { timestamps: true }); // Use Mongoose's timestamps
 
-mongoose.models = {};
-const PersonalReply = mongoose.model('PersonalReply', PersonalReplySchema);
+
+
+// Create the model
+const PersonalReply =  mongoose.models.PersonalReply ||  mongoose.model('PersonalReply', PersonalReplySchema);
 
 export default PersonalReply;

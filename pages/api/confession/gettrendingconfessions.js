@@ -1,3 +1,4 @@
+// pages/api/confession/gettrendingconfessions.js
 import connectToMongo from '@/middleware/middleware';
 import Confession from '@/models/Confession';
 import CryptoJS from 'crypto-js';
@@ -13,7 +14,7 @@ const calculateTrendingConfessions = async () => {
     const confessions = await Confession.aggregate([
       {
         $match: {
-          timestamps: { $gte: sinceDate },
+          createdAt: { $gte: sinceDate }, 
           $expr: { $gte: [{ $strLenCP: "$confessionContent" }, MIN_CHAR_COUNT] },
         },
       },
@@ -23,7 +24,7 @@ const calculateTrendingConfessions = async () => {
           commentsWeight: { $multiply: [{ $size: "$comments" }, 20] },
           ageInHours: {
             $divide: [
-              { $subtract: [new Date(), "$timestamps"] },
+              { $subtract: [new Date(), "$createdAt"] }, // Use 'createdAt'
               1000 * 60 * 60,
             ],
           },
@@ -68,7 +69,7 @@ const calculateTrendingConfessions = async () => {
         commentsWeight: { $multiply: [{ $size: "$comments" }, 20] },
         ageInHours: {
           $divide: [
-            { $subtract: [new Date(), "$timestamps"] },
+            { $subtract: [new Date(), "$createdAt"] }, // Use 'createdAt'
             1000 * 60 * 60,
           ],
         },
@@ -97,6 +98,10 @@ const calculateTrendingConfessions = async () => {
 };
 
 const handler = async (req, res) => {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed. Use GET.' });
+  }
+
   try {
     const secretKeyHex = process.env.ENCRYPTION_SECRET_KEY;
 
@@ -117,7 +122,7 @@ const handler = async (req, res) => {
     res.status(200).json({ trendingConfessions: decryptedConfessions, totalConfessions });
   } catch (error) {
     console.error('Error fetching trending confessions:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error', detailedError: error.message });
   }
 };
 
