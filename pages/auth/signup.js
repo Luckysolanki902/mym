@@ -11,6 +11,9 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CustomHead from '@/components/seo/CustomHead';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
+
 
 const mymtheme = createTheme({
   palette: {
@@ -21,8 +24,14 @@ const mymtheme = createTheme({
   },
 });
 
-const Signup = () => {
+const Signup = ({userDetails}) => {
+  const { data: session } = useSession();
   const router = useRouter();
+  useEffect(()=>{
+    if(userDetails){
+      router.push('/')
+    }
+  }, [userDetails])
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [gender, setGender] = useState('Select Gender');
@@ -289,3 +298,30 @@ const Signup = () => {
 };
 
 export default Signup;
+
+
+export async function getServerSideProps(context) {
+  let session = null;
+  session = await getSession(context);
+
+  let userDetails = null;
+  if (session?.user?.email) {
+    try {
+      const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
+      const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
+      if (response.ok) {
+        userDetails = await response.json();
+      } else {
+        console.error('Error fetching user details');
+      }
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  }
+
+  return {
+    props: {
+      userDetails,
+    },
+  };
+}

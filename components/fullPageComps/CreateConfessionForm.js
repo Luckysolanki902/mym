@@ -110,14 +110,14 @@ const CreateConfessionForm = ({ userDetails }) => {
       <WarningDialog open={dialogOpen} onClose={handleDialogClose} content={dialogContent} />
 
       {/* Success Snackbar */}
-      <Snackbar
+      {/* <Snackbar
         open={successSnackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
         message="Confession submitted successfully"
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         sx={{ backgroundColor: '#43a047' }} // Customizing background color
-      />
+      /> */}
     </div>
   );
 };

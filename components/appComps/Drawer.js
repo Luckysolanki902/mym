@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
@@ -37,11 +37,21 @@ export default function SwipeableTemporaryDrawer(props) {
     });
     const [fetching, setFetching] = useState(false);
 
+    // Ref to track if the drawer is open
+    const isDrawerOpen = useRef(false);
+
     const toggleDrawer = (anchor, open) => (event) => {
         if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        setState({ ...state, [anchor]: open });
+
+        setState((prevState) => ({ ...prevState, [anchor]: open }));
+        isDrawerOpen.current = open;
+
+        if (open) {
+            // Push a shallow route change to add a history entry without navigating
+            router.push(router.asPath, router.asPath, { shallow: true });
+        }
     };
 
     const fetchUserDetails = async () => {
@@ -96,9 +106,27 @@ export default function SwipeableTemporaryDrawer(props) {
     useEffect(() => {
         // Check if the path matches any of the Drawer items and set the active index accordingly
         const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion'];
-        const index = paths.findIndex(path => path === router.pathname);
-        setState(prevState => ({ ...prevState, activeIndex: index !== -1 ? index : null }));
+        const index = paths.findIndex((path) => path === router.pathname);
+        setState((prevState) => ({ ...prevState, activeIndex: index !== -1 ? index : null }));
     }, [router.pathname]);
+
+    useEffect(() => {
+        // Intercept the back button using beforePopState
+        router.beforePopState(({ url, as, options }) => {
+            if (isDrawerOpen.current) {
+                // If the drawer is open, close it and prevent route change
+                setState((prevState) => ({ ...prevState, right: false }));
+                isDrawerOpen.current = false;
+                return false; // Prevent the route change
+            }
+            return true; // Allow the route change
+        });
+
+        // Cleanup on unmount
+        return () => {
+            router.beforePopState(() => true);
+        };
+    }, [router]);
 
     const isActive = (href) => {
         return router.asPath === href;
@@ -112,7 +140,14 @@ export default function SwipeableTemporaryDrawer(props) {
             onKeyDown={toggleDrawer(anchor, false)}
         >
             <div className={styles.imageCont}>
-                <Image className={styles.logoImage} src={'/images/mym_logos/mymlogoinvert2.png'} width={724 / 2} height={338 / 2} alt="mym" title='maddy logo' />
+                <Image
+                    className={styles.logoImage}
+                    src={'/images/mym_logos/mymlogoinvert2.png'}
+                    width={724 / 2}
+                    height={338 / 2}
+                    alt="mym"
+                    title="maddy logo"
+                />
             </div>
             <List className={styles.list} style={{ height: '100%' }}>
                 {[
@@ -128,16 +163,19 @@ export default function SwipeableTemporaryDrawer(props) {
                         className={`${styles.sideBarListItem}`}
                         style={index === 5 ? null : null}
                     >
-
-                        <Link href={item.href} className={`${styles.sideBarLinks} ${state.activeIndex === index ? styles.activeListItem : ''}`} passHref>
-                            <ListItemButton className={styles.sideBarListItem}>
+                        <Link href={item.href} passHref>
+                            <ListItemButton
+                                className={`${styles.sideBarLinks} ${
+                                    state.activeIndex === index ? styles.activeListItem : ''
+                                }`}
+                            >
                                 <ListItemIcon className={styles.listItemIcon}>
                                     {index === 0 ? (
                                         <Image
                                             src={'/images/sidebaricons/home.png'}
                                             width={512 / 3}
                                             height={512 / 3}
-                                            alt='icon'
+                                            alt="icon"
                                             className={`${styles.iconspng1} ${styles.sideIcon}`}
                                         />
                                     ) : index === 1 ? (
@@ -145,7 +183,7 @@ export default function SwipeableTemporaryDrawer(props) {
                                             src={'/images/sidebaricons/randomchat.png'}
                                             width={1080 / 10}
                                             height={720 / 10}
-                                            alt='icon'
+                                            alt="icon"
                                             className={`${styles.iconspng2} ${styles.sideIcon}`}
                                         />
                                     ) : index === 2 ? (
@@ -153,7 +191,7 @@ export default function SwipeableTemporaryDrawer(props) {
                                             src={'/images/sidebaricons/confessions.png'}
                                             width={545 / 10}
                                             height={720 / 10}
-                                            alt='icon'
+                                            alt="icon"
                                             className={`${styles.iconspng3} ${styles.sideIcon}`}
                                         />
                                     ) : index === 3 ? (
@@ -161,19 +199,19 @@ export default function SwipeableTemporaryDrawer(props) {
                                             src={'/images/sidebaricons/createconfession.png'}
                                             width={225 / 2}
                                             height={272 / 2}
-                                            alt='icon'
+                                            alt="icon"
                                             className={`${styles.iconspng4} ${styles.sideIcon}`}
                                         />
                                     ) : index === 4 ? (
                                         <StyledBadge badgeContent={state.unseenCount} color="primary">
-                                            <MailIcon fontSize='medium' style={{ color: 'white' }} />
+                                            <MailIcon fontSize="medium" style={{ color: 'white' }} />
                                         </StyledBadge>
                                     ) : index === 5 ? (
                                         <Image
                                             src={'/images/sidebaricons/bulb.png'}
                                             width={300 / 2}
                                             height={272 / 2}
-                                            alt='icon'
+                                            alt="icon"
                                             className={`${styles.iconspng5} ${styles.sideIcon}`}
                                         />
                                     ) : (
@@ -181,7 +219,7 @@ export default function SwipeableTemporaryDrawer(props) {
                                             src={'/images/sidebaricons/logout.png'}
                                             width={300 / 2}
                                             height={272 / 2}
-                                            alt='icon'
+                                            alt="icon"
                                             className={`${styles.iconspng5} ${styles.sideIcon}`}
                                         />
                                     )}
@@ -200,27 +238,29 @@ export default function SwipeableTemporaryDrawer(props) {
                 ))}
                 <ListItem
                     className={`${styles.sideBarListItem}`}
-                    style={{ position: 'absolute', bottom: '-1rem', marginLeft:'2.5rem' }}
+                    style={{ position: 'absolute', bottom: '-1rem', marginLeft: '2.5rem' }}
                 >
-                    {session && <ListItemButton className={styles.sideBarListItem} onClick={signOut}>
-                        <ListItemIcon className={styles.listItemIcon}>
-                            <Image
-                                src={'/images/sidebaricons/logout.png'}
-                                width={300 / 2}
-                                height={272 / 2}
-                                alt='logout icon'
-                                className={`${styles.iconspng5} ${styles.sideIcon}`}
+                    {state.userDetails && (
+                        <ListItemButton className={styles.sideBarListItem} onClick={signOut}>
+                            <ListItemIcon className={styles.listItemIcon}>
+                                <Image
+                                    src={'/images/sidebaricons/logout.png'}
+                                    width={300 / 2}
+                                    height={272 / 2}
+                                    alt="logout icon"
+                                    className={`${styles.iconspng5} ${styles.sideIcon}`}
+                                />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={
+                                    <h3 style={{ color: 'white' }} className={styles.linkText}>
+                                        Logout
+                                    </h3>
+                                }
+                                className={styles.link}
                             />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={
-                                <h3 style={{ color: 'white' }} className={styles.linkText}>
-                                    Logout
-                                </h3>
-                            }
-                            className={styles.link}
-                        />
-                    </ListItemButton>}
+                        </ListItemButton>
+                    )}
                 </ListItem>
             </List>
         </div>
@@ -233,6 +273,7 @@ export default function SwipeableTemporaryDrawer(props) {
                 onClick={toggleDrawer('right', true)}
                 startIcon={<MenuIcon className={styles.menuIcon} style={{ fontSize: '40px' }} />}
             >
+                {/* You can add button text here if needed */}
             </Button>
             <SwipeableDrawer
                 anchor="right"

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { Button, useMediaQuery } from '@mui/material';
 import { Close } from '@mui/icons-material';
@@ -26,6 +26,39 @@ const CommentsDrawer = ({
     replyingToId: '',
     replyingToContent: '',
   });
+
+  // Ref to track if the drawer is open
+  const isDrawerOpenRef = useRef(isOpen);
+
+  // Function to handle closing the drawer
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    isDrawerOpenRef.current = isOpen;
+
+    if (isOpen) {
+      // Push a new history state when the drawer opens
+      window.history.pushState({ drawer: true }, '');
+      
+      // Define the popstate handler
+      const handlePopState = (event) => {
+        if (isDrawerOpenRef.current) {
+          // If the drawer is open, close it and prevent default back navigation
+          handleClose();
+        }
+      };
+
+      // Add the popstate event listener
+      window.addEventListener('popstate', handlePopState);
+
+      // Cleanup function to remove the event listener when the drawer closes
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+      };
+    }
+  }, [isOpen, handleClose]);
 
   useEffect(() => {
     // Scroll to the bottom when the comments change
@@ -74,9 +107,17 @@ const CommentsDrawer = ({
     <SwipeableDrawer
       anchor="bottom"
       open={isOpen}
-      onClose={onClose}
-      onOpen={() => {}} // Add an empty function for onOpen
+      onClose={handleClose}
+      onOpen={() => {}} // Empty function for onOpen
       style={{ maxWidth: '100vw', overflowX: 'hidden' }}
+      // Customize PaperProps to add top corner radius
+      PaperProps={{
+        style: {
+          borderTopLeftRadius: '16px',
+          borderTopRightRadius: '16px',
+        },
+        className: styles.customPaper, // Optional: Use a CSS class for more styling
+      }}
     >
       <div className={styles.drawerMainContainer}>
         <div className={styles.drawerHeader}>
@@ -85,7 +126,16 @@ const CommentsDrawer = ({
             {replyingState.replying && (
               <div>
                 Replying to: {replyingState.replyingToContent}{' '}
-                <span onClick={() => setReplyingState({ replying: false, replyingToId: '', replyingToContent: '' })}>
+                <span
+                  onClick={() =>
+                    setReplyingState({
+                      replying: false,
+                      replyingToId: '',
+                      replyingToContent: '',
+                    })
+                  }
+                  style={{ cursor: 'pointer', color: 'red' }}
+                >
                   <Close />
                 </span>
               </div>
@@ -94,15 +144,22 @@ const CommentsDrawer = ({
               <input
                 ref={inputRef}
                 type="text"
-              
                 placeholder="Add a comment..."
                 value={commentValue}
                 onChange={(e) => setCommentValue(e.target.value)}
-                style={{ flex: '1', height: '100%', outline: 'none', border: 'none' }}
+                style={{
+                  flex: '1',
+                  height: '100%',
+                  outline: 'none',
+                  border: 'none',
+                  padding: '0.5rem',
+                }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && e.target.value.trim() !== '') {
                     e.preventDefault();
-                    replyingState.replying ? handleReplySubmit() : handleCommentSubmit();
+                    replyingState.replying
+                      ? handleReplySubmit()
+                      : handleCommentSubmit();
                   }
                 }}
                 autoFocus
@@ -113,43 +170,97 @@ const CommentsDrawer = ({
             </div>
           </div>
         </div>
-        <div className={`${styles.drawerContainer} ${isSmallScreen ? styles.smallScreen : ''}`}>
+        <div
+          className={`${styles.drawerContainer} ${
+            isSmallScreen ? styles.smallScreen : ''
+          }`}
+        >
           <div ref={drawerContainerRef}></div>
-          <div className={styles.comments} style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}>
+          <div
+            className={styles.comments}
+            style={{ flex: '1', overflowY: 'auto', marginBottom: '1rem' }}
+          >
             <div className={styles.comments}>
               <div ref={bottomRef}></div>
               {comments.map((comment) => (
-                <div key={`${comment._id}${Math.random()}`} style={{ display: 'flex', flexDirection: 'column' }}>
+                <div
+                  key={comment._id} // Removed Math.random() for stable keys
+                  style={{ display: 'flex', flexDirection: 'column' }}
+                >
                   <div className={styles.comment}>
-                    <div className={styles.commentContent}>     <span className={comment.gender === 'male' ? styles.maleAvatar : styles.femaleAvatar}>
-                      {comment.gender === 'male' ? 'Some Boy:' : 'Some Girl:'}
-                    </span>{comment.commentContent}</div>
+                    <div className={styles.commentContent}>
+                      <span
+                        className={
+                          comment.gender === 'male'
+                            ? styles.maleAvatar
+                            : styles.femaleAvatar
+                        }
+                      >
+                        {comment.gender === 'male' ? 'Some Boy:' : 'Some Girl:'}
+                      </span>
+                      {comment.commentContent}
+                    </div>
 
-                    {/* <div style={{ display: 'flex', gap: '1rem' }}>
-                      <Button onClick={() => handleLikeClickOnComment(comment._id)} style={{ textTransform: 'none' }}>
+                    {/* Uncomment and style these sections as needed
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <Button
+                        onClick={() =>
+                          handleLikeClickOnComment(comment._id)
+                        }
+                        style={{ textTransform: 'none' }}
+                      >
                         <FaHeart />
                         <span>{comment?.likes?.length}</span>
                       </Button>
-                      <Button onClick={() => handleReplyClick(comment._id, comment.commentContent)} style={{ textTransform: 'none' }}>
+                      <Button
+                        onClick={() =>
+                          handleReplyClick(comment._id, comment.commentContent)
+                        }
+                        style={{ textTransform: 'none' }}
+                      >
                         Reply
                       </Button>
-                    </div> */}
-
+                    </div>
+                    */}
                   </div>
 
-                  {/* <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginLeft:'2rem' }}>
+                  {/* Uncomment and style replies as needed
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem',
+                      marginLeft: '2rem',
+                    }}
+                  >
                     {comment?.replies?.map((reply) => (
-                      <div key={reply._id} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <div>{reply.gender === 'male' ? 'Some Boy:' : 'Some Girl:'}</div>
+                      <div
+                        key={reply._id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '1rem',
+                        }}
+                      >
+                        <div>
+                          {reply.gender === 'male'
+                            ? 'Some Boy:'
+                            : 'Some Girl:'}
+                        </div>
                         <div>{reply.replyContent}</div>
-                        <Button onClick={() => handleLikeClickOnReply(comment._id, reply._id)} style={{ textTransform: 'none' }}>
+                        <Button
+                          onClick={() =>
+                            handleLikeClickOnReply(comment._id, reply._id)
+                          }
+                          style={{ textTransform: 'none' }}
+                        >
                           <FaHeart />
                           <span>{reply.likes.length}</span>
                         </Button>
                       </div>
                     ))}
-                  </div> */}
-
+                  </div>
+                  */}
                 </div>
               ))}
               {comments.length < 1 && <>No comments Yet</>}

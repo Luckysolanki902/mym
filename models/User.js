@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';  // UUID library to generate unique ids
 const UserSchema = new mongoose.Schema({
   email: {
     type: String,
+    index: true,
     required: true,
     unique: true,
     validate: {
@@ -16,15 +17,18 @@ const UserSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
+    index: true,
     required: true,
   },
   college: {
     type: String,
     required: true,
+    index: true, 
   },
   isVerified: {
     type: Boolean,
     default: false,
+    index: true
   },
   otp: {
     type: String, // Store OTP as a string
@@ -34,11 +38,13 @@ const UserSchema = new mongoose.Schema({
     type: Date, // Store cooldown as a Date
   },
   mid: {
+    index: true,
     type: String,
     unique: true,
     default: () => uuidv4(),  // Generate unique id for mid
   },
   tokenId: {
+    index: true,
     type: String,
     unique: true,
     default: () => uuidv4(),  // Generate unique id for tokenId

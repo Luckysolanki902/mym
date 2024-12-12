@@ -6,7 +6,6 @@ import MailIcon from '@mui/icons-material/Mail';
 import Image from 'next/image';
 import styles from './styles/sidebar.module.css';
 import { getSession, signOut } from 'next-auth/react';
-import { useSession } from 'next-auth/react';
 
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -20,7 +19,6 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const Sidebar = () => {
   const router = useRouter();
-    const { data: session } = useSession();
   const [activeIndex, setActiveIndex] = useState(null);
   const [unseenCount, setUnseenCount] = useState(0);
   const [userDetails, setUserDetails] = useState(null);
@@ -167,7 +165,7 @@ const Sidebar = () => {
           />
         </div>
 
-      {session && (
+      {userDetails && (
         <div
           className={`${styles.icons}`}
           onClick={() => signOut()}
@@ -190,3 +188,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

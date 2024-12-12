@@ -1,6 +1,6 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { createTheme, ThemeProvider, TextField, Button, InputAdornment, IconButton } from '@mui/material';
 import Image from 'next/image';
@@ -9,7 +9,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CustomHead from "@/components/seo/CustomHead";
-
+import { useSession } from 'next-auth/react';
+import { getSession } from "next-auth/react";
 
 
 
@@ -24,8 +25,14 @@ const mymtheme = createTheme({
 
 
 
-export default function Signin() {
+export default function Signin({userDetails}) {
+  const { data: session } = useSession();
   const router = useRouter();
+  useEffect(()=>{
+    if(userDetails){
+      router.push('/')
+    }
+  }, [userDetails])
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [signInError, setSignInError] = useState(null); // State to manage sign-in errors
@@ -144,7 +151,7 @@ export default function Signin() {
               className={styles.paraLink}
               style={{ textTransform: 'none' }}
             >
-              <span style={{marginRight:'0.5rem'}}>Don't have an account?</span ><span style={{ cursor: 'pointer', color: 'rgb(50, 50, 50)', fontWeight: '800' }}>Signup</span>
+              <span style={{ marginRight: '0.5rem' }}>Don't have an account?</span ><span style={{ cursor: 'pointer', color: 'rgb(50, 50, 50)', fontWeight: '800' }}>Signup</span>
             </div>
           </div>
         </div>
@@ -152,4 +159,30 @@ export default function Signin() {
     </>
 
   );
+}
+
+export async function getServerSideProps(context) {
+  let session = null;
+  session = await getSession(context);
+
+  let userDetails = null;
+  if (session?.user?.email) {
+    try {
+      const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
+      const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
+      if (response.ok) {
+        userDetails = await response.json();
+      } else {
+        console.error('Error fetching user details');
+      }
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  }
+
+  return {
+    props: {
+      userDetails,
+    },
+  };
 }
