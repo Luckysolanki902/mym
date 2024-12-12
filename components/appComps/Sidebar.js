@@ -5,7 +5,9 @@ import { styled } from '@mui/material/styles';
 import MailIcon from '@mui/icons-material/Mail';
 import Image from 'next/image';
 import styles from './styles/sidebar.module.css';
-import { getSession } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -18,15 +20,15 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const Sidebar = () => {
   const router = useRouter();
-  const [activeIndex, setActiveIndex] = useState(null); // Initially set to null
+    const { data: session } = useSession();
+  const [activeIndex, setActiveIndex] = useState(null);
   const [unseenCount, setUnseenCount] = useState(0);
   const [userDetails, setUserDetails] = useState(null);
-  const [fetching, setFetching]  = useState(false)
+  const [fetching, setFetching] = useState(false);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-
         const session = await getSession();
         if (session?.user?.email) {
           const response = await fetch(`/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
@@ -71,10 +73,9 @@ const Sidebar = () => {
   }, [userDetails]);
 
   useEffect(() => {
-    // Check if the path matches any of the sidebar routes and set the active tab accordingly
     const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion'];
     const index = paths.findIndex(path => path === router.pathname);
-    setActiveIndex(index !== -1 ? index : null); // If not found in sidebar routes, set to null
+    setActiveIndex(index !== -1 ? index : null);
   }, [router.pathname]);
 
   const handleSetActive = (index, path) => {
@@ -89,7 +90,6 @@ const Sidebar = () => {
           className={`${styles.icons} ${activeIndex === 0 ? styles.activeAndAtHome : ''}`}
           onClick={() => handleSetActive(0, '/')}
           data-title="Home"
-
         >
           <Image
             src={'/images/sidebaricons/home.png'}
@@ -153,12 +153,10 @@ const Sidebar = () => {
             />
           </StyledBadge>
         </div>
-
         <div
           className={`${styles.icons} ${activeIndex === 5 ? styles.active : ''}`}
           onClick={() => handleSetActive(5, '/give-your-suggestion')}
           data-title="Suggestions"
-          style={{ position:'absolute', bottom:'2rem'}}
         >
           <Image
             src={'/images/sidebaricons/bulb.png'}
@@ -168,6 +166,24 @@ const Sidebar = () => {
             className={styles.iconspng4}
           />
         </div>
+
+      {session && (
+        <div
+          className={`${styles.icons}`}
+          onClick={() => signOut()}
+          data-title="Logout"
+          style={{ position: 'absolute', bottom: '2rem' }}
+        >
+          <Image
+            src={'/images/sidebaricons/logout.png'}
+            width={225 / 2}
+            height={272 / 2}
+            alt='icon'
+            style={{transform:'scale(0.9)'}}
+            className={styles.iconspng4}
+          />
+        </div>
+      )}
       </div>
     </div>
   );

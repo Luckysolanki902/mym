@@ -12,13 +12,16 @@ import Footer from '@/components/commonComps/Footer';
 import CollegeCards from '@/components/justhomepage/CollegeCards';
 import InstagramCard from '@/components/justhomepage/InstagramCard';
 import Link from 'next/link';
-export default function Home({ session, trendingConfessions, totalConfessions }) {
+import { useMediaQuery } from '@mui/material';
 
+
+
+export default function Home({ session, trendingConfessions, totalConfessions }) {
   const containerSpring = useSpring({
     from: { opacity: 0, transform: 'translate3d(0, -50px, 0)' },
     to: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
   });
-
+ const isSmallDevice = useMediaQuery('(max-width:600px)');
   const router = useRouter()
 
 
@@ -117,7 +120,11 @@ export default function Home({ session, trendingConfessions, totalConfessions })
 
 
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '90%', margin: 'auto', marginTop: '3rem', marginBottom: '3rem' }} >
+        {!isSmallDevice ?
           <Image src={'/images/illustrations/roadmapforphone.png'} className={styles.featuresBg} width={5032 / 3} height={3144 / 3} alt='roadmap'></Image>
+          :
+          <Image src={'/images/illustrations/roadmap-low-width.png'} className={styles.featuresBg} width={5032 / 3} height={3144 / 3} alt='roadmap'></Image>}
+
         </div>
 
         <Link href={'https://www.instagram.com/_mym_official/'} target="_blank" rel="noopener noreferrer" style={{ width: '100%', marginTop: '1rem', marginBottom: '2rem' }}>
@@ -136,7 +143,7 @@ export default function Home({ session, trendingConfessions, totalConfessions })
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Image src={'/images/illustrations/notOhmegle.png'} width={1516 / 2} height={511 / 2} alt='notohmegle' className={styles.notohmegle}></Image>
+          <Image src={'/images/illustrations/die-single.png'} width={1516} height={511} alt='notohmegle' className={styles.notohmegle}></Image>
         </div>
         {/* <CollegeCards /> */}
         {/* <div style={{ width: '100%', height: '10em' }}></div> */}

@@ -14,7 +14,8 @@ import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
-import { getSession } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
@@ -26,6 +27,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 export default function SwipeableTemporaryDrawer(props) {
+    const { data: session } = useSession();
     const router = useRouter();
     const [state, setState] = useState({
         right: false,
@@ -33,8 +35,7 @@ export default function SwipeableTemporaryDrawer(props) {
         unseenCount: 0,
         activeIndex: null, // Initially set to null
     });
-  const [fetching, setFetching]  = useState(false)
-
+    const [fetching, setFetching] = useState(false);
 
     const toggleDrawer = (anchor, open) => (event) => {
         if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -76,8 +77,7 @@ export default function SwipeableTemporaryDrawer(props) {
                 }
             } catch (error) {
                 console.error('Error fetching unseen count:', error);
-            }
-            finally{
+            } finally {
                 setFetching(false);
             }
         }
@@ -114,20 +114,19 @@ export default function SwipeableTemporaryDrawer(props) {
             <div className={styles.imageCont}>
                 <Image className={styles.logoImage} src={'/images/mym_logos/mymlogoinvert2.png'} width={724 / 2} height={338 / 2} alt="mym" title='maddy logo' />
             </div>
-            <List className={styles.list} style={{ height: '100%', }}>
+            <List className={styles.list} style={{ height: '100%' }}>
                 {[
                     { text: 'Home', href: '/' },
                     { text: 'Random Chat', href: '/textchat' },
-                    { text: 'Read Confessions ', href: '/all-confessions' },
+                    { text: 'Read Confessions', href: '/all-confessions' },
                     { text: 'Write Confession', href: '/create-confession' },
                     { text: 'Inbox', href: '/inbox' },
-                    { text: 'Suggestions', href: '/give-your-suggestion' }, // New option added
+                    { text: 'Suggestions', href: '/give-your-suggestion' },
                 ].map((item, index) => (
                     <ListItem
                         key={item.text}
-                        className={`${styles.sideBarListItem} `}
-                        style={index === 5 ? { position: 'absolute', bottom: '1rem', } : null}
-
+                        className={`${styles.sideBarListItem}`}
+                        style={index === 5 ? null : null}
                     >
 
                         <Link href={item.href} className={`${styles.sideBarLinks} ${state.activeIndex === index ? styles.activeListItem : ''}`} passHref>
@@ -169,9 +168,17 @@ export default function SwipeableTemporaryDrawer(props) {
                                         <StyledBadge badgeContent={state.unseenCount} color="primary">
                                             <MailIcon fontSize='medium' style={{ color: 'white' }} />
                                         </StyledBadge>
-                                    ) : (
+                                    ) : index === 5 ? (
                                         <Image
                                             src={'/images/sidebaricons/bulb.png'}
+                                            width={300 / 2}
+                                            height={272 / 2}
+                                            alt='icon'
+                                            className={`${styles.iconspng5} ${styles.sideIcon}`}
+                                        />
+                                    ) : (
+                                        <Image
+                                            src={'/images/sidebaricons/logout.png'}
                                             width={300 / 2}
                                             height={272 / 2}
                                             alt='icon'
@@ -191,14 +198,38 @@ export default function SwipeableTemporaryDrawer(props) {
                         </Link>
                     </ListItem>
                 ))}
+                <ListItem
+                    className={`${styles.sideBarListItem}`}
+                    style={{ position: 'absolute', bottom: '-1rem', marginLeft:'2.5rem' }}
+                >
+                    {session && <ListItemButton className={styles.sideBarListItem} onClick={signOut}>
+                        <ListItemIcon className={styles.listItemIcon}>
+                            <Image
+                                src={'/images/sidebaricons/logout.png'}
+                                width={300 / 2}
+                                height={272 / 2}
+                                alt='logout icon'
+                                className={`${styles.iconspng5} ${styles.sideIcon}`}
+                            />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={
+                                <h3 style={{ color: 'white' }} className={styles.linkText}>
+                                    Logout
+                                </h3>
+                            }
+                            className={styles.link}
+                        />
+                    </ListItemButton>}
+                </ListItem>
             </List>
         </div>
     );
 
-
     return (
         <div className={styles.drawermain}>
             <Button
+                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 onClick={toggleDrawer('right', true)}
                 startIcon={<MenuIcon className={styles.menuIcon} style={{ fontSize: '40px' }} />}
             >

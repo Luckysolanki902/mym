@@ -16,7 +16,11 @@
     /* position: relative; */
 }
  
-
+.drawermain{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 
 
