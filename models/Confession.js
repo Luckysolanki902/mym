@@ -14,10 +14,12 @@ const confessionSchema = new mongoose.Schema({
   college: {
     type: String,
     required: true,
+    index: true, 
   },
   gender: { 
     type: String,
     required: true,
+    index: true
   },
   confessionContent: {
     type: String,
@@ -29,6 +31,7 @@ const confessionSchema = new mongoose.Schema({
   }],
   showForAllColleges: {
     type: String,
+    index: true,
   },
   comments: [{
     type: Schema.Types.ObjectId,

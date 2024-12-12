@@ -71,86 +71,85 @@ export default function Signin() {
 
   return (
     <>
-    <CustomHead title={'Login to MYM - Meet Your Mate'}/>
-    <ThemeProvider theme={mymtheme}>
+      <CustomHead title={'Login to MYM - Meet Your Mate'} />
+      <ThemeProvider theme={mymtheme}>
 
-      <div className={styles.mainContainer}>
-        <div className={styles.macpng}>
-          <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview'></Image>
-        </div>
-        <div className={styles.mainBox}>
-          <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
-          {signInError && (<p style={{ color: 'red' }}>{signInError}</p>)}
-          <form onSubmit={handleSignIn} className={styles.form}>
-            <TextField
-              type="email"
-              label="College Id"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              variant='standard'
-              InputLabelProps={{
-                required: false, // Remove the asterisk for the Email field
-              }}
-              className={styles.input}
-            />
-            <TextField
-              variant='standard'
-              type={showPassword ? "text" : "password"}
-              label="Password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              InputLabelProps={{
-                required: false, // Remove the asterisk for the Email field
-              }}
-              className={styles.input}
+        <div className={styles.mainContainer}>
+          <div className={styles.macpng}>
+            <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview'></Image>
+          </div>
+          <div className={styles.mainBox}>
+            <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
+            {signInError && (<p style={{ color: 'red' }}>{signInError}</p>)}
+            <form onSubmit={handleSignIn} className={styles.form}>
+              <TextField
+                type="email"
+                label="College Id"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                variant='standard'
+                InputLabelProps={{
+                  required: false, // Remove the asterisk for the Email field
+                }}
+                className={styles.input}
+              />
+              <TextField
+                variant='standard'
+                type={showPassword ? "text" : "password"}
+                label="Password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                InputLabelProps={{
+                  required: false, // Remove the asterisk for the Email field
+                }}
+                className={styles.input}
 
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      edge="end"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClickShowPassword}
+                        edge="end"
                       >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Button
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className={styles.button}
+                style={{ textTransform: 'none' }}
+                disabled={loading}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
+              </Button>
+            </form>
+            <Link href="/auth/forgot-password" className={styles.paraLink2}>
+              Forgot Password?
+            </Link>
+            <div className={styles.line}></div>
+            <div
               type="submit"
               variant="contained"
               color="primary"
-              className={styles.button}
+              onClick={() => router.push('/auth/signup')}
+              className={styles.paraLink}
               style={{ textTransform: 'none' }}
-              disabled={loading}
-              >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
-            </Button>
-          </form>
-          <Link href="/auth/forgot-password" className={styles.paraLink2}>
-            Forgot Password?
-          </Link>
-          <div className={styles.line}></div>
-          <div
-            type="submit"
-            variant="contained"
-            color="primary"
-            onClick={() => router.push('/auth/signup')}
-            className={styles.paraLink}
-            style={{ textTransform: 'none', cursor: 'pointer' }}
-
-          >
-            {'Create New Account'}
+            >
+              <span style={{marginRight:'0.5rem'}}>Don't have an account?</span ><span style={{ cursor: 'pointer', color: 'rgb(50, 50, 50)', fontWeight: '800' }}>Signup</span>
+            </div>
           </div>
         </div>
-      </div>
-    </ThemeProvider>
-            </>
+      </ThemeProvider>
+    </>
 
   );
 }

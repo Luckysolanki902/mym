@@ -5,14 +5,13 @@ const insultThreshold = 0.5;
 const threatThreshold = 0.5;
 
 export default async function handler(req, res) {
-    
+
     const { confessionContent } = req.body;
     if (!confessionContent) {
         return res.status(400).json({ error: 'Missing confession content' });
     }
 
     const { isFitForSubmission, problematicSentences, warning, advice } = await analyzeFullContent(confessionContent);
-
     res.status(200).json({ isFitForSubmission, problematicSentences, warning, advice });
 }
 
@@ -23,7 +22,8 @@ async function analyzeFullContent(content) {
         return { isFitForSubmission: true, problematicSentences: [], warning: '', advice: '' };
     } else {
         // If full content fails, analyze each sentence
-        const sentences = content.split(/[.,!?\n]+/);
+        const sentences = content.split(/[.,!?\\n]+/).filter(sentence => sentence.trim().length > 0);
+
         const problematicSentences = [];
         let warning = '';
         let advice = '';
@@ -43,7 +43,13 @@ async function analyzeFullContent(content) {
 }
 
 async function analyzeSentence(sentence) {
+    if (!sentence || sentence.trim().length === 0) {
+        console.warn('Skipping empty or invalid sentence:', sentence);
+        return { isFitForSubmission: true, warning: '', advice: '' };
+    }
+
     const apiKey = process.env.PERSPECTIVE_API_KEY;
+
 
     const response = await fetch(`https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${apiKey}`, {
         method: 'POST',
@@ -67,16 +73,22 @@ async function analyzeSentence(sentence) {
 
     const data = await response.json();
 
-    if (data.error) {
-        console.error('Error analyzing sentence:', data.error.message);
+    if (!response.ok) {
+        console.error('API response error:', response.status, response.statusText, data);
         return { isFitForSubmission: true, warning: '', advice: '' };
     }
 
+    if (!data || !data.attributeScores) {
+        console.error('Invalid data received from API:', data);
+        return { isFitForSubmission: true, warning: '', advice: '' };
+    }
+
+
     const attributeScores = {
-        insult: data.attributeScores.INSULT.summaryScore.value,
-        threat: data.attributeScores.THREAT.summaryScore.value,
-        severeToxicity: data.attributeScores.SEVERE_TOXICITY.summaryScore.value,
-        identityAttack: data.attributeScores.IDENTITY_ATTACK.summaryScore.value,
+        insult: data.attributeScores?.INSULT?.summaryScore?.value || 0,
+        threat: data.attributeScores?.THREAT?.summaryScore?.value || 0,
+        severeToxicity: data.attributeScores?.SEVERE_TOXICITY?.summaryScore?.value || 0,
+        identityAttack: data.attributeScores?.IDENTITY_ATTACK?.summaryScore?.value || 0,
     };
 
     const { isFitForSubmission, warning, advice } = determineFitForSubmission(attributeScores);
@@ -122,23 +134,22 @@ function generateWarningAndAdvice(attributeScores) {
 
     // Customize the warning and advice based on attribute scores
     if (attributeScores.insult >= insultThreshold) {
-        warning = 'Your confession contains insulting language, which may harm others.';
-        advice = 'Kindly express your thoughts with empathy and choose words that foster a positive dialogue.';
+        warning = 'Your message includes insulting language that might hurt others.';
+        advice = 'Try expressing your thoughts in a kind and respectful way.';
     } else if (attributeScores.threat >= threatThreshold) {
-        warning = 'Your confession contains threats, which is not conducive to a healthy conversation.';
-        advice = 'Please reconsider your words and communicate in a non-threatening and respectful manner.';
+        warning = 'Your message contains threatening language.';
+        advice = 'Please consider using calm and respectful words to share your thoughts.';
     } else if (attributeScores.severeToxicity >= severeToxicityThreshold) {
-        warning = 'Your confession has a high level of severe toxicity, indicating harmful language.';
-        advice = 'It is crucial to communicate respectfully. Consider rephrasing to promote positive and constructive dialogue.';
+        warning = 'Your message is highly toxic and could be harmful.';
+        advice = 'Kindly rephrase to ensure your words promote understanding and positivity.';
+    } else if (attributeScores.identityAttack >= identityAttackThreshold) {
+        warning = 'Your message targets someone’s identity, which can be hurtful.';
+        advice = 'Focus on being open-minded and avoid language that singles out individuals or groups.';
     } else {
-        if (attributeScores.identityAttack >= identityAttackThreshold) {
-            warning = 'Your confession contains identity attacks, targeting a specific person or group.';
-            advice = 'Encourage open-mindedness and avoid using language that attacks someone based on their identity.';
-        } else {
-            warning = 'Your confession might have elements that could be perceived negatively.';
-            advice = 'Take a moment to review your words, ensuring they contribute to a respectful and constructive conversation.';
-        }
+        warning = 'Your message might come across as negative.';
+        advice = 'Consider reviewing your words to make them more constructive and respectful.';
     }
+    
 
     return { warning, advice };
 }

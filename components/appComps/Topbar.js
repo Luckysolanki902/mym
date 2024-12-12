@@ -41,15 +41,15 @@ const Topbar = () => {
         {!loading && !user && (
           <div className={styles.sessionButtons}>
             {isSignUpPage && (
-              <button className={styles.login} onClick={handleSignIn}>Log In</button>
+              <button className={styles.login} onClick={handleSignIn}>Log In Instead</button>
             )}
             {isSignInPage && (
-              <button className={styles.signup} onClick={handleSignUp}>Sign Up</button>
+              <button className={styles.login} onClick={handleSignUp}>Sign Up Instead</button>
             )}
             {!isSignUpPage && !isSignInPage && (
               <>
                 <button className={styles.login} onClick={handleSignIn}>Login</button>
-                <button className={styles.signup} onClick={handleSignUp}>Sign Up</button>
+                {/* <button className={styles.signup} onClick={handleSignUp}>Sign Up</button> */}
               </>
             )}
             {<SwipeableTemporaryDrawer />}

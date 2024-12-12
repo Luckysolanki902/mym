@@ -4,11 +4,14 @@ import { FaHeart, FaComment, FaRegHeart, } from 'react-icons/fa';
 import { IoIosSend } from 'react-icons/io';
 import styles from '../componentStyles/confession.module.css';
 import AnonymDialog from './AnonymDialog';
-import { useMediaQuery } from '@mui/material';
+import { Button, useMediaQuery } from '@mui/material';
 import Image from 'next/image';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ReplyIcon from '@mui/icons-material/Reply';
 
-const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommentsDialog, handleClick, handleOpenAuthPrompt }) => {
+
+const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommentsDialog, handleClick, handleOpenAuthPrompt, isAdmin, ondeleteClick, handleShareClick }) => {
     const [liked, setLiked] = useState(false);
     const isSmallDevice = useMediaQuery('(max-width:800px)');
     const [likeanimation, setlikeanimation] = useState('');
@@ -146,66 +149,44 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
     return (
         <div>
             <div className={styles.confessionfooter}>
-                <div className={styles.likes} onClick={handleLike} style={{ cursor: 'pointer' }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        {liked ? (
-                            <FaHeart className={`${styles.iconm} ${styles.redheart} ${likeanimation ? styles[likeanimation] : ''}`} />
-                        ) : (
-                            <Image src={'/images/othericons/heart.png'} width={50} height={50} alt='' className={`${styles.iconm} ${likeanimation ? styles[likeanimation] : ''}`} style={{ color: 'black' }} />
-                        )}                    </div>
-                    <div  >{likesCount}</div>
-                </div>
-                <div className={styles.commentsiconinfooter} onClick={toggleCommentsDialog} style={{ cursor: 'pointer' }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Image src={'/images/othericons/comment.png'} width={50} height={50} alt='' style={{ color: 'white' }} className={styles.iconm} />
+                <div className={styles.confessionFooterChild}>
+                    <div className={styles.likes} onClick={handleLike} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {liked ? (
+                                <FaHeart className={`${styles.iconm} ${styles.redheart} ${likeanimation ? styles[likeanimation] : ''}`} />
+                            ) : (
+                                <Image src={'/images/othericons/heart.png'} width={50} height={50} alt='' className={`${styles.iconm} ${likeanimation ? styles[likeanimation] : ''}`} style={{ color: 'black' }} />
+                            )}                    </div>
+                        <div className={styles.count}>{likesCount}</div>
                     </div>
-                    <div >{commentsCount}</div>
+                    <div className={styles.commentsiconinfooter} onClick={toggleCommentsDialog} style={{ cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Image src={'/images/othericons/comment.png'} width={50} height={50} alt='' style={{ color: 'white' }} className={styles.iconm} />
+                        </div>
+                        <div className={styles.count}>{commentsCount}</div>
+                    </div>
+
+                    <div style={{ display:'flex', justifyContent:'center', alignItems:'center'}}>
+                        <Image src={'/images/othericons/send.png'} width={50} height={50} alt='' onClick={handleShareClick}  className={styles.shareIcon} />
+                        
+                    </div>
                 </div>
-                <div className={styles.reply} onClick={handleClick}>
-                    <input
-                        className={styles.anonymInput}
-                        type="text"
-                        placeholder='Reply anonymously...'
-                        value={anonymousReplyValue}
-                        onChange={(e) => setAnonymousReplyValue(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                if (anonymousReplyValue.trim() !== '') {
-                                    handleAnonymousReply();
-                                }
-                            }
-                        }}
-                        readOnly={isSmallDevice || sendingAnonymousReply}
-                        disabled={sendingAnonymousReply}
-                        onClick={(e) => {
 
-                            if (isSmallDevice && !isAnonymousReplyDialogOpen) {
-                                setAnonymousReplyDialogOpen(true);
-                            }
-                        }}
+                {!isAdmin && <div className={styles.reply} onClick={handleClick}>
 
-                    // onClick={() => {
-                    //     if (isSmallDevice && !isAnonymousReplyDialogOpen) {
-                    //         setAnonymousReplyDialogOpen(true)
-                    //     }
-                    // }}
-                    />
-
-
-
-                    {/* <button
-                        className={styles.comBtn}
-                        id={styles.anonsendbtn}
-                        variant="text"
-                        color="primary"
-                        style={{ height: '100%', cursor: 'pointer' }}
-                        onClick={handleAnonymousReply}
-                        disabled={anonymousReplyValue.trim() === ''}
+                    <div onClick={() => setAnonymousReplyDialogOpen(!isAnonymousReplyDialogOpen)} className={styles.replybutton}><span>|</span>Reply anonymously...</div>
+                </div>}
+                {/* Delete Button for Admins */}
+                {isAdmin && (
+                    <Button
+                        variant="contained"
+                        color="error"
+                        startIcon={<DeleteIcon />}
+                        onClick={ondeleteClick}
                     >
-                        <IoIosSend style={{ width: '100%', height: 'auto' }} className={styles.iosendanon} />
-                    </button> */}
-                </div>
+                        Delete
+                    </Button>
+                )}
             </div>
             <AnonymDialog
                 open={isAnonymousReplyDialogOpen}

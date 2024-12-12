@@ -6,6 +6,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    validate: {
+      validator: (value) => {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(value);
+      },
+      message: (props) => `${props.value} is not a valid email address`,
+    },
   },
   gender: {
     type: String,
@@ -21,6 +28,7 @@ const UserSchema = new mongoose.Schema({
   },
   otp: {
     type: String, // Store OTP as a string
+    
   },
   otpCooldown: {
     type: Date, // Store cooldown as a Date

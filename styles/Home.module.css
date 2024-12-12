@@ -25,18 +25,32 @@
 }
 
 .desc {
-  font-family: Jost;
-  font-style: inherit;
-  font-weight: 900;
+  font-family: Inter, system-ui;
+  /* font-style: inherit; */
   font-size: 1.6rem;
-  font-weight: 600;
+  /* font-weight: 600; */
   color: #a5a5a5;
   text-align: center;
   /* border: 1px solid rgba(128, 128, 128, 0.399); */
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 0rem;
+  margin-bottom: 2rem;
   text-align: center;
+  font-style: italic;
+  font-weight: 100;
+  /* animation: italic 1s ease-in-out infinite alternate; */
+  transition: all 0.3s ease-in-out;
+
 }
+
+/* @keyframes italic {
+  0% {
+    font-style: italic;
+  }
+  100% {
+    font-style: normal;
+  }
+} */
+
 
 .showcase {
   display: flex;
@@ -92,7 +106,7 @@
 
 
 .ourgoal {
-  font-family: "Jomhuria", cursive;
+  font-family: "Jost", sans-serif;
   font-size: 8rem;
   margin-bottom: -2rem;
   color: #83E7FD;
@@ -106,7 +120,7 @@
 .ourgoalP {
   padding-left: 1.4rem;
   padding-right: 1.4rem;
-  font-family: 'Courgette', cursive;
+  font-family: 'Jost', sans-serif;
   /* font-size: 1.5rem; */
   text-align: center;
   margin: auto;
@@ -118,7 +132,7 @@
   justify-content: center;
   gap: 10rem;
   margin-top: 4rem; 
-margin-bottom: 4rem;
+margin-bottom: 3rem;
 } 
 
 .homepageBtns button{
@@ -545,7 +559,7 @@ left: 0;
   
 
   .ourgoal {
-    font-family: "Courgette", cursive;
+    font-family: "Jost", sans-serif;
     font-size: 3rem;
     color: #83E7FD;
     text-align: center;
@@ -559,7 +573,7 @@ left: 0;
   .ourgoalP {
     padding-left: 1.4rem;
     padding-right: 1.4rem;
-    font-family: 'Courgette', cursive;
+    font-family: 'Jost', sans-serif;
     /* font-size: 1.5rem; */
     text-align: center;
     margin: auto;
@@ -588,8 +602,8 @@ left: 0;
     padding: 0 4%;
     font-size: 0.9rem;
     letter-spacing: 0px;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-top: 0rem;
+    /* margin-bottom: 0.5rem; */
   }
 
 

@@ -24,34 +24,49 @@
     padding: 1rem;
     /* background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, rgba(255, 0, 0, 0.8) 79.73%); */
     transition: all 0.3s ease-in-out;
-    background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #1CD5FD 79.73%);
+    /* background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #1CD5FD 79.73%); */
     overflow: scroll;
 }
 
 .mainContainer .textarea {
+    padding: 1rem;
     padding-top: 2rem;
-    padding-left: 2rem;
+    /* padding-left: 2rem; */
     resize: none;
-    font-family: 'Dancing Script';
-    color: white;
-    font-size: 1.5rem;
+    font-family: 'Jost', 'sans-serif';
+    color: black;
+    font-size: 1rem;
     caret-color: white;
     outline: none;
     border: none;
     background: transparent;
     width: 100%;
     flex: 1;
-    color: #FFF;
+    color: rgba(0, 0, 0, 0.732);
     font-weight: 400;
     line-height: normal;
-    letter-spacing: 0.105rem;
     overflow: auto;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    /* box-shadow: 0px 10px 5px 5px rgba(0, 0, 0, 0.42); */
+    border-radius: 1rem;
 
 
 }
 
+.mainContainer .textarea::-webkit-scrollbar {
+  width: 8px;
+  display: block;
+}
+
+.mainContainer .textarea::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.3);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.mainContainer .textarea::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(80, 80, 80, 0.5);
+}
 .mainContainer .textarea::placeholder {
     color: white;
     font-weight: 300;
@@ -111,11 +126,25 @@
 
 .confessionfooter {
     margin-top: 1rem;
-    width: 50vw;
+    width: 100%;
     display: flex;
     justify-content: space-between;
-    gap: 2rem;
+    gap:   1.5rem;
+    padding: 0 1rem 0 1rem;
     /* background-color: blue; */
+}
+.timestamp {
+    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2rem 0 1rem;
+}
+
+.confessionFooterChild {
+    display: flex;
+    gap: 1rem;
+    /* background-color: red; */
 }
 
 .likes {
@@ -124,21 +153,21 @@
     /* background-color: var(--mymblack); */
     min-width: 2rem;
     padding: 0.5rem 0rem;
-    border-radius: 4rem;
     justify-content: space-evenly;
     gap: 0.3rem;
     font-family: Roboto;
     font-size: 1.6rem;
     color: black;
+    display: flex;
+    align-items: flex-end;
 }
 
 .commentsiconinfooter {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     /* background-color: var(--mymblack); */
     min-width: 2rem;
     padding: 0.5rem 0rem;
-    border-radius: 4rem;
     justify-content: space-evenly;
     gap: 0.3rem;
     font-family: Roboto;
@@ -189,7 +218,11 @@
 }
 
 .shareIcon {
-    font-size: 1.6rem;
+    cursor: pointer;
+    width: 1.35rem;
+    height: auto;
+    opacity: 0.75;
+    transform: rotate(9deg);
 
 }
 
@@ -255,14 +288,16 @@
 }
 
 .iconm {
-    width: 2rem;
+    width: 1.8rem;
     height: auto;
     color: white;
     transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
-
+.count{
+    font-size: 0.8rem;
+}
 .redheart {
-    color: red;
+    color: rgb(248, 82, 120);
     /* background-color: red; */
 }
 
@@ -279,34 +314,70 @@
 .reply {
     /* background-color: var(--mymblack); */
     display: flex;
-    justify-content: center;
     align-items: center;
     border-radius: 4rem;
-    flex: 1;
-    border: 1px solid black;
+    /* border: 1px solid red; */
     color: black;
     min-width: 2rem;
     margin: 0.4rem 0;
-    
-    
+    font-family: 'Roboto', sans-serif;
+
+
 }
 
 .anonymInput {
     background-color: transparent;
     height: 100%;
-    width: 100%;
+    /* width: 100%; */
     color: black;
     font-size: 1.1rem;
     font-family: Roboto;
     font-weight: 300;
     padding-left: 2rem;
-    border-radius: 3rem;
     border: none;
     outline: none;
     /* background-color: black; */
- 
+    font-family: 'Roboto', sans-serif;
+
 }
 
+.replybutton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    color: rgba(0, 0, 0, 0.33);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+}
+/* blink cursor */
+.replybutton span{
+    font-size: 1.3rem;
+    margin-right: -0.1rem;
+    color: rgba(0, 0, 0, 0.405);
+}
+
+/* blink animation for cursor */
+/* .replybutton span {
+    animation: blink 1s infinite;
+  }
+  
+  @keyframes blink {
+    0%, 100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  } */
+
+.anonymInput::placeholder {
+    font-family: 'Roboto', sans-serif;
+    color: rgba(0, 0, 0, 0.33);
+    font-weight: 400;
+}
 
 
 .anonymInput:focus {
@@ -314,9 +385,6 @@
     outline: none;
 }
 
-.anonymInput::placeholder {
-    color: rgb(68, 68, 68);
-}
 
 
 .reply2 {
@@ -364,14 +432,14 @@
 }
 
 .maleAvatar {
-    color: rgb(4, 107, 204);
-    font-weight: 800;
+    color: rgb(45, 153, 241);
+    font-weight: 600;
     margin-right: 1rem;
 }
 
 .femaleAvatar {
-    color: red;
-    font-weight: 800;
+    color: rgb(248, 82, 120);
+    font-weight: 600;
     margin-right: 1rem;
 }
 
@@ -418,12 +486,16 @@
 
 
 .maleGradient {
-    background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #1CD5FD 79.73%);
+    /* background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #1CD5FD 79.73%); */
+    box-shadow: 5px 4px 4px 0px rgba(64, 226, 244, 0.20);
+
 
 }
 
 .femaleGradient {
-    background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #EF7FF1 79.73%);
+    /* background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #EF7FF1 79.73%); */
+    box-shadow: 5px 4px 4px 0px rgba(255, 118, 159, 0.2);
+
 }
 
 .displayedText::selection {
@@ -436,9 +508,6 @@
         width: 60vw;
     }
 
-    .confessionfooter {
-        width: 60vw;
-    }
 }
 
 @media (width<1200px) {
@@ -446,9 +515,6 @@
         width: 70vw;
     }
 
-    .confessionfooter {
-        width: 70vw;
-    }
 }
 
 @media (width<1000px) {
@@ -456,9 +522,6 @@
         width: 80vw;
     }
 
-    .confessionfooter {
-        width: 80vw;
-    }
 }
 
 @media (width<800px) {
@@ -501,10 +564,6 @@
         width: 90vw;
     }
 
-    .confessionfooter {
-        width: 90vw;
-        gap: 1rem;
-    }
 
     .likes {
         min-width: 1rem;
@@ -515,11 +574,13 @@
     }
 
     .commentsiconinfooter {
+        /* border: 1px solid red; */
         min-width: 1rem;
         padding: 0.5rem 0rem;
-        border-radius: 3rem;
         gap: 0rem;
         font-size: 1.3rem;
+        display: flex;
+        align-items: flex-end;
     }
 
     .counting {
@@ -545,9 +606,25 @@
     }
 }
 
-@media (width<400) {
+@media (width<450px) {
+    .confessionFooterChild {
+        display: flex;
+        gap: 0.6rem;
+        /* background-color: red; */
+    }
+}
+@media (width<400px) {
     .anonymInput {
         font-size: 0.9rem;
         padding-left: 0.8rem;
+    }
+    .replybutton{
+        font-family: 'Roboto', sans-serif;
+        color: rgba(0, 0, 0, 0.33);
+        font-weight: 400;
+        font-size: 0.8rem;
+    }
+    .replybutton span{
+        font-size: 1.1rem;
     }
 }

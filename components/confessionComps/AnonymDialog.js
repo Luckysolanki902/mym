@@ -25,34 +25,31 @@ const AnonymDialog = ({ open, onClose, handleAnonymousReply, anonymousReplyValue
         <Dialog open={open} onClose={onClose}
             PaperProps={{
                 style: {
-                    margin: '20px', // Adjust margin as needed
-                    maxHeight: 'calc(100% - 40px)',
+                    minHeight: '40vh',
                     width: 'calc(100% - 40px)',
-                    maxWidth: 'none',
-                    position: 'fixed',
-                    top: '3rem',
-                    left: 0,
-                    right: 0,
+                    borderRadius:'1rem'
+
                 },
             }}
         >
-            <DialogTitle>
+            {/* <DialogTitle>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>Reply Anonymously</div>
                     <Button onClick={onClose}>
                         <CloseRounded />
                     </Button>
                 </div>
-            </DialogTitle>
-            <DialogContent>
-                <TextField
+            </DialogTitle> */}
+            <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
+                <textarea
+                
                     // multiline
                     // rows={4}
                     fullWidth
                     autoFocus
                     variant="standard"
-                    placeholder="Type your anonymous reply here..."
-                    style={{ marginTop: '0.1rem' }}
+                    placeholder="Share your thoughts, they’ll never know it’s you…"
+                    style={{ marginTop: '0.1rem', border:'none', outline:'none', flex:1, fontFamily:'Roboto', fontSize:'1rem', color:'rgb(50, 50, 50)', resize:'none' }}
                     value={anonymousReplyValue}
                     onChange={(e) => setAnonymousReplyValue(e.target.value)}
                     onKeyDown={(e) => {
@@ -67,7 +64,9 @@ const AnonymDialog = ({ open, onClose, handleAnonymousReply, anonymousReplyValue
                     color="primary"
                     onClick={handleSendReply}
                     disabled={anonymousReplyValue.trim() === ''}
-                    style={{ marginTop: '2rem', float: 'right' }}
+                    sx={{
+                        marginTop: '1rem',width:'fit-content',
+                        alignSelf: 'flex-end', textTransform:'none', backgroundColor:'rgb(60, 60, 60)', borderRadius:'0.655rem'}}                    
                 >
                     {sending ? <CircularProgress size={24} color="inherit" /> : 'Send'}
                 </Button>

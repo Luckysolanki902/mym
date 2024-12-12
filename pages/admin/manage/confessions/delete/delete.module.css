@@ -1,0 +1,28 @@
+/* pages/admin/manage/confessions/delete/delete.module.css */
+.chipContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  
+  .mainHeading {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .confessionContainer {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    max-width: 1200px;
+  }
+  
+  .isLoading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  

@@ -10,9 +10,19 @@ import { FaHeart, FaComment } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 
 const truncateText = (text, maxLength) => {
+    // Remove double newlines
+    text = text.replace(/\n\n+/g, '\n');
+
+    // Replace two or more simultaneous whitespaces with a single space
+    text = text.replace(/\s{2,}/g, ' ');
+
+    // Trim the text
+    text = text.trim();
+
     if (text.length <= maxLength) {
         return text;
     }
+
     const truncatedText = text.substring(0, maxLength).trim();
     return `${truncatedText.substr(0, Math.min(truncatedText.length, truncatedText.lastIndexOf(' ')))}...`;
 };
@@ -34,14 +44,14 @@ const loadingConfessions = Array.from({ length: 5 }, (_, index) => ({
 }));
 
 register();
-const TrendingConfessions = ({ trendingConfessions }) => {
+const TrendingConfessions = ({ trendingConfessions, totalConfessions }) => {
     const router = useRouter()
     const [loading, setLoading] = useState(true)
 
-    useEffect(()=>{
-        if(trendingConfessions.length > 0)
+    useEffect(() => {
+        if (trendingConfessions.length > 0)
             setLoading(false)
-    },[trendingConfessions])
+    }, [trendingConfessions])
 
     return (
         <Swiper className={styles.main} loop={true} speed={500} simulateTouch={true} autoplay={{ delay: 3000, pauseOnMouseEnter: true, disableOnInteraction: false }}
@@ -52,10 +62,10 @@ const TrendingConfessions = ({ trendingConfessions }) => {
                         <div className={styles.blurCard} onClick={() => router.push(`/confession/${confession._id}`)} style={{ zIndex: "-1" }}>
                             <div className={styles.card}>
                                 <div className={styles.heading}>
-                                    <h3>Trending Confession #{index + 1}</h3>
+                                    <h3>Trending Confession <span className={styles.Trendingnumber}>#{index + 1}</span></h3>
                                 </div>
                                 <p style={{ whiteSpace: 'pre-line' }}>
-                                    {truncateText(confession.confessionContent, 200)}
+                                    {truncateText(confession.confessionContent, 200)} <span>Read more</span>
                                 </p>
                                 <div className={styles.footer}>
                                     <div className={styles.footerDiv}>
@@ -82,8 +92,11 @@ const TrendingConfessions = ({ trendingConfessions }) => {
                                         <h3>See All Confessions</h3>
                                     </div>
                                     <p style={{ whiteSpace: 'pre-line' }}>
-                                        Click here to explore all confessions
+                                        <span style={{ fontWeight: 400, color: 'black' }}>Tap here </span> to uncover {totalConfessions < 50 ? 50 : Math.round(totalConfessions / 10) * 10}+ confessions that might just surprise you.
+                                        <br />
+                                        Peek into the stories that stayed behind closed doors
                                     </p>
+
                                     <div className={styles.footer}>
                                         <div className={styles.footerDiv}>
                                             <FaHeart />

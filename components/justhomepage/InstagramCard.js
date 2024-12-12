@@ -11,7 +11,7 @@ const InstagramCard = () => {
                 <div style={{ fontWeight: '500' }}>@_mym_official</div>
 
             </div>
-            {!isMobile && <div style={{fontSize:'1.5rem', fontFamily:'Dancing Script'}}>
+            {!isMobile && <div style={{fontSize:'1.5rem', fontFamily:'Jost'}}>
                 For More Updates
                 </div>}
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>

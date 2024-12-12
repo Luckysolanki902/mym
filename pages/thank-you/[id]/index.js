@@ -55,11 +55,11 @@ const ThankYouPage = ({ session, confessionId, userDetails, confession }) => {
                     {/* <div className={styles.imgDiv}>
                         <Image src={'/images/illustrations/thankyou.png'} width={1650 / 4} height={1275 / 4} alt='thank you'></Image>
                     </div> */}
-                    <button className={styles.button} onClick={() => router.push('/')}>back to home</button>
                     <h2 className={styles.successHeading}>
-                        Confessed Successfully
+                            Confessed Successfully :&#41;
                     </h2>
                     {confession && <Confession applyGenderBasedGrandients={true} confession={confession} userDetails={userDetails || null} />}
+                    <button className={`${styles.confessButton} ${userDetails ? styles[`${userDetails.gender}Button`] : styles.maleButton}`}  onClick={() => router.push('/all-confessions')}>See all confessions</button>
                     {/* <p>Your confession ID is: {confessionId}</p> */}
                 </div>
             )}

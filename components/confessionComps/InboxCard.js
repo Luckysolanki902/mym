@@ -235,13 +235,13 @@ const InboxCard = ({ entry, userDetails }) => {
 
 
     return (
-        <div ref={cardRef} className={`${styles.box}`}>
+        <div ref={cardRef} className={`${styles.box} ${entry?.confessorGender === 'female' ? styles.femaleBox : styles.maleBox}`}>
             <div className={styles.confession} id={entry?.confessorGender === 'male' ? styles.maleConfession : styles.femaleConfession}>
-                <Link href={disabled ? '' : `/confession/${entry?.confessionId}`} passHref>
+                <Link href={disabled ? '' : `/confession/${entry?.confessionId}`}  passHref>
                     {truncateText(entry?.confessionContent, 200)}
                 </Link>
             </div>
-            <div className={styles.br} style={{ opacity: '0.5' }}></div>
+            {/* <div className={styles.br} style={{ opacity: '0.5' }}></div> */}
             <div className={styles.repliesBox}>
                 {reversedReplies.filter(reply => reply?.reply !== '').map((reply, index) => {
                     const isUnseen = !reply.seen.includes(userDetails.mid);
@@ -265,7 +265,7 @@ const InboxCard = ({ entry, userDetails }) => {
                             )}
                             <div className={`reply-observer ${styles.reply}`} data-confession-id={entry?.confessionId} data-confessor-mid={entry?.confessorMid} data-replier-mid={reply?.replierMid} data-seen={isUnseen ? '' : 'true'}>
                                 <div className={styles.markup} id={reply?.replierGender === 'male' ? styles.maleReply : styles.femaleReply}></div>
-                                <div className={styles.replyContent}>{reply?.reply}</div>
+                                <div className={styles.replyContent}>{reply?.reply ? reply.reply[0].toUpperCase() + reply.reply.slice(1) : ''}</div>
                             </div>
 
                             {reply?.secondaryReplies?.length === 0 && (
@@ -310,8 +310,13 @@ const InboxCard = ({ entry, userDetails }) => {
                                                     borderRadius: '50%',
                                                 }}></div>
                                             )}
-                                            <div className={styles.markup} id={secondaryReply?.replierGender === 'male' ? styles.maleReply : styles.femaleReply}></div>
-                                            <div className={styles.replyContent}>{secondaryReply?.content}</div>
+                                            {/* <div className={styles.markup} id={secondaryReply?.replierGender === 'male' ? styles.maleReply : styles.femaleReply}></div> */}
+                                            <div className={styles.replyContent} style={{display:'flex', gap:'0.6rem'}}>
+                                                <div>
+                                                    {secondaryReply?.sentByConfessor ? 'You:' :
+                                                        secondaryReply?.replierGender === 'female' ? 'Her:' : 'Him:'}
+                                                </div>
+                                                {secondaryReply?.content}</div>
                                         </div>
                                     );
                                 })}

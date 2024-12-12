@@ -94,7 +94,7 @@ const messageAppearConfig2 = {
             }
             {!hasPaired && isFindingPair &&
                 <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                    <div style={{ fontFamily: 'Courgette' }}><span>Pairing</span>
+                    <div style={{ fontFamily: 'Jost' }}><span>Pairing</span>
                         <Image className={styles.dots} priority src={'/gifs/istyping4.gif'} width={800 / 5} height={600 / 5} alt='' />
                     </div>
                 </div>

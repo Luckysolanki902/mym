@@ -1,4 +1,4 @@
-.main *{
+.main * {
     /* padding: 1rem; */
     box-sizing: border-box;
 }
@@ -6,8 +6,9 @@
 .mainCard {
     z-index: 1;
     padding: 2rem 2rem;
-    /* for white space around */
     box-sizing: border-box;
+    padding-top: 0;
+    justify-content: stretch;
 }
 
 .blurCard {
@@ -15,42 +16,74 @@
     padding: 1rem 1rem;
     padding-top: 0;
     padding-bottom: 0;
-    background-color: #83E7FD;
-    box-shadow: 0 0 15px 15px rgba(131, 231, 253, 1);
+    box-shadow: 0 4px 4px 0px rgba(0, 0, 0, 0.2);
+    /* background-color: #83E7FD; */
     border-radius: 2rem;
     cursor: pointer;
+
 }
 
 .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
     z-index: 89;
-    padding: 1rem 2rem;
-    background-color: #83E7FD;
+    padding: 1rem 0.5rem;
     filter: blur(0px);
     padding-bottom: 0;
+    /* height: 40vh; */
+    background-color: transparent;
+    /* Ensure no color affects visibility */
+    overflow: hidden;
+    /* Prevent pseudo-element overflow */
+    padding-bottom: 1rem;
 }
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/images/showcase/anime3.png') no-repeat center right;
+    background-size: contain;
+    opacity: 0.1;
+    z-index: -1;
+    /* Place it behind the content of the .card */
+}
+
+
 
 .heading {
     width: 100%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    font-family: 'Inter';
 }
 
 .heading h3 {
-    background-image: linear-gradient(to right, #f1325f, #65dbf5);
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    -webkit-background-clip: text;
-    font-style: italic;
+    /* background-image: linear-gradient(to right, #f1325f, #65dbf5); */
+    /* background-clip: text; */
+    /* -webkit-text-fill-color: transparent; */
+    /* -webkit-background-clip: text; */
+    font-family: 'Inter';
+    font-size: 1.1rem;
+    font-weight: 400;
+}
 
-    font-size: 1.2rem;
+.Trendingnumber {
+    color: gray;
 }
 
 .card p {
-    font-family: 'Roboto';
-    font-style: italic;
+    font-family: 'Jost', sans-serif;
+    /* font-style: italic; */
     /* text-indent: 2rem; */
     font-size: 0.7rem;
+    font-weight: 300;
 }
 
 .footer {
@@ -77,35 +110,60 @@
 }
 
 
-@media (width>800px){
+@media (width>600px) {
+    .heading h3 {
+        font-size: 1.4rem;
+    }
+}
+
+@media (width>900px) {
+
     .mainCard {
         z-index: 1;
-        padding: 2rem 10rem;
+        padding: 2rem 8rem;
         /* for white space around */
     }
-    .heading h3{
-        font-size: 2rem;
+
+
+    .heading h3 {
+        font-size: 1.7rem;
     }
-    .card p{
-    font-size: 0.9rem;
+
+    .card p {
+        font-size: 0.9rem;
 
     }
-      
+
 }
 
 
-@media (width>1400px){
+@media (width>1200px) {
+
     .mainCard {
         z-index: 1;
-        padding: 2rem 15rem;
+        padding: 2rem 12rem;
         /* for white space around */
     }
-    .heading h3{
+    .heading h3 {
         font-size: 2rem;
     }
-    .card p{
+
+    .card p {
         font-size: 1rem;
-    
-        }
-      
+
+    }
+
+}
+
+@media (width>1400px) {
+
+    .heading h3 {
+        font-size: 2rem;
+    }
+
+    .card p {
+        font-size: 1rem;
+
+    }
+
 }

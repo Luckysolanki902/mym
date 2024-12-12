@@ -3,8 +3,10 @@
 }
 
 .h1 {
-    font-family: 'ITC Kristen';
-    text-align: center;
+    font-family: 'Jost';
+    text-align: left;
+    font-weight: 400;
+
 }
 
 .box {
@@ -13,7 +15,7 @@
     margin: auto;
     padding: 0.7rem;
     border-radius: 1.5rem;
-    box-shadow: 3px 3px 6px rgba(39, 39, 39, 0.5);
+    /* box-shadow: 3px 3px 6px rgba(39, 39, 39, 0.5); */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -23,12 +25,23 @@
     border-bottom-right-radius: 0;
 }
 
+.maleBox {
+    box-shadow: 5px 4px 4px 0px rgba(64, 226, 244, 0.20);
+
+}
+
+.femaleBox {
+    box-shadow: 5px 4px 4px 0px rgba(255, 118, 159, 0.2);
+
+}
+
 .confession {
     width: 100%;
-    padding: 2rem 3rem;
+    padding: 2rem 0rem 2rem 4rem;
     border-radius: 1.5rem;
     transition: all 0.3s ease-out;
     cursor: pointer;
+    text-align: justify;
 }
 
 .confession:hover {
@@ -37,17 +50,15 @@
 
 .confession a {
     margin-left: 0rem;
-    text-align: center;
-    color: white;
+    text-align: right;
+    color: rgba(0, 0, 0, 0.793);
     text-decoration: none;
-    font-family: 'Dancing Script';
-    font-size: 1.5rem;
-    font-weight: 400;
-    line-height: normal;
-    letter-spacing: 0.105rem;
+    font-family: 'Jost';
+    font-size: 1rem;
+    /* font-weight: 400; */
 }
 
-.replierConfession{
+.replierConfession {
     align-self: flex-end;
     float: right;
     width: 70%;
@@ -56,17 +67,19 @@
 
 }
 
-.replierConfession a{
-    font-family: 'David Libre', serif;
+.replierConfession a {
+    font-family: 'Jost', sans-serif;
     font-size: 0.8rem;
-    
+
 }
-.youReplied{
+
+.youReplied {
     width: 100%;
     text-align: right;
     font-size: 0.8rem;
     margin-right: 1rem;
 }
+
 .br {
     width: 97%;
     border-radius: 1rem;
@@ -92,8 +105,9 @@
     border-radius: 0.7rem;
     /* border: 1px solid red; */
     overflow: hidden;
-    font-family: "David Libre", serif;
+    font-family: 'Jost', sans-serif;
     border: 1px solid rgba(128, 128, 128, 0.586);
+    text-align: right;
 }
 
 
@@ -102,7 +116,10 @@
 }
 
 .markup {
-    width: 0.7rem;
+    width: 0.5rem;
+    min-width: 0.5rem;
+    max-width: 0.5rem;
+    flex-shrink: 0;
     box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.2) inset;
     border-top-left-radius: 0.7rem;
     border-bottom-left-radius: 0.7rem;
@@ -117,11 +134,14 @@
 }
 
 #femaleConfession {
-    background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #AE67AF 79.73%);
+    /* background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #AE67AF 79.73%); */
+    /* box-shadow: 5px 4px 4px 0px rgba(255, 118, 159, 0.2); */
 }
 
 #maleConfession {
-    background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #2CBFDF 79.73%);
+    /* background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #2CBFDF 79.73%); */
+    /* box-shadow: 5px 4px 4px 0px rgba(64, 226, 244, 0.20); */
+
 }
 
 .greenDot {
@@ -135,19 +155,24 @@
     right: 6px;
 
 }
+
 .secRepMainCont {
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Adjust as per your layout needs */
-    align-items: flex-start; /* Adjust as per your layout needs */
+    justify-content: flex-start;
+    /* Adjust as per your layout needs */
+    align-items: flex-start;
+    /* Adjust as per your layout needs */
     padding-left: 3rem;
     padding-right: 1rem;
     margin-top: 1rem;
     margin-bottom: 1rem;
-    gap: 0.5rem;
-    max-height: 300px; /* Maximum height to maintain */
-    overflow-y: auto; /* Show scrollbar only when necessary */
+    gap: 0rem;
+    max-height: 300px;
+    /* Maximum height to maintain */
+    overflow-y: auto;
+    /* Show scrollbar only when necessary */
 }
 
 .secRep {
@@ -155,11 +180,14 @@
     display: flex;
     border-radius: 0.7rem;
     position: relative;
-    font-family: "David Libre", serif;
-    border: 1px solid rgba(128, 128, 128, 0.586);
-    margin-bottom: 0rem; /* Add some space between posts */
+    font-family: 'Jost', sans-serif;
+    /* border: 1px solid rgba(128, 128, 128, 0.586); */
+    margin-bottom: 0rem;
+    /* Add some space between posts */
     height: 100%;
+
 }
+
 /* WebKit Scrollbar Styling */
 .secRepMainCont::-webkit-scrollbar {
     display: block;
@@ -196,11 +224,12 @@
     outline: none;
     border-radius: 0.7rem;
     border: none;
-    font-family: "David Libre", serif;
+    font-family: 'Jost', sans-serif;
     padding: 1rem 3rem;
     font-size: 1rem;
 }
-.secRep::selection{
+
+.secRep::selection {
     background-color: black;
     color: white;
 }
@@ -219,14 +248,14 @@
 
 @media (width<800px) {
     .h1 {
-        text-align: left;
         margin-left: 1rem;
-        margin-bottom: 2.5rem;
     }
+
+
 
     .box {
         justify-content: flex-start;
-        width: 100%;
+        width: 90%;
     }
 
     .reply {
@@ -238,7 +267,6 @@
 
     .confession a {
         font-size: 1rem;
-        letter-spacing: 0.080rem;
     }
 
     .replyContent {
@@ -246,8 +274,9 @@
     }
 
     .markup {
-        width: 0.5rem;
-        box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.2) inset;
+        width: 0.4rem;
+        /* box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.2) inset; */
+        /* box-shadow: 5px 4px 4px 0px rgba(255, 118, 159, 0.2); */
         min-width: 0.5rem;
         border-top-left-radius: 0.5rem;
         border-bottom-left-radius: 0.5rem;
@@ -255,5 +284,12 @@
 
     .br {
         height: 3px;
+    }
+}
+
+@media (width> 800px) {
+    .hdiv {
+        max-width: 40vw;
+
     }
 }

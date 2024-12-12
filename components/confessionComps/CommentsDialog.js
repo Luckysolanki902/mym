@@ -94,6 +94,7 @@ const CommentsDrawer = ({
               <input
                 ref={inputRef}
                 type="text"
+              
                 placeholder="Add a comment..."
                 value={commentValue}
                 onChange={(e) => setCommentValue(e.target.value)}

@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 const FillForm = () => {
   const router = useRouter()
   const queryCategory = router.query.category || '';
+  const collegedomain = router.query.collegedomain || '';
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [recreateBug, setRecreateBug] = useState('');
@@ -19,6 +20,9 @@ const FillForm = () => {
 useEffect(()=>{
 if(queryCategory === 'add-college'){
   setCategory('Add My College')
+}
+if(collegedomain){
+  setCollegeId(collegedomain)
 }
 },[queryCategory])
 

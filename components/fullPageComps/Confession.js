@@ -1,16 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
+// components/fullPageComps/Confession.js
+
+import React, { useState, useEffect } from 'react';
 import styles from '../componentStyles/confession.module.css';
 import { IoIosSend } from 'react-icons/io';
-import { useMediaQuery } from '@mui/material';
+import {
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+  useMediaQuery
+} from '@mui/material';
 import { useInView } from 'react-intersection-observer';
 import AuthPrompt from '@/components/commonComps/AuthPrompt';
-// import { getRandomCommentAvatar } from '@/utils/avtarUtils';
 import CommentsDialog from '../confessionComps/CommentsDialog';
 import ConfessionBox from '../confessionComps/ConfessionBox';
 import ConfessionFooter from '../confessionComps/ConfessionFooter';
-// import { getSession } from 'next-auth/react';
-const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => {
+import DeleteIcon from '@mui/icons-material/Delete';
 
+const Confession = ({
+  confession,
+  userDetails,
+  applyGenderBasedGrandients,
+  isAdmin = false, // Indicates if the user is an admin
+  onDelete, // Callback function to handle deletion
+}) => {
   const isSmallDevice = useMediaQuery('(max-width:800px)');
   const [isAnonymousReplyDialogOpen, setAnonymousReplyDialogOpen] = useState(false);
   const [commentAvatars, setCommentAvatars] = useState([]);
@@ -23,6 +39,10 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
   const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
   const [commentCountsMadeByUser, setCommentCountsMadeByUser] = useState({});
   const [replyCountsMadeByUser, setReplyCountsMadeByUser] = useState({});
+
+  // State for delete confirmation dialog
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
   const handleOpenAuthPrompt = () => {
     setIsAuthPromptOpen(true);
   };
@@ -31,13 +51,9 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
     setIsAuthPromptOpen(false);
   };
 
-
-
   const openAnonymousReplyDialog = () => {
     setAnonymousReplyDialogOpen(true);
   };
-
-
 
   const toggleCommentsDialog = () => {
     setCommentDialogOpen(!isCommentDialogOpen);
@@ -51,7 +67,6 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       setGender(confession.gender);
     }
   }, [confession, applyGenderBasedGrandients]);
-
 
   useEffect(() => {
     const savedCommentCountsMadeByUser = localStorage.getItem('commentCountsMadeByUser');
@@ -108,7 +123,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       setCommentCountsMadeByUser({ ...commentCountsMadeByUser });
       localStorage.setItem('commentCountsMadeByUser', JSON.stringify(commentCountsMadeByUser));
 
-      // const session = await getSession();
+      // Send comment to the server
       const commentResponse = await fetch('/api/confession/comment', {
         method: 'POST',
         headers: {
@@ -118,8 +133,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       });
 
       if (commentResponse.ok) {
-        // console.log('Comment submitted successfully');
-        // The server has confirmed the operation, you can update the comment with the real ID if needed
+        // Optionally update the comment with the real ID if needed
       } else {
         console.error('Error submitting comment');
         // Revert the optimistic update if there was an error
@@ -128,6 +142,7 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
             (comment) => comment._id !== optimisticComment._id
           )
         );
+        setCommentsCount((prevCount) => prevCount - 1);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -144,13 +159,13 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       if (!replyCountsMadeByUser[commentId]) {
         replyCountsMadeByUser[commentId] = 0;
       }
-  
+
       if (replyCountsMadeByUser[commentId] >= 1) {
         alert('You can only make 1 reply per comment.');
         return;
       }
       const { gender, mid } = userDetails;
-  
+
       // Optimistic update: Add reply to the comments array immediately
       const optimisticReply = {
         _id: new Date().toISOString(),
@@ -159,25 +174,25 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         mid,
         likes: [], // Assuming you have a likes array for replies
       };
-  
+
       const updatedComments = comments.map(comment =>
         comment._id === commentId
           ? {
-              ...comment,
-              replies: [...comment?.replies, optimisticReply],
-            }
+            ...comment,
+            replies: [...(comment.replies || []), optimisticReply],
+          }
           : comment
       );
-  
+
       setComments(updatedComments);
-  
+
       const dataToSend = {
         commentId,
         replyContent,
         gender,
         mid,
       };
-  
+
       // Send the reply data to the server
       const replyResponse = await fetch('/api/confession/replytocomment', {
         method: 'POST',
@@ -186,11 +201,11 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         },
         body: JSON.stringify(dataToSend),
       });
-  
+
       replyCountsMadeByUser[commentId] += 1;
       setReplyCountsMadeByUser({ ...replyCountsMadeByUser });
       localStorage.setItem('replyCountsMadeByUser', JSON.stringify(replyCountsMadeByUser));
-  
+
       if (replyResponse.ok) {
         // Reply submitted successfully
         console.log('Reply submitted successfully');
@@ -202,7 +217,6 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       console.error('Error:', error);
     }
   };
-  
 
   const likecomment = async (id) => {
     try {
@@ -253,13 +267,15 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       const updatedComments = comments.map(comment => {
         if (comment._id === id) {
           // Remove the user's mid from the likes array
-          comment?.likes?.splice(comment.likes.indexOf(userDetails.mid), 1);
+          const updatedLikes = comment.likes.filter(mid => mid !== userDetails.mid);
+          return { ...comment, likes: updatedLikes };
         }
         return comment;
       });
       setComments(updatedComments);
     }
   };
+
   const likereply = async (commentId, replyId) => {
     try {
       // Check if user is authenticated
@@ -269,32 +285,38 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         return;
       }
 
-      // Check if the user has already liked the reply
-      const likedIndex = comments.findIndex(comment => comment._id === commentId && comment?.replies?.some(reply => reply._id === replyId && reply.likes.includes(userDetails.mid)));
+      // Find the comment containing the reply
+      const commentIndex = comments.findIndex(comment => comment._id === commentId);
+      if (commentIndex === -1) return;
 
-      if (likedIndex !== -1) {
-        // User already liked the reply, so unlike it
-        const updatedReplies = [...comments[likedIndex].replies];
-        const replyIndex = updatedReplies.findIndex(reply => reply._id === replyId);
-        updatedReplies[replyIndex] = { ...updatedReplies[replyIndex], likes: updatedReplies[replyIndex].likes.filter(mid => mid !== userDetails.mid) };
-        const updatedComment = { ...comments[likedIndex], replies: updatedReplies };
+      const replyIndex = comments[commentIndex].replies.findIndex(reply => reply._id === replyId);
+      if (replyIndex === -1) return;
+
+      const reply = comments[commentIndex].replies[replyIndex];
+
+      // Check if the user has already liked the reply
+      const hasLiked = reply.likes.includes(userDetails.mid);
+
+      if (hasLiked) {
+        // Unlike the reply
+        const updatedLikes = reply.likes.filter(mid => mid !== userDetails.mid);
+        const updatedReply = { ...reply, likes: updatedLikes };
         const updatedComments = [...comments];
-        updatedComments[likedIndex] = updatedComment;
+        updatedComments[commentIndex].replies[replyIndex] = updatedReply;
         setComments(updatedComments);
       } else {
-        // User hasn't liked the reply, so like it
-        const updatedReplies = [...comments.find(comment => comment._id === commentId).replies];
-        const replyIndex = updatedReplies.findIndex(reply => reply._id === replyId);
-        updatedReplies[replyIndex] = { ...updatedReplies[replyIndex], likes: [...updatedReplies[replyIndex].likes, userDetails.mid] };
-        const updatedComment = { ...comments.find(comment => comment._id === commentId), replies: updatedReplies };
-        const updatedComments = comments.map(comment => (comment._id === commentId ? updatedComment : comment));
+        // Like the reply
+        const updatedLikes = [...reply.likes, userDetails.mid];
+        const updatedReply = { ...reply, likes: updatedLikes };
+        const updatedComments = [...comments];
+        updatedComments[commentIndex].replies[replyIndex] = updatedReply;
         setComments(updatedComments);
       }
 
       // Save like operation locally (for offline support)
       localStorage.setItem('pendingReplyLikeOperation', JSON.stringify({ mid: userDetails.mid, commentId, replyId }));
 
-      // Call API to like reply
+      // Call API to like/unlike reply
       const response = await fetch('/api/confession/likereply', {
         method: 'POST',
         headers: {
@@ -310,23 +332,22 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
       console.error('Error liking/unliking reply:', error);
       // Revert the optimistic update if there was an error
       const updatedComments = comments.map(comment => {
-        const updatedReplies = comment?.replies?.map(reply => {
-          if (reply._id === replyId) {
-            // Remove the user's mid from the likes array
-            reply?.likes?.splice(reply.likes.indexOf(userDetails.mid), 1);
-          }
-          return reply;
-        });
-        return { ...comment, replies: updatedReplies };
+        if (comment._id === commentId) {
+          const updatedReplies = comment.replies.map(reply => {
+            if (reply._id === replyId) {
+              // Remove the user's mid from the likes array
+              const updatedLikes = reply.likes.filter(mid => mid !== userDetails.mid);
+              return { ...reply, likes: updatedLikes };
+            }
+            return reply;
+          });
+          return { ...comment, replies: updatedReplies };
+        }
+        return comment;
       });
       setComments(updatedComments);
     }
   };
-
-
-
-
-
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -336,10 +357,6 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         );
         if (response.ok) {
           const { comments } = await response.json();
-          // const commentAvatars = comments.map((comment) =>
-          //     getRandomCommentAvatar(comment._id, comment.gender)
-          // );
-          // setCommentAvatars(commentAvatars);
           setComments(comments);
           setCommentsCount(comments.length);
         } else {
@@ -349,47 +366,66 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         console.error('Error fetching comments:', error);
       }
     };
-    fetchComments()
-  }, [confession, userDetails])
-
-
+    fetchComments();
+  }, [confession, userDetails]);
 
   const handleClick = () => {
     if (isSmallDevice) {
       openAnonymousReplyDialog();
     }
   };
+
   const [ref, inView] = useInView({
     triggerOnce: true,
   });
 
-  return (
-    <div ref={ref} className={styles.mainDiv}>
+  // Handlers for delete dialog
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
 
+  const handleDeleteConfirm = () => {
+      onDelete(confession);
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  return (
+    <div ref={ref} className={styles.mainDiv} style={{ position: 'relative' }}>
       <ConfessionBox
         gender={gender}
         applyGenderBasedGrandients={applyGenderBasedGrandients}
-        confession={confession}
-      />
-
-      <ConfessionFooter
         confession={confession}
         userDetails={userDetails}
         commentsCount={commentsCount}
         toggleCommentsDialog={toggleCommentsDialog}
         handleClick={handleClick}
         handleOpenAuthPrompt={handleOpenAuthPrompt}
+        isAdmin={isAdmin}
+        ondeleteClick={handleDeleteClick}
       />
+
+      {/* <ConfessionFooter
+        confession={confession}
+        userDetails={userDetails}
+        commentsCount={commentsCount}
+        toggleCommentsDialog={toggleCommentsDialog}
+        handleClick={handleClick}
+        handleOpenAuthPrompt={handleOpenAuthPrompt}
+        isAdmin={isAdmin}
+        ondeleteClick={handleDeleteClick}
+      /> */}
 
 
       <AuthPrompt open={isAuthPromptOpen} onClose={handleCloseAuthPrompt} />
-
 
       <CommentsDialog
         isOpen={isCommentDialogOpen}
         onClose={() => setCommentDialogOpen(false)}
         comments={comments}
-        // commentAvatars={commentAvatars}
         commentValue={commentValue}
         handleCommentSubmit={handleCommentSubmit}
         setCommentValue={setCommentValue}
@@ -398,9 +434,28 @@ const Confession = ({ confession, userDetails, applyGenderBasedGrandients }) => 
         likereply={likereply}
       />
 
-      {/* Anon. dialog________________ */}
-
-
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle id="delete-dialog-title">Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            Are you sure you want to delete this confession? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="secondary" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

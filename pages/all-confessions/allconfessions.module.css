@@ -13,7 +13,9 @@
 }
 
 .mainHeading{
-    font-family: 'ITC Kristen', 'sans-serif';
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+    padding-left: 2rem;
 }
 
 .chipParent {
@@ -46,6 +48,7 @@
     background: linear-gradient(to right, rgba(218, 9, 197, 0.7), rgba(0, 186, 244, 0.7));
 }
 
+
 @media (width< 900px) {
     .isLoading {
         font-size: 1.5rem;
@@ -55,6 +58,9 @@
 @media (width< 600px) {
     .isLoading {
         font-size: 1.2rem;
+    }
+    .mainHeading{
+        padding-left: 0rem;
     }
 }
 
@@ -88,3 +94,15 @@
         width: 80vw;
     }
 }
+
+@media (width>600px){
+    .mainHeading{
+        padding-left: 0rem;
+    }
+}
+@media (width>800px){
+    .mainHeading{
+        padding-left: 2rem;
+    }
+}
+

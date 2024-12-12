@@ -89,15 +89,19 @@ const CreateConfessionForm = ({ userDetails }) => {
           spellCheck="false"
           autoCorrect='off'
           name="confessionContent"
+          autoFocus
           id="confessioncontentbox"
-          placeholder="Start writing..."
+          placeholder="Speak the Words You’ve Been Holding Back..."
           value={confessionValue}
           onChange={(e) => setConfessionValue(e.target.value)}
           className={styles.textarea}
         ></textarea>
         <div style={{ textAlign: 'right', margin: '1rem 0' }}>
-          <button className={styles.confessButton} onClick={handleConfessionSubmit} disabled={confessionValue.trim() === ''}>
-            {loading ? <CircularProgress size={20} /> : 'Confess'}
+          <button
+           className={`${styles.confessButton} ${userDetails ? styles[`${userDetails.gender}Button`] : styles.maleButton}`} 
+           onClick={handleConfessionSubmit} 
+          disabled={confessionValue.trim().length < 50}>
+            {loading ? <CircularProgress sx={{color:'white'}} size={20} /> : 'Confess'}
           </button>
         </div>
       </div>

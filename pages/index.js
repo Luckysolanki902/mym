@@ -12,7 +12,7 @@ import Footer from '@/components/commonComps/Footer';
 import CollegeCards from '@/components/justhomepage/CollegeCards';
 import InstagramCard from '@/components/justhomepage/InstagramCard';
 import Link from 'next/link';
-export default function Home({ session, trendingConfessions }) {
+export default function Home({ session, trendingConfessions, totalConfessions }) {
 
   const containerSpring = useSpring({
     from: { opacity: 0, transform: 'translate3d(0, -50px, 0)' },
@@ -54,11 +54,10 @@ export default function Home({ session, trendingConfessions }) {
         {/* <div className={styles.hiuser}>
           <Image src={'/images/large_pngs/hiuser.png'} width={1080 / 3} height={720 / 3} alt='hi user' />
         </div> */}
-        <p className={styles.desc}>AN ANONYMOUS INTERCOLLEGE SOCIAL MEDIA PLATFORM</p>
 
         {/* Trending Confessions */}
         <div style={{ width: "100%", height: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <TrendingConfessions trendingConfessions={trendingConfessions} />
+          <TrendingConfessions trendingConfessions={trendingConfessions} totalConfessions={totalConfessions} />
         </div>
 
         {/* Buttons for chat page and confession page */}
@@ -68,6 +67,7 @@ export default function Home({ session, trendingConfessions }) {
         </div>
 
 
+        <p className={styles.desc}>“Because No One Should Walk Out of College Alone”</p>
 
 
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -160,6 +160,7 @@ export async function getServerSideProps(context) {
       props: {
         session: null,
         trendingConfessions: data.trendingConfessions,
+        totalConfessions: data.totalConfessions, 
       },
     };
   }
@@ -169,6 +170,7 @@ export async function getServerSideProps(context) {
       props: {
         session: null,
         trendingConfessions: [],
+        totalConfessions: 50,
       },
     }
   }
@@ -177,6 +179,7 @@ export async function getServerSideProps(context) {
     props: {
       session,
       trendingConfessions: data.trendingConfessions,
+      totalConfessions: data.totalConfessions,
     },
   };
 }

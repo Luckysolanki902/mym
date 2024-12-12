@@ -92,14 +92,14 @@ const Signup = () => {
       const collegeIndex = allowedEmails.indexOf(matchedCollege);
       setCollege('');
       const matchedCollege2 = allowedEmails.find((allowedEmail) => allowedEmail === emailDomain)
-      if(matchedCollege2){
+      if (matchedCollege2) {
         const collegeIndex2 = allowedEmails.indexOf(matchedCollege2);
         setCollege(colleges[collegeIndex2]);
       }
       setError(null); // Clear error if email is valid
     } else {
       setCollege('');
-      if (emailValue.includes('@') && emailValue.includes('.'))  {
+      if (emailValue.includes('@') && emailValue.includes('.')) {
         setError('Your college is not on mym yet.');
       } else {
         setError(null); // Clear error if email is empty
@@ -180,8 +180,20 @@ const Signup = () => {
           </div>
           <div className={styles.mainBox}>
             <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
-            {error && <p style={{ color: 'red', marginBottom: '15px',textAlign:'center' }}>{error} <br /> {error === 'Your college is not on mym yet.'? <Link style={{color:'rgb()', textDecoration:'none', marginTop:'-1rem'}} href={'/give-your-suggestion?category=add-college'}>Click here to get your college added.</Link> : null}</p>}
-           
+            {error && (
+              <p style={{ color: 'red', marginBottom: '15px', textAlign: 'center' }}>
+                {error} <br />
+                {error === 'Your college is not on mym yet.' ? (
+                  <Link
+                    style={{ color: 'rgb(0,0,0)', textDecoration: 'none', marginTop: '-1rem', }}
+                    href={`/give-your-suggestion?category=add-college&collegedomain=${email.split('@')[1]}`}
+                  >
+                    Click here to get your college added.
+                  </Link>
+                ) : null}
+              </p>
+            )}
+
             <form onSubmit={handleSignUp} className={styles.form}>
               <TextField
                 type="email"
@@ -265,9 +277,9 @@ const Signup = () => {
               color="primary"
               onClick={() => router.push('/auth/signin')}
               className={styles.paraLink}
-              style={{ cursor: 'pointer' }}
             >
-              {'Login Instead'}
+              <span style={{ marginRight: '0.5rem' }}>Already have an account?</span ><span style={{ cursor: 'pointer', color: 'rgb(50, 50, 50)', fontWeight: '800' }}>Login</span>
+
             </div>
           </div>
         </div>

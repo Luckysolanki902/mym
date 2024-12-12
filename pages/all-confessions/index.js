@@ -8,6 +8,7 @@ import styles from './allconfessions.module.css';
 import CustomHead from '@/components/seo/CustomHead';
 import FilterOptions from '@/components/confessionComps/FilterOptions';
 
+
 const Index = ({ userDetails }) => {
   const [confessions, setConfessions] = useState([]);
   const [hasMore, setHasMore] = useState(true);
@@ -80,13 +81,13 @@ const Index = ({ userDetails }) => {
           <h1 className={styles.mainHeading}>Confessions</h1>
         </div>
         <div className={styles.chipParent}>
-          {userDetails && <FilterOptions userDetails={userDetails} onChange={handleFiltersChange} />}
+          {/* {userDetails && <FilterOptions userDetails={userDetails} onChange={handleFiltersChange} />} */}
         </div>
-        {confessions.map((confession, index) => (
+        { confessions.map((confession, index) => (
           <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
         ))}
         {loading &&
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', marginBottom: '3rem', marginTop: '0', alignItems: 'center' }} className={styles.isLoading}>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', marginBottom: '3rem', marginTop: '0', alignItems: 'center', fontWeight:'200', color:'gray' }} className={styles.isLoading}>
             <p>Loading confessions</p>
             <span>
               <Image src={'/gifs/istyping4.gif'} width={800 / 2} height={600 / 2} alt='' />
@@ -94,9 +95,9 @@ const Index = ({ userDetails }) => {
           </div>
         }
         <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
-        {!hasMore &&
+        {!hasMore  &&
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '3rem', marginTop: '0' }} className={styles.isLoading}>
-            <p style={{ padding: '1rem', textAlign: 'center', opacity: '0.7', scale: '0.8', fontWeight: '200' }}>You have reached the end</p>
+            <p style={{ padding: '1rem', textAlign: 'center', opacity: '0.7', scale: '0.8', fontWeight: '200' }}>That’s the last confession for now... new stories will unfold soon!</p>
           </div>
         }
       </div>

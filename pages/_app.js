@@ -120,7 +120,7 @@ export default function App({ Component, pageProps }) {
       /> */}
       {/* <Analytics/> */}
       {isAdminPage ? (
-        <ThemeProvider theme={mymthemeDark}>
+        <ThemeProvider theme={mymtheme}>
           <CssBaseline />
           {isLoading && (
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>

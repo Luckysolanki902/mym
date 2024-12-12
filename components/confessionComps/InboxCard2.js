@@ -44,7 +44,7 @@ const InboxCard2 = ({ entry, userDetails }) => {
     const handleInputKeyDown = (event, index, primaryReplierMid) => {
         // let's make sure it's not empty
         if (event.key === 'Enter' && inputValues[index] !== '') {
-            
+
             handleInputSubmit(index, primaryReplierMid);
         }
     };
@@ -67,17 +67,17 @@ const InboxCard2 = ({ entry, userDetails }) => {
                     userMid: userDetails?.mid,
                 }),
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to update all secondary replies seen state');
             }
-    
+
             // Handle response as needed
         } catch (error) {
             console.error('Error updating all secondary replies seen state:', error);
         }
     };
-    
+
 
     const handleInputSubmit = async (index, primaryReplierMid) => {
         const { confessionId, confessorMid } = entry;
@@ -126,7 +126,7 @@ const InboxCard2 = ({ entry, userDetails }) => {
                     secondaryReplyContent,
                     sentByConfessor,
                     replierGender: userDetails?.gender,
-                    userMid:sentByConfessor ? confessorMid : userDetails?.mid,
+                    userMid: sentByConfessor ? confessorMid : userDetails?.mid,
                 }),
             });
 
@@ -169,35 +169,35 @@ const InboxCard2 = ({ entry, userDetails }) => {
             if (entry.isIntersecting) {
                 const replierMid = entry.target.getAttribute('data-replier-mid');
                 const primaryReplyId = entry.target.getAttribute('data-id'); // Assuming data-id corresponds to primaryReplyId
-    
+
                 if (replierMid && primaryReplyId) {
                     setTimeout(() => {
-                        
+
                         handleViewAllReplies(primaryReplyId); // Call handleViewAllReplies with primaryReplyId
                     }, 3000);
                 }
             }
         });
     }, [handleViewAllReplies]);
-    
+
     useEffect(() => {
         observer.current = new IntersectionObserver(handleObserver, {
             threshold: 0.1,
         });
-    
+
         const elements = document.querySelectorAll('.reply-observer');
         elements.forEach(element => {
             observer.current.observe(element);
         });
-    
+
         return () => {
             observer.current.disconnect();
         };
     }, [handleObserver]);
-    
+
 
     return (
-        <div ref={cardRef} className={`${styles.box}`}>
+        <div ref={cardRef} className={`${styles.box} ${entry?.confessorGender === 'female' ? styles.femaleBox : styles.maleBox}`}>
             <div className={styles.confession} id={entry?.confessorGender === 'male' ? styles.maleConfession : styles.femaleConfession}>
                 <Link href={disabled ? '' : `/confession/${entry.confessionId}`} passHref>
                     {truncateText(entry.confessionContent, 200)}
@@ -216,22 +216,22 @@ const InboxCard2 = ({ entry, userDetails }) => {
                     return (
                         <div style={{ width: "100%", position: 'relative' }} key={index}>
                             {(isUnseen ||
-                            // also render if any of the secondary replies are unseen
-                            reply.secondaryReplies.some(secondaryReply => !secondaryReply.seen.includes(userDetails.mid))) &&
-                            (
-                                <div style={{
-                                    position: 'absolute',
-                                    top: '10px',
-                                    right: '10px',
-                                    width: '5px',
-                                    height: '5px',
-                                    backgroundColor: 'green',
-                                    borderRadius: '50%',
-                                }}></div>
-                            )}
+                                // also render if any of the secondary replies are unseen
+                                reply.secondaryReplies.some(secondaryReply => !secondaryReply.seen.includes(userDetails.mid))) &&
+                                (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '10px',
+                                        right: '10px',
+                                        width: '5px',
+                                        height: '5px',
+                                        backgroundColor: 'green',
+                                        borderRadius: '50%',
+                                    }}></div>
+                                )}
                             <div className={`reply-observer ${styles.reply}`} data-confession-id={entry?.confessionId} data-confessor-mid={entry?.confessorMid} data-replier-mid={reply?.replierMid} data-id={reply?._id}>
                                 <div className={styles.markup} id={reply?.replierGender === 'male' ? styles.maleReply : styles.femaleReply}></div>
-                                <div className={styles.replyContent}>{reply?.reply}</div>
+                                <div className={styles.replyContent}>{reply?.reply ? reply.reply[0].toUpperCase() + reply.reply.slice(1) : ''}</div>
                             </div>
 
                             {reply.secondaryReplies.length === 0 && (
@@ -273,8 +273,13 @@ const InboxCard2 = ({ entry, userDetails }) => {
                                                     borderRadius: '50%',
                                                 }}></div>
                                             )}
-                                            <div className={styles.markup} id={secondaryReply.replierGender === 'male' ? styles.maleReply : styles.femaleReply}></div>
-                                            <div className={styles.replyContent}>{secondaryReply.content}</div>
+                                            {/* <div className={styles.markup} id={secondaryReply.replierGender === 'male' ? styles.maleReply : styles.femaleReply}></div> */}
+                                              <div className={styles.replyContent} style={{ display: 'flex', gap: '0.6rem' }}>
+                                                <div >
+                                                    {secondaryReply?.sentByConfessor ? 'You:' :
+                                                        secondaryReply?.replierGender === 'female' ? 'Her:' : 'Him:'}
+                                                </div>
+                                                {secondaryReply?.content}</div>
                                         </div>
                                     );
                                 })}

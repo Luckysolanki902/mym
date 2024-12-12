@@ -39,7 +39,7 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
     const fetchUnseenCounts = async (email) => {
       try {
         const unseenCountResponse = await fetch(`/api/inbox/unseen-count?email=${email}`);
-    
+
         if (unseenCountResponse.ok) {
           const data = await unseenCountResponse.json();
           const totalCount = data.totalUnseenCount1 + data.totalUnseenCount2;
@@ -53,7 +53,7 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
     };
 
     try {
-  
+
       await fetchUnseenCounts(email);
 
       const response1 = await fetch(`/api/inbox/get-replies-to-confessions?mid=${mid}`);
@@ -93,9 +93,10 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
         {/* mui refresh icon */}
         {fetchingData ? <CircularProgress size={20} /> : <RefreshIcon />}
       </Button>
-      <div style={{}}>
-        <h1 className={styles.h1} style={{ marginLeft: "1rem", display: 'flex', alignItems: 'center' }}>Inbox <span>({count})</span></h1>
-
+      <div style={{ display: 'flex', justifyContent: 'center', width: '100%', maxWidth: '100vw' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-start', width: '100%'}} className={styles.hdiv}>
+          <h1 className={styles.h1} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width:'100%', textAlign:'left' }}>Inbox <span>({count})</span></h1>
+        </div>
       </div>
 
       <Tabs value={tabIndex} onChange={handleTabChange} centered style={{ marginBottom: "4rem" }}>
