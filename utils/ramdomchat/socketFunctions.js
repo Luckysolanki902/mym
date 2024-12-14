@@ -1,4 +1,4 @@
-import { scrollToBottom } from "../generalUtilities";
+import { scrollToBottom, triggerVibration } from "../generalUtilities";
 import CryptoJS from 'crypto-js';
 const secretKey = process.env.NEXT_PUBLIC_SECRET_KEY;
 const encryptMessage = (message, secretKey) => {
@@ -57,8 +57,15 @@ export const handlePairingSuccess = (data, hasPaired, stateFunctions, findingTim
         setReceiver(stranger);
         setStrangerGender(strangerGender);
 
-        const snackbarColor = strangerGender === 'male' ? '#0094d4' : '#e3368d';
-        setSnackbarColor(snackbarColor);
+        triggerVibration({
+            duration: 200,
+            strength: 0.5,
+            interval: 100,
+            repeat: 2
+        });
+
+        // const snackbarColor = strangerGender === 'male' ? '#0094d4' : '#e3368d';
+        // setSnackbarColor(snackbarColor);
 
         // const snackbarMessage = `A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`;
         // setSnackbarMessage(snackbarMessage);
@@ -85,6 +92,14 @@ export const handleReceivedMessage = (data, stateFunctions, messagesContainerRef
         ...prevMessages,
         { sender: sender, message: decryptedMessage },
     ]);
+
+    triggerVibration({
+        duration: 150,
+        strength: 0.3,
+        repeat: 1
+    });
+
+
     scrollToBottom(messagesContainerRef);
 };
 
@@ -95,6 +110,13 @@ export const handlePairDisconnected = (stateFunctions, messagesContainerRef) => 
     setStrangerDisconnectedMessageDiv(true);
     setHasPaired(false);
     scrollToBottom(messagesContainerRef);
+
+    triggerVibration({
+        duration: 250,
+        strength: 0.3,
+        repeat: 1
+    });
+
 };
 
 // Your handleSend function
@@ -111,6 +133,14 @@ export const handleSend = (socket, textValue, stateFunctions, messagesContainerR
         ]);
         setStrangerIsTyping(false);
     }
+
+    triggerVibration({
+        duration: 50,
+        strength: 0.2,
+        repeat: 1
+    });
+
+
     scrollToBottom(messagesContainerRef);
 };
 

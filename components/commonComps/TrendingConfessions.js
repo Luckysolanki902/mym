@@ -8,6 +8,7 @@ import Image from 'next/image';
 import styles from './styles/trendingconfession.module.css'
 import { FaHeart, FaComment } from 'react-icons/fa';
 import { useRouter } from 'next/router';
+import { useMediaQuery } from '@mui/material';
 
 const truncateText = (text, maxLength) => {
     // Remove double newlines
@@ -45,9 +46,10 @@ const loadingConfessions = Array.from({ length: 5 }, (_, index) => ({
 
 register();
 const TrendingConfessions = ({ trendingConfessions, totalConfessions }) => {
+
     const router = useRouter()
     const [loading, setLoading] = useState(true)
-
+    const islessthan600px = useMediaQuery('(max-width:600px)');
     useEffect(() => {
         if (trendingConfessions.length > 0)
             setLoading(false)
@@ -62,11 +64,13 @@ const TrendingConfessions = ({ trendingConfessions, totalConfessions }) => {
                         <div className={styles.blurCard} onClick={() => router.push(`/confession/${confession._id}`)} style={{ zIndex: "-1" }}>
                             <div className={styles.card}>
                                 <div className={styles.heading}>
-                                    <h3>Trending Confession <span className={styles.Trendingnumber}>#{index + 1}</span></h3>
+                                    <div>
+                                        <h3>Trending Confession <span className={styles.Trendingnumber}>#{index + 1}</span></h3>
+                                        <p style={{ whiteSpace: 'pre-line' }}>
+                                            {truncateText(confession.confessionContent, islessthan600px ? 100 : 200)} <span>Read more</span>
+                                        </p>
+                                    </div>
                                 </div>
-                                <p style={{ whiteSpace: 'pre-line' }}>
-                                    {truncateText(confession.confessionContent, 200)} <span>Read more</span>
-                                </p>
                                 <div className={styles.footer}>
                                     <div className={styles.footerDiv}>
                                         <FaHeart />
@@ -88,15 +92,18 @@ const TrendingConfessions = ({ trendingConfessions, totalConfessions }) => {
                         <SwiperSlide key={`explore-${index}`} className={styles.mainCard}>
                             <div className={styles.blurCard} onClick={() => router.push(`/all-confessions`)} style={{ zIndex: "-1" }}>
                                 <div className={styles.card}>
-                                    <div className={styles.heading}>
-                                        <h3>See All Confessions</h3>
-                                    </div>
-                                    <p style={{ whiteSpace: 'pre-line' }}>
-                                        <span style={{ fontWeight: 400, color: 'black' }}>Tap here </span> to uncover {totalConfessions < 50 ? 50 : Math.round(totalConfessions / 10) * 10}+ confessions that might just surprise you.
-                                        <br />
-                                        Peek into the stories that stayed behind closed doors
-                                    </p>
+                                    <div>
 
+                                        <div className={styles.heading}>
+                                            <h3>See All Confessions</h3>
+                                        </div>
+                                        <p style={{ whiteSpace: 'pre-line' }}>
+                                            <span style={{ fontWeight: 400, color: 'black' }}>Tap here </span> to uncover {totalConfessions < 50 ? 50 : Math.round(totalConfessions / 10) * 10}+ confessions that might just surprise you.
+                                            <br />
+                                            Peek into the stories that stayed behind closed doors
+                                        </p>
+
+                                    </div>
                                     <div className={styles.footer}>
                                         <div className={styles.footerDiv}>
                                             <FaHeart />
@@ -121,12 +128,14 @@ const TrendingConfessions = ({ trendingConfessions, totalConfessions }) => {
                 <SwiperSlide key={`loading-${index}`} className={styles.mainCard}>
                     <div className={styles.blurCard} onClick={() => router.push(`/confession/${confession._id}`)} style={{ zIndex: "-1" }}>
                         <div className={styles.card}>
-                            <div className={styles.heading}>
-                                <h3>Trending Confession #{index + 1}</h3>
+                            <div>
+                                <div className={styles.heading}>
+                                    <h3>Trending Confession #{index + 1}</h3>
+                                </div>
+                                <p>
+                                    {truncateText(confession.confessionContent, 200)}
+                                </p>
                             </div>
-                            <p>
-                                {truncateText(confession.confessionContent, 200)}
-                            </p>
                             <div className={styles.footer}>
                                 <div className={styles.footerDiv}>
                                     <FaHeart />

@@ -103,7 +103,7 @@ const AnonymDialog = ({
             outline: 'none',
             flex: 1,
             fontFamily: 'Roboto, sans-serif',
-            fontSize: '1rem',
+            fontSize: '0.9rem',
             color: 'rgb(50, 50, 50)',
             resize: 'none',
           }}

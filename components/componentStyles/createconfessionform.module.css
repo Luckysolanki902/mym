@@ -6,6 +6,7 @@
 }
 
 .mainPageHeading{
+    color: rgba(84, 84, 84, 0.866);
     text-align: center;
     font-size: 1.8rem;
 }
@@ -15,7 +16,7 @@
     width: auto;
     height: auto;
     min-width: 50vw;
-    height: 40vh;
+    height: 35vh;
     /* border: 1px solid red; */
     border-radius: 1.1875rem;
     display: flex;
@@ -41,19 +42,19 @@
     resize: none;
     font-family: 'Jost';
     color: white;
-    font-size: 1.2rem;
+    font-size: 1rem;
     outline: none;
     border: none;
     background: transparent;
     width: 100%;
     flex: 1;
-    font-weight: 300;
+    font-weight: 350;
     color: black;
 
 }
 
 .mainContainer textarea::placeholder {
-    color: black;
+    color: rgb(136, 136, 136);
     /* font-weight: 200; */
 }
 
@@ -108,7 +109,7 @@
 
 .femaleGradient {
     /* background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #1CD5FD 79.73%); */
-    box-shadow: 5px 4px 4px 0px rgba(64, 151, 244, 0.20);
+    box-shadow: 5px 4px 4px 0px rgba(255, 118, 159, 0.2);
 
 
 }
@@ -217,7 +218,7 @@
     }
 
     .mainContainer .textarea {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 }
 
@@ -225,6 +226,14 @@
     .mainPageHeading{
         font-size: 1.5rem;
         margin-left: 3.5rem;
+    }
+}
+
+
+@media (width<400px) {
+    .mainPageHeading{
+        font-size: 1.5rem;
+        margin-left: 3rem;
     }
 }
 

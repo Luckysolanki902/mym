@@ -4,6 +4,7 @@ import { Button, useMediaQuery } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import styles from '../componentStyles/confession.module.css';
 import { FaHeart } from 'react-icons/fa';
+import Image from 'next/image';
 
 const CommentsDrawer = ({
   isOpen,
@@ -41,7 +42,7 @@ const CommentsDrawer = ({
     if (isOpen) {
       // Push a new history state when the drawer opens
       window.history.pushState({ drawer: true }, '');
-      
+
       // Define the popstate handler
       const handlePopState = (event) => {
         if (isDrawerOpenRef.current) {
@@ -108,7 +109,7 @@ const CommentsDrawer = ({
       anchor="bottom"
       open={isOpen}
       onClose={handleClose}
-      onOpen={() => {}} // Empty function for onOpen
+      onOpen={() => { }} // Empty function for onOpen
       style={{ maxWidth: '100vw', overflowX: 'hidden' }}
       // Customize PaperProps to add top corner radius
       PaperProps={{
@@ -141,7 +142,9 @@ const CommentsDrawer = ({
               </div>
             )}
             <div>
-              <input
+              <textarea
+                rows={1}
+
                 ref={inputRef}
                 type="text"
                 placeholder="Add a comment..."
@@ -167,13 +170,28 @@ const CommentsDrawer = ({
                 spellCheck="false"
                 autoCorrect="off"
               />
+              <Image
+                src={'/images/othericons/sendFill.png'}
+                width={108}
+                height={72}
+                alt="icon"
+                className={styles.sendIconPhone}
+                onClick={(e) => {
+                  if (commentValue.trim() !== '') {
+                    e.preventDefault();
+                    replyingState.replying
+                      ? handleReplySubmit()
+                      : handleCommentSubmit();
+                  }
+                }}
+              />
+
             </div>
           </div>
         </div>
         <div
-          className={`${styles.drawerContainer} ${
-            isSmallScreen ? styles.smallScreen : ''
-          }`}
+          className={`${styles.drawerContainer} ${isSmallScreen ? styles.smallScreen : ''
+            }`}
         >
           <div ref={drawerContainerRef}></div>
           <div

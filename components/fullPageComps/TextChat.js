@@ -66,12 +66,14 @@ const TextChatWithout = ({ userDetails }) => {
   }, [neverShowTimer.current]);
 
   useEffect(() => {
-    if (isChatAvailable || neverShowTimer.current) {
+    if ((isChatAvailable || neverShowTimer.current) && !socket) {
       initiateSocket(socket, { userDetails, preferredCollege, preferredGender }, hasPaired, { room, setSocket, setUsersOnline, setStrangerIsTyping, setStrangerDisconnectedMessageDiv, setIsFindingPair, setRoom, setReceiver, setStrangerGender, setSnackbarColor, setSnackbarMessage, setSnackbarOpen, setHasPaired, setMessages }, { messagesContainerRef, findingTimeoutRef });
-    } else if (socket) {
-      socket.disconnect();
+    } else if (socket && !hasPaired && !receiver) {
+      handleFindNew(socket, { userDetails, preferredCollege, preferredGender }, { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages, }, hasPaired, findingTimeoutRef)
     }
-  }, [isChatAvailable, neverShowTimer.current]);
+//  on component unmount disconnect socket
+    
+  }, [isChatAvailable, neverShowTimer.current, socket]);
 
   const handleSendButton = () => {
     handleSend(socket, textValue, { setTextValue, setMessages, setStrangerIsTyping }, messagesContainerRef, userDetails, hasPaired)

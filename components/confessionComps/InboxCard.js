@@ -225,9 +225,9 @@ const InboxCard = ({ entry, userDetails }) => {
     ), [reversedReplies]);
 
     return (
-        <div ref={cardRef} className={`${styles.box} ${entry?.confessorGender === 'female' ? styles.femaleBox : styles.maleBox}`}>
+        <div ref={cardRef}  className={`${styles.box} ${entry?.confessorGender === 'female' ? styles.femaleBox : styles.maleBox}`}>
             <div className={styles.confession} id={entry?.confessorGender === 'male' ? styles.maleConfession : styles.femaleConfession}>
-                <Link href={disabled ? '' : `/confession/${entry?.confessionId}`} passHref>
+                <Link style={{ width:'100%', display: 'block', textAlign: entry.confessionContent.length > 60 ? 'justify' : 'right' }} href={disabled ? '' : `/confession/${entry?.confessionId}`}  passHref>
                     {truncateText(entry?.confessionContent, 200)}
                 </Link>
             </div>

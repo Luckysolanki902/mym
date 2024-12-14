@@ -22,8 +22,7 @@ const InputBox = ({
   const { isFindingPair, socket, hasPaired, paddingDivRef } = useTextChat();
   const isSmallScreen = useMediaQuery('(max-width:800px)');
   const messagesContainerRef = useRef(null);
-
-  // Scroll to the bottom when inpFocus changes
+  // Scroll to the bottom when inpFocus or textValue changes
   useEffect(() => {
     if (inpFocus && messagesContainerRef.current) {
       messagesContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -33,7 +32,7 @@ const InputBox = ({
   return (
     <div className={styles.inputContainerMainDiv} ref={inputRef}>
       <div className={`${styles.inputContainer} ${inpFocus ? styles.inpFocus : ''}`}>
-        <Tooltip title={!isFindingPair ? 'Find New' : 'Finding...'} placement="top" arrow >
+        <Tooltip title={!isFindingPair ? 'Find New' : 'Finding...'} placement="top" arrow>
           <button
             disabled={isFindingPair}
             className={styles.newButton}
@@ -41,8 +40,8 @@ const InputBox = ({
           >
             <Image
               src={'/images/sidebaricons/randomchat.png'}
-              width={1080 / 10}
-              height={720 / 10}
+              width={108}
+              height={72}
               alt="icon"
               className={styles.randomIcon}
               style={isFindingPair && !hasPaired ? { transform: 'scale(0.96)', opacity: '0.8' } : {}}
@@ -50,23 +49,37 @@ const InputBox = ({
           </button>
         </Tooltip>
         <div className={styles.textBox}>
-          <form onSubmit={handleSendButton}>
-            <input
+          <form 
+            autoComplete="off"
+            onSubmit={(e) => {
+              e.preventDefault(); // Prevent form submission
+              handleSendButton();
+            }}
+            // Adding 'noValidate' to prevent browser validation prompts
+            noValidate
+          >
+
+            <textarea
               className={`${styles.textBox} ${styles.input}`}
               name="messageBox"
               spellCheck="false"
-              autoCorrect="false"
-              placeholder={'Start typing...'}
+              autoCorrect="off"
+              placeholder="Start typing..."
               autoFocus
-              type="text"
               id="messageBox"
               value={textValue}
               onFocus={() => setInpFocus(true)}
               autoComplete="off"
-              onBlurCapture={() => setInpFocus(false)}
+              // Make the textarea behave like a single line
+              rows={1}
+              // Prevents the textarea from resizing vertically
+              style={{ 
+                width: '100%', 
+                resize: 'none', 
+                overflow: 'hidden',
+              }}
               onChange={(e) => setTextValue(e.target.value)}
-              style={{ width: '100%' }}
-              onKeyDown={(e) => handleKeyDown(e)}
+              onKeyDown={handleKeyDown}
               onBlur={() => handleStoppedTyping(socket, typingTimeoutRef, userDetails, hasPaired)}
               onClick={() => {
                 if (messagesContainerRef.current) {
@@ -79,7 +92,17 @@ const InputBox = ({
             />
           </form>
         </div>
-        <Image src={'/images/othericons/sendFill.png'} width={1080 / 10} height={720 / 10} alt="icon" className={styles.sendIconPhone} onClick={handleSendButton}/>
+        <Image 
+          src={'/images/othericons/sendFill.png'} 
+          width={108} 
+          height={72} 
+          alt="icon" 
+          className={styles.sendIconPhone} 
+          onClick={(e) => {
+            e.preventDefault();
+            handleSendButton();
+          }}
+        />
       </div>
       {/* This div is used to scroll to the bottom */}
       <div ref={messagesContainerRef} />

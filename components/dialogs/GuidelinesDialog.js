@@ -1,36 +1,78 @@
-// components/dialogs/GuidelinesDialog.js
-
 import React from 'react';
 import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import styled from '@emotion/styled';
 
-const GuidelinesDialog = ({ open, onClose }) => {
-    const handleBackdropClick = (e) => {
-        e.stopPropagation();
-    }
+const StyledDialogContent = styled(DialogContent)({
+    padding: '3rem',
+    borderRadius: '1.5rem',
+    backgroundColor: '#ffffff',
+    textAlign: 'center',
+    boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
+}); 
+
+const StyledButton = styled(Button)(({ userGender }) => ({
+    marginTop: '2rem',
+    backgroundColor: userGender === 'male' ? 'rgba(83, 195, 255, 0.9)' : 'rgba(255, 115, 147, 0.91)',
+    color: '#fff',
+    padding: '0.9rem 2rem',
+    borderRadius: '1rem',
+    fontWeight: 700,
+    fontSize: '1rem',
+    textTransform: 'capitalize',
+    transition: 'background-color 0.3s ease, transform 0.2s ease',
+    ':hover': {
+        backgroundColor: userGender === 'male' ? 'rgba(83, 175, 235, 0.8)' : 'rgba(255, 95, 127, 0.8)',
+        transform: 'scale(0.98)',
+    },
+}));
+
+const GuidelinesDialog = ({ open, onClose, userGender }) => {
     return (
-        <Dialog open={open} onClose={onClose} onClick={handleBackdropClick}
-        maxWidth={'md'} style={{ backgroundColor:'rgba(0,0,0,0.6)'}}
+        <Dialog
+            open={open}
+            onClose={onClose}
+            PaperProps={{
+                style: {
+                    borderRadius: '1.5rem',
+                    overflow: 'hidden',
+                    maxWidth: '650px',
+                },
+            }}
         >
-            {/* <DialogTitle>Guidelines Before Creating a Confession</DialogTitle> */}
-            <DialogContent
-            style={{padding:'2rem'}}
-            >
-                <p style={{  fontSize: '1.1rem' }}>
-                    We understand that confessions can be powerful expressions of emotion. Here are some guidelines to ensure a positive and respectful experience:
-                </p>
-                <ul>
-                    <li style={{  fontSize: '1.1rem', marginBottom: '1rem' }}>Be mindful of the impact of your words on others. Everyone has feelings, and it's important to respect them.</li>
-                    <li style={{  fontSize: '1.1rem', marginBottom: '1rem' }}>Share your thoughts in a constructive manner. Confessions made in anger or frustration may not lead to the desired outcome.</li>
-                    <li style={{  fontSize: '1.1rem', marginBottom: '1rem' }}>Protect your privacy and the privacy of others. Avoid sharing personal information that could harm yourself or others.</li>
-                    {/* <li style={{ fontFamily: 'Jost', fontSize: '1.1rem' }}>Choose your words wisely. Offensive language or derogatory remarks have no place here.</li> */}
-                </ul>
-                <Button onClick={onClose} variant="contained" color="primary" style={{ marginTop: '1rem' }}>
-                    I Understand
-                </Button>
-            </DialogContent>
+            <StyledDialogContent>
+                <Typography
+                    variant="h5"
+                    gutterBottom
+                    style={{ fontWeight: 800, color: '#2c3e50', marginBottom: '2rem' }}
+                >
+                    Guidelines to Follow
+                </Typography>
+  
+                <div style={{
+                    textAlign: 'left',
+                    margin: '0 auto',
+                    maxWidth: '520px',
+                    color: '#555',
+                    lineHeight: '1.9',
+                    fontSize: '1.1rem',
+                }}>
+                    <Typography variant="body1" style={{ marginBottom: '1.2rem' }}>
+                        <strong>1. Be Real:</strong> Say what you feel, not what you think others want to hear. True words have power to touch hearts.
+                    </Typography>
+                    <Typography variant="body1" style={{ marginBottom: '1.2rem' }}>
+                        <strong>2. Be Kind:</strong> Life is beautiful and is all about <span style={{ color: '#df2c7a' }}>love</span> and not hatred. Keep your words as gentle as your intentions.
+                    </Typography>
+                    <Typography variant="body1" style={{ marginBottom: '1.2rem' }}>
+                        <strong>3. Respect Privacy:</strong> Avoid revealing personal details about yourself or others.
+                    </Typography>
+                </div>
+                <StyledButton onClick={onClose} userGender={userGender}>
+                    I understand
+                </StyledButton>
+            </StyledDialogContent>
         </Dialog>
     );
 };

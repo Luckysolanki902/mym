@@ -218,11 +218,11 @@ const InboxCard2 = ({ entry, userDetails }) => {
     return (
         <div ref={cardRef} className={`${styles.box} ${entry?.confessorGender === 'female' ? styles.femaleBox : styles.maleBox}`}>
             <div className={styles.confession} id={entry?.confessorGender === 'male' ? styles.maleConfession : styles.femaleConfession}>
-                <Link href={disabled ? '' : `/confession/${entry?.confessionId}`} passHref>
+                <Link style={{ width:'100%', display: 'block', textAlign: entry.confessionContent.length > 60 ? 'justify' : 'right' }} href={disabled ? '' : `/confession/${entry?.confessionId}`} passHref>
                     {truncateText(entry?.confessionContent, 200)}
                 </Link>
             </div>
-            <div className={styles.youReplied}>You replied to this confession</div>
+            <div className={styles.youReplied}>You replied to above confession</div>
             <div className={styles.repliesBox}>
                 {reversedReplies.filter(reply => reply?.reply !== '').map((reply, index) => {
                     const isUnseen = !reply.seen.includes(userDetails.mid);

@@ -91,7 +91,7 @@ const CreateConfessionForm = ({ userDetails }) => {
           name="confessionContent"
           autoFocus
           id="confessioncontentbox"
-          placeholder="Speak the Words You’ve Been Holding Back..."
+          placeholder="Speak the words you’ve been holding back..."
           value={confessionValue}
           onChange={(e) => setConfessionValue(e.target.value)}
           className={styles.textarea}
@@ -107,7 +107,7 @@ const CreateConfessionForm = ({ userDetails }) => {
       </div>
 
       {/* Custom Dialog for displaying warnings and advice */}
-      <WarningDialog open={dialogOpen} onClose={handleDialogClose} content={dialogContent} />
+      <WarningDialog open={dialogOpen} onClose={handleDialogClose} content={dialogContent} userGender={userDetails.gender}/>
 
       {/* Success Snackbar */}
       {/* <Snackbar

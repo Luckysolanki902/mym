@@ -171,7 +171,7 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession, userDet
 
 
 
-        <ShareDialog open={isShareDialogOpen} shareLink={confession._id} onClose={() => setShareDialogOpen(false)} />
+        <ShareDialog open={isShareDialogOpen} shareLink={confession._id} onClose={() => setShareDialogOpen(false)} confessorGender={confession?.gender}/>
       </div>
 
 
