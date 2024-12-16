@@ -21,7 +21,6 @@ const Topbar = () => {
 
     fetchData();
   }, [router]);
-  //
 
   const handleSignIn = () => {
     router.push('/auth/signin');
