@@ -38,16 +38,14 @@ const EventsContainer = () => {
                             </div>
                         )}
 
-                        {item === strangerIsTyping && hasPaired && (
+                        {/* {item === strangerIsTyping && hasPaired && (
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <div className={styles.isTyping}>
                                     {strangerGender === 'male' ? 'He' : 'She'} is typing{' '}
-                                    <span>
-                                        <Image priority src={'/gifs/istyping4.gif'} width={800 / 5} height={600 / 5} alt='' />
-                                    </span>
+                                   
                                 </div>
                             </div>
-                        )}
+                        )} */}
                     </animated.div>
                 )
             )}

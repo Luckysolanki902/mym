@@ -45,22 +45,22 @@
 }
 
 .maleMsg {
-  border-radius: 1.7rem;
-  border-bottom-right-radius: 0;
+  border-radius: 1.12rem;
+  /* border-bottom-right-radius: 0; */
 
   background: linear-gradient(180deg, #ADF0FF 0%, #90B3F6 99.99%);
 }
 
 .sMsg {
-  border-radius: 1.7rem;
+  border-radius: 1.12rem;
   background: linear-gradient(180deg, #6AE9D9 0%, #B4EEFF 100%);
-  border-bottom-right-radius: 0;
+  /* border-bottom-right-radius: 0; */
 
 }
 
 .femaleMsg {
-  border-radius: 1.7rem;
-  border-bottom-right-radius: 0;
+  border-radius: 1.12rem;
+  /* border-bottom-right-radius: 0; */
 
   background: linear-gradient(180deg, #EFADFF 0%, #ED70EF 99.99%);
 }
@@ -117,12 +117,13 @@
 
 }
 
-.dots{
+.istypingImg{
   width: 2rem;
   height: auto;
   transform: translateY(20%);
   opacity: 0.7;
 }
+
 .msgIllustration{
   width: 100%;
   height: 100%;
@@ -130,6 +131,10 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .msgIllustration img{
   width: 15rem;
@@ -188,26 +193,26 @@
   
 .maleMsg {
   background: linear-gradient(180deg, #ADF0FF 0%, #90B3F6 99.99%);
-  border-radius: 1.7rem;
+  border-radius: 1.12rem;
 }
 
 .sMsg {
   background: linear-gradient(180deg, #6AE9D9 0%, #B4EEFF 100%);
-  border-radius: 1.7rem;
+  border-radius: 1.12rem;
 
 }
 
 .femaleMsg {
-  border-radius: 1.7rem;
+  border-radius: 1.12rem;
   background: linear-gradient(180deg, #EFADFF 0%, #ED70EF 99.99%);
 }
 
 .rightB{
-  border-bottom-left-radius: 0;
+  /* border-bottom-left-radius: 0; */
 }
 
 .leftB{
-  border-bottom-right-radius: 0;
+  /* border-bottom-right-radius: 0; */
 
 }
 
@@ -399,6 +404,13 @@
   will-change: transform, opacity;
 }
 
+.dots{
+  width: 2rem;
+  height: auto;
+  transform: translateY(20%);
+  opacity: 0.7;
+}
+
 
 
 @media (width<800px) {
@@ -411,6 +423,15 @@
 
     padding-left: 0;
   }
+
+  
+.dots{
+  width: 2rem;
+  height: auto;
+  opacity: 0.7;
+}
+
+  
 
   .sendTextIcon {
     display: none;
@@ -489,12 +510,14 @@
     transform: translateY(20%);
     opacity: 0.7;
   }
-  .dots {
+
+  .istypingImg{
     width: 2rem;
     height: auto;
     transform: translateY(20%);
     opacity: 0.7;
   }
+
 
   .newButton2 {
 
@@ -514,5 +537,50 @@
 @media (width>600px){
   .sendIconPhone{
     display: none;
+  }
+}
+
+.typingIndicator {
+  display: flex;
+  align-items: center; /* Center dots vertically */
+  padding: 0 0.5rem;
+  font-size: 0.9rem;
+  color: #3b3b3b;
+}
+
+.dots {
+  display: flex;
+  gap: 0.5rem; /* Adjust spacing between dots */
+  margin-left: 0.5rem;
+}
+
+.dots span {
+  width: 8px; /* Larger, more noticeable dots */
+  height: 8px;
+  background-color: #333333;
+  border-radius: 50%;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0); /* Dots shrink to invisible */
+    opacity: 0.3; /* Slight visibility during transition */
+  }
+  40% {
+    transform: scale(1); /* Dots expand to full size */
+    opacity: 1; /* Fully visible */
   }
 }

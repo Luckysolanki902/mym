@@ -77,6 +77,7 @@ const InputBox = ({
                 width: '100%', 
                 resize: 'none', 
                 overflow: 'hidden',
+                whiteSpace: 'nowrap',
               }}
               onChange={(e) => setTextValue(e.target.value)}
               onKeyDown={handleKeyDown}

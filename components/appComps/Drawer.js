@@ -14,7 +14,6 @@ import MailIcon from '@mui/icons-material/Mail';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
 import { getSession, signOut } from 'next-auth/react';
-import { useSession } from 'next-auth/react';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
@@ -26,7 +25,6 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 export default function SwipeableTemporaryDrawer(props) {
-    const { data: session } = useSession();
     const router = useRouter();
     const [state, setState] = useState({
         right: false,
@@ -99,8 +97,9 @@ export default function SwipeableTemporaryDrawer(props) {
     useEffect(() => {
         const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion'];
         const currentPath = router.pathname.split('?')[0]; // Remove query parameters
-        const index = paths.findIndex((path) => currentPath.startsWith(path));
+        const index = paths.findIndex((path) => path === currentPath);
         setState((prevState) => ({ ...prevState, activeIndex: index !== -1 ? index : null }));
+        console.log(index);
     }, [router.pathname]);
 
     useEffect(() => {

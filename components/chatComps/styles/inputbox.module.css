@@ -1,0 +1,224 @@
+.inputContainerMainDiv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    width: calc(100vw - var(--sidebarwidth));
+    /* transition: all 0.3s ease-out; */
+
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 99;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    overflow-y: hidden;
+}
+
+
+
+.inputContainerMainDiv button {
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.inputContainerMainDiv button:hover {
+    scale: 0.98;
+}
+
+.inputContainerMainDiv {
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+}
+
+
+.inputContainer {
+    display: flex;
+    align-items: center;
+    background: #E9E9E9;
+    width: 100%;
+    box-shadow: 0px 7px 7px 3px rgba(0, 0, 0, 0.09) inset;
+    border-radius: 0.8rem;
+    height: calc(var(--inputboxheight) + 1rem);
+    padding: 0rem;
+    /* padding-left: 1rem; */
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    padding-left: 0;
+
+}
+
+.newButton {
+    /* background: none; */
+    min-width: 5rem;
+    margin-right: 1rem;
+    /* border: 1px solid red; */
+    padding: 0;
+    height: 100%;
+    border-top-right-radius: 0;
+
+
+}
+
+.newButton2 {
+    transform: translateX(0%);
+}
+
+.newButton {
+    flex: 0;
+    margin-right: 1rem;
+    padding: 0rem 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.625rem;
+    background: var(--mymblack);
+    border: none;
+    color: white;
+    text-align: center;
+    font-family: Inter;
+    font-size: 1.1em;
+    height: var(--inputboxheight);
+    width: auto;
+    min-width: 7rem;
+    cursor: pointer;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    height: 100%;
+    border-top-right-radius: 0;
+
+
+}
+
+.newButton:hover {
+    scale: 0.95;
+
+}
+
+
+.randomIcon {
+    width: 3.5rem;
+    height: auto;
+    /* filter: invert(0); */
+    opacity: 0.8;
+    /* filter: drop-shadow(5px 2px 2px gray); */
+}
+
+
+.randomIcon {
+    width: 3.5rem;
+    height: auto;
+    /* filter: invert(0); */
+    opacity: 0.8;
+    /* filter: drop-shadow(5px 2px 2px gray); */
+}
+
+.randomIcon {
+    width: 3.5rem;
+    height: auto;
+    filter: invert(1);
+}
+
+/* Textbox */
+.textBox {
+    caret-color: black;
+    flex: 1;
+    background: #E9E9E9;
+    border: none;
+    margin-right: 0.5rem;
+    padding: 0;
+    font-size: 1.2rem;
+    /* margin-left: 0.4rem; */
+    margin-right: 1rem;
+    color: rgb(64, 64, 64);
+    font-family: Inter;
+    color: #2D2D2D;
+  }
+  
+  .textBox :focus {
+    border: none;
+    outline: none;
+  }
+  
+  
+  
+  .textBox::selection {
+    background-color: #2d2d2ddf;
+    color: white;
+  }
+
+  .input {
+    padding-left: 0;
+  }
+
+  .sendIconPhone{
+    width: 1.8rem;
+    height: auto;
+    margin-right: 1rem;
+    filter: drop-shadow(2px 2px 2px gray);
+    opacity: 0.9;
+  }
+  
+
+
+
+
+
+
+@media (width>600px){
+    .sendIconPhone{
+      display: none;
+    }
+  }
+
+@media (width> 800px) {
+    .inputContainer {
+        height: calc(var(--inputboxheight) + 0.6rem);
+
+    }
+
+
+    .inputContainerMainDiv {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        width: calc(100vw - var(--sidebarwidth));
+        /* transition: all 0.3s ease-out; */
+
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 99;
+        margin-top: 6px;
+        margin-bottom: 6px;
+
+    }
+}
+
+@media (width< 600px) {
+
+    .newButton2 {
+
+        min-width: 3rem;
+    }
+
+    .randomIcon {
+        width: 3rem;
+        height: auto;
+        opacity: 0.8;
+        /* filter: drop-shadow(5px 2px 2px gray); */
+        filter: invert(1);
+    }
+
+    .textBox {
+        font-size: 1rem;
+    margin-right: 0.5rem;
+
+      }
+
+      
+
+    
+}
