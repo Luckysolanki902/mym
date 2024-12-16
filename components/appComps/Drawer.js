@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -16,7 +15,6 @@ import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
 import { getSession, signOut } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
-import { Typography } from '@mui/material';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
@@ -47,11 +45,6 @@ export default function SwipeableTemporaryDrawer(props) {
 
         setState((prevState) => ({ ...prevState, [anchor]: open }));
         isDrawerOpen.current = open;
-
-        if (open) {
-            // Add a history entry without navigating
-            router.push(router.asPath, router.asPath, { shallow: true });
-        }
     };
 
     const fetchUserDetails = async () => {
@@ -105,7 +98,8 @@ export default function SwipeableTemporaryDrawer(props) {
 
     useEffect(() => {
         const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion'];
-        const index = paths.findIndex((path) => path === router.pathname);
+        const currentPath = router.pathname.split('?')[0]; // Remove query parameters
+        const index = paths.findIndex((path) => currentPath.startsWith(path));
         setState((prevState) => ({ ...prevState, activeIndex: index !== -1 ? index : null }));
     }, [router.pathname]);
 
@@ -136,7 +130,6 @@ export default function SwipeableTemporaryDrawer(props) {
                     title="maddy logo"
                 />
             </div>
-            {/* Use flex layout with space-between to place logout at the bottom */}
             <List className={styles.list} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%', maxHeight:'60vh', overflowY:'auto' }}>
                     {[
@@ -149,7 +142,7 @@ export default function SwipeableTemporaryDrawer(props) {
                     ].map((item, index) => (
                         <ListItem key={item.text} className={styles.sideBarListItem}>
                             <Link href={item.href} passHref style={{ width: '100%', textDecoration: 'none' }}>
-                                <ListItemButton onClick={()=> {setTimeout(toggleDrawer('right', false ), 1000)}} className={`${styles.sideBarLinks} ${state.activeIndex === index ? styles.activeListItem : ''}`}>
+                                <ListItemButton onClick={() => { setTimeout(() => toggleDrawer('right', false)(), 1000) }} className={`${styles.sideBarLinks} ${state.activeIndex === index ? styles.activeListItem : ''}`}>
                                     <ListItemIcon className={styles.listItemIcon}>
                                         {index === 0 ? (
                                             <Image
