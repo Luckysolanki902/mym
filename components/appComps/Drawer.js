@@ -153,6 +153,10 @@ export default function SwipeableTemporaryDrawer() {
     };
   }, [router]);
 
+  useEffect(()=>{
+    console.log({activeIndex})
+  },[activeIndex])
+
   const list = () => (
     <div className={styles.MainCont} role="presentation">
       <div className={styles.imageCont}>
@@ -191,7 +195,10 @@ export default function SwipeableTemporaryDrawer() {
             { text: 'Write Confession', href: '/create-confession' },
             { text: 'Inbox', href: '/inbox' },
             { text: 'Suggestions', href: '/give-your-suggestion' },
-          ].map((item, index) => (
+          ].map((item, index) => 
+            {
+              console.log('compLog: ', index, activeIndex, activeIndex === index)
+              return(
             <ListItem key={item.text} className={styles.sideBarListItem}>
               <Link href={item.href} passHref style={{ width: '100%', textDecoration: 'none' }}>
                 <ListItemButton
@@ -254,7 +261,7 @@ export default function SwipeableTemporaryDrawer() {
                 </ListItemButton>
               </Link>
             </ListItem>
-          ))}
+          )})}
         </div>
         {/* Bottom actions (e.g., Logout) */}
         {userDetails && (
