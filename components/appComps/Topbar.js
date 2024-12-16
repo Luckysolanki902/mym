@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import SwipeableTemporaryDrawer from '@/components/appComps/Drawer';
+// import SwipeableTemporaryDrawer from '@/components/appComps/Drawer';
 import styles from './styles/topbar.module.css';
 import { useRouter } from 'next/router';
 import { getSession } from 'next-auth/react';
+import PhoneDrawer from './PhoneDrawer';
 
 const Topbar = () => {
   const [loading, setLoading] = useState(true);
@@ -37,7 +38,8 @@ const Topbar = () => {
     <div className={`topbarheight ${styles.mainDiv}`}>
       <Image onClick={() => router.push('/')} src={'/images/mym_logos/mymlogoinvert2.png'} width={724 / 3} height={338 / 3} alt='mym' style={{ height: '60%', width: 'auto' }} />
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        {user && <SwipeableTemporaryDrawer />}
+        {/* {user && <SwipeableTemporaryDrawer />} */}
+        {user && <PhoneDrawer />}
         {!loading && !user && (
           <div className={styles.sessionButtons}>
             {/* {isSignUpPage && (
@@ -52,7 +54,7 @@ const Topbar = () => {
                 {/* <button className={styles.signup} onClick={handleSignUp}>Sign Up</button> */}
               </>
             )}
-            {<SwipeableTemporaryDrawer />}
+            {<PhoneDrawer />}
 
           </div>
         )}

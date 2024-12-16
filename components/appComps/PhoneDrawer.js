@@ -24,7 +24,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-export default function SwipeableTemporaryDrawer() {
+export default function PhoneDrawer() {
   const router = useRouter();
 
   // Separate state variables
