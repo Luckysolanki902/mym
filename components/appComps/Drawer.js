@@ -14,7 +14,6 @@ import MailIcon from '@mui/icons-material/Mail';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
 import { getSession, signOut } from 'next-auth/react';
-import { Box } from '@mui/material';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
@@ -100,7 +99,7 @@ export default function SwipeableTemporaryDrawer(props) {
         const currentPath = router.pathname.split('?')[0]; // Remove query parameters
         const index = paths.findIndex((path) => path === currentPath);
         setState((prevState) => ({ ...prevState, activeIndex: index !== -1 ? index : null }));
-        console.log(index);
+        console.log(index, state.activeIndex, currentPath, paths[state.activeIndex]);
     }, [router.pathname]);
 
     useEffect(() => {
@@ -141,8 +140,8 @@ export default function SwipeableTemporaryDrawer(props) {
                         { text: 'Suggestions', href: '/give-your-suggestion' },
                     ].map((item, index) => (
                         <ListItem key={item.text} className={styles.sideBarListItem}>
-                            <Box onClick={()=>{router.push(item.href); setTimeout(() => toggleDrawer('right', false)(), 1000) }} passHref style={{ width: '100%', textDecoration: 'none' }}>
-                                <ListItemButton className={`${styles.sideBarLinks} ${state.activeIndex === index ? styles.activeListItem : ''}`}>
+                            <Link href={item.href} passHref style={{ width: '100%', textDecoration: 'none' }}>
+                                <ListItemButton onClick={() => { setTimeout(() => toggleDrawer('right', false)(), 1000) }} className={`${styles.sideBarLinks} ${state.activeIndex === index ? styles.activeListItem : ''}`}>
                                     <ListItemIcon className={styles.listItemIcon}>
                                         {index === 0 ? (
                                             <Image
@@ -195,7 +194,7 @@ export default function SwipeableTemporaryDrawer(props) {
                                         className={styles.link}
                                     />
                                 </ListItemButton>
-                            </Box>
+                            </Link>
                         </ListItem>
                     ))}
                 </div>
@@ -214,7 +213,7 @@ export default function SwipeableTemporaryDrawer(props) {
                             </ListItemIcon>
                             <ListItemText
                                 primary={
-                                    <div style={{ color: 'white', fontWeight:'400', fontFamily:'Jost', width:'100%', fontSize:'1rem' }} className={styles.linkText}>
+                                    <div style={{ color: 'white', fontWeight:'500', fontFamily:'Jost', width:'100%', fontSize:'1.2rem' }} className={styles.linkText}>
                                         Logout
                                     </div>
                                 }
