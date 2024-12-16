@@ -127,9 +127,9 @@ export default function SwipeableTemporaryDrawer() {
       '/inbox',
       '/give-your-suggestion',
     ];
-    const currentPath = router.pathname.split('?')[0].replace(/\/$/, ''); // Remove query params and trailing slash
+    const currentPath = router.asPath; // Remove query params and trailing slash
     const index = paths.findIndex(
-      (path) => path.replace(/\/$/, '') === currentPath
+      (path) => path === currentPath
     );
     setActiveIndex(index !== -1 ? index : null);
     console.info({currentPath, arrayPathValue: paths[index], index  })
