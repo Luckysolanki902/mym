@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -8,6 +8,7 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Link from 'next/link';
 import Image from 'next/image';
+import clsx from 'clsx'; // Install clsx
 import styles from './styles/topbar.module.css';
 import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
@@ -34,10 +35,10 @@ export default function PhoneDrawer() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [fetching, setFetching] = useState(false);
 
-  const isDrawerOpen = useRef(false);
+  const isDrawerOpenRef = useRef(false);
 
   // Toggle Drawer
-  const toggleDrawer = (open) => (event) => {
+  const toggleDrawer = useCallback((open) => (event) => {
     if (
       event &&
       event.type === 'keydown' &&
@@ -47,66 +48,82 @@ export default function PhoneDrawer() {
     }
 
     setDrawerOpen(open);
-    isDrawerOpen.current = open;
-  };
+    isDrawerOpenRef.current = open;
+    console.log(`Drawer is now ${open ? 'open' : 'closed'}`);
+  }, []);
 
   // Fetch User Details
-  const fetchUserDetails = async () => {
+  const fetchUserDetails = useCallback(async () => {
     try {
       const session = await getSession();
+      console.log('Session:', session);
       if (session?.user?.email) {
         const response = await fetch(
           `/api/getdetails/getuserdetails?userEmail=${encodeURIComponent(
             session.user.email
           )}`
         );
+        console.log('Fetching user details response:', response);
         if (response.ok) {
           const data = await response.json();
+          console.log('User Details:', data);
           setUserDetails(data);
         } else {
-          console.error('Failed to fetch user details');
+          console.error('Failed to fetch user details:', response.status);
         }
+      } else {
+        console.warn('No user session found.');
       }
     } catch (error) {
       console.error('Error fetching user details:', error);
     }
-  };
+  }, []);
 
   // Fetch Unseen Count
-  const fetchUnseenCount = async () => {
+  const fetchUnseenCount = useCallback(async () => {
     if (userDetails && userDetails.email) {
       try {
-        if (fetching) return;
+        if (fetching) {
+          console.log('Already fetching unseen count.');
+          return;
+        }
         setFetching(true);
         const response = await fetch(
           `/api/inbox/unseen-count?mid=${encodeURIComponent(userDetails.mid)}`
         );
+        console.log('Fetching unseen count response:', response);
         if (response.ok) {
           const data = await response.json();
           const totalCount = data.totalUnseenCount1 + data.totalUnseenCount2;
+          console.log('Unseen Count:', totalCount);
           setUnseenCount(totalCount);
         } else {
-          console.error('Failed to fetch unseen count');
+          console.error('Failed to fetch unseen count:', response.status);
         }
       } catch (error) {
         console.error('Error fetching unseen count:', error);
       } finally {
         setFetching(false);
       }
+    } else {
+      console.warn('User details not available for fetching unseen count.');
     }
-  };
+  }, [userDetails, fetching]);
 
   // Handle Navigation
-  const handleNavigation = (href, index) => {
+  const handleNavigation = useCallback((href, index) => {
+    console.log(`Navigating to ${href} with index ${index}`);
     setActiveIndex(index);
-    router.push(href);
-    setDrawerOpen(false);
-  };
+    router.push(href).then(() => {
+      setDrawerOpen(false);
+      console.log(`Navigation to ${href} complete, drawer closed.`);
+    });
+  }, [router]);
 
   // Fetch user details on mount
   useEffect(() => {
     fetchUserDetails();
-  }, []);
+  }, [fetchUserDetails]);
 
   // Fetch unseen count when userDetails change
   useEffect(() => {
@@ -115,7 +132,7 @@ export default function PhoneDrawer() {
       const intervalId = setInterval(fetchUnseenCount, 10000); // 10 seconds
       return () => clearInterval(intervalId);
     }
-  }, [userDetails]);
+  }, [userDetails, fetchUnseenCount]);
 
   // Set activeIndex based on current path
   useEffect(() => {
@@ -127,20 +144,21 @@ export default function PhoneDrawer() {
       '/inbox',
       '/give-your-suggestion',
     ];
-    const currentPath = router.pathname.split('?')[0].replace(/\/$/, ''); // Remove query params and trailing slash
+    const currentPath = router.pathname.split('?')[0].replace(/\/$/, '').toLowerCase();
     const index = paths.findIndex(
-      (path) => path.replace(/\/$/, '') === currentPath
+      (path) => path.replace(/\/$/, '').toLowerCase() === currentPath
     );
+    console.info({ currentPath, arrayPathValue: paths[index], index });
     setActiveIndex(index !== -1 ? index : null);
-    console.info({currentPath, arrayPathValue: paths[index], index  })
   }, [router.pathname]);
 
   // Handle back button when drawer is open
   useEffect(() => {
     const handleBeforePopState = ({ url, as, options }) => {
-      if (isDrawerOpen.current) {
+      if (isDrawerOpenRef.current) {
+        console.log('Closing drawer due to back navigation.');
         setDrawerOpen(false);
-        isDrawerOpen.current = false;
+        isDrawerOpenRef.current = false;
         return false;
       }
       return true;
@@ -196,9 +214,9 @@ export default function PhoneDrawer() {
               <Link href={item.href} passHref style={{ width: '100%', textDecoration: 'none' }}>
                 <ListItemButton
                   onClick={() => handleNavigation(item.href, index)}
-                  className={`${styles.sideBarLinks} ${
-                    activeIndex === index ? styles.activeListItem : ''
-                  }`}
+                  className={clsx(styles.sideBarLinks, {
+                    [styles.activeListItem]: activeIndex === index,
+                  })}
                 >
                   <ListItemIcon className={styles.listItemIcon}>
                     {index === 0 ? (
@@ -262,6 +280,7 @@ export default function PhoneDrawer() {
             <ListItemButton
               className={styles.sideBarListItem}
               onClick={() => {
+                console.log('Signing out.');
                 signOut();
                 setDrawerOpen(false);
               }}
