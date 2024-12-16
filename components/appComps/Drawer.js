@@ -132,7 +132,6 @@ export default function SwipeableTemporaryDrawer() {
       (path) => path === currentPath
     );
     setActiveIndex(index !== -1 ? index : null);
-    console.info({ currentPath, arrayPathValue: paths[index], index })
   }, [router.pathname]);
 
   // Handle back button when drawer is open
@@ -153,9 +152,7 @@ export default function SwipeableTemporaryDrawer() {
     };
   }, [router]);
 
-  useEffect(() => {
-    console.log({ activeIndex })
-  }, [activeIndex])
+
 
   const list = () => (
     <div className={styles.MainCont} role="presentation">
