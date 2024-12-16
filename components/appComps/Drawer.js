@@ -280,10 +280,10 @@ export default function SwipeableTemporaryDrawer() {
                   <div
                     style={{
                       color: 'white',
-                      fontWeight: '500',
+                      fontWeight: '400',
                       fontFamily: 'Jost',
                       width: '100%',
-                      fontSize: '1.2rem',
+                      fontSize: '1rem',
                     }}
                     className={styles.linkText}
                   >
