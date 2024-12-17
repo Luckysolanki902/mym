@@ -10,12 +10,12 @@ import { Button } from '@mui/material';
 import ConfessionFooter from './ConfessionFooter';
 
 const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession, userDetails, commentsCount, toggleCommentsDialog, handleClick, handleOpenAuthPrompt, isAdmin, ondeleteClick }) => {
-  const [content, setContent] = useState('');
-  const [index, setIndex] = useState(0);
-  const [isTyping, setIsTyping] = useState(true);
-  const [showCaret, setShowCaret] = useState(true);
+  // const [content, setContent] = useState('');
+  // const [index, setIndex] = useState(0);
+  // const [isTyping, setIsTyping] = useState(true);
+  // const [showCaret, setShowCaret] = useState(true);
   const [isShareDialogOpen, setShareDialogOpen] = useState(false); // State to manage ShareDialog visibility
-  const [showFullContent, setShowFullContent] = useState(false);
+  // const [showFullContent, setShowFullContent] = useState(false);
   const [ref, inView] = useInView({
     triggerOnce: true,
   });
@@ -33,27 +33,27 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession, userDet
     setShareDialogOpen(true);
   };
 
-  const handleBoxClick = () => {
-    setShowFullContent(true);
-    handleComplete();
-  };
+  // const handleBoxClick = () => {
+  //   setShowFullContent(true);
+  //   handleComplete();
+  // };
 
-  useEffect(() => {
-    if (inView && isTyping && !showFullContent) {
-      const timer = setTimeout(() => {
-        if (index < confession?.confessionContent?.length) {
-          setContent(prevContent => prevContent + confession.confessionContent.charAt(index));
-          setIndex(prevIndex => prevIndex + 1);
-          confessionBoxRef.current.scrollTop = confessionBoxRef.current.scrollHeight; // Scroll to the bottom
-        } else {
-          setShowCaret(prevShowCaret => !prevShowCaret); // Toggle caret visibility
-          handleComplete();
-        }
-      }, 40);
+  // useEffect(() => {
+  //   if (inView && isTyping && !showFullContent) {
+  //     const timer = setTimeout(() => {
+  //       if (index < confession?.confessionContent?.length) {
+  //         setContent(prevContent => prevContent + confession.confessionContent.charAt(index));
+  //         setIndex(prevIndex => prevIndex + 1);
+  //         confessionBoxRef.current.scrollTop = confessionBoxRef.current.scrollHeight; // Scroll to the bottom
+  //       } else {
+  //         setShowCaret(prevShowCaret => !prevShowCaret); // Toggle caret visibility
+  //         handleComplete();
+  //       }
+  //     }, 40);
 
-      return () => clearTimeout(timer);
-    }
-  }, [index, inView, isTyping, showFullContent, confession?.confessionContent?.length]);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [index, inView, isTyping, showFullContent, confession?.confessionContent?.length]);
 
   const getTimeAgo = (timestamp) => {
     const now = new Date();
@@ -135,23 +135,30 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession, userDet
 
   return (
     <>
-      <div ref={ref} style={{ position: 'relative' }} className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`} onClick={handleBoxClick}>
-        <div onClick={handleBoxClick} className={styles.textarea} style={{ whiteSpace: 'pre-line' }} ref={confessionBoxRef}>
-          {inView ? (
+      <div ref={ref} style={{ position: 'relative' }} className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`}
+      //  onClick={handleBoxClick}
+       >
+        <div 
+        // onClick={handleBoxClick}
+         className={styles.textarea} style={{ whiteSpace: 'pre-line' }} ref={confessionBoxRef}>
+          {/* {inView ? (
             <>
               <span>{showFullContent ? confession.confessionContent : content}</span>
               {showCaret && <span style={{ animation: '1s step-end infinite blink-caret' }}> |</span>}
             </>
           ) : (
             <span>{confession.confessionContent}</span>
-          )}
+          )} */}
+
+          <span>{confession.confessionContent}</span>
+
         </div>
 
         <div className={styles.timestamp}>
-          <div style={{fontSize:'0.7rem', color:'rgb(120, 120, 120)'}}>
+          <div style={{ fontSize: '0.7rem', color: 'rgb(120, 120, 120)' }}>
             {getTimeAgo(confession.createdAt)}
           </div>
-          <div style={{fontSize:'0.7rem', color:'rgb(120, 120, 120)'}}>From {confession?.college}</div>
+          <div style={{ fontSize: '0.7rem', color: 'rgb(120, 120, 120)' }}>From {confession?.college}</div>
         </div>
 
         <ConfessionFooter
@@ -167,11 +174,11 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession, userDet
 
 
 
-  
 
 
 
-        <ShareDialog open={isShareDialogOpen} shareLink={confession._id} onClose={() => setShareDialogOpen(false)} confessorGender={confession?.gender}/>
+
+        <ShareDialog open={isShareDialogOpen} shareLink={confession._id} onClose={() => setShareDialogOpen(false)} confessorGender={confession?.gender} />
       </div>
 
 

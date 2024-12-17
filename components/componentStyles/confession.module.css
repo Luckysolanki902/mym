@@ -44,7 +44,7 @@
     width: 100%;
     flex: 1;
     color: rgba(0, 0, 0, 0.732);
-    font-weight: 400;
+    font-weight: 300;
     line-height: normal;
     overflow: auto;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -513,9 +513,7 @@ font-family: Jost, sans-serif;
 
 }
 
-.displayedText::selection {
-    background-color: rgb(45, 45, 45);
-}
+
 @media (width>600px){
     .sendIconPhone{
       display: none;
@@ -616,9 +614,7 @@ font-family: Jost, sans-serif;
         display: none;
     }
 
-    .mainContainer .textarea {
-        font-size: 0.9rem;
-    }
+
 }
 
 @media (width<450px) {
@@ -653,5 +649,18 @@ font-family: Jost, sans-serif;
 
     .shareIcon {
         width: 1.1rem;
+    }
+}
+
+
+@media (width > 900px){
+    .mainContainer .textarea {
+        font-size: 0.9rem;
+    }
+}
+
+@media (width > 1200px){
+    .mainContainer .textarea {
+        font-size: 1rem;
     }
 }

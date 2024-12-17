@@ -21,7 +21,7 @@ const AuthPrompt = ({ open, onClose }) => {
   };
 
   const StyledDialogContent = styled(DialogContent)({
-    padding: '3rem',
+    padding: '1rem 3rem',
     borderRadius: '1.5rem',
     backgroundColor: '#ffffff',
     textAlign: 'center',
@@ -51,10 +51,10 @@ const StyledButton = styled(Button)(() => ({
   }}
   >
       <StyledDialogContent>
-        <p>Please sign in or create an account to continue.</p>
+        <p>Please login to continue!</p>
         <Box sx={{display:'flex', width:'100%', alignItems:'center', justifyContent:'center', marginTop:'2rem', gap:'2rem'}}>
         <StyledButton color="primary" onClick={handleSignIn}>
-          Sign In
+          Login
         </StyledButton>
         <Button sx={{borderRadius:'0.6rem'}} color="primary" onClick={handleSignUp}>
           Sign Up

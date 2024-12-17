@@ -140,11 +140,6 @@
   }
   
   
-  
-  .textBox::selection {
-    background-color: #2d2d2ddf;
-    color: white;
-  }
 
   .input {
     padding-left: 0;

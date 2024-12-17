@@ -11,6 +11,9 @@ import '@/styles/globals.css';
 import PageRefresh from '@/components/loadings/PageRefresh';
 import Image from 'next/image';
 import CustomHead from '@/components/seo/CustomHead';
+import { Provider } from 'react-redux';
+import { store, persistor } from '@/store/store';
+import { PersistGate } from 'redux-persist/integration/react';
 // import { Analytics } from "@vercel/analytics/react"
 
 const mymtheme = createTheme({
@@ -120,7 +123,7 @@ export default function App({ Component, pageProps }) {
       /> */}
       {/* <Analytics/> */}
       {isAdminPage ? (
-        <ThemeProvider theme={mymtheme}>
+        <ThemeProvider theme={mymthemeDark}>
           <CssBaseline />
           {isLoading && (
             <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
@@ -136,24 +139,28 @@ export default function App({ Component, pageProps }) {
           )}
         </ThemeProvider>
       ) : (
-        <SessionProvider>
-          <ThemeProvider theme={mymtheme}>
-            <CssBaseline />
-            {/* {!isAuthRoute && <Topbar />} */}
-            <Topbar />
-            <Sidebar />
-            <div style={{ display: 'flex', flex: 1, overflowY: 'scroll', position: 'relative' }} className='remcheight'>
-              <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
-                {showLoadingGif &&
-                  <div style={{ width: 'var(--remwidth)', height: '100%', display: 'flex', position: 'absolute', top: '0', right: '0', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', zIndex: '999' }}>
-                    <Image src={'/gifs/rhombus.gif'} priority width={800 / 3} height={800 / 3} className='loadingGif' alt='loading'></Image>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <SessionProvider>
+              <ThemeProvider theme={mymtheme}>
+                <CssBaseline />
+                {/* {!isAuthRoute && <Topbar />} */}
+                <Topbar />
+                <Sidebar />
+                <div style={{ display: 'flex', flex: 1, overflowY: 'scroll', position: 'relative' }} className='remcheight'>
+                  <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
+                    {showLoadingGif &&
+                      <div style={{ width: 'var(--remwidth)', height: '100%', display: 'flex', position: 'absolute', top: '0', right: '0', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', zIndex: '999' }}>
+                        <Image src={'/gifs/rhombus.gif'} priority width={800 / 3} height={800 / 3} className='loadingGif' alt='loading'></Image>
+                      </div>
+                    }
+                    <Component {...pageProps} />
                   </div>
-                }
-                <Component {...pageProps} />
-              </div>
-            </div>
-          </ThemeProvider>
-        </SessionProvider>
+                </div>
+              </ThemeProvider>
+            </SessionProvider>
+          </PersistGate>
+        </Provider>
       )}
     </>
   );

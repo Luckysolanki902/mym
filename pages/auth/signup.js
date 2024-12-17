@@ -1,19 +1,17 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/firebase';
+// pages/auth/signup.js
 import { useRouter } from 'next/router';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSignupData, setOtpToken, setOtpSentAt, clearSignupData } from '@/store/slices/signupSlice';
 import React, { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import { signIn } from 'next-auth/react';
-import { createTheme, ThemeProvider, Select, MenuItem, TextField, Button, InputLabel, InputAdornment, IconButton } from '@mui/material';
+import { createTheme, ThemeProvider, Select, MenuItem, TextField, Button, InputAdornment, IconButton, Alert } from '@mui/material';
 import Image from 'next/image';
 import styles from './signup.module.css';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CustomHead from '@/components/seo/CustomHead';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { getSession } from 'next-auth/react';
-
 
 const mymtheme = createTheme({
   palette: {
@@ -24,18 +22,21 @@ const mymtheme = createTheme({
   },
 });
 
-const Signup = ({userDetails}) => {
-  const { data: session } = useSession();
+const Signup = ({ userDetails }) => {
   const router = useRouter();
-  useEffect(()=>{
-    if(userDetails){
-      router.push('/')
+  const dispatch = useDispatch();
+  const signupData = useSelector((state) => state.signup);
+
+  useEffect(() => {
+    if (userDetails) {
+      router.push('/');
     }
-  }, [userDetails])
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [gender, setGender] = useState('Select Gender');
-  const [college, setCollege] = useState('');
+  }, [userDetails, router]);
+
+  const [email, setEmail] = useState(signupData.email || '');
+  const [password, setPassword] = useState(signupData.password || '');
+  const [gender, setGender] = useState(signupData.gender || 'Select Gender');
+  const [college, setCollege] = useState(signupData.college || '');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [colleges, setColleges] = useState([]);
@@ -52,7 +53,7 @@ const Signup = ({userDetails}) => {
       try {
         const response = await fetch('/api/admin/testids/get');
         const data = await response.json();
-        setTestIds(data.map(test => test.email));
+        setTestIds(data.map((test) => test.email));
       } catch (error) {
         console.error('Error fetching test IDs:', error);
       }
@@ -100,7 +101,7 @@ const Signup = ({userDetails}) => {
     if (matchedCollege) {
       const collegeIndex = allowedEmails.indexOf(matchedCollege);
       setCollege('');
-      const matchedCollege2 = allowedEmails.find((allowedEmail) => allowedEmail === emailDomain)
+      const matchedCollege2 = allowedEmails.find((allowedEmail) => allowedEmail === emailDomain);
       if (matchedCollege2) {
         const collegeIndex2 = allowedEmails.indexOf(matchedCollege2);
         setCollege(colleges[collegeIndex2]);
@@ -109,7 +110,7 @@ const Signup = ({userDetails}) => {
     } else {
       setCollege('');
       if (emailValue.includes('@') && emailValue.includes('.')) {
-        setError('Your college is not on mym yet.');
+        setError('Your college is not on MYM yet.');
       } else {
         setError(null); // Clear error if email is empty
       }
@@ -121,56 +122,61 @@ const Signup = ({userDetails}) => {
 
     try {
       setError(null);
-      setLoading(true);
-      let isTestId = false;
+
+      // Validation
+      if (gender === 'Select Gender') {
+        throw new Error('Please select your gender.');
+      }
+
+      if (college === '') {
+        throw new Error('Please fill all fields.');
+      }
+
       if (allowOnlyCollegeEmails) {
         const isEmailAllowed = allowedEmails.some((allowedEmail) =>
           email.endsWith(allowedEmail)
         );
-        isTestId = testIds.includes(email); // Check if email is one of the test IDs
+        const isTestId = testIds.includes(email); // Check if email is one of the test IDs
         if (!isEmailAllowed && !isTestId) {
-          throw new Error('Your college is not on mym yet.');
+          throw new Error('Your college is not on MYM yet.');
         }
       }
 
-      if (gender === 'Select Gender' || college === '') {
-        throw new Error('Please fill all the fields');
-      }
+      setLoading(true);
 
-      // Create user with email and password
-      const authResult = await createUserWithEmailAndPassword(auth, email, password);
-      await signIn('credentials', {
-        email,
-        password,
-        redirect: false, // Remove redirect:true here
+      // Send OTP to the email
+      const response = await fetch('/api/security/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
       });
 
-      // If createUserWithEmailAndPassword is successful, save user data to the database
-      if (authResult && authResult.user) {
+      const data = await response.json();
 
-        const responseSaving = await fetch('/api/security/saveuseronsignup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, gender, college, isTestId }),
-        });
-
-        if (!responseSaving.ok) {
-          throw new Error('Failed to save user data.');
-        }
-
-
-        // Redirect to verifyotp page with the entered email
-        if (isTestId) {
-          router.push(`/`);
-        }
-        else {
-          router.push(`/verify/verifyotp`);
-        }
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send OTP.');
       }
+
+      // Save signup data and OTP token to Redux
+      dispatch(
+        setSignupData({
+          email,
+          password,
+          gender,
+          college,
+          isTestId: testIds.includes(email),
+        })
+      );
+
+      dispatch(setOtpToken(data.token));
+      dispatch(setOtpSentAt(new Date().toISOString()));
+
+      // Redirect to verify OTP page
+      router.push('/verify/verifyotp');
     } catch (error) {
-      console.error('Error signing up:', error);
+      console.error('Error during signup:', error);
       setError(error.message || 'Failed to sign up. Please try again.');
     } finally {
       setLoading(false);
@@ -184,28 +190,28 @@ const Signup = ({userDetails}) => {
       <ThemeProvider theme={mymtheme}>
         <div className={styles.mainContainer}>
           <div className={styles.macpng}>
-            <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview'></Image>
+            <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview' />
           </div>
           <div className={styles.mainBox}>
-            <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
+            <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo} />
             {error && (
-              <p style={{ color: 'red', marginBottom: '15px', textAlign: 'center' }}>
-                {error} <br />
-                {error === 'Your college is not on mym yet.' ? (
+              <Alert severity="error" style={{ marginBottom: '15px' }}>
+                {error}{' '}
+                {error === 'Your college is not on MYM yet.' && (
                   <Link
-                    style={{ color: 'rgb(0,0,0)', textDecoration: 'none', marginTop: '-1rem', }}
+                    style={{ color: 'rgb(0,0,0)', textDecoration: 'none', marginTop: '-1rem' }}
                     href={`/give-your-suggestion?category=add-college&collegedomain=${email.split('@')[1]}`}
                   >
                     Click here to get your college added.
                   </Link>
-                ) : null}
-              </p>
+                )}
+              </Alert>
             )}
 
             <form onSubmit={handleSignUp} className={styles.form}>
               <TextField
                 type="email"
-                label="College Id"
+                label="College Email"
                 autoComplete="email"
                 required
                 value={email}
@@ -218,23 +224,20 @@ const Signup = ({userDetails}) => {
               />
               <TextField
                 variant='standard'
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 label="Create Password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 InputLabelProps={{
-                  required: false, // Remove the asterisk for the Email field
+                  required: false, // Remove the asterisk for the Password field
                 }}
                 className={styles.input}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        onClick={handleClickShowPassword}
-                        edge="end"
-                      >
+                      <IconButton onClick={handleClickShowPassword} edge="end">
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
@@ -256,13 +259,14 @@ const Signup = ({userDetails}) => {
                 <MenuItem value="Select Gender">Select Gender</MenuItem>
                 <MenuItem value="male">Male</MenuItem>
                 <MenuItem value="female">Female</MenuItem>
+                {/* <MenuItem value="other">Other</MenuItem> */}
               </Select>
               <TextField
                 variant='standard'
                 required
                 value={college}
                 label="College"
-                placeholder='fill valid college id first'
+                placeholder='Fill a valid college email first'
                 inputProps={{
                   readOnly: true,
                 }}
@@ -280,14 +284,12 @@ const Signup = ({userDetails}) => {
             </form>
             <div className={styles.line}></div>
             <div
-              type="submit"
-              variant="contained"
-              color="primary"
               onClick={() => router.push('/auth/signin')}
               className={styles.paraLink}
+              style={{ cursor: 'pointer' }}
             >
-              <span style={{ marginRight: '0.5rem' }}>Already have an account?</span ><span style={{ cursor: 'pointer', color: 'rgb(50, 50, 50)', fontWeight: '800' }}>Login</span>
-
+              <span style={{ marginRight: '0.5rem' }}>Already have an account?</span>
+              <span style={{ color: 'rgb(50, 50, 50)', fontWeight: '800' }}>Login</span>
             </div>
           </div>
         </div>
@@ -298,18 +300,26 @@ const Signup = ({userDetails}) => {
 
 export default Signup;
 
-
 export async function getServerSideProps(context) {
-  let session = null;
-  session = await getSession(context);
+  // Retrieve the current session based on the request
+  const session = await getSession(context);
 
-  let userDetails = null;
   if (session?.user?.email) {
     try {
       const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
       const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
+      
       if (response.ok) {
-        userDetails = await response.json();
+        const userDetails = await response.json();
+        
+        if (userDetails) {
+          return {
+            redirect: {
+              destination: '/',
+              permanent: false, 
+            },
+          };
+        }
       } else {
         console.error('Error fetching user details');
       }
@@ -319,8 +329,6 @@ export async function getServerSideProps(context) {
   }
 
   return {
-    props: {
-      userDetails,
-    },
+    props: {},
   };
 }

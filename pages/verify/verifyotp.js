@@ -1,10 +1,17 @@
+// pages/verify/verifyotp.js
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearSignupData, setOtpToken, setOtpSentAt } from '@/store/slices/signupSlice';
+import React, { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import { createTheme, ThemeProvider, TextField, Button } from '@mui/material';
+import { createTheme, ThemeProvider, TextField, Button, Alert } from '@mui/material';
 import Image from 'next/image';
-import styles from './signup.module.css';
-import { getSession } from 'next-auth/react';
+import styles from './verifyotp.module.css'; // Ensure you have appropriate styles
+import CustomHead from '@/components/seo/CustomHead';
+import Link from 'next/link';
+import { signIn } from 'next-auth/react'; // Import signIn from NextAuth
+
+const COOLDOWN_SECONDS = 30;
 
 const mymtheme = createTheme({
   palette: {
@@ -15,48 +22,83 @@ const mymtheme = createTheme({
   },
 });
 
-const VerifyOTP = ({ session }) => {
+const VerifyOTP = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const signupData = useSelector((state) => state.signup);
+
   const [enteredOTP, setEnteredOTP] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [otpSent, setOTPSent] = useState(false);
-  const [wait30sec, setWait30sec] = useState(false);
+  const [waitTimeLeft, setWaitTimeLeft] = useState(0);
+  const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
-    sendOTP();
-  }, []);
+    // On component mount, check if OTP was sent and calculate remaining cooldown
+    if (signupData.otpSentAt) {
+      const now = Date.now();
+      const sentAt = new Date(signupData.otpSentAt).getTime();
+      const elapsedSeconds = Math.floor((now - sentAt) / 1000);
+      if (elapsedSeconds < COOLDOWN_SECONDS) {
+        setWaitTimeLeft(COOLDOWN_SECONDS - elapsedSeconds);
+        const timer = setInterval(() => {
+          const newElapsedSeconds = Math.floor((Date.now() - sentAt) / 1000);
+          const newWaitTime = COOLDOWN_SECONDS - newElapsedSeconds;
+          if (newWaitTime <= 0) {
+            setWaitTimeLeft(0);
+            clearInterval(timer);
+          } else {
+            setWaitTimeLeft(newWaitTime);
+          }
+        }, 1000);
+
+        return () => clearInterval(timer);
+      }
+    }
+  }, [signupData.otpSentAt]);
 
   const sendOTP = async () => {
     try {
-      setError(null);  // Clear any existing errors
-      const resendResponse = await fetch('/api/security/sendotp', {
+      setError(null);
+      setSuccessMessage(null);
+      setLoading(true);
+
+      const response = await fetch('/api/security/send-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: session?.user?.email }),
+        body: JSON.stringify({ email: signupData.email }),
       });
 
-      const resendData = await resendResponse.json();
+      const data = await response.json();
 
-      if (!resendResponse.ok) {
-        throw new Error(resendData.error || 'Failed to send OTP.');
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send OTP.');
       }
 
-      setOTPSent(true);
-      setWait30sec(true);
+      // Update the OTP token and sent timestamp in Redux
+      dispatch(setOtpToken(data.token));
+      dispatch(setOtpSentAt(new Date().toISOString()));
 
-      setTimeout(() => {
-        setWait30sec(false);
-      }, 30000);
+      setWaitTimeLeft(COOLDOWN_SECONDS);
+      setSuccessMessage('A new OTP has been sent to your email.');
+
+      // Start the cooldown timer
+      const timer = setInterval(() => {
+        setWaitTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } catch (error) {
       console.error('Error sending OTP:', error);
-      if (error.message.includes('Failed to fetch')) {
-        setError('Network error: Please check your connection.');
-      } else {
-        setError(error.message || 'Failed to send OTP. Please try again.');
-      }
+      setError(error.message || 'Failed to send OTP. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,6 +107,7 @@ const VerifyOTP = ({ session }) => {
 
     try {
       setError(null);
+      setSuccessMessage(null);
 
       if (!enteredOTP) {
         throw new Error('Please enter the OTP.');
@@ -72,12 +115,19 @@ const VerifyOTP = ({ session }) => {
 
       setLoading(true);
 
-      const response = await fetch('/api/security/validate-otp', {
+      const response = await fetch('/api/security/verify-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: session?.user?.email, otp: enteredOTP }),
+        body: JSON.stringify({
+          enteredOTP,
+          token: signupData.otpToken,
+          password: signupData.password,
+          gender: signupData.gender,
+          college: signupData.college,
+          isTestId: signupData.isTestId,
+        }),
       });
 
       const data = await response.json();
@@ -86,80 +136,117 @@ const VerifyOTP = ({ session }) => {
         throw new Error(data.error || 'Failed to verify OTP.');
       }
 
-      setLoading(false);
+      setSuccessMessage('Verifying and signing you in...');
 
-      // Redirect to textchat page if OTP verification succeeds
+      // Attempt to sign in the user
+      const signInResponse = await signIn('credentials', {
+        redirect: false, // Prevent automatic redirection
+        email: signupData.email,
+        password: signupData.password,
+      });
+
+      if (signInResponse.error) {
+        throw new Error(signInResponse.error);
+      }
+
+      // Clear signup data from Redux
+      dispatch(clearSignupData());
+
+      // Redirect to main page or dashboard
       router.push('/');
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      if (error.message.includes('NetworkError')) {
-        setError('Network error: Please check your connection.');
-      } else if (error.message.includes('User not found')) {
-        setError('User not found: Please check your email and try again.');
-      } else if (error.message.includes('Invalid OTP')) {
-        setError('Invalid OTP: Please check the OTP and try again.');
-      } else {
-        setError(error.message || 'Failed to verify OTP. Please try again.');
-      }
+      setError(error.message || 'Failed to verify OTP. Please try again.');
+    } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <ThemeProvider theme={mymtheme}>
-      <div className={styles.mainContainer}>
-        <div className={styles.mainBox}>
-          <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo} />
-          {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
-          <form onSubmit={handleVerifyOTP} className={styles.form}>
-            <TextField
-              type="text"
-              label="Email"
-              value={session?.user?.email || ''}
-              required
-              variant='standard'
-              disabled
-            />
-            <TextField
-              type="text"
-              label="Enter OTP"
-              value={enteredOTP}
-              required
-              variant='standard'
-              onChange={(e) => setEnteredOTP(e.target.value)}
-            />
+  // If signupData is incomplete, redirect back to signup
+  useEffect(() => {
+    if (!signupData.email || !signupData.password || !signupData.gender || !signupData.college) {
+      router.push('/auth/signup');
+    }
+  }, [signupData, router]);
 
-            <Button
-              type="submit"
-              disabled={loading}
-              variant="contained"
-              color="primary"
+  return (
+    <>
+      <CustomHead title={'Verify OTP - MYM'} />
+
+      <ThemeProvider theme={mymtheme}>
+        <div className={styles.mainContainer}>
+          <div className={styles.mainBox}>
+            <Image
+              src={'/images/mym_logos/mymshadow.png'}
+              width={1232}
+              height={656}
+              alt='mym'
+              className={styles.mymLogo}
+            />
+            {error && (
+              <Alert severity="error" style={{ marginBottom: '15px' }}>
+                {error}
+              </Alert>
+            )}
+            {successMessage && (
+              <Alert severity="success" style={{ marginBottom: '15px' }}>
+                {successMessage}
+              </Alert>
+            )}
+            <form onSubmit={handleVerifyOTP} className={styles.form}>
+              <TextField
+                type="email"
+                label="Email"
+                value={signupData.email || ''}
+                required
+                variant='standard'
+                disabled
+                className={styles.input}
+              />
+              <TextField
+                type="text"
+                label="Enter OTP"
+                value={enteredOTP}
+                required
+                variant='standard'
+                onChange={(e) => setEnteredOTP(e.target.value)}
+                className={styles.input}
+              />
+
+              <Button
+                type="submit"
+                disabled={loading}
+                variant="contained"
+                color="primary"
+                className={styles.button}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Verify'}
+              </Button>
+              <Button
+                onClick={sendOTP}
+                disabled={waitTimeLeft > 0 || loading}
+                variant="text"
+                color="primary"
+                className={styles.button}
+                sx={{ marginBottom: '1rem' }}
+              >
+                {waitTimeLeft > 0 ? `Resend OTP in ${waitTimeLeft}s` : 'Resend OTP'}
+              </Button>
+            </form>
+            <div className={styles.line}></div>
+            <div
+              onClick={() => router.push('/auth/signup')}
+              className={styles.paraLink}
+              style={{ cursor: 'pointer' }}
             >
-              {loading ? <CircularProgress style={{ fontSize: '1rem', width: '1rem', height: '1rem' }} /> : 'Verify'}
-            </Button>
-            <Button
-              onClick={sendOTP}
-              disabled={wait30sec}
-              variant="text"
-              color="primary"
-            >
-              {wait30sec ? `Resend OTP in 30s` : 'Resend OTP'}
-            </Button>
-          </form>
+              <span style={{ marginRight: '0.5rem' }}>Need to edit your information?</span>
+              <span style={{ color: 'rgb(50, 50, 50)', fontWeight: '800' }}>Edit</span>
+            </div>
+          </div>
         </div>
-      </div>
-    </ThemeProvider>
+      </ThemeProvider>
+    </>
   );
 };
-
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
-
-  return {
-    props: {
-      session,
-    },
-  };
-}
 
 export default VerifyOTP;

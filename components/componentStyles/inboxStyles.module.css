@@ -229,10 +229,7 @@
     font-size: 1rem;
 }
 
-.secRep::selection {
-    background-color: black;
-    color: white;
-}
+
 
 .replyButton {
     width: 100%;

@@ -30,13 +30,6 @@ const UserSchema = new mongoose.Schema({
     default: false,
     index: true
   },
-  otp: {
-    type: String, // Store OTP as a string
-    
-  },
-  otpCooldown: {
-    type: Date, // Store cooldown as a Date
-  },
   mid: {
     index: true,
     type: String,
