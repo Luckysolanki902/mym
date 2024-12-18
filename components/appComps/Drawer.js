@@ -1,8 +1,9 @@
+// components/SwipeableTemporaryDrawer.js
+
 import React, { useState, useEffect, useRef } from 'react';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -11,9 +12,10 @@ import Image from 'next/image';
 import styles from './styles/topbar.module.css';
 import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
-import { getSession, signOut } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -27,7 +29,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 export default function SwipeableTemporaryDrawer() {
   const router = useRouter();
 
-  // Separate state variables
+  // State variables
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
   const [unseenCount, setUnseenCount] = useState(0);
@@ -115,7 +117,7 @@ export default function SwipeableTemporaryDrawer() {
       const intervalId = setInterval(fetchUnseenCount, 10000); // 10 seconds
       return () => clearInterval(intervalId);
     }
-  }, [userDetails]);
+  }, [userDetails]); // Removed 'fetching' from dependencies
 
   // Set activeIndex based on current path
   useEffect(() => {
@@ -126,8 +128,9 @@ export default function SwipeableTemporaryDrawer() {
       '/create-confession',
       '/inbox',
       '/give-your-suggestion',
+      '/settings',
     ];
-    const currentPath = router.asPath; // Remove query params and trailing slash
+    const currentPath = router.asPath.split('?')[0].replace(/\/$/, ''); // Remove query params and trailing slash
     const index = paths.findIndex(
       (path) => path === currentPath
     );
@@ -151,8 +154,6 @@ export default function SwipeableTemporaryDrawer() {
       router.beforePopState(() => true);
     };
   }, [router]);
-
-
 
   const list = () => (
     <div className={styles.MainCont} role="presentation">
@@ -197,10 +198,9 @@ export default function SwipeableTemporaryDrawer() {
               <ListItem key={item.text} className={styles.sideBarListItem}>
                 <Link href={item.href} passHref style={{ width: '100%', textDecoration: 'none' }}>
                   <div
-                    style={{ backgroundColor: activeIndex == index ? 'rgba(211, 211, 211, 0.2)' : 'transparent' }}
+                    style={{ backgroundColor: activeIndex === index ? 'rgba(211, 211, 211, 0.2)' : 'transparent' }}
                     onClick={() => handleNavigation(item.href, index)}
-                    className={`${styles.sideBarLinks} 
-                  `}
+                    className={`${styles.sideBarLinks}`}
                   >
                     <ListItemIcon className={styles.listItemIcon}>
                       {index === 0 ? (
@@ -259,43 +259,24 @@ export default function SwipeableTemporaryDrawer() {
             )
           })}
         </div>
-        {/* Bottom actions (e.g., Logout) */}
+        {/* Settings Option at the Bottom */}
         {userDetails && (
-          <ListItem>
-            <ListItemButton
-              className={styles.sideBarListItem}
-              onClick={() => {
-                signOut();
-                setDrawerOpen(false);
-              }}
-            >
-              <ListItemIcon className={styles.listItemIcon}>
-                <Image
-                  src={'/images/sidebaricons/logout.png'}
-                  width={150}
-                  height={136}
-                  alt="logout icon"
-                  className={`${styles.iconspng5} ${styles.sideIcon}`}
+          <ListItem className={styles.sideBarListItem}>
+            <Link href="/settings" passHref style={{ width: '100%', textDecoration: 'none' }}>
+              <div
+                style={{ backgroundColor: activeIndex === 6 ? 'rgba(211, 211, 211, 0.2)' : 'transparent' }}
+                onClick={() => handleNavigation('/settings', 6)}
+                className={`${styles.sideBarLinks}`}
+              >
+                <ListItemIcon className={styles.listItemIcon}>
+                  <SettingsIcon fontSize="medium" style={{ color: 'white' }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={<div className={styles.linkText}>Settings</div>}
+                  className={styles.link}
                 />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <div
-                    style={{
-                      color: 'white',
-                      fontWeight: '400',
-                      fontFamily: 'Jost',
-                      width: '100%',
-                      fontSize: '1rem',
-                    }}
-                    className={styles.linkText}
-                  >
-                    Logout
-                  </div>
-                }
-                className={styles.link}
-              />
-            </ListItemButton>
+              </div>
+            </Link>
           </ListItem>
         )}
       </List>

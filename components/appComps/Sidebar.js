@@ -168,12 +168,12 @@ const Sidebar = () => {
       {userDetails && (
         <div
           className={`${styles.icons}`}
-          onClick={() => signOut()}
-          data-title="Logout"
+          onClick={() => router.push('/settings')}
+          data-title="Settings"
           style={{ position: 'absolute', bottom: '2rem' }}
         >
           <Image
-            src={'/images/sidebaricons/logout.png'}
+            src={'/images/sidebaricons/settings.png'}
             width={225 / 2}
             height={272 / 2}
             alt='icon'
