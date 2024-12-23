@@ -14,6 +14,7 @@ import CustomHead from '@/components/seo/CustomHead';
 import { Provider } from 'react-redux';
 import { store, persistor } from '@/store/store';
 import { PersistGate } from 'redux-persist/integration/react';
+import ComingSoon from '@/components/fullPageComps/ComingSoon';
 // import { Analytics } from "@vercel/analytics/react"
 
 const mymtheme = createTheme({
@@ -42,7 +43,7 @@ export default function App({ Component, pageProps }) {
   const [isLoading, setIsLoading] = useState(true);
   const [showLoadingGif, setShowLoadingGif] = useState(false)
   // const isAuthRoute = router.pathname.startsWith('/auth') || router.pathname.startsWith('/verify');
-
+  const showComingSoonPage = true
 
 
   useEffect(() => {
@@ -110,7 +111,6 @@ export default function App({ Component, pageProps }) {
 
 
 
-
   return (
     <>
       <CustomHead />
@@ -139,28 +139,30 @@ export default function App({ Component, pageProps }) {
           )}
         </ThemeProvider>
       ) : (
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <SessionProvider>
-              <ThemeProvider theme={mymtheme}>
-                <CssBaseline />
-                {/* {!isAuthRoute && <Topbar />} */}
-                <Topbar />
-                <Sidebar />
-                <div style={{ display: 'flex', flex: 1, overflowY: 'scroll', position: 'relative' }} className='remcheight'>
-                  <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
-                    {showLoadingGif &&
-                      <div style={{ width: 'var(--remwidth)', height: '100%', display: 'flex', position: 'absolute', top: '0', right: '0', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', zIndex: '999' }}>
-                        <Image src={'/gifs/rhombus.gif'} priority width={800 / 3} height={800 / 3} className='loadingGif' alt='loading'></Image>
-                      </div>
-                    }
-                    <Component {...pageProps} />
+        showComingSoonPage ? <ComingSoon />
+          :
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <SessionProvider>
+                <ThemeProvider theme={mymtheme}>
+                  <CssBaseline />
+                  {/* {!isAuthRoute && <Topbar />} */}
+                  <Topbar />
+                  <Sidebar />
+                  <div style={{ display: 'flex', flex: 1, overflowY: 'scroll', position: 'relative' }} className='remcheight'>
+                    <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
+                      {showLoadingGif &&
+                        <div style={{ width: 'var(--remwidth)', height: '100%', display: 'flex', position: 'absolute', top: '0', right: '0', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', zIndex: '999' }}>
+                          <Image src={'/gifs/rhombus.gif'} priority width={800 / 3} height={800 / 3} className='loadingGif' alt='loading'></Image>
+                        </div>
+                      }
+                      <Component {...pageProps} />
+                    </div>
                   </div>
-                </div>
-              </ThemeProvider>
-            </SessionProvider>
-          </PersistGate>
-        </Provider>
+                </ThemeProvider>
+              </SessionProvider>
+            </PersistGate>
+          </Provider>
       )}
     </>
   );
