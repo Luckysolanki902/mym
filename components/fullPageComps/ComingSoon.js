@@ -1,4 +1,5 @@
 import { Typography, Box, Container, styled } from '@mui/material';
+import Image from 'next/image';
 
 const Background = styled(Box)({
   position: 'fixed',
@@ -28,8 +29,10 @@ export default function ComingSoon() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          flexDirection: 'column',
         }}
       >
+        <Image width={1000} height={1000} alt='mym' style={{width:'250px', height:'auto', marginBottom:'-3rem'}} src={'/images/mym_logos/mymlogo.png'}/>
         <Box
           sx={{
             textAlign: 'center',

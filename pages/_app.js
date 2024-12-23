@@ -1,21 +1,17 @@
 import { useRouter } from 'next/router';
-import Head from 'next/head';
 import { useState, useEffect } from 'react';
-import LoadingBar from 'react-top-loading-bar';
 import TypeAdminPassword from '@/components/fullPageComps/TypeAdminPassword';
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import SessionProvider from './SessionProvider';
 import Topbar from '@/components/appComps/Topbar';
 import Sidebar from '@/components/appComps/Sidebar';
 import '@/styles/globals.css';
-import PageRefresh from '@/components/loadings/PageRefresh';
 import Image from 'next/image';
 import CustomHead from '@/components/seo/CustomHead';
 import { Provider } from 'react-redux';
 import { store, persistor } from '@/store/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import ComingSoon from '@/components/fullPageComps/ComingSoon';
-// import { Analytics } from "@vercel/analytics/react"
 
 const mymtheme = createTheme({
   palette: {
