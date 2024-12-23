@@ -21,7 +21,7 @@ const colleges = [
   {
     firstname: "RGIPT",
     lastname: "Amethi",
-    live: true,
+    live: false,
     position: 'left',
   },
   {
@@ -33,13 +33,13 @@ const colleges = [
   {
     firstname: "NIT",
     lastname: "Jalandhar",
-    live: true,
+    live: false,
     position: 'right',
   },
   {
     firstname: "NIT",
     lastname: "Kurukshetra",
-    live: true,
+    live: false,
     position: 'right',
   },
 ];
