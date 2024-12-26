@@ -1,17 +1,17 @@
-// Updated TextChatWithout component
+// Updated TextChatWrapper and textchat component
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import FilterOptions from '@/components/chatComps/FilterOptions';
 import styles from '../componentStyles/textchat.module.css';
-import { initiateSocket } from '@/utils/ramdomchat/initiateSocket';
-import { handleSend, handleTyping, handleStoppedTyping, handleFindNew, stopFindingPair, handleFindNewWhenSomeoneLeft } from '@/utils/ramdomchat/socketFunctions';
+import { initiateSocket } from '@/utils/randomchat/initiateSocket';
+import { handleSend, handleTyping, handleStoppedTyping, handleFindNew, stopFindingPair, handleFindNewWhenSomeoneLeft } from '@/utils/randomchat/socketFunctions';
 import CustomSnackbar from '../commonComps/Snackbar';
 import InputBox from '../chatComps/InputBox';
 import MessageDisplay from '../chatComps/MessagesDisplay';
 import { useTextChat, TextChatProvider } from '@/context/TextChatContext';
 import { useFilters, FiltersProvider } from '@/context/FiltersContext';
 import TimerPopup from '@/components/chatComps/TimerPopup';
- 
-const TextChatWithout = ({ userDetails }) => {
+
+const TextChat = ({ userDetails }) => {
   const [textValue, setTextValue] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -19,6 +19,7 @@ const TextChatWithout = ({ userDetails }) => {
   const [inpFocus, setInpFocus] = useState(false);
   const [isChatAvailable, setIsChatAvailable] = useState(false);
   const typingTimeoutRef = useRef(null);
+  const isTypingRef = useRef(false); // Initialize isTypingRef
   const messagesContainerRef = useRef(null);
   const inputRef = useRef(null);
   const findingTimeoutRef = useRef(null);
@@ -72,7 +73,11 @@ const TextChatWithout = ({ userDetails }) => {
       handleFindNew(socket, { userDetails, preferredCollege, preferredGender }, { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages, }, hasPaired, findingTimeoutRef)
     }
 //  on component unmount disconnect socket
-    
+
+    return () => {
+        // Cleanup on unmount
+        clearTimeout(typingTimeoutRef.current);
+    };
   }, [isChatAvailable, neverShowTimer.current, socket]);
 
   const handleSendButton = () => {
@@ -96,11 +101,11 @@ const TextChatWithout = ({ userDetails }) => {
   }
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && hasPaired) {
       e.preventDefault();
       handleSendButton();
     } else {
-      handleTyping(e, socket, typingTimeoutRef, userDetails, hasPaired);
+      handleTyping(e, socket, typingTimeoutRef, userDetails, hasPaired, isTypingRef); // Pass isTypingRef
     }
   }
 
@@ -118,7 +123,7 @@ const TextChatWithout = ({ userDetails }) => {
             inpFocus={inpFocus}
             setInpFocus={setInpFocus}
             handleKeyDown={handleKeyDown}
-            handleStoppedTyping={handleStoppedTyping}
+            handleStoppedTyping={() => handleStoppedTyping(socket, typingTimeoutRef, userDetails, hasPaired, isTypingRef)} // Pass isTypingRef
             typingTimeoutRef={typingTimeoutRef}
             inputRef={inputRef}
             userDetails={userDetails}
@@ -135,12 +140,12 @@ const TextChatWithout = ({ userDetails }) => {
   );
 };
 
-const TextChat = ({ userDetails }) => (
+const TextChatWrapper = ({ userDetails }) => (
   <FiltersProvider>
     <TextChatProvider>
-      <TextChatWithout userDetails={userDetails} />
+      <TextChat userDetails={userDetails} />
     </TextChatProvider>
   </FiltersProvider>
 );
 
-export default TextChat;
+export default TextChatWrapper;

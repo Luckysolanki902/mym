@@ -14,6 +14,8 @@ const darkTheme = createTheme({
 });
 
 const FilterOptions = ({ userDetails }) => {
+const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000'
+
   const [openFilterMenu, setOpenFilterMenu] = useState(false);
   const mainFilterContainerRef = useRef(null);
   const filterContentAnimation = useSpring({
@@ -78,7 +80,7 @@ const FilterOptions = ({ userDetails }) => {
     try {
       if (fetchingChatStats) return;
       setFetchingChatStats(true);
-      const response = await fetch('https://hostedmymserver.onrender.com/api/user-stats');
+      const response = await fetch(`${serverUrl}/api/user-stats`);
       if (!response.ok) {
         throw new Error('Failed to fetch chat stats');
       }

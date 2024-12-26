@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
-import { handleIdentify, handlePairDisconnected, handlePairingSuccess, handleReceivedMessage } from "@/utils/ramdomchat/socketFunctions";
-const serverUrl = 'https://hostedmymserver.onrender.com'
-// const serverUrl = 'http://localhost:1000'
+import { handleIdentify, handlePairDisconnected, handlePairingSuccess, handleReceivedMessage } from "@/utils/randomchat/socketFunctions";
+
+const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000'
 
 export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, stateFunctions, refs) => {
 

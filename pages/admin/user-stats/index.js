@@ -4,6 +4,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import Link from 'next/link';
 
 const Index = () => {
+    const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000'
+
     const [chatStats, setChatStats] = useState({
         totalUsers: 0,
         maleUsers: 0,
@@ -51,7 +53,7 @@ const Index = () => {
     const fetchChatStats = async () => {
         try {
             setFetchingChatStats(true);
-            const response = await fetch('https://hostedmymserver.onrender.com/api/user-stats');
+            const response = await fetch(`${serverUrl}/api/user-stats`);
             if (!response.ok) {
                 throw new Error('Failed to fetch chat stats');
             }

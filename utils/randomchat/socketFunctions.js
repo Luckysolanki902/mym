@@ -1,6 +1,10 @@
-import { scrollToBottom, triggerVibration } from "../generalUtilities";
+// utils/randomchat/socketFunctions.js
+
 import CryptoJS from 'crypto-js';
+import { scrollToBottom, triggerVibration } from "../generalUtilities";
+
 const secretKey = process.env.NEXT_PUBLIC_SECRET_KEY;
+
 const encryptMessage = (message, secretKey) => {
     return CryptoJS.AES.encrypt(message, secretKey).toString();
 };
@@ -10,8 +14,6 @@ const decryptMessage = (encryptedMessage, secretKey) => {
     return bytes.toString(CryptoJS.enc.Utf8);
 };
 
-
-
 export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef) => {
     const { setIsFindingPair } = stateFunctions;
     const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
@@ -20,7 +22,7 @@ export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions
         if (userDetails && preferredCollege !== undefined && preferredGender !== undefined) {
             // Identify user and send preferences to the server
             socket.emit('identify', {
-                userEmail: userDetails.email,
+                userMID: userDetails.mid,
                 userGender: userDetails.gender,
                 userCollege: userDetails.college,
                 preferredGender: preferredGender,
@@ -33,9 +35,7 @@ export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions
     }
 };
 
-
 export const handlePairingSuccess = (data, hasPaired, stateFunctions, findingTimeoutRef) => {
-
     const {
         setStrangerDisconnectedMessageDiv,
         setIsFindingPair,
@@ -64,22 +64,22 @@ export const handlePairingSuccess = (data, hasPaired, stateFunctions, findingTim
             repeat: 2
         });
 
-        // const snackbarColor = strangerGender === 'male' ? '#0094d4' : '#e3368d';
-        // setSnackbarColor(snackbarColor);
+        // Uncomment and customize if you wish to use snackbar notifications
+        /*
+        const snackbarColor = strangerGender === 'male' ? '#0094d4' : '#e3368d';
+        setSnackbarColor(snackbarColor);
 
-        // const snackbarMessage = `A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`;
-        // setSnackbarMessage(snackbarMessage);
+        const snackbarMessage = `A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`;
+        setSnackbarMessage(snackbarMessage);
 
-        // setSnackbarOpen(true);
+        setSnackbarOpen(true);
+        */
         setHasPaired(true);
     }
-
 
     // Clear the timeout
     clearTimeout(findingTimeoutRef.current);
 };
-
-
 
 // Your handleReceivedMessage function
 export const handleReceivedMessage = (data, stateFunctions, messagesContainerRef) => {
@@ -99,12 +99,10 @@ export const handleReceivedMessage = (data, stateFunctions, messagesContainerRef
         repeat: 1
     });
 
-
     scrollToBottom(messagesContainerRef);
 };
 
 export const handlePairDisconnected = (stateFunctions, messagesContainerRef) => {
-
     const { setStrangerDisconnectedMessageDiv, setHasPaired } = stateFunctions;
 
     setStrangerDisconnectedMessageDiv(true);
@@ -116,7 +114,6 @@ export const handlePairDisconnected = (stateFunctions, messagesContainerRef) => 
         strength: 0.3,
         repeat: 1
     });
-
 };
 
 // Your handleSend function
@@ -125,11 +122,11 @@ export const handleSend = (socket, textValue, stateFunctions, messagesContainerR
     const message = textValue.trim();
     if (message !== '' && socket && hasPaired) {
         const encryptedMessage = encryptMessage(message, secretKey);
-        socket.emit('message', { type: 'message', content: encryptedMessage, userEmail: userDetails?.email, pageType: 'textchat' });
+        socket.emit('message', { type: 'message', content: encryptedMessage, userMID: userDetails?.mid, pageType: 'textchat' });
         setTextValue('');
         setMessages(prevMessages => [
             ...prevMessages,
-            { sender: userDetails?.email, message: message },
+            { sender: userDetails?.mid, message: message },
         ]);
         setStrangerIsTyping(false);
     }
@@ -140,29 +137,34 @@ export const handleSend = (socket, textValue, stateFunctions, messagesContainerR
         repeat: 1
     });
 
-
     scrollToBottom(messagesContainerRef);
 };
 
-
-export const handleTyping = (e, socket, typingTimeoutRef, userDetails, hasPaired) => {
+// Updated handleTyping function with debounce
+export const handleTyping = (e, socket, typingTimeoutRef, userDetails, hasPaired, isTypingRef) => {
     if (e.key !== 'Enter' && socket && hasPaired) {
-        socket.emit('userTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
+        if (!isTypingRef.current) {
+            socket.emit('userTyping', { userMID: userDetails?.mid, pageType: 'textchat' });
+            isTypingRef.current = true;
+        }
 
         // Clear any existing timeout
         clearTimeout(typingTimeoutRef.current);
 
-        // Set a new timeout with dynamic delay
+        // Set a new timeout with a consistent delay (e.g., 1000ms)
         typingTimeoutRef.current = setTimeout(() => {
-            socket.emit('userStoppedTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
-        }, e.key === ' ' ? 500 : 1500); // Shorter timeout for spaces
+            socket.emit('userStoppedTyping', { userMID: userDetails?.mid, pageType: 'textchat' });
+            isTypingRef.current = false;
+        }, 1000); // 1 second delay after the last keystroke
     }
 };
 
-export const handleStoppedTyping = (socket, typingTimeoutRef, userDetails, hasPaired) => {
+// Updated handleStoppedTyping function with isTypingRef parameter
+export const handleStoppedTyping = (socket, typingTimeoutRef, userDetails, hasPaired, isTypingRef) => {
     clearTimeout(typingTimeoutRef.current);
-    if (socket && hasPaired) {
-        socket.emit('userStoppedTyping', { userEmail: userDetails?.email, pageType: 'textchat' });
+    if (socket && hasPaired && isTypingRef.current) {
+        socket.emit('userStoppedTyping', { userMID: userDetails?.mid, pageType: 'textchat' });
+        isTypingRef.current = false;
     }
 };
 
@@ -176,7 +178,7 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions,
 
     setMessages([]);
     socket.emit('findNewPair', {
-        userEmail: userDetails?.email,
+        userMID: userDetails?.mid,
         userGender: userDetails?.gender,
         userCollege: userDetails?.college,
         preferredGender: preferredGender,
@@ -195,6 +197,7 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions,
     //     }
     // }, timeout);
 };
+
 export const handleFindNewWhenSomeoneLeft = (socket, userDetailsAndPreferences, stateFunctions, hasPaired, findingTimeoutRef) => {
     const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
     const { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages } = stateFunctions;
@@ -205,7 +208,7 @@ export const handleFindNewWhenSomeoneLeft = (socket, userDetailsAndPreferences, 
 
     setMessages([]);
     socket.emit('findNewPairWhenSomeoneLeft', {
-        userEmail: userDetails?.email,
+        userMID: userDetails?.mid,
         userGender: userDetails?.gender,
         userCollege: userDetails?.college,
         preferredGender: preferredGender,
@@ -229,4 +232,4 @@ export const stopFindingPair = (socket, stateFunctions) => {
     const { setIsFindingPair } = stateFunctions;
     socket.emit('stopFindingPair');
     setIsFindingPair(false);
-}
+};

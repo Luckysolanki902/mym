@@ -1,5 +1,5 @@
 // pages/textchat.js
-import TextChat from '@/components/fullPageComps/TextChat';
+import TextChatWrapper from '@/components/fullPageComps/TextChatWrapper';
 import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef } from 'react';
@@ -27,7 +27,7 @@ const TextChatPage = ({ userDetails }) => {
   return (
     <>
       <CustomHead title={'Chat Anonymously With Your College Peers | MyM'} description={"Experience the buzz of anonymous chatting with MyM TextChat! Say goodbye to the usual small talk and dive into genuine conversations with your fellow college mates. It's like Omegle, but exclusive to your campus. Filter your matches by gender, college, and more, ensuring every chat is tailored to your preferences. Unveil the excitement of anonymous connections, share stories, and forge bonds—all within the safe confines of your college community. Join MyM TextChat today and let the conversations begin!"}/>
-      <TextChat userDetails={userDetails} />
+      <TextChatWrapper userDetails={userDetails} />
       <div ref={bottomRef}></div>
     </>
   );
