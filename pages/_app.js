@@ -39,7 +39,7 @@ export default function App({ Component, pageProps }) {
   const [isLoading, setIsLoading] = useState(true);
   const [showLoadingGif, setShowLoadingGif] = useState(false)
   // const isAuthRoute = router.pathname.startsWith('/auth') || router.pathname.startsWith('/verify');
-  const showComingSoonPage = true
+  const showComingSoonPage = false
 
 
   useEffect(() => {

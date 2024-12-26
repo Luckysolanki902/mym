@@ -58,13 +58,13 @@ const Message = ({ msg, userDetails, isTypingMsg = false, strangerGender }) => {
   return (
     <div
       className={`${styles.message} ${
-        msg.sender === userDetails?.email ? styles.right : styles.left
+        msg.sender === userDetails?.mid ? styles.right : styles.left
       }`}
     >
       <div
         className={`${styles.text} ${
-          msg.sender === userDetails?.email ? senderClass : receiverClass
-        } ${msg.sender === userDetails?.email ? styles.rightB : styles.leftB}`}
+          msg.sender === userDetails?.mid ? senderClass : receiverClass
+        } ${msg.sender === userDetails?.mid ? styles.rightB : styles.leftB}`}
       >
         {msg.message}
       </div>

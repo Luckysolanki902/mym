@@ -5,28 +5,40 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import CustomHead from '@/components/seo/CustomHead';
+import UserVerificationDialog from '@/components/chatComps/UserVerificationDialog';
+import { useSelector } from 'react-redux';
+
 const TextChatPage = ({ userDetails }) => {
   const bottomRef = useRef(null);
-  const router = useRouter()
+  const router = useRouter();
+  const { data: session } = useSession();
+  const unverifiedUserDetails = useSelector((state) => state.unverifiedUserDetails);
+
   useEffect(() => {
     // Scroll to the bottom when the component mounts
     bottomRef.current.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
-
-  const { data: session } = useSession();
   useEffect(() => {
     // Redirect to verify/verifyotp if userDetails is not verified
-    if (userDetails && !userDetails.isVerified) {
-      router.push('/verify/verifyotp');
+
+    // if (userDetails && !userDetails.isVerified) {
+    //   router.push('/verify/verifyotp');
+    // }
+    if (!session && !unverifiedUserDetails.mid) {
+      // Allow access without sign in if unverifiedUserDetails exists
     }
-    if (!session) {
-      router.push('/auth/signup');
-    }
-  }, [userDetails, router]);
+  }, [userDetails, router, session, unverifiedUserDetails]);
+
   return (
     <>
-      <CustomHead title={'Chat Anonymously With Your College Peers | MyM'} description={"Experience the buzz of anonymous chatting with MyM TextChat! Say goodbye to the usual small talk and dive into genuine conversations with your fellow college mates. It's like Omegle, but exclusive to your campus. Filter your matches by gender, college, and more, ensuring every chat is tailored to your preferences. Unveil the excitement of anonymous connections, share stories, and forge bonds—all within the safe confines of your college community. Join MyM TextChat today and let the conversations begin!"}/>
+      <CustomHead
+        title={'Chat Anonymously With Your College Peers | MyM'}
+        description={
+          "Experience the buzz of anonymous chatting with MyM TextChat! Say goodbye to the usual small talk and dive into genuine conversations with your fellow college mates. It's like Omegle, but exclusive to your campus. Filter your matches by gender, college, and more, ensuring every chat is tailored to your preferences. Unveil the excitement of anonymous connections, share stories, and forge bonds—all within the safe confines of your college community. Join MyM TextChat today and let the conversations begin!"
+        }
+      />
+      <UserVerificationDialog />
       <TextChatWrapper userDetails={userDetails} />
       <div ref={bottomRef}></div>
     </>
@@ -36,15 +48,6 @@ const TextChatPage = ({ userDetails }) => {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/auth/signup',
-        permanent: false,
-      },
-    };
-  }
 
   let userDetails = null;
   if (session?.user?.email) {
