@@ -6,10 +6,13 @@ import styles from '../componentStyles/textchat.module.css';
 import EventsContainer from './EventsContainer';
 import FilterOptions from './FilterOptions';
 import { useTextChat } from '@/context/TextChatContext';
+import WarningIcon from '@mui/icons-material/Warning';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
 
 const EventsContainerMemoized = React.memo(EventsContainer);
 
-const MessageDisplay = React.memo(({ userDetails }) => {
+const MessageDisplay = React.memo(({ userDetails, isStrangerVerified }) => {
     const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping, usersOnline, isFindingPair, paddingDivRef } = useTextChat();
 
     const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
@@ -87,6 +90,15 @@ const MessageDisplay = React.memo(({ userDetails }) => {
                     <Image src={'/images/illustrations/messages.png'} width={960} height={695} alt="start chat" />
                     <div><span style={{ color: strangerGender === 'female' ? '#FFA0BC' : '#79EAF7' }}>{strangerGender === 'male' ? 'Boy' : 'Girl'}</span> connected</div>
                     <div style={{ fontSize: '0.84rem' }}>Say <span>hi</span> and see where the conversation takes you!</div>
+                    {!isStrangerVerified &&
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {isStrangerVerified ?
+                                <CheckCircleIcon color="success" fontSize="medium" style={{ marginRight: '0.5rem' }} />
+                                :
+                                <WarningIcon color="warning" fontSize="medium" />
+                            }
+                            {isStrangerVerified ? 'Verified User' : 'Unverified User'}
+                        </div>}
                 </div>
             )}
 

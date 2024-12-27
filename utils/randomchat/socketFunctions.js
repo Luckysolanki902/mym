@@ -27,6 +27,7 @@ export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions
                 userCollege: userDetails.college,
                 preferredGender: preferredGender,
                 preferredCollege: preferredCollege,
+                isVerified: userDetails?.isVerified || false,
                 pageType: 'textchat'
             });
         }
@@ -45,17 +46,19 @@ export const handlePairingSuccess = (data, hasPaired, stateFunctions, findingTim
         setSnackbarColor,
         setSnackbarMessage,
         setSnackbarOpen,
-        setHasPaired
+        setHasPaired,
+        setIsStrangerVerified,
     } = stateFunctions;
 
     if (!hasPaired) {
         setStrangerDisconnectedMessageDiv(false);
         setIsFindingPair(false);
 
-        const { roomId, strangerGender, stranger } = data;
+        const { roomId, strangerGender, stranger, isStrangerVerified } = data;
         setRoom(roomId);
         setReceiver(stranger);
         setStrangerGender(strangerGender);
+        setIsStrangerVerified(isStrangerVerified);
 
         triggerVibration({
             duration: 200,
@@ -183,6 +186,7 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions,
         userCollege: userDetails?.college,
         preferredGender: preferredGender,
         preferredCollege: preferredCollege,
+        isVerified: userDetails?.isVerified || false,
         pageType: 'textchat'
     });
 
@@ -213,6 +217,7 @@ export const handleFindNewWhenSomeoneLeft = (socket, userDetailsAndPreferences, 
         userCollege: userDetails?.college,
         preferredGender: preferredGender,
         preferredCollege: preferredCollege,
+        isVerified: userDetails?.isVerified || false,
         pageType: 'textchat'
     });
 

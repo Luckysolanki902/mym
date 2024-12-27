@@ -14,6 +14,7 @@ export const TextChatProvider = ({ children }) => {
     const [usersOnline, setUsersOnline] = useState('');
     const [messages, setMessages] = useState([])
     const paddingDivRef = useRef(null)
+    const [isStrangerVerified, setIsStrangerVerified] = useState(true)
     return (
         <TextChatContext.Provider
             value={{
@@ -27,7 +28,8 @@ export const TextChatProvider = ({ children }) => {
                 strangerIsTyping, setStrangerIsTyping,
                 usersOnline, setUsersOnline,
                 messages, setMessages,
-                paddingDivRef
+                paddingDivRef,
+                isStrangerVerified, setIsStrangerVerified
             }}
         >
             {children}

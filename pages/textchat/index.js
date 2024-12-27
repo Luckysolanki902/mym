@@ -20,13 +20,13 @@ const TextChatPage = ({ userDetails }) => {
   }, []);
 
   useEffect(() => {
-    // Redirect to verify/verifyotp if userDetails is not verified
-
+    // Redirect logic can be handled within the dialog
     // if (userDetails && !userDetails.isVerified) {
     //   router.push('/verify/verifyotp');
     // }
     if (!session && !unverifiedUserDetails.mid) {
       // Allow access without sign in if unverifiedUserDetails exists
+      // No redirection needed as dialog handles verification
     }
   }, [userDetails, router, session, unverifiedUserDetails]);
 

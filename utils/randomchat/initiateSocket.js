@@ -1,68 +1,80 @@
+// utils/randomchat/initiateSocket.js
 import { io } from 'socket.io-client';
-import { handleIdentify, handlePairDisconnected, handlePairingSuccess, handleReceivedMessage } from "@/utils/randomchat/socketFunctions";
+import {
+  handleIdentify,
+  handlePairDisconnected,
+  handlePairingSuccess,
+  handleReceivedMessage
+} from "@/utils/randomchat/socketFunctions";
 
-const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000'
+const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000';
 
 export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, stateFunctions, refs) => {
+  const {
+    room,
+    setSocket,
+    setUsersOnline,
+    setStrangerIsTyping,
+    setStrangerDisconnectedMessageDiv,
+    setIsFindingPair,
+    setRoom,
+    setReceiver,
+    setStrangerGender,
+    setSnackbarColor,
+    setSnackbarMessage,
+    setSnackbarOpen,
+    setHasPaired,
+    setMessages,
+    setIsStrangerVerified
+  } = stateFunctions;
 
-    const { room, setSocket, setUsersOnline, setStrangerIsTyping, strangerSocketId } = stateFunctions;
-    const { messagesContainerRef, findingTimeoutRef } = refs
-    let newSocket
-    try {
-        if (socket === null || !socket || socket === undefined) {
-            newSocket = io(serverUrl, { query: { pageType: 'textchat' } });
-            setSocket(newSocket)
-        } else {
-            newSocket = socket
-        }
+  const { messagesContainerRef, findingTimeoutRef } = refs;
+  let newSocket;
 
-        newSocket = io(serverUrl, { query: { pageType: 'textchat' } });
-        setSocket(newSocket)
+  try {
+    if (!socket) {
+      newSocket = io(serverUrl, { query: { pageType: 'textchat' } });
+      setSocket(newSocket);
 
-    } catch (error) {
-    }
+      newSocket.on('connect', () => {
+        // Sending user preferences to server
+        handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef);
 
-    newSocket.on('connect', () => {
-        // sending your preferences to server
-        handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef)
-
-        // getting number of users online
+        // Handling various socket events
         newSocket.on('roundedUsersCount', (count) => {
-            setUsersOnline(count)
-        })
+          setUsersOnline(count);
+        });
+
         newSocket.on('identify', () => {
-            handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef)
+          handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef);
+        });
 
-        })
-        // Handling the successful pairing event
         newSocket.on('pairingSuccess', (data) => {
-            handlePairingSuccess(data, hasPaired, stateFunctions, findingTimeoutRef)
+          handlePairingSuccess(data, hasPaired, stateFunctions, findingTimeoutRef);
         });
 
-        // Handling receive message event
         newSocket.on('message', (data) => {
-            handleReceivedMessage(data, stateFunctions, messagesContainerRef);
+          handleReceivedMessage(data, stateFunctions, messagesContainerRef);
         });
 
-        // sending 'user is typing' evnent to server
         newSocket.on('userTyping', () => {
-            setStrangerIsTyping(true)
+          setStrangerIsTyping(true);
         });
 
-        // sending 'user stopped typing' event to server
         newSocket.on('userStoppedTyping', () => {
-            setStrangerIsTyping(false)
+          setStrangerIsTyping(false);
         });
 
-        // Handling stranger's disconnection event
         newSocket.on('pairDisconnected', () => {
-            handlePairDisconnected(stateFunctions, messagesContainerRef)
+          handlePairDisconnected(stateFunctions, messagesContainerRef);
         });
 
-
-        // handling user's disconnection
         newSocket.on('disconnect', () => {
-            setSocket(null)
+          setSocket(null);
         });
-    });
-}
+      });
+    }
+  } catch (error) {
+    console.error('Error initiating socket:', error);
+  }
+};

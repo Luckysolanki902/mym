@@ -13,8 +13,8 @@ import {
 import CustomSnackbar from '../commonComps/Snackbar';
 import InputBox from '../chatComps/InputBox';
 import MessageDisplay from '../chatComps/MessagesDisplay';
-import { useTextChat, TextChatProvider } from '@/context/TextChatContext';
-import { useFilters, FiltersProvider } from '@/context/FiltersContext';
+import { useTextChat } from '@/context/TextChatContext';
+import { useFilters } from '@/context/FiltersContext';
 import TimerPopup from '@/components/chatComps/TimerPopup';
 import { useSelector } from 'react-redux';
 
@@ -24,15 +24,14 @@ const TextChat = ({ userDetails }) => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarColor, setSnackbarColor] = useState('');
   const [inpFocus, setInpFocus] = useState(false);
-  const [isChatAvailable, setIsChatAvailable] = useState(false);
+  const [isChatAvailable, setIsChatAvailable] = useState(true); // Set to true if no time restrictions
   const typingTimeoutRef = useRef(null);
   const isTypingRef = useRef(false); // Initialize isTypingRef
   const messagesContainerRef = useRef(null);
   const inputRef = useRef(null);
   const findingTimeoutRef = useRef(null);
-  const neverShowTimer = useRef(true);
 
-  // using textchat contexts
+  // Using textchat contexts
   const {
     socket,
     setSocket,
@@ -54,39 +53,46 @@ const TextChat = ({ userDetails }) => {
     setUsersOnline,
     messages,
     setMessages,
+    isStrangerVerified, setIsStrangerVerified
   } = useTextChat();
 
-  // using filters contexts
+  // Using filters contexts
   const { preferredCollege, preferredGender } = useFilters();
 
-  // Check if the current time is between 10 PM and 11 PM
-  useEffect(() => {
-    const checkChatAvailability = () => {
-      const now = new Date();
-      const start = new Date();
-      start.setHours(22, 0, 0, 0); // 10 PM today
-      const end = new Date(start);
-      end.setHours(23, 59, 0, 0); // 11 PM today
+  // Check if the current time is between 10 PM and 11 PM (if required)
 
-      if (now >= start && now < end) {
-        setIsChatAvailable(true);
-      } else {
-        setIsChatAvailable(false);
-      }
-    };
+//   useEffect(() => {
+//     const checkChatAvailability = () => {
+//       const now = new Date();
+//       const start = new Date();
+//       start.setHours(22, 0, 0, 0); // 10 PM today
+//       const end = new Date(start);
+//       end.setHours(23, 59, 0, 0); // 11 PM today
 
-    if (!neverShowTimer.current) {
-      checkChatAvailability();
-      const interval = setInterval(checkChatAvailability, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [neverShowTimer.current]);
+//       if (now >= start && now < end) {
+//         setIsChatAvailable(true);
+//       } else {
+//         setIsChatAvailable(false);
+//       }
+//     };
+
+//     // Uncomment below if you want time-based restrictions
+//     /*
+//     checkChatAvailability();
+//     const interval = setInterval(checkChatAvailability, 60000); // Check every minute
+//     return () => clearInterval(interval);
+//     */
+    
+//     // If you don't want time-based restrictions, ensure isChatAvailable is true
+//     setIsChatAvailable(true);
+//   }, []);
 
   useEffect(() => {
     const initiate = async () => {
-      if (!userDetails) return;
+      // Ensure all required userDetails fields are present
+      if (!userDetails || !userDetails.gender || !userDetails.college || !userDetails.mid) return;
 
-      if ((isChatAvailable || neverShowTimer.current) && !socket) {
+      if (isChatAvailable && !socket) {
         initiateSocket(
           socket,
           { userDetails, preferredCollege, preferredGender },
@@ -106,6 +112,7 @@ const TextChat = ({ userDetails }) => {
             setSnackbarOpen,
             setHasPaired,
             setMessages,
+            setIsStrangerVerified
           },
           { messagesContainerRef, findingTimeoutRef }
         );
@@ -113,7 +120,7 @@ const TextChat = ({ userDetails }) => {
         handleFindNew(
           socket,
           { userDetails, preferredCollege, preferredGender },
-          { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages },
+          { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages, setIsStrangerVerified },
           hasPaired,
           findingTimeoutRef
         );
@@ -128,7 +135,6 @@ const TextChat = ({ userDetails }) => {
     initiate();
   }, [
     isChatAvailable,
-    neverShowTimer.current,
     socket,
     userDetails,
     preferredCollege,
@@ -138,7 +144,14 @@ const TextChat = ({ userDetails }) => {
   ]);
 
   const handleSendButton = () => {
-    handleSend(socket, textValue, { setTextValue, setMessages, setStrangerIsTyping }, messagesContainerRef, userDetails, hasPaired);
+    handleSend(
+      socket,
+      textValue,
+      { setTextValue, setMessages, setStrangerIsTyping },
+      messagesContainerRef,
+      userDetails,
+      hasPaired
+    );
   };
 
   const handleFindNewButton = () => {
@@ -163,28 +176,9 @@ const TextChat = ({ userDetails }) => {
         }
       }
     } else {
-      initiateSocket(
-        socket,
-        { userDetails, preferredCollege, preferredGender },
-        hasPaired,
-        {
-          room,
-          setSocket,
-          setUsersOnline,
-          setStrangerIsTyping,
-          setStrangerDisconnectedMessageDiv,
-          setIsFindingPair,
-          setRoom,
-          setReceiver,
-          setStrangerGender,
-          setSnackbarColor,
-          setSnackbarMessage,
-          setSnackbarOpen,
-          setHasPaired,
-          setMessages,
-        },
-        { messagesContainerRef, findingTimeoutRef }
-      );
+      // Socket is not initialized, perhaps show a message or initiate the socket
+      // But since TextChat is only rendered when userDetails are complete, this should not happen
+      console.warn("Socket not initialized yet.");
     }
   };
 
@@ -193,16 +187,17 @@ const TextChat = ({ userDetails }) => {
       e.preventDefault();
       handleSendButton();
     } else {
-      handleTyping(e, socket, typingTimeoutRef, userDetails, hasPaired, isTypingRef); // Pass isTypingRef
+      handleTyping(e, socket, typingTimeoutRef, userDetails, hasPaired, isTypingRef);
     }
   };
 
   return (
     <div className={styles.mainC}>
-      {!isChatAvailable && !neverShowTimer.current && <TimerPopup open={!isChatAvailable} />}
-      {(isChatAvailable || neverShowTimer.current) && userDetails && (
+      {/* Remove the TimerPopup if chat is always available, or adjust logic accordingly */}
+      {/* {!isChatAvailable && <TimerPopup open={!isChatAvailable} />} */}
+      {(isChatAvailable && userDetails) && (
         <>
-          <MessageDisplay userDetails={userDetails} />
+          <MessageDisplay userDetails={userDetails} isStrangerVerified={isStrangerVerified}/>
           <InputBox
             handleFindNewButton={handleFindNewButton}
             handleSendButton={handleSendButton}
@@ -211,7 +206,9 @@ const TextChat = ({ userDetails }) => {
             inpFocus={inpFocus}
             setInpFocus={setInpFocus}
             handleKeyDown={handleKeyDown}
-            handleStoppedTyping={() => handleStoppedTyping(socket, typingTimeoutRef, userDetails, hasPaired, isTypingRef)} // Pass isTypingRef
+            handleStoppedTyping={() =>
+              handleStoppedTyping(socket, typingTimeoutRef, userDetails, hasPaired, isTypingRef)
+            }
             typingTimeoutRef={typingTimeoutRef}
             inputRef={inputRef}
             userDetails={userDetails}
@@ -224,6 +221,13 @@ const TextChat = ({ userDetails }) => {
           />
         </>
       )}
+      {/* {!isChatAvailable && (
+        <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100vh">
+          <Typography variant="h5" gutterBottom>
+            Chat is currently unavailable. Please try again later.
+          </Typography>
+        </Box>
+      )} */}
     </div>
   );
 };
