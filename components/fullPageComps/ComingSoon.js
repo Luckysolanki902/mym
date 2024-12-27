@@ -1,5 +1,6 @@
 import { Typography, Box, Container, styled } from '@mui/material';
 import Image from 'next/image';
+import TimerBox from '../chatComps/TimerBox';
 
 const Background = styled(Box)({
   position: 'fixed',
@@ -13,11 +14,13 @@ const Background = styled(Box)({
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   opacity: 0.3,
-  width:'100%',
-  height:"auto"
+  width: '100%',
+  height: 'auto',
 });
 
 export default function ComingSoon() {
+  const targetDate = new Date('December 30, 2024 18:00:00');
+
   return (
     <>
       <Background />
@@ -32,7 +35,13 @@ export default function ComingSoon() {
           flexDirection: 'column',
         }}
       >
-        <Image width={1000} height={1000} alt='mym' style={{width:'250px', height:'auto', marginBottom:'-3rem'}} src={'/images/mym_logos/mymlogo.png'}/>
+        <Image
+          width={1000}
+          height={1000}
+          alt='mym'
+          style={{ width: '250px', height: 'auto', marginBottom: '-3rem' }}
+          src={'/images/mym_logos/mymlogo.png'}
+        />
         <Box
           sx={{
             textAlign: 'center',
@@ -55,15 +64,24 @@ export default function ComingSoon() {
             fontFamily={"Jost"}
             color={'black'}
             sx={{
-              fontStyle:'italic'
+              fontStyle: 'italic',
             }}
           >
             "Because no one should walk out of college alone."
           </Typography>
-
+        </Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '2rem',
+            display: 'flex',
+            justifyContent: 'center',
+            width: '100%',
+          }}
+        >
+          <TimerBox targetDate={targetDate} />
         </Box>
       </Container>
     </>
   );
 }
-

@@ -15,7 +15,6 @@ import InputBox from '../chatComps/InputBox';
 import MessageDisplay from '../chatComps/MessagesDisplay';
 import { useTextChat } from '@/context/TextChatContext';
 import { useFilters } from '@/context/FiltersContext';
-import TimerPopup from '@/components/chatComps/TimerPopup';
 import { useSelector } from 'react-redux';
 
 const TextChat = ({ userDetails }) => {
@@ -193,8 +192,6 @@ const TextChat = ({ userDetails }) => {
 
   return (
     <div className={styles.mainC}>
-      {/* Remove the TimerPopup if chat is always available, or adjust logic accordingly */}
-      {/* {!isChatAvailable && <TimerPopup open={!isChatAvailable} />} */}
       {(isChatAvailable && userDetails) && (
         <>
           <MessageDisplay userDetails={userDetails} isStrangerVerified={isStrangerVerified}/>
@@ -221,13 +218,6 @@ const TextChat = ({ userDetails }) => {
           />
         </>
       )}
-      {/* {!isChatAvailable && (
-        <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100vh">
-          <Typography variant="h5" gutterBottom>
-            Chat is currently unavailable. Please try again later.
-          </Typography>
-        </Box>
-      )} */}
     </div>
   );
 };
