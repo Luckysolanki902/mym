@@ -102,28 +102,32 @@ const UserVerificationDialog = () => {
   // 3. Decide if we should show dialog based on userType + time checks
   // -------------------------
   useEffect(() => {
+    const hasStartedChatting = localStorage.getItem('hasStartedChatting');
+    if (hasStartedChatting === 'true') {
+      setOpen(false); // Ensure dialog stays closed if already started chatting
+      return;
+    }
+
     if (!userType) return; // Wait until we know userType
 
-    const now = new Date().getTime();
+    const now = Date.now();
     const oneHour = 60 * 60 * 1000;
 
     if (userType === 'signedIn') {
-      // Check localStorage for last time shown
       const lastShown = localStorage.getItem('lastDialogShownAtSignedIn');
       if (!lastShown || now - parseInt(lastShown, 10) > oneHour) {
         setOpen(true);
       }
     } else if (userType === 'unverifiedHasDetails') {
-      // Check Redux lastDialogShownAt
       const lastShown = unverifiedUserDetails.lastDialogShownAt;
       if (!lastShown || now - lastShown > oneHour) {
         setOpen(true);
       }
     } else if (userType === 'unverifiedNoDetails') {
-      // No details at all? Show the 3-step flow immediately
       setOpen(true);
     }
   }, [userType, unverifiedUserDetails.lastDialogShownAt]);
+
 
   // -------------------------
   // 4. Fetch colleges once
@@ -192,6 +196,7 @@ const UserVerificationDialog = () => {
       alert('Please select both gender and college.');
       return;
     }
+
     let finalCollegeName = college;
     if (college === 'other') {
       if (!collegeName.trim()) {
@@ -201,20 +206,29 @@ const UserVerificationDialog = () => {
       finalCollegeName = toTitleCase(collegeName.trim());
     }
 
+    // Save details
     dispatch(
       setUnverifiedUserDetails({
         gender,
         college: finalCollegeName,
       })
     );
+
+    // Set loading state
     setShowButtonLoading(true);
+
+    // Use a flag to avoid reopening
+    localStorage.setItem('hasStartedChatting', 'true');
+
+    // Close dialog after loading finishes
     setTimeout(() => {
       setShowButtonLoading(false);
-      handleClose();
+      setOpen(false); // Close dialog definitively
     }, 1000);
-    handleClose();
-    setOpen(false);
   };
+
+
+
 
   // -------------------------
   // Step-by-step UI
@@ -386,14 +400,16 @@ const UserVerificationDialog = () => {
             <Button
               variant="contained"
               onClick={handleStartChatting}
+              disabled={showButtonLoading} // Disable button while loading
               sx={{
-                backgroundColor: '#2d2d2d',
-                ':hover': { backgroundColor: 'rgba(45,45,45,0.9)' },
+                backgroundColor: showButtonLoading ? '#ccc' : '#2d2d2d',
+                ':hover': { backgroundColor: showButtonLoading ? '#ccc' : 'rgba(45,45,45,0.9)' },
               }}
             >
-              {showButtonLoading ? 'working...' : 'Start Chatting!'}
+              {showButtonLoading ? 'Working...' : 'Start Chatting!'}
             </Button>
           </Box>
+
         </Box>
       );
     }

@@ -1,17 +1,19 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-import TypeAdminPassword from '@/components/fullPageComps/TypeAdminPassword';
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
+import Image from 'next/image';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+
 import SessionProvider from './SessionProvider';
 import Topbar from '@/components/appComps/Topbar';
 import Sidebar from '@/components/appComps/Sidebar';
-import '@/styles/globals.css';
-import Image from 'next/image';
 import CustomHead from '@/components/seo/CustomHead';
-import { Provider } from 'react-redux';
-import { store, persistor } from '@/store/store';
-import { PersistGate } from 'redux-persist/integration/react';
+import TypeAdminPassword from '@/components/fullPageComps/TypeAdminPassword';
 import ComingSoon from '@/components/fullPageComps/ComingSoon';
+
+import { store, persistor } from '@/store/store';
+import '@/styles/globals.css';
 
 const mymtheme = createTheme({
   palette: {
@@ -33,135 +35,213 @@ const mymthemeDark = createTheme({
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
-  // const [progress, setProgress] = useState(0);
+
+  // Admin state
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const isAdminPage = router.pathname.startsWith('/admin');
-  const [isLoading, setIsLoading] = useState(true);
-  const [showLoadingGif, setShowLoadingGif] = useState(false)
-  // const isAuthRoute = router.pathname.startsWith('/auth') || router.pathname.startsWith('/verify');
-  const showComingSoonPage = true
 
+  // Coming soon state
+  const [showComingSoonPage, setShowComingSoonPage] = useState(true);
+
+  // Overall loading state (used while we do initial checks)
+  const [appLoading, setAppLoading] = useState(true);
+
+  // Loading gif state during route transitions
+  const [showLoadingGif, setShowLoadingGif] = useState(false);
+
+  // Launch date/time
+  const launchDateNTime = new Date('30 Dec, 2024 18:00:00 GMT+0530').getTime();
 
   useEffect(() => {
-    const verifyToken = async () => {
-      try {
-        const token = localStorage.getItem('adminAuthToken');
+    // Combined Initialization
+    // 1. Check if the site is launched yet
+    // 2. If on an admin route, verify the token
+    // Until done, show a loading screen
 
-        if (!token) {
-          setIsLoading(false);
-          return;
-        }
+    const initApp = async () => {
+      // 1) Check if site has launched
+      const now = new Date().getTime();
+      if (now >= launchDateNTime) {
+        setShowComingSoonPage(false);
+      } else {
+        // If not launched, set up an interval to check every second or so
+        const intervalId = setInterval(() => {
+          const updatedTime = new Date().getTime();
+          if (updatedTime >= launchDateNTime) {
+            setShowComingSoonPage(false);
+            clearInterval(intervalId);
+          }
+        }, 1000);
+      }
 
-        const response = await fetch('/api/admin/security/authenticate', {
-          method: 'GET',
-          headers: {
-            'Authorization': token,
-          },
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          setIsAdminLoggedIn(true);
-        } else {
-          // Handle invalid or expired token
-          console.error('Invalid token or insufficient privileges.');
+      // 2) If on admin page, verify token
+      if (isAdminPage) {
+        try {
+          const token = localStorage.getItem('adminAuthToken');
+          if (token) {
+            const response = await fetch('/api/admin/security/authenticate', {
+              method: 'GET',
+              headers: {
+                Authorization: token,
+              },
+            });
+            const data = await response.json();
+            if (data.success) {
+              setIsAdminLoggedIn(true);
+            } else {
+              localStorage.removeItem('adminAuthToken');
+            }
+          }
+        } catch (error) {
+          console.error('Error verifying token:', error);
           localStorage.removeItem('adminAuthToken');
         }
-      } catch (error) {
-        console.error('Error verifying token:', error);
-        // Handle token verification error
-        localStorage.removeItem('adminAuthToken');
-      } finally {
-        setIsLoading(false); // Hide loading indicator when verification is complete
       }
+
+      // Once checks are done, hide the initial loading screen
+      setAppLoading(false);
     };
 
-    if (isAdminPage) {
-      verifyToken();
-    }
+    initApp();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
+  // Listen to route changes for showing a loading GIF
   useEffect(() => {
     let timeout;
-
-    router.events.on('routeChangeStart', () => {
+    const handleRouteChangeStart = () => {
       setShowLoadingGif(true);
-      // Set a timeout to hide the loading indicator after 5 seconds
+      // Set a timeout so the loading doesn't get stuck
+      // in case route change fails for some reason
       timeout = setTimeout(() => {
         setShowLoadingGif(false);
-      }, 10000); // Adjust this timeout duration as needed
-    });
-
-    router.events.on('routeChangeComplete', () => {
-      // Clear the timeout and hide the loading indicator
+      }, 10000);
+    };
+    const handleRouteChangeComplete = () => {
       clearTimeout(timeout);
       setShowLoadingGif(false);
-    });
+    };
+
+    router.events.on('routeChangeStart', handleRouteChangeStart);
+    router.events.on('routeChangeComplete', handleRouteChangeComplete);
 
     return () => {
-      clearTimeout(timeout); // Clear the timeout on component unmount
+      clearTimeout(timeout);
+      router.events.off('routeChangeStart', handleRouteChangeStart);
+      router.events.off('routeChangeComplete', handleRouteChangeComplete);
     };
   }, [router.events]);
 
+  // -------------
+  //   RENDERING
+  // -------------
 
+  // If still performing initial checks, show a simple loading screen
+  if (appLoading) {
+    return (
+      <ThemeProvider theme={mymtheme}>
+        <CssBaseline />
+        <div
+          style={{
+            width: '100vw',
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Image
+            style={{ width: '130px', height: 'auto' }}
+            src={'/gifs/rhombus.gif'}
+            priority
+            width={400} // 800/3
+            height={400}
+            alt='loading'
+          />
+        </div>
+      </ThemeProvider>
+    );
+  }
 
+  // If on admin page:
+  if (isAdminPage) {
+    return (
+      <ThemeProvider theme={mymthemeDark}>
+        <CssBaseline />
+        <CustomHead />
+        {isAdminLoggedIn ? (
+          <Component {...pageProps} />
+        ) : (
+          <TypeAdminPassword onLogin={() => setIsAdminLoggedIn(true)} />
+        )}
+      </ThemeProvider>
+    );
+  }
+
+  // Non-admin pages:
+  // If ComingSoon is active, show it
+  if (showComingSoonPage) {
+    return (
+      <ThemeProvider theme={mymtheme}>
+        <CssBaseline />
+        <CustomHead />
+        <ComingSoon />
+      </ThemeProvider>
+    );
+  }
+
+  // Otherwise, render the actual site
   return (
-    <>
-      <CustomHead />
-      {/* <LoadingBar
-        height={2}
-        color='rgb(45, 45, 45)'
-        progress={progress}
-        waitingTime={600}
-        onLoaderFinished={() => setProgress(0)}
-      /> */}
-      {/* <Analytics/> */}
-      {isAdminPage ? (
-        <ThemeProvider theme={mymthemeDark}>
-          <CssBaseline />
-          {isLoading && (
-            <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
-              Loading...
-            </div>
-          )}
-          {!isLoading && (
-            isAdminLoggedIn ? (
-              <Component {...pageProps} />
-            ) : (
-              <TypeAdminPassword onLogin={() => setIsAdminLoggedIn(true)} />
-            )
-          )}
-        </ThemeProvider>
-      ) : (
-        showComingSoonPage ? <ComingSoon />
-          :
-          <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-              <SessionProvider>
-                <ThemeProvider theme={mymtheme}>
-                  <CssBaseline />
-                  {/* {!isAuthRoute && <Topbar />} */}
-                  <Topbar />
-                  <Sidebar />
-                  <div style={{ display: 'flex', flex: 1, overflowY: 'scroll', position: 'relative' }} className='remcheight'>
-                    <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
-                      {showLoadingGif &&
-                        <div style={{ width: 'var(--remwidth)', height: '100%', display: 'flex', position: 'absolute', top: '0', right: '0', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', zIndex: '999' }}>
-                          <Image src={'/gifs/rhombus.gif'} priority width={800 / 3} height={800 / 3} className='loadingGif' alt='loading'></Image>
-                        </div>
-                      }
-                      <Component {...pageProps} />
-                    </div>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <SessionProvider>
+          <ThemeProvider theme={mymtheme}>
+            <CssBaseline />
+            <CustomHead />
+            <Topbar />
+            <Sidebar />
+
+            <div
+              style={{
+                display: 'flex',
+                flex: 1,
+                overflowY: 'scroll',
+                position: 'relative',
+              }}
+              className='remcheight'
+            >
+              <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
+                {showLoadingGif && (
+                  <div
+                    style={{
+                      width: 'var(--remwidth)',
+                      height: '100%',
+                      display: 'flex',
+                      position: 'absolute',
+                      top: '0',
+                      right: '0',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: 'white',
+                      zIndex: '999',
+                    }}
+                  >
+                    <Image
+                      style={{ width: '266px', height: '266px' }}
+                      src={'/gifs/rhombus.gif'}
+                      priority
+                      width={400} // 800/3
+                      height={400}
+                      alt='loading'
+                    />
                   </div>
-                </ThemeProvider>
-              </SessionProvider>
-            </PersistGate>
-          </Provider>
-      )}
-    </>
+                )}
+                <Component {...pageProps} />
+              </div>
+            </div>
+          </ThemeProvider>
+        </SessionProvider>
+      </PersistGate>
+    </Provider>
   );
 }
-
-
