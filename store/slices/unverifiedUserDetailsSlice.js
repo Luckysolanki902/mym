@@ -18,7 +18,6 @@ const unverifiedUserDetailsSlice = createSlice({
       state.college = action.payload.college;
       state.mid = uuidv4();
       state.lastDialogShownAt = new Date().getTime();
-      console.log("unverifiedUserDetails updated:", state);
     },
     setLastDialogShownAt: (state, action) => {
       state.lastDialogShownAt = action.payload;

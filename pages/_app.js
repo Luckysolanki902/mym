@@ -14,6 +14,7 @@ import ComingSoon from '@/components/fullPageComps/ComingSoon';
 
 import { store, persistor } from '@/store/store';
 import '@/styles/globals.css';
+import GoogleAnalytics from '@/components/seo/GoogleAnalytics';
 
 const mymtheme = createTheme({
   palette: {
@@ -154,8 +155,9 @@ export default function App({ Component, pageProps }) {
             style={{ width: '130px', height: 'auto' }}
             src={'/gifs/rhombus.gif'}
             priority
-            width={400} // 800/3
-            height={400}
+            width={200}
+            height={200}
+            loading='eager'
             alt='loading'
           />
         </div>
@@ -197,6 +199,7 @@ export default function App({ Component, pageProps }) {
         <SessionProvider>
           <ThemeProvider theme={mymtheme}>
             <CssBaseline />
+            <GoogleAnalytics />
             <CustomHead />
             <Topbar />
             <Sidebar />
@@ -227,12 +230,13 @@ export default function App({ Component, pageProps }) {
                     }}
                   >
                     <Image
-                      style={{ width: '266px', height: '266px' }}
+                      style={{ width: '120px', height: '120px' }}
                       src={'/gifs/rhombus.gif'}
                       priority
-                      width={400} // 800/3
-                      height={400}
+                      width={200}
+                      height={200}
                       alt='loading'
+                      loading='eager'
                     />
                   </div>
                 )}

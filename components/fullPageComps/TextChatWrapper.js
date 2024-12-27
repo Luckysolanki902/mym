@@ -29,10 +29,6 @@ const TextChatWrapper = ({ userDetails }) => {
 
     setEffectiveUserDetails(userDetailsToUse);
 
-    // Debugging logs
-    console.log('Session:', session);
-    console.log('Unverified User Details:', unverifiedUserDetails);
-    console.log('Is User Details Complete:', detailsComplete);
   }, [session, userDetails, unverifiedUserDetails]);
 
   return (
