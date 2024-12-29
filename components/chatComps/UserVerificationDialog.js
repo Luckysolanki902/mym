@@ -292,7 +292,7 @@ const UserVerificationDialog = () => {
             <IconButton onClick={handleBack}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h6" sx={{ ml: 2 }}>
+            <Typography variant="body1" sx={{ ml: 1, fontWeight:'600', fontSize:"1.1rem" }}>
               Sign In or Continue
             </Typography>
           </Box>
@@ -302,7 +302,19 @@ const UserVerificationDialog = () => {
             or continue as an unverified user.
           </Typography>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              mt: 3,
+              flexDirection: {
+                xs: 'column', // column direction for small screens
+                sm: 'row', // row direction for medium and larger screens
+              },
+              gap:'1rem',
+            }}
+
+          >
             <Button
               variant="contained"
               onClick={handleSignIn}
@@ -311,6 +323,7 @@ const UserVerificationDialog = () => {
                 color: 'white',
                 ':hover': {
                   backgroundColor: '#333',
+                  fontsize: '0.7rem',
                 },
               }}
             >
@@ -326,6 +339,7 @@ const UserVerificationDialog = () => {
                 ':hover': {
                   borderColor: '#666',
                   color: '#444',
+                  fontsize: '0.7rem',
                 },
               }}
             >
