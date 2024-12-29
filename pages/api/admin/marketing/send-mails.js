@@ -49,7 +49,7 @@ const handler = async (req, res) => {
                             <!-- Header Section -->
                             <tr>
                                 <td style="padding: 0px 0; text-align:center; background-color:rgb(50, 50, 50); color:#000000;">
-                                    <img src="https://www.meetyourmate.in/images/mym_logos/mymlogoinvert2.png" alt="mymlogo" style="width:40%; max-width:300px; display:block; Margin:0 auto;">
+                                    <img src="https://www.meetyourmate.in/images/mym_logos/mymlogoinvert2.png" alt="mymlogo" style="width:40%; max-width:300px; display:block; margin:20px auto;">
                                     <p style="text-align:center; font-family: Jost, sans-serif; font-size:14px; color:#ffffff; margin:10px 0;">
                                         HBTU’s Anonymous Chat Platform <br>Is Waiting for You!
                                     </p>
@@ -91,14 +91,14 @@ const handler = async (req, res) => {
                                     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin:0 auto; background-color:#1F1F1F;">
                                         <tr>
                                             <td style="width:50%; vertical-align:top; padding:10px; background-color:#1F1F1F;">
-                                                <img src="https://www.meetyourmate.in/images/othericons/bubble-chat.png" alt="Anonymous Chats" style="width:50px; height:auto; display:block; Margin:0 auto; filter:invert(1);">
+                                                <img src="https://www.meetyourmate.in/images/othericons/bubble-chat2.png" alt="Anonymous Chats" style="width:50px; height:auto; display:block; Margin:0 auto; ">
                                                 <h4 style="font-size:16px; text-align:center; margin:10px 0 5px 0; color:rgb(250, 250, 250);">Anonymous Chats</h4>
                                                 <p style="font-size:14px; line-height:1.5; text-align:center; color:rgb(250, 250, 250);">
                                                     Say hello to random people from HBTU, without even revealing who you are. No more hiding behind a mask.
                                                 </p>
                                             </td>
                                             <td style="width:50%; vertical-align:top; padding:10px; background-color:#1F1F1F;">
-                                                <img src="https://www.meetyourmate.in/images/othericons/network.png" alt="Real Connections" style="width:50px; height:auto; display:block; Margin:0 auto; filter:invert(1);">
+                                                <img src="https://www.meetyourmate.in/images/othericons/network2.png" alt="Real Connections" style="width:50px; height:auto; display:block; Margin:0 auto; ">
                                                 <h4 style="font-size:16px; text-align:center; margin:10px 0 5px 0; color:rgb(250, 250, 250);">Real Connections</h4>
                                                 <p style="font-size:14px; line-height:1.5; text-align:center; color:rgb(250, 250, 250);">
                                                     Imagine starting the new semester with a new friend who’s just as excited to see you as you are.
@@ -107,14 +107,14 @@ const handler = async (req, res) => {
                                         </tr>
                                         <tr>
                                             <td style="width:50%; vertical-align:top; padding:10px; background-color:#1F1F1F;">
-                                                <img src="https://www.meetyourmate.in/images/othericons/feather.png" alt="Confession Space" style="width:50px; height:auto; display:block; Margin:0 auto; filter:invert(1);">
+                                                <img src="https://www.meetyourmate.in/images/othericons/feather2.png" alt="Confession Space" style="width:50px; height:auto; display:block; Margin:0 auto; ">
                                                 <h4 style="font-size:16px; text-align:center; margin:10px 0 5px 0; color:rgb(250, 250, 250);">Confession Space</h4>
                                                 <p style="font-size:14px; line-height:1.5; text-align:center; color:rgb(250, 250, 250);">
                                                     Spill your heart out anonymously. Write what you've been holding back. Read what other people have to say.
                                                 </p>
                                             </td>
                                             <td style="width:50%; vertical-align:top; padding:10px; background-color:#1F1F1F;">
-                                                <img src="https://www.meetyourmate.in/images/othericons/privacy.png" alt="Total Privacy" style="width:50px; height:auto; display:block; Margin:0 auto; filter:invert(1);">
+                                                <img src="https://www.meetyourmate.in/images/othericons/privacy2.png" alt="Total Privacy" style="width:50px; height:auto; display:block; Margin:0 auto; ">
                                                 <h4 style="font-size:16px; text-align:center; margin:10px 0 5px 0; color:rgb(250, 250, 250);">Total Privacy</h4>
                                                 <p style="font-size:14px; line-height:1.5; text-align:center; color:rgb(250, 250, 250);">
                                                     Your chats are secure and private — end-to-end encryption and browser-to-browser chats with no storage involved.

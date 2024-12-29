@@ -31,7 +31,7 @@ import {
 import { useRouter } from 'next/router';
 import axios from 'axios';
 
-const steps = ['Verification', 'Sign In', 'Details'];
+const steps = ['Guidelines', 'Sign In or Not', 'Gender & College'];
 
 const UserVerificationDialog = () => {
   const dispatch = useDispatch();
@@ -268,7 +268,15 @@ const UserVerificationDialog = () => {
             You can trust that they are honest about their college. Sign in to make others trust you.
           </Typography>
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+          
+            <Button
+              variant="outlined"
+              onClick={()=> router.push('/')}
+            >
+              Back to Home
+            </Button>
+
             <Button
               variant="contained"
               onClick={handleNext}

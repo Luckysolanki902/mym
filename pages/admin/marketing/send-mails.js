@@ -79,6 +79,7 @@ const MarketingPage = () => {
           color="primary"
           fullWidth
           style={{ marginTop: '1rem' }}
+          disabled={sending}
         >
           {sending ? 'Sending...' : 'Send Emails'}
         </Button>
