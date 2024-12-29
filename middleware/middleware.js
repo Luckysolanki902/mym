@@ -1,3 +1,4 @@
+// middleware/middleware.js
 import mongoose from "mongoose";
 
 const connectToMongo = handler => async (req, res ) => {
