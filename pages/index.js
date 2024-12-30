@@ -127,7 +127,7 @@ export default function Home({ session, trendingConfessions, totalConfessions })
 
         </div>
 
-        <Link href={'https://www.instagram.com/_mym_official/'} target="_blank" rel="noopener noreferrer" style={{ width: '100%', marginTop: '1rem', marginBottom: '2rem' }}>
+        <Link href={'https://www.instagram.com/meetyourmate_/'} target="_blank" rel="noopener noreferrer" style={{ width: '100%', marginTop: '1rem', marginBottom: '2rem' }}>
           <Image src={'/images/showcase/follow2.png'} className={styles.featuresBg} width={5120 / 4} height={470 / 4} alt='instagram_link'></Image>
         </Link>
 

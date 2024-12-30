@@ -19,7 +19,7 @@ const Footer = () => {
                 </div>
                 <div className={styles.contactContent}>
                     <span><Image width={95} height={89} alt='icon' src={'/images/othericons/instagramw.png'} priority={true}></Image></span>
-                    <span style={{ cursor: 'pointer' }}><a target={'_blank'} className={styles.contactLink} style={{ color: 'white' }} href="https://instagram.com/_mym_official?igshid=NGVhN2U2NjQ0Yg==">@_mym_official</a></span>
+                    <span style={{ cursor: 'pointer' }}><a target={'_blank'} className={styles.contactLink} style={{ color: 'white' }} href="https://instagram.com/meetyourmate_?igshid=NGVhN2U2NjQ0Yg==">@meetyourmate_</a></span>
                 </div>
 
                 <div className={styles.tnc}>
