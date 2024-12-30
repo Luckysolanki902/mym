@@ -194,7 +194,7 @@ const handler = async (req, res) => {
 
         // Fetch female users
         const femaleUsers = await MailMarketingUser.find({
-            gender: 'Female',
+            gender: ' Female',
             sentCount: { $lt: 1 },
         }).limit(femaleCount);
 

@@ -1,101 +1,11 @@
 // pages/api/confession/gettrendingconfessions.js
+
 import connectToMongo from '@/middleware/middleware';
 import Confession from '@/models/Confession';
 import CryptoJS from 'crypto-js';
 
-const MIN_CHAR_COUNT = 200; // Minimum length of confession content
-const MAX_TRENDING_DAYS = [7, 30, 60, 90]; // Time windows for trending confessions
-const MAX_TRENDING_ITEMS = 3; // Maximum number of trending confessions
-
-const calculateTrendingConfessions = async () => {
-  for (const days of MAX_TRENDING_DAYS) {
-    const sinceDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-
-    const confessions = await Confession.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: sinceDate }, 
-          $expr: { $gte: [{ $strLenCP: "$confessionContent" }, MIN_CHAR_COUNT] },
-        },
-      },
-      {
-        $addFields: {
-          likesWeight: { $multiply: [{ $size: "$likes" }, 10] },
-          commentsWeight: { $multiply: [{ $size: "$comments" }, 20] },
-          ageInHours: {
-            $divide: [
-              { $subtract: [new Date(), "$createdAt"] }, // Use 'createdAt'
-              1000 * 60 * 60,
-            ],
-          },
-          decayFactor: { $exp: { $multiply: [-0.1, { $divide: ["$ageInHours", 24] }] } },
-          velocityScore: {
-            $add: [
-              { $multiply: [{ $divide: [{ $size: "$likes" }, { $add: ["$ageInHours", 1] }] }, 10] },
-              { $multiply: [{ $divide: [{ $size: "$comments" }, { $add: ["$ageInHours", 1] }] }, 20] },
-            ],
-          },
-        },
-      },
-      {
-        $addFields: {
-          totalScore: {
-            $multiply: [
-              { $add: ["$likesWeight", "$commentsWeight", "$velocityScore"] },
-              "$decayFactor",
-            ],
-          },
-        },
-      },
-      { $sort: { totalScore: -1 } },
-      { $limit: MAX_TRENDING_ITEMS },
-    ]);
-
-    if (confessions.length > 0) {
-      return confessions;
-    }
-  }
-
-  // Fallback: Return any confessions if no recent ones found
-  return await Confession.aggregate([
-    {
-      $match: {
-        $expr: { $gte: [{ $strLenCP: "$confessionContent" }, MIN_CHAR_COUNT] },
-      },
-    },
-    {
-      $addFields: {
-        likesWeight: { $multiply: [{ $size: "$likes" }, 10] },
-        commentsWeight: { $multiply: [{ $size: "$comments" }, 20] },
-        ageInHours: {
-          $divide: [
-            { $subtract: [new Date(), "$createdAt"] }, // Use 'createdAt'
-            1000 * 60 * 60,
-          ],
-        },
-        decayFactor: { $exp: { $multiply: [-0.1, { $divide: ["$ageInHours", 24] }] } },
-        velocityScore: {
-          $add: [
-            { $multiply: [{ $divide: [{ $size: "$likes" }, { $add: ["$ageInHours", 1] }] }, 10] },
-            { $multiply: [{ $divide: [{ $size: "$comments" }, { $add: ["$ageInHours", 1] }] }, 20] },
-          ],
-        },
-      },
-    },
-    {
-      $addFields: {
-        totalScore: {
-          $multiply: [
-            { $add: ["$likesWeight", "$commentsWeight", "$velocityScore"] },
-            "$decayFactor",
-          ],
-        },
-      },
-    },
-    { $sort: { totalScore: -1 } },
-    { $limit: MAX_TRENDING_ITEMS },
-  ]);
-};
+const MIN_CHAR_COUNT = 200;   // Minimum length of confession content
+const MAX_TRENDING_ITEMS = 3; // Always exactly 3 confessions
 
 const handler = async (req, res) => {
   if (req.method !== 'GET') {
@@ -103,23 +13,93 @@ const handler = async (req, res) => {
   }
 
   try {
+    // 1. Define an aggregation pipeline that computes a "fair" score
+    //    using alpha=2 for likes and beta=1 for comments, plus time decay.
+    const trendingConfessions = await Confession.aggregate([
+      {
+        // Only consider confessions with content >= MIN_CHAR_COUNT
+        $match: {
+          $expr: { $gte: [{ $strLenCP: "$confessionContent" }, MIN_CHAR_COUNT] },
+        },
+      },
+      {
+        // Calculate:
+        //  - likesCount    = size of likes array
+        //  - commentsCount = size of comments array
+        //  - engagementScore = (2 * likesCount) + (1 * commentsCount)
+        //  - ageInHours    = (now - createdAt) in hours
+        $addFields: {
+          likesCount: { $size: "$likes" },
+          commentsCount: { $size: "$comments" },
+          engagementScore: {
+            $add: [
+              { $multiply: [2, { $size: "$likes" }] },
+              { $multiply: [1, { $size: "$comments" }] }
+            ]
+          },
+          ageInHours: {
+            $divide: [
+              { $subtract: [new Date(), "$createdAt"] },
+              1000 * 60 * 60
+            ]
+          }
+        },
+      },
+      {
+        // Implement the time decay factor:
+        //   timeDecay = 1 / (1 + ((ageInHours / 24)^2))
+        // Then combine to get totalScore = engagementScore * timeDecay
+        $addFields: {
+          timeDecay: {
+            $divide: [
+              1,
+              {
+                $add: [
+                  1,
+                  {
+                    $pow: [
+                      { $divide: ["$ageInHours", 24] }, 
+                      2
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        $addFields: {
+          totalScore: { $multiply: ["$engagementScore", "$timeDecay"] },
+        },
+      },
+      {
+        // Sort highest scoring first
+        $sort: { totalScore: -1 },
+      },
+      {
+        // Return exactly 3
+        $limit: MAX_TRENDING_ITEMS,
+      },
+    ]);
+
+    // 2. Decrypt the confession contents
     const secretKeyHex = process.env.ENCRYPTION_SECRET_KEY;
-
-    // Fetch trending confessions
-    const rawTrendingConfessions = await calculateTrendingConfessions();
-
-    // Decrypt confessions
-    const decryptedConfessions = rawTrendingConfessions.map((confession) => {
+    const decryptedConfessions = trendingConfessions.map((confession) => {
       const bytes = CryptoJS.AES.decrypt(confession.confessionContent, secretKeyHex);
       const decryptedContent = bytes.toString(CryptoJS.enc.Utf8);
       confession.confessionContent = decryptedContent;
       return confession;
     });
 
-    // Count total confessions in the database
+    // 3. Count total confessions in the database (for reference/stats)
     const totalConfessions = await Confession.countDocuments();
 
-    res.status(200).json({ trendingConfessions: decryptedConfessions, totalConfessions });
+    // 4. Send the response
+    res.status(200).json({
+      trendingConfessions: decryptedConfessions,
+      totalConfessions
+    });
   } catch (error) {
     console.error('Error fetching trending confessions:', error);
     res.status(500).json({ error: 'Internal Server Error', detailedError: error.message });
