@@ -44,7 +44,7 @@ const StyledButton = styled('div')(({ theme }) => ({
 const ScrollToTop = ({ scrollContainerRef }) => {
   const [isVisible, setIsVisible] = useState(false); // Controls button visibility
 
-  useEffect(() => {
+useEffect(() => {
     const container = scrollContainerRef?.current;
     if (!container) return;
 

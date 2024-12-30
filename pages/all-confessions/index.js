@@ -9,7 +9,7 @@ import styles from './allconfessions.module.css';
 import CustomHead from '@/components/seo/CustomHead';
 import FilterOptions from '@/components/confessionComps/FilterOptions';
 import AuthPrompt from '@/components/commonComps/AuthPrompt';
-import ScrollToTop from '@/components/commonComps/scrolltotop';
+import ScrollToTop from '@/components/commonComps/ScrollToTop';
 
 const Index = ({ userDetails }) => {
   const [confessions, setConfessions] = useState([]);
