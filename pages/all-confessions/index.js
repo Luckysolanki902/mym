@@ -9,7 +9,7 @@ import styles from './allconfessions.module.css';
 import CustomHead from '@/components/seo/CustomHead';
 import FilterOptions from '@/components/confessionComps/FilterOptions';
 import AuthPrompt from '@/components/commonComps/AuthPrompt';
-import ScrollToTop from '@/components/commonComps/ScrollToTop';
+import ScrollToTop2 from '@/components/commonComps/ScrollToTop2';
 
 const Index = ({ userDetails }) => {
   const [confessions, setConfessions] = useState([]);
@@ -160,7 +160,7 @@ const Index = ({ userDetails }) => {
           </div>
         )}
       </div>
-      <ScrollToTop scrollContainerRef={scrollContainerRef} /> {/* Pass the ref to ScrollToTop */}
+      <ScrollToTop2 scrollContainerRef={scrollContainerRef} />
       <AuthPrompt open={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
     </>
   );

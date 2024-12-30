@@ -41,7 +41,7 @@ const StyledButton = styled('div')(({ theme }) => ({
  * Props:
  * - scrollContainerRef (object): Ref of the scrollable container to track.
  */
-const ScrollToTop = ({ scrollContainerRef }) => {
+const ScrollToTop2 = ({ scrollContainerRef }) => {
   const [isVisible, setIsVisible] = useState(false); // Controls button visibility
 
 useEffect(() => {
@@ -94,9 +94,4 @@ useEffect(() => {
   );
 };
 
-// Define PropTypes for type checking
-ScrollToTop.propTypes = {
-  scrollContainerRef: PropTypes.object.isRequired,
-};
-
-export default ScrollToTop;
+export default ScrollToTop2;
