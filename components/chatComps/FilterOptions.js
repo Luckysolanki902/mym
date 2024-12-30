@@ -80,7 +80,7 @@ const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1
     try {
       if (fetchingChatStats) return;
       setFetchingChatStats(true);
-      const response = await fetch(`${serverUrl}/api/user-stats`);
+      const response = await fetch(`${serverUrl.endsWith('/') ? serverUrl + 'api/user-stats' : serverUrl + '/api/user-stats'}`);
       if (!response.ok) {
         throw new Error('Failed to fetch chat stats');
       }

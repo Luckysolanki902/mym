@@ -22,7 +22,7 @@ const Index = () => {
 
     const fetchUserStats = async () => {
         try {
-            const response = await fetch(`${serverUrl}/api/user-stats`);
+            const response = await fetch(`${serverUrl.endsWith('/') ? serverUrl + 'api/user-stats' : serverUrl + '/api/user-stats'}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch user stats');
             }
