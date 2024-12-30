@@ -50,7 +50,6 @@ useEffect(() => {
 
     const handleScroll = () => {
       const currentOffset = container.scrollTop;
-      console.log('Current Scroll Y:', currentOffset);
       if (currentOffset > 500) {
         setIsVisible(true);
       } else {
