@@ -1,4 +1,4 @@
-// pages/api/confession/updatemainreplyseen.js
+// pages/api/inbox/updatemainreplyseen.js
 
 import PersonalReply from '@/models/PersonalReply';
 import connectToMongo from '@/middleware/middleware';
@@ -19,8 +19,6 @@ const updateMainReplySeen = async (req, res) => {
                 { $addToSet: { 'replies.$.seen': userMid } },
                 { new: true } // To return the updated document
             );
-
-            
 
             if (!personalReply) {
                 return res.status(404).json({ message: 'PersonalReply not found' });

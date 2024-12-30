@@ -136,7 +136,7 @@ const InboxCard2 = ({ entry, userDetails }) => {
 
     const updateMainReplySeen = async (confessionId, confessorMid, replierMid) => {
         try {
-            const response = await fetch('/api/confession/updatemainreplyseen', {
+            const response = await fetch('/api/inbox/updatemainreplyseen', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
