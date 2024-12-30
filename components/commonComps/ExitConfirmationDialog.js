@@ -53,7 +53,6 @@ const StyledButton = styled(Button)(({ userGender, theme }) => ({
  */
 const ExitConfirmationDialog = ({ open, onConfirm, onCancel, userGender }) => {
     const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     return (
         <Dialog
@@ -62,7 +61,6 @@ const ExitConfirmationDialog = ({ open, onConfirm, onCancel, userGender }) => {
             aria-labelledby="exit-dialog-title"
             fullWidth
             maxWidth="xs"
-            fullScreen={fullScreen}
             PaperProps={{
                 sx: {
                     borderRadius: '1rem',

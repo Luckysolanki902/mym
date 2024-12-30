@@ -1,3 +1,4 @@
+// pages/textchat.js
 import React, { useEffect, useRef, useState } from 'react';
 import Confession from '@/components/fullPageComps/Confession';
 import { getSession } from 'next-auth/react';
@@ -8,6 +9,7 @@ import styles from './allconfessions.module.css';
 import CustomHead from '@/components/seo/CustomHead';
 import FilterOptions from '@/components/confessionComps/FilterOptions';
 import AuthPrompt from '@/components/commonComps/AuthPrompt';
+import ScrollToTop from '@/components/commonComps/scrolltotop';
 
 const Index = ({ userDetails }) => {
   const [confessions, setConfessions] = useState([]);
@@ -21,6 +23,7 @@ const Index = ({ userDetails }) => {
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [authPromptShown, setAuthPromptShown] = useState(false); // Prevent multiple prompts
   const [limitReached, setLimitReached] = useState(false); // New state to track limit
+  const scrollContainerRef = useRef(null); // Create a ref for the scrollable div
 
   useEffect(() => {
     if (userDetails && !userDetails?.isVerified) {
@@ -105,7 +108,10 @@ const Index = ({ userDetails }) => {
   return (
     <>
       <CustomHead title={'Read Confessions from Various Colleges | MYM - Meet Your Mate'} />
-      <div style={{ width: '100%', paddingTop: '2rem' }}>
+      <div
+        ref={scrollContainerRef} // Assign the ref to the div
+        style={{ width: '100%', paddingTop: '2rem', height: '100vh', overflowY: 'auto' }} // Make the div scrollable
+      >
         <div className={styles.chipContainer}>
           <h1 className={styles.mainHeading}>Confessions</h1>
         </div>
@@ -154,6 +160,7 @@ const Index = ({ userDetails }) => {
           </div>
         )}
       </div>
+      <ScrollToTop scrollContainerRef={scrollContainerRef} /> {/* Pass the ref to ScrollToTop */}
       <AuthPrompt open={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
     </>
   );

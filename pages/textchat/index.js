@@ -41,31 +41,29 @@ const TextChatPage = ({ userDetails }) => {
   }, [session, unverifiedUserDetails]);
 
   /**
-   * Sets up a listener for the browser's back button to show the exit confirmation dialog.
+   * Sets up Next.js's router.beforePopState to intercept back navigation.
    */
   useEffect(() => {
-    const handlePopState = (event) => {
+    const handleBeforePopState = ({ url, as, options }) => {
       if (!allowNavigation) {
-        event.preventDefault();
         setExitDialogOpen(true);
+        // Prevent navigation by returning false
+        return false;
       }
+      // Allow navigation
+      return true;
     };
 
-    // Add the popstate event listener
-    window.addEventListener('popstate', handlePopState);
+    router.beforePopState(handleBeforePopState);
 
-    // Push the current state to the history stack to intercept back navigation
-    window.history.pushState(null, '', window.location.href);
-
-    // Cleanup the event listener on component unmount
     return () => {
-      window.removeEventListener('popstate', handlePopState);
+      router.beforePopState(() => true);
     };
-  }, [allowNavigation]);
+  }, [allowNavigation, router]);
 
   /**
    * Handles the user's confirmation to exit the chat.
-   * Allows navigation by removing the event listener and navigating back.
+   * Allows navigation by setting allowNavigation to true and triggering router.back().
    */
   const handleConfirmExit = () => {
     setExitDialogOpen(false);
@@ -75,12 +73,11 @@ const TextChatPage = ({ userDetails }) => {
 
   /**
    * Handles the user's cancellation of the exit action.
-   * Keeps the user on the current page by pushing the current state again.
+   * Keeps the user on the current page by not allowing navigation.
    */
   const handleCancelExit = () => {
     setExitDialogOpen(false);
-    // Push the current state to prevent back navigation
-    window.history.pushState(null, '', window.location.href);
+    setAllowNavigation(false);
   };
 
   // Determine the user's gender for button styling; defaults to 'other' if undefined
