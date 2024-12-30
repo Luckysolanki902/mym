@@ -15,18 +15,17 @@ import { styled } from '@mui/material/styles';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const SettingsContainer = styled(Container)(({ theme }) => ({
-  paddingTop: theme.spacing(4),
-  paddingBottom: theme.spacing(4),
+const SettingsContainer = styled(Container)(() => ({
+  paddingTop: '1rem',
+  paddingBottom: '1rem',
 }));
 
-const ProfileBox = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
+const ProfileBox = styled(Paper)(() => ({
+  padding: '1rem',
   textAlign: 'center',
-  color: theme.palette.text.secondary,
 }));
 
-const SettingsPage = () => {
+const SettingsPage = ({ userDetails }) => {
   const [session, setSession] = useState(null);
 
   useEffect(() => {
@@ -62,36 +61,50 @@ const SettingsPage = () => {
             <Grid container spacing={3}>
               {/* Example Settings Option */}
 
-              {/* <Grid item xs={12} sm={6}>
-                <Link href="/settings/profile" passHref>
+              {userDetails && <Grid item xs={12} sm={6}>
+                <Box >
                   <Button
                     variant="outlined"
                     fullWidth
-                    sx={{ height: '100%', textTransform: 'none' }}
+                    sx={{ height: '100%', textTransform: 'capitalize' }}
                   >
-                    Manage Profile
+                    {userDetails?.gender}
                   </Button>
-                </Link>
-              </Grid> */}
+                </Box>
+              </Grid>}
 
-              {/* <Grid item xs={12} sm={6}>
-                <Link href="/settings/account" passHref>
+              {userDetails && <Grid item xs={12} sm={6}>
+                <Box >
                   <Button
                     variant="outlined"
                     fullWidth
                     sx={{ height: '100%', textTransform: 'none' }}
                   >
-                    Account Settings
+                    {userDetails?.college}
                   </Button>
-                </Link>
-              </Grid> */}
+                </Box>
+              </Grid>}
 
               {/* Add more settings options here as needed */}
+              <Grid item xs={12}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontStyle: 'italic',
+                    color: 'rgba(0, 0, 0, 0.6)',
+                    textAlign: 'center',
+                    mt: 2,
+                    fontFamily: 'Jost',
+                  }}
+                >
+                  You can't change these details.
+                </Typography>
+              </Grid>
 
               {/* Logout Button */}
               <Grid item xs={12}>
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   color="error"
                   fullWidth
                   onClick={handleLogout}
@@ -119,3 +132,31 @@ const SettingsPage = () => {
 };
 
 export default SettingsPage;
+
+
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
+
+  let userDetails = null;
+  if (session?.user?.email) {
+    try {
+      const response = await fetch(`${pageurl}/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
+      if (response.ok) {
+        userDetails = await response.json();
+      } else {
+        console.error('Error fetching user details');
+      }
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  }
+
+  return {
+    props: {
+      userDetails,
+    },
+  };
+}
+

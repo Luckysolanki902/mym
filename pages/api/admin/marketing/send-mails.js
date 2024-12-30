@@ -169,7 +169,7 @@ const handler = async (req, res) => {
                 await transporter.sendMail({
                     from: process.env.EMAIL_USER,
                     to: user.email,
-                    subject: 'Discover Your Match on MeetYourMate.in!',
+                    subject: "HBTU’s Anonymous Chat Platform Is Waiting for You!",
                     html: emailHTML,
                 });
 
