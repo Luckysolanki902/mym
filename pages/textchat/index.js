@@ -1,12 +1,12 @@
 // pages/textchat.js
-import TextChatWrapper from '@/components/fullPageComps/TextChatWrapper';
-import { getSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import CustomHead from '@/components/seo/CustomHead';
-import UserVerificationDialog from '@/components/chatComps/UserVerificationDialog';
+import { useRouter } from 'next/router';
+import { getSession, useSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
+import CustomHead from '@/components/seo/CustomHead';
+import TextChatWrapper from '@/components/fullPageComps/TextChatWrapper';
+import UserVerificationDialog from '@/components/chatComps/UserVerificationDialog';
+import ExitConfirmationDialog from '@/components/commonComps/ExitConfirmationDialog';
 
 const TextChatPage = ({ userDetails }) => {
   const bottomRef = useRef(null);
@@ -14,114 +14,109 @@ const TextChatPage = ({ userDetails }) => {
   const { data: session } = useSession();
   const unverifiedUserDetails = useSelector((state) => state.unverifiedUserDetails);
   
-  const [isBlocking, setIsBlocking] = useState(true); // Assume blocking by default
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [nextRoute, setNextRoute] = useState(null);
+  // State to control the visibility of the exit confirmation dialog
+  const [exitDialogOpen, setExitDialogOpen] = useState(false);
+  
+  // State to determine if navigation is allowed (to prevent infinite loops)
+  const [allowNavigation, setAllowNavigation] = useState(false);
 
+  /**
+   * Scrolls to the bottom of the chat when the component mounts.
+   */
   useEffect(() => {
-    // Scroll to the bottom when the component mounts
-    bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   }, []);
 
+  /**
+   * Handles redirection based on session and unverified user details.
+   * Currently, no redirection is performed as the dialog manages verification.
+   */
   useEffect(() => {
-    // Redirect logic can be handled within the dialog
     if (!session && !unverifiedUserDetails.mid) {
-      // Allow access without sign in if unverifiedUserDetails exists
-      // No redirection needed as dialog handles verification
+      // Access is allowed without sign-in if unverifiedUserDetails exists
+      // No redirection needed as the dialog handles verification
     }
-  }, [userDetails, router, session, unverifiedUserDetails]);
+  }, [session, unverifiedUserDetails]);
 
-  // Handle browser refresh and tab close
+  /**
+   * Sets up a listener for the browser's back button to show the exit confirmation dialog.
+   */
   useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (isBlocking) {
-        e.preventDefault();
-        e.returnValue = 'All your chats will be lost if you leave this page.';
-        return 'All your chats will be lost if you leave this page.';
-      }
-      return undefined;
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [isBlocking]);
-
-  // Handle client-side navigation
-  useEffect(() => {
-    const handleRouteChangeStart = (url) => {
-      if (isBlocking && url !== router.asPath) {
-        // Show custom confirmation dialog
-        setShowConfirm(true);
-        setNextRoute(url);
-        // Prevent the route change
-        router.events.emit('routeChangeError');
-        throw 'Route change aborted.';
+    const handlePopState = (event) => {
+      if (!allowNavigation) {
+        event.preventDefault();
+        setExitDialogOpen(true);
       }
     };
 
-    router.events.on('routeChangeStart', handleRouteChangeStart);
+    // Add the popstate event listener
+    window.addEventListener('popstate', handlePopState);
 
+    // Push the current state to the history stack to intercept back navigation
+    window.history.pushState(null, '', window.location.href);
+
+    // Cleanup the event listener on component unmount
     return () => {
-      router.events.off('routeChangeStart', handleRouteChangeStart);
+      window.removeEventListener('popstate', handlePopState);
     };
-  }, [isBlocking, router]);
+  }, [allowNavigation]);
 
-  // Handle user confirmation
-  const handleConfirmLeave = () => {
-    setIsBlocking(false);
-    setShowConfirm(false);
-    if (nextRoute) {
-      router.push(nextRoute);
-    }
+  /**
+   * Handles the user's confirmation to exit the chat.
+   * Allows navigation by removing the event listener and navigating back.
+   */
+  const handleConfirmExit = () => {
+    setExitDialogOpen(false);
+    setAllowNavigation(true);
+    router.back();
   };
 
-  const handleCancelLeave = () => {
-    setShowConfirm(false);
-    setNextRoute(null);
+  /**
+   * Handles the user's cancellation of the exit action.
+   * Keeps the user on the current page by pushing the current state again.
+   */
+  const handleCancelExit = () => {
+    setExitDialogOpen(false);
+    // Push the current state to prevent back navigation
+    window.history.pushState(null, '', window.location.href);
   };
+
+  // Determine the user's gender for button styling; defaults to 'other' if undefined
+  const userGender = userDetails?.gender || 'other';
 
   return (
     <>
+      {/* SEO Component */}
       <CustomHead
-        title={'Chat Anonymously With Your College Peers | MyM'}
-        description={
-          "Experience the buzz of anonymous chatting with MyM TextChat! Say goodbye to the usual small talk and dive into genuine conversations with your fellow college mates. It's like Omegle, but exclusive to your campus. Filter your matches by gender, college, and more, ensuring every chat is tailored to your preferences. Unveil the excitement of anonymous connections, share stories, and forge bonds—all within the safe confines of your college community. Join MyM TextChat today and let the conversations begin!"
-        }
+        title="Chat Anonymously With Your College Peers | MyM"
+        description="Experience the buzz of anonymous chatting with MyM TextChat! Say goodbye to the usual small talk and dive into genuine conversations with your fellow college mates. It's like Omegle, but exclusive to your campus. Filter your matches by gender, college, and more, ensuring every chat is tailored to your preferences. Unveil the excitement of anonymous connections, share stories, and forge bonds—all within the safe confines of your college community. Join MyM TextChat today and let the conversations begin!"
       />
+
+      {/* User Verification Dialog */}
       <UserVerificationDialog />
+
+      {/* Main Chat Wrapper */}
       <TextChatWrapper userDetails={userDetails} />
+
+      {/* Reference Div for Scrolling */}
       <div ref={bottomRef}></div>
 
-      {/* Custom Confirmation Modal */}
-      {showConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
-            <h2 className="text-xl mb-4">Confirm Navigation</h2>
-            <p>All your chats will be lost if you leave this page. Are you sure you want to proceed?</p>
-            <div className="mt-6 flex justify-end space-x-4">
-              <button
-                onClick={handleCancelLeave}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmLeave}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                Leave
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Exit Confirmation Dialog */}
+      <ExitConfirmationDialog
+        open={exitDialogOpen}
+        onConfirm={handleConfirmExit}
+        onCancel={handleCancelExit}
+        userGender={userGender}
+      />
     </>
   );
 };
 
+/**
+ * Fetches user details server-side based on the session.
+ */
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
