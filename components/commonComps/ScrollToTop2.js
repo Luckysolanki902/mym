@@ -12,7 +12,7 @@ const StyledButtonContainer = styled(animated.div)(({ theme }) => ({
   position: 'fixed',
   right: '2rem',
   bottom: '2rem',
-  zIndex: 99999,
+  zIndex: 1,
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
