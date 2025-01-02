@@ -108,6 +108,10 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified }) => {
                         <span>Pairing</span>
                         <Image className={styles.dots} priority src={'/gifs/istyping4.gif'} width={800 / 5} height={600 / 5} alt="" />
                     </div>
+                    <div style={{ fontFamily: 'Jost', display: 'flex', alignItems: 'center', padding:'0 1rem' }}>
+                        <div style={{textAlign:'center'}}>Timing is key! <span style={{fontSize:'1.5rem', fontWeight:'500'}}>6 PM</span> & <span style={{fontSize:'1.5rem', fontWeight:'500'}}>10 PM</span> on MYM are like lucky hours for chats. Don’t miss it.</div>
+                    </div>
+
                 </div>
             )}
 
