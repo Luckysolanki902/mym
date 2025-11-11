@@ -50,7 +50,6 @@
 
 .newButton {
     /* background: none; */
-    min-width: 5rem;
     margin-right: 1rem;
     /* border: 1px solid red; */
     padding: 0;
@@ -96,7 +95,7 @@
 
 
 .randomIcon {
-    width: 3.5rem;
+
     height: auto;
     /* filter: invert(0); */
     opacity: 0.8;
@@ -105,7 +104,6 @@
 
 
 .randomIcon {
-    width: 3.5rem;
     height: auto;
     /* filter: invert(0); */
     opacity: 0.8;
@@ -113,9 +111,7 @@
 }
 
 .randomIcon {
-    width: 3.5rem;
     height: auto;
-    filter: invert(1);
 }
 
 /* Textbox */
@@ -194,18 +190,6 @@
 
 @media (width< 600px) {
 
-    .newButton2 {
-
-        min-width: 3rem;
-    }
-
-    .randomIcon {
-        width: 3rem;
-        height: auto;
-        opacity: 0.8;
-        /* filter: drop-shadow(5px 2px 2px gray); */
-        filter: invert(1);
-    }
 
     .textBox {
         font-size: 1rem;

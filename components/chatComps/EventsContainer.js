@@ -1,56 +1,48 @@
+
 // EventsContainer.js
 import React from 'react';
-import { useTransition, animated } from 'react-spring';
-import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../componentStyles/textchat.module.css';
 import { useTextChat } from '@/context/TextChatContext';
 
 const EventsContainer = () => {
-    const { strangerDisconnectedMessageDiv, strangerIsTyping, hasPaired, strangerGender } = useTextChat();
+    const { strangerDisconnectedMessageDiv, hasPaired, strangerGender } = useTextChat();
 
-    // Transition configuration
-    const transitionConfig = {
-        from: { opacity: 0, height: 0 },
-        enter: { opacity: 1, height: 'auto' },
-        leave: { opacity: 0, height: 0, duration: 200 }, // Adjust duration for smoother exit
-        config: { tension: 120, friction: 18 }
+    const genderTheme = {
+        male: { primary: '#79EAF7', secondary: '#0094d4' },
+        female: { primary: '#FFA0BC', secondary: '#e3368d' }
     };
-
-    // Define transitions for stranger typing and goodbye message
-    const transitions = useTransition(
-        [strangerDisconnectedMessageDiv, strangerIsTyping],
-        {
-            ...transitionConfig,
-            keys: item => item === strangerDisconnectedMessageDiv ? 'goodbye' : 'typing'
-        }
-    );
+    const theme = genderTheme[strangerGender] || genderTheme.male;
 
     return (
-        <>
-            {transitions((style, item) =>
-                item && (
-                    <animated.div style={style}>
-                        {item === strangerDisconnectedMessageDiv && !hasPaired && (
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <div className={styles.isTyping}>
-                                    {strangerGender === 'male' ? 'He' : 'She'} said “goodbye!!”
-                                </div>
-                            </div>
-                        )}
-
-                        {/* {item === strangerIsTyping && hasPaired && (
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <div className={styles.isTyping}>
-                                    {strangerGender === 'male' ? 'He' : 'She'} is typing{' '}
-                                   
-                                </div>
-                            </div>
-                        )} */}
-                    </animated.div>
-                )
+        <AnimatePresence>
+            {strangerDisconnectedMessageDiv && !hasPaired && (
+                <motion.div 
+                    className={styles.eventContainer}
+                    initial={{ opacity: 0, y: -20, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                    transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                >
+                    <div 
+                        className={styles.goodbyeMessage}
+                        style={{
+                            background: `linear-gradient(135deg, ${theme.primary}10 0%, ${theme.secondary}10 100%)`,
+                            borderColor: `${theme.primary}40`, padding: '0.5rem 1rem', borderRadius: '15px', display: 'flex', alignItems: 'center'
+                        }}
+                    >
+                        <div className={styles.goodbyeIcon}>👋</div>
+                        <div className={styles.goodbyeText}>
+                            <span style={{ color: theme.secondary }}>
+                                {strangerGender === 'male' ? 'He' : 'She'}
+                            </span> said goodbye
+                        </div>
+                    </div>
+                </motion.div>
             )}
-        </>
+        </AnimatePresence>
     );
 };
 
 export default EventsContainer;
+                          

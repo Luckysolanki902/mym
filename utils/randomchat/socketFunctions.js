@@ -2,6 +2,7 @@
 
 import CryptoJS from 'crypto-js';
 import { scrollToBottom, triggerVibration } from "../generalUtilities";
+import { devLogger } from './developmentLogger';
 
 const secretKey = process.env.NEXT_PUBLIC_SECRET_KEY;
 
@@ -15,11 +16,14 @@ const decryptMessage = (encryptedMessage, secretKey) => {
 };
 
 export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef) => {
-    const { setIsFindingPair } = stateFunctions;
+    const { setIsFindingPair, setPairingState } = stateFunctions;
     const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
-    setIsFindingPair(true);
+    
     try {
         if (userDetails && preferredCollege !== undefined && preferredGender !== undefined) {
+            setIsFindingPair(true);
+            if (setPairingState) setPairingState('FINDING');
+            
             // Identify user and send preferences to the server
             socket.emit('identify', {
                 userMID: userDetails.mid,
@@ -30,9 +34,31 @@ export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions
                 isVerified: userDetails?.isVerified || false,
                 pageType: 'textchat'
             });
+            
+            devLogger.socket('User identifying', {
+                userMID: userDetails.mid,
+                gender: userDetails.gender,
+                college: userDetails.college,
+                preferences: { gender: preferredGender, college: preferredCollege }
+            });
+
+            // Reduced safety timeout to 10 seconds for faster recovery
+            const safetyTimeout = setTimeout(() => {
+                devLogger.warning('Safety timeout: No queue acknowledgment received, resetting state');
+                setIsFindingPair(false);
+                if (setPairingState) setPairingState('IDLE');
+            }, 10000); // 10 second timeout
+
+            // Store timeout reference for cleanup
+            if (findingTimeoutRef) {
+                findingTimeoutRef.current = safetyTimeout;
+            }
         }
     } catch (error) {
+        devLogger.error('Error in handleIdentify', { error: error.message });
         console.error('Error in handleIdentify:', error.message);
+        setIsFindingPair(false);
+        if (setPairingState) setPairingState('IDLE');
     }
 };
 
@@ -43,22 +69,32 @@ export const handlePairingSuccess = (data, hasPaired, stateFunctions, findingTim
         setRoom,
         setReceiver,
         setStrangerGender,
-        setSnackbarColor,
-        setSnackbarMessage,
-        setSnackbarOpen,
         setHasPaired,
         setIsStrangerVerified,
+        setPairingState,
+        setMatchQuality,
     } = stateFunctions;
 
     if (!hasPaired) {
         setStrangerDisconnectedMessageDiv(false);
         setIsFindingPair(false);
 
-        const { roomId, strangerGender, stranger, isStrangerVerified } = data;
+        const { roomId, strangerGender, stranger, isStrangerVerified, matchQuality, waitTime } = data;
         setRoom(roomId);
         setReceiver(stranger);
         setStrangerGender(strangerGender);
         setIsStrangerVerified(isStrangerVerified);
+        setMatchQuality(matchQuality);
+        setPairingState('CHATTING');
+
+        devLogger.pairingSuccess({
+            room: roomId,
+            receiver: stranger,
+            strangerGender,
+            isStrangerVerified,
+            matchQuality,
+            waitTime
+        });
 
         triggerVibration({
             duration: 200,
@@ -67,16 +103,6 @@ export const handlePairingSuccess = (data, hasPaired, stateFunctions, findingTim
             repeat: 2
         });
 
-        // Uncomment and customize if you wish to use snackbar notifications
-        /*
-        const snackbarColor = strangerGender === 'male' ? '#0094d4' : '#e3368d';
-        setSnackbarColor(snackbarColor);
-
-        const snackbarMessage = `A ${strangerGender === 'male' ? 'boy' : 'girl'} connected`;
-        setSnackbarMessage(snackbarMessage);
-
-        setSnackbarOpen(true);
-        */
         setHasPaired(true);
     }
 
@@ -87,26 +113,46 @@ export const handlePairingSuccess = (data, hasPaired, stateFunctions, findingTim
 // Your handleReceivedMessage function
 export const handleReceivedMessage = (data, stateFunctions, messagesContainerRef) => {
     const { setStrangerIsTyping, setMessages } = stateFunctions;
-    setStrangerIsTyping(false);
-
+    
     const { sender, content } = data;
     const decryptedMessage = decryptMessage(content, secretKey);
-    setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: sender, message: decryptedMessage },
-    ]);
+    
+    devLogger.message('Message received', { sender, messageLength: decryptedMessage.length });
+    
+    // BRILLIANT SOLUTION: Staggered transition for buttery smooth animation
+    // Step 1: Immediately hide typing (starts fade out)
+    setStrangerIsTyping(false);
+    
+    // Step 2: Wait for typing indicator to be halfway through fade out (125ms)
+    // Then add the message (it will start appearing as typing disappears)
+    setTimeout(() => {
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            { 
+                sender: sender, 
+                message: decryptedMessage,
+                timestamp: Date.now(), // Unique timestamp for React key
+                id: `${sender}-${Date.now()}-${Math.random()}` // Unique ID
+            },
+        ]);
 
-    triggerVibration({
-        duration: 150,
-        strength: 0.3,
-        repeat: 1
-    });
+        triggerVibration({
+            duration: 150,
+            strength: 0.3,
+            repeat: 1
+        });
 
-    scrollToBottom(messagesContainerRef);
+        // Scroll after message renders
+        setTimeout(() => {
+            scrollToBottom(messagesContainerRef);
+        }, 50);
+    }, 125); // 125ms = half of 250ms typing fade duration
 };
 
 export const handlePairDisconnected = (stateFunctions, messagesContainerRef) => {
     const { setStrangerDisconnectedMessageDiv, setHasPaired } = stateFunctions;
+
+    devLogger.pairing('Pair disconnected');
 
     setStrangerDisconnectedMessageDiv(true);
     setHasPaired(false);
@@ -129,7 +175,12 @@ export const handleSend = (socket, textValue, stateFunctions, messagesContainerR
         setTextValue('');
         setMessages(prevMessages => [
             ...prevMessages,
-            { sender: userDetails?.mid, message: message },
+            { 
+                sender: userDetails?.mid, 
+                message: message,
+                timestamp: Date.now(), // Unique timestamp for React key
+                id: `${userDetails?.mid}-${Date.now()}-${Math.random()}` // Unique ID
+            },
         ]);
         setStrangerIsTyping(false);
     }
@@ -173,13 +224,25 @@ export const handleStoppedTyping = (socket, typingTimeoutRef, userDetails, hasPa
 
 export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions, hasPaired, findingTimeoutRef) => {
     const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
-    const { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages } = stateFunctions;
+    const { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages, setIsStrangerVerified, setPairingState } = stateFunctions;
 
+    devLogger.pairing('Finding new pair', { 
+        userMID: userDetails?.mid, 
+        currentState: { hasPaired, isFindingPair: true } 
+    });
+
+    // Clear all states
     setHasPaired(false);
-    setIsFindingPair(true); // Set finding pair state to true
+    setIsFindingPair(true);
     setStrangerDisconnectedMessageDiv(false);
-
     setMessages([]);
+    setIsStrangerVerified && setIsStrangerVerified(false);
+    if (setPairingState) setPairingState('FINDING');
+
+    // Clear any existing timeout
+    clearTimeout(findingTimeoutRef?.current);
+
+    // Emit to server
     socket.emit('findNewPair', {
         userMID: userDetails?.mid,
         userGender: userDetails?.gender,
@@ -190,27 +253,40 @@ export const handleFindNew = (socket, userDetailsAndPreferences, stateFunctions,
         pageType: 'textchat'
     });
 
+    devLogger.socket('findNewPair emitted', { userMID: userDetails?.mid });
 
-    // const timeout = 10000;
-    // clearTimeout(findingTimeoutRef.current); // Clear previous timeout
-    // findingTimeoutRef.current = setTimeout(() => {
-    //     // emit stop pairing here
-    //     if (!hasPaired) {
-    //         socket.emit('stopFindingPair');
-    //         setIsFindingPair(false);
-    //     }
-    // }, timeout);
+    // Safety timeout - if no queueJoined event received within 10s
+    const safetyTimeout = setTimeout(() => {
+        devLogger.warning('Safety timeout: No queue acknowledgment, resetting state');
+        setIsFindingPair(false);
+        if (setPairingState) setPairingState('IDLE');
+    }, 10000);
+
+    if (findingTimeoutRef) {
+        findingTimeoutRef.current = safetyTimeout;
+    }
 };
 
 export const handleFindNewWhenSomeoneLeft = (socket, userDetailsAndPreferences, stateFunctions, hasPaired, findingTimeoutRef) => {
     const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
-    const { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages } = stateFunctions;
+    const { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages, setIsStrangerVerified, setPairingState } = stateFunctions;
 
+    devLogger.pairing('Finding new pair after someone left', { 
+        userMID: userDetails?.mid 
+    });
+
+    // Clear all states
     setHasPaired(false);
-    setIsFindingPair(true); // Set finding pair state to true
+    setIsFindingPair(true);
     setStrangerDisconnectedMessageDiv(false);
-
     setMessages([]);
+    setIsStrangerVerified && setIsStrangerVerified(false);
+    if (setPairingState) setPairingState('FINDING');
+
+    // Clear any existing timeout
+    clearTimeout(findingTimeoutRef?.current);
+
+    // Emit to server
     socket.emit('findNewPairWhenSomeoneLeft', {
         userMID: userDetails?.mid,
         userGender: userDetails?.gender,
@@ -221,15 +297,18 @@ export const handleFindNewWhenSomeoneLeft = (socket, userDetailsAndPreferences, 
         pageType: 'textchat'
     });
 
-    // const timeout = 10000;
-    // clearTimeout(findingTimeoutRef.current); // Clear previous timeout
-    // findingTimeoutRef.current = setTimeout(() => {
-    //     // emit stop pairing here
-    //     if (!hasPaired) {
-    //         socket.emit('stopFindingPair');
-    //         setIsFindingPair(false);
-    //     }
-    // }, timeout);
+    devLogger.socket('findNewPairWhenSomeoneLeft emitted', { userMID: userDetails?.mid });
+
+    // Safety timeout - if no queueJoined event received within 10s
+    const safetyTimeout = setTimeout(() => {
+        devLogger.warning('Safety timeout: No queue acknowledgment, resetting state');
+        setIsFindingPair(false);
+        if (setPairingState) setPairingState('IDLE');
+    }, 10000);
+
+    if (findingTimeoutRef) {
+        findingTimeoutRef.current = safetyTimeout;
+    }
 };
 
 

@@ -10,7 +10,6 @@ import {
   handleFindNew,
   handleFindNewWhenSomeoneLeft,
 } from '@/utils/randomchat/socketFunctions';
-import CustomSnackbar from '../commonComps/Snackbar';
 import InputBox from '../chatComps/InputBox';
 import MessageDisplay from '../chatComps/MessagesDisplay';
 import { useTextChat } from '@/context/TextChatContext';
@@ -19,9 +18,6 @@ import { useSelector } from 'react-redux';
 
 const TextChat = ({ userDetails }) => {
   const [textValue, setTextValue] = useState('');
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarColor, setSnackbarColor] = useState('');
   const [inpFocus, setInpFocus] = useState(false);
   const [isChatAvailable, setIsChatAvailable] = useState(true); // Set to true if no time restrictions
   const typingTimeoutRef = useRef(null);
@@ -52,7 +48,24 @@ const TextChat = ({ userDetails }) => {
     setUsersOnline,
     messages,
     setMessages,
-    isStrangerVerified, setIsStrangerVerified
+    isStrangerVerified,
+    setIsStrangerVerified,
+    queuePosition,
+    setQueuePosition,
+    waitTime,
+    setWaitTime,
+    filterLevel,
+    setFilterLevel,
+    filterDescription,
+    setFilterDescription,
+    estimatedWaitTime,
+    setEstimatedWaitTime,
+    queueSize,
+    setQueueSize,
+    pairingState,
+    setPairingState,
+    matchQuality,
+    setMatchQuality
   } = useTextChat();
 
   // Using filters contexts
@@ -106,40 +119,38 @@ const TextChat = ({ userDetails }) => {
             setRoom,
             setReceiver,
             setStrangerGender,
-            setSnackbarColor,
-            setSnackbarMessage,
-            setSnackbarOpen,
             setHasPaired,
             setMessages,
-            setIsStrangerVerified
+            setIsStrangerVerified,
+            setQueuePosition,
+            setWaitTime,
+            setFilterLevel,
+            setFilterDescription,
+            setEstimatedWaitTime,
+            setQueueSize,
+            setPairingState,
+            setMatchQuality
           },
           { messagesContainerRef, findingTimeoutRef }
         );
-      } else if (socket && !hasPaired && !receiver) {
-        handleFindNew(
-          socket,
-          { userDetails, preferredCollege, preferredGender },
-          { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages, setIsStrangerVerified },
-          hasPaired,
-          findingTimeoutRef
-        );
       }
+      // REMOVED: Automatic handleFindNew call - user must manually click Find New button
 
       // Cleanup on unmount
       return () => {
         clearTimeout(typingTimeoutRef.current);
+        // Disconnect socket on unmount to prevent duplicates
+        if (socket) {
+          socket.disconnect();
+        }
       };
     };
 
     initiate();
+    // Remove dependencies that cause re-initialization
   }, [
     isChatAvailable,
-    socket,
-    userDetails,
-    preferredCollege,
-    preferredGender,
-    hasPaired,
-    receiver,
+    userDetails?.mid,  // Only track user ID, not entire object
   ]);
 
   const handleSendButton = () => {
@@ -153,31 +164,80 @@ const TextChat = ({ userDetails }) => {
     );
   };
 
+  // Safety: Reset stuck state on mount
+  useEffect(() => {
+    // If we're in "finding" state but socket doesn't exist, reset
+    if (isFindingPair && !socket) {
+      setIsFindingPair(false);
+      setPairingState && setPairingState('IDLE');
+    }
+  }, [isFindingPair, socket, setIsFindingPair, setPairingState]);
+
   const handleFindNewButton = () => {
-    if (socket) {
-      if (!isFindingPair) {
-        if (strangerDisconnectedMessageDiv && !hasPaired) {
-          handleFindNewWhenSomeoneLeft(
-            socket,
-            { userDetails, preferredCollege, preferredGender },
-            { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages },
-            hasPaired,
-            findingTimeoutRef
-          );
-        } else {
-          handleFindNew(
-            socket,
-            { userDetails, preferredCollege, preferredGender },
-            { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages },
-            hasPaired,
-            findingTimeoutRef
-          );
-        }
+    // Edge Case 1: No user details
+    if (!userDetails || !userDetails.mid || !userDetails.gender || !userDetails.college) {
+      console.error('[FindNew] Missing user details');
+      alert('Please refresh the page - user information missing');
+      return;
+    }
+
+    // Edge Case 2: Socket not initialized or disconnected
+    if (!socket || !socket.connected) {
+      // Force reconnect
+      if (socket) {
+        socket.disconnect();
       }
+      
+      // Reset state and reinitialize
+      setIsFindingPair(false);
+      setHasPaired(false);
+      setStrangerDisconnectedMessageDiv(false);
+      setPairingState && setPairingState('IDLE');
+      
+      // Trigger re-initialization by clearing socket
+      setSocket(null);
+      
+      // Show feedback to user
+      setTimeout(() => {
+        alert('Connection reset. Please click Find New again.');
+      }, 500);
+      
+      return;
+    }
+
+    // Edge Case 3: Already finding - prevent spam clicks
+    if (isFindingPair && !hasPaired && !strangerDisconnectedMessageDiv) {
+      return;
+    }
+
+    // Edge Case 4: Clear any stuck timeout
+    if (findingTimeoutRef.current) {
+      clearTimeout(findingTimeoutRef.current);
+    }
+
+    // Edge Case 5: Validate filter preferences
+    if (preferredGender === undefined || preferredCollege === undefined) {
+      console.error('[FindNew] Filter preferences not set');
+      return;
+    }
+    
+    // Determine which handler to use
+    if (strangerDisconnectedMessageDiv && !hasPaired) {
+      handleFindNewWhenSomeoneLeft(
+        socket,
+        { userDetails, preferredCollege, preferredGender },
+        { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages, setIsStrangerVerified, setPairingState },
+        hasPaired,
+        findingTimeoutRef
+      );
     } else {
-      // Socket is not initialized, perhaps show a message or initiate the socket
-      // But since TextChat is only rendered when userDetails are complete, this should not happen
-      console.warn("Socket not initialized yet.");
+      handleFindNew(
+        socket,
+        { userDetails, preferredCollege, preferredGender },
+        { setHasPaired, setIsFindingPair, setStrangerDisconnectedMessageDiv, setMessages, setIsStrangerVerified, setPairingState },
+        hasPaired,
+        findingTimeoutRef
+      );
     }
   };
 
@@ -191,7 +251,7 @@ const TextChat = ({ userDetails }) => {
   };
 
   return (
-    <div className={styles.mainC}>
+    <div className={styles.mainC} data-user-gender={userDetails?.gender}>
       {(isChatAvailable && userDetails) && (
         <>
           <MessageDisplay userDetails={userDetails} isStrangerVerified={isStrangerVerified}/>
@@ -209,12 +269,6 @@ const TextChat = ({ userDetails }) => {
             typingTimeoutRef={typingTimeoutRef}
             inputRef={inputRef}
             userDetails={userDetails}
-          />
-          <CustomSnackbar
-            open={snackbarOpen}
-            onClose={() => setSnackbarOpen(false)}
-            message={snackbarMessage}
-            color={snackbarColor}
           />
         </>
       )}

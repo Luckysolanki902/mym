@@ -25,6 +25,13 @@ const InputBox = ({
     const isSmallScreen = useMediaQuery('(max-width:800px)');
     const messagesContainerRef = useRef(null);
 
+    // Get gender theme colors
+    const genderTheme = {
+        male: { primary: '#79EAF7', secondary: '#0094d4', border: 'rgba(121, 234, 247, 0.3)' },
+        female: { primary: '#FFA0BC', secondary: '#e3368d', border: 'rgba(255, 160, 188, 0.3)' }
+    };
+    const theme = genderTheme[userDetails?.gender] || genderTheme.male;
+
     // Scroll to the bottom when inpFocus or textValue changes
     useEffect(() => {
         if (inpFocus && messagesContainerRef.current) {
@@ -34,12 +41,26 @@ const InputBox = ({
 
     return (
         <div className={styles.inputContainerMainDiv} ref={inputRef}>
-            <div className={`${styles.inputContainer} ${inpFocus ? styles.inpFocus : ''}`}>
-                <Tooltip title={!isFindingPair ? 'Find New' : 'Finding...'} placement="top" arrow>
+            <div 
+                className={`${styles.inputContainer} ${inpFocus ? styles.inpFocus : ''}`}
+                style={{
+                    transition: 'all 0.3s ease'
+                }}
+            >
+                <Tooltip 
+                    title={!socket?.connected ? 'Connecting...' : (isFindingPair && !hasPaired) ? 'Finding...' : 'Find New'} 
+                    placement="top" 
+                    arrow
+                >
                     <button
-                        disabled={isFindingPair}
+                        disabled={!socket?.connected || (isFindingPair && !hasPaired)}
                         className={styles.newButton}
                         onClick={handleFindNewButton}
+                        style={{
+                            opacity: (!socket?.connected || (isFindingPair && !hasPaired)) ? 0.5 : 1,
+                            cursor: (!socket?.connected || (isFindingPair && !hasPaired)) ? 'not-allowed' : 'pointer',
+                            transition: 'opacity 0.3s ease'
+                        }}
                     >
                         <Image
                             src={'/images/sidebaricons/randomchat.png'}
@@ -47,7 +68,11 @@ const InputBox = ({
                             height={72}
                             alt="icon"
                             className={styles.randomIcon}
-                            style={isFindingPair && !hasPaired ? { transform: 'scale(0.96)', opacity: '0.8' } : {}}
+                            style={(isFindingPair && !hasPaired) ? { 
+                                transform: 'scale(0.96)',
+                                filter: 'grayscale(0.3)',
+                                transition: 'all 0.3s ease'
+                            } : { transition: 'all 0.3s ease' }}
                         />
                     </button>
                 </Tooltip>
@@ -55,8 +80,10 @@ const InputBox = ({
                     <form 
                         autoComplete="off"
                         onSubmit={(e) => {
-                            e.preventDefault(); // Prevent form submission
-                            handleSendButton();
+                            e.preventDefault();
+                            if (hasPaired) {
+                                handleSendButton();
+                            }
                         }}
                         noValidate
                     >
@@ -65,22 +92,26 @@ const InputBox = ({
                             name="messageBox"
                             spellCheck="false"
                             autoCorrect="off"
-                            placeholder="Start typing..."
+                            placeholder={socket?.connected ? (hasPaired ? "Type your message..." : "Find a pair to start chatting") : "Waiting for a pair..."}
                             autoFocus
                             id="messageBox"
                             value={textValue}
                             onFocus={() => setInpFocus(true)}
                             autoComplete="off"
                             rows={1}
+                            disabled={!hasPaired}
                             style={{ 
                                 width: '100%', 
                                 resize: 'none', 
                                 overflow: 'hidden',
                                 whiteSpace: 'nowrap',
+                                opacity: hasPaired ? 1 : 0.6,
+                                cursor: hasPaired ? 'text' : 'not-allowed',
+                                transition: 'opacity 0.3s ease'
                             }}
                             onChange={(e) => setTextValue(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            onBlur={handleStoppedTyping} // Use the handler directly
+                            onBlur={handleStoppedTyping}
                             onClick={() => {
                                 if (messagesContainerRef.current) {
                                     messagesContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -92,19 +123,28 @@ const InputBox = ({
                         />
                     </form>
                 </div>
-                <Image 
-                    src={'/images/othericons/sendFill.png'} 
-                    width={108} 
-                    height={72} 
-                    alt="icon" 
-                    className={styles.sendIconPhone} 
+                <div 
+                    className={styles.sendIconPhone}
                     onClick={(e) => {
                         if(hasPaired){
                             e.preventDefault();
                             handleSendButton();
                         }
                     }}
-                />
+                    style={{
+                        opacity: hasPaired ? 1 : 0.4,
+                        cursor: hasPaired ? 'pointer' : 'not-allowed',
+                        pointerEvents: hasPaired ? 'auto' : 'none'
+                    }}
+                >
+                    <Image 
+                        src={'/images/othericons/sendFill.png'} 
+                        width={108} 
+                        height={72} 
+                        alt="icon"
+                        style={{ pointerEvents: 'none' }}
+                    />
+                </div>
             </div>
             {/* This div is used to scroll to the bottom */}
             <div ref={messagesContainerRef} />

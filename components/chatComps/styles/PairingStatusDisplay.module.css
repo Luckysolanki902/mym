@@ -1,0 +1,136 @@
+.statusContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 2rem 1.5rem;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Remove ripple animation */
+.rippleBackground {
+    display: none;
+}
+
+.ripple {
+    display: none;
+}
+
+/* Content wrapper - minimal */
+.contentWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.statsRow {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+
+.statCard {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+
+.statValue {
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'SF Pro Display', 'Inter', sans-serif;
+    letter-spacing: -0.3px;
+}
+
+.statLabel {
+    font-size: 0.95rem;
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 400;
+}
+
+.searchDescription {
+    text-align: center;
+}
+
+.searchText {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.6);
+    line-height: 1.5;
+}
+
+/* Minimal gender highlight */
+.genderHighlight {
+    font-weight: 600;
+}
+
+.searchingIndicator {
+    display: inline-flex;
+    align-items: center;
+}
+
+.findingText {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.45);
+    animation: textPulse 2s ease-in-out infinite;
+}
+
+@keyframes textPulse {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.queueSize {
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(0, 0, 0, 0.45);
+    font-weight: 400;
+}
+
+@media (max-width: 768px) {
+    .statusContainer {
+        padding: 1.5rem 1rem;
+    }
+
+    .statsRow {
+        gap: 0.5rem;
+    }
+
+    .statValue {
+        font-size: 0.95rem;
+    }
+
+    .statLabel {
+        font-size: 0.9rem;
+    }
+
+    .searchText {
+        font-size: 0.9rem;
+    }
+
+    .findingText {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .statusContainer {
+        padding: 1rem 0.75rem;
+    }
+
+    .statValue {
+        font-size: 0.9rem;
+    }
+
+    .statLabel {
+        font-size: 0.85rem;
+    }
+}
