@@ -1,6 +1,5 @@
 // components/chatComps/TextChat.js
 import React, { useEffect, useRef, useState } from 'react';
-import FilterOptions from '@/components/chatComps/FilterOptions';
 import styles from '../componentStyles/textchat.module.css';
 import { initiateSocket } from '@/utils/randomchat/initiateSocket';
 import {

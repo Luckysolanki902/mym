@@ -351,7 +351,7 @@ const UserVerificationDialog = () => {
                 },
               }}
             >
-              Chat without Signing In
+              Continue without Signing In
             </Button>
           </Box>
         </Box>
