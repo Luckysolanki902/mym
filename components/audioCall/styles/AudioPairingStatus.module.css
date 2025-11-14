@@ -1,0 +1,57 @@
+.statusContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.1rem 1.4rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 16px 28px rgba(15, 24, 61, 0.06);
+  font-family: 'Inter', sans-serif;
+}
+
+.pulseDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+.copyBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.headline {
+  font-size: 0.98rem;
+  font-weight: 600;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.subline {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 720px) {
+  .statusContainer {
+    padding: 1rem 1.2rem;
+  }
+}

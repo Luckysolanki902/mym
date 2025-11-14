@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3003",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -15,6 +15,7 @@
     "@mui/icons-material": "^5.15.7",
     "@mui/material": "^5.15.2",
     "@mui/styles": "^5.15.8",
+    "peerjs": "^1.5.4",
     "@reduxjs/toolkit": "^2.2.3",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
@@ -25,6 +26,8 @@
     "firebase": "^10.7.1",
     "firebase-admin": "^12.1.0",
     "framer-motion": "^12.23.24",
+    "howler": "^2.2.4",
+    "lru-cache": "^10.2.0",
     "googleapis": "^139.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
