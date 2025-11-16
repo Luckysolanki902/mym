@@ -74,7 +74,7 @@ export default function Home({ session, trendingConfessions, totalConfessions })
 
 
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Image src={'/images/showcase/makingfriends.png'} priority width={1516 / 2} height={511 / 2} alt='notohmegle' className={styles.notohmegle}></Image>
+          <Image src={'/images/showcase/makingfriends.png'} width={1516 / 2} height={511 / 2} alt='notohmegle' className={styles.notohmegle}></Image>
         </div>
 
         {/* <h3 className={styles.unlock}>AN ANOYNYMOUS INTERCOLLEGE SOCIAL MEDIA  PLATFORM</h3> */}

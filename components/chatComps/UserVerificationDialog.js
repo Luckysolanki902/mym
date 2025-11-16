@@ -33,9 +33,14 @@ import axios from 'axios';
 
 const steps = ['Guidelines', 'Sign In or Not', 'Gender & College'];
 
-const UserVerificationDialog = () => {
+const UserVerificationDialog = ({ mode = 'textchat' }) => {
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const experienceLabel = mode === 'audiocall' ? 'Audio Call' : 'Text Chat';
+  const startFlagKey = mode === 'audiocall' ? 'hasStartedAudioCall' : 'hasStartedChatting';
+  const lastDialogSignedInKey =
+    mode === 'audiocall' ? 'lastDialogShownAtSignedInAudio' : 'lastDialogShownAtSignedIn';
 
   const unverifiedUserDetails = useSelector((state) => state.unverifiedUserDetails);
   const [open, setOpen] = useState(false);
@@ -102,8 +107,8 @@ const UserVerificationDialog = () => {
   // 3. Decide if we should show dialog based on userType + time checks
   // -------------------------
   useEffect(() => {
-    const hasStartedChatting = localStorage.getItem('hasStartedChatting');
-    if (hasStartedChatting === 'true') {
+    const hasStartedExperience = localStorage.getItem(startFlagKey);
+    if (hasStartedExperience === 'true') {
       setOpen(false); // Ensure dialog stays closed if already started chatting
       return;
     }
@@ -114,7 +119,7 @@ const UserVerificationDialog = () => {
     const oneHour = 60 * 60 * 1000;
 
     if (userType === 'signedIn') {
-      const lastShown = localStorage.getItem('lastDialogShownAtSignedIn');
+      const lastShown = localStorage.getItem(lastDialogSignedInKey);
       if (!lastShown || now - parseInt(lastShown, 10) > oneHour) {
         setOpen(true);
       }
@@ -152,7 +157,7 @@ const UserVerificationDialog = () => {
     const now = new Date().getTime();
 
     if (userType === 'signedIn') {
-      localStorage.setItem('lastDialogShownAtSignedIn', now.toString());
+      localStorage.setItem(lastDialogSignedInKey, now.toString());
     } else {
       // unverifiedHasDetails or unverifiedNoDetails
       dispatch(setLastDialogShownAt(now));
@@ -191,7 +196,7 @@ const UserVerificationDialog = () => {
   };
 
   // Final step: store details to Redux
-  const handleStartChatting = () => {
+  const handleStartExperience = () => {
     if (!gender || !college) {
       alert('Please select both gender and college.');
       return;
@@ -218,7 +223,7 @@ const UserVerificationDialog = () => {
     setShowButtonLoading(true);
 
     // Use a flag to avoid reopening
-    localStorage.setItem('hasStartedChatting', 'true');
+  localStorage.setItem(startFlagKey, 'true');
 
     // Close dialog after loading finishes
     setTimeout(() => {
@@ -249,7 +254,7 @@ const UserVerificationDialog = () => {
             </Grid>
           </Grid>
           <Typography variant="body2" sx={{ mt: 1 }}>
-            Unverified Users are those who are chatting without signing in.
+            Unverified Users are those who are {mode === 'audiocall' ? 'calling' : 'chatting'} without signing in.
             They have not confirmed their college and might not be so trustworthy.
           </Typography>
 
@@ -265,7 +270,7 @@ const UserVerificationDialog = () => {
           </Grid>
           <Typography variant="body2" sx={{ mt: 1 }}>
             Verified users have signed in and confirmed their college with otp.
-            You can trust that they are honest about their college. Sign in to make others trust you.
+            You can trust that they are honest about their college. Sign in to make others trust you before joining {experienceLabel}.
           </Typography>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
@@ -421,14 +426,14 @@ const UserVerificationDialog = () => {
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
             <Button
               variant="contained"
-              onClick={handleStartChatting}
+              onClick={handleStartExperience}
               disabled={showButtonLoading} // Disable button while loading
               sx={{
                 backgroundColor: showButtonLoading ? '#ccc' : '#2d2d2d',
                 ':hover': { backgroundColor: showButtonLoading ? '#ccc' : 'rgba(45,45,45,0.9)' },
               }}
             >
-              {showButtonLoading ? 'Working...' : 'Start Chatting!'}
+              {showButtonLoading ? 'Working...' : `Start ${experienceLabel}!`}
             </Button>
           </Box>
 

@@ -1,0 +1,73 @@
+.queueBar {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
+}
+
+.queueCopy {
+  flex: 1 1 240px;
+}
+
+.queueLabel {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  margin: 0 0 0.2rem 0;
+  color: rgba(15, 23, 42, 0.5);
+}
+
+.queuePrimary {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.errorText {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: #b42318;
+  font-weight: 500;
+}
+
+.queueMetrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: flex-end;
+}
+
+.metricChip {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.04);
+  color: #0f172a;
+  font-size: 0.85rem;
+  border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.metricSuccess {
+  background: rgba(16, 209, 171, 0.16);
+  border-color: rgba(16, 209, 171, 0.45);
+  color: #0a9d7e;
+}
+
+@media (max-width: 640px) {
+  .queueBar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .queueMetrics {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

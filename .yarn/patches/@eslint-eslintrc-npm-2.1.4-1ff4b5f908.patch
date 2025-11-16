@@ -1,0 +1,35 @@
+diff --git a/dist/eslintrc.cjs b/dist/eslintrc.cjs
+index eb2ed8d37ffef4848b3b514a4cb12225d9fd459e..33b0fd454f04db721773f82e72d2d43c114f51d2 100644
+--- a/dist/eslintrc.cjs
++++ b/dist/eslintrc.cjs
+@@ -2144,6 +2144,13 @@ class ConfigValidator {
+      * @returns {string} Formatted error message
+      */
+     formatErrors(errors) {
++        const safeJSONStringify = value => {
++            try {
++                return JSON.stringify(value);
++            } catch (error) {
++                return '"[Circular]"';
++            }
++        };
+         return errors.map(error => {
+             if (error.keyword === "additionalProperties") {
+                 const formattedPropertyPath = error.dataPath.length ? `${error.dataPath.slice(1)}.${error.params.additionalProperty}` : error.params.additionalProperty;
+@@ -2153,14 +2160,14 @@ class ConfigValidator {
+             if (error.keyword === "type") {
+                 const formattedField = error.dataPath.slice(1);
+                 const formattedExpectedType = Array.isArray(error.schema) ? error.schema.join("/") : error.schema;
+-                const formattedValue = JSON.stringify(error.data);
++                const formattedValue = safeJSONStringify(error.data);
+ 
+                 return `Property "${formattedField}" is the wrong type (expected ${formattedExpectedType} but got \`${formattedValue}\`)`;
+             }
+ 
+             const field = error.dataPath[0] === "." ? error.dataPath.slice(1) : error.dataPath;
+ 
+-            return `"${field}" ${error.message}. Value: ${JSON.stringify(error.data)}`;
++            return `"${field}" ${error.message}. Value: ${safeJSONStringify(error.data)}`;
+         }).map(message => `\t- ${message}.\n`).join("");
+     }
+ 

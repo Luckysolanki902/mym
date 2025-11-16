@@ -1,0 +1,314 @@
+.heroShell {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+  width: 100%;
+}
+
+.callCard,
+.metaCard {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.08);
+  padding: clamp(1rem, 2vw, 1.5rem);
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.callStateBadge {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.35rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.timerDisplay {
+  font-size: 2.2rem;
+  font-variant-numeric: tabular-nums;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.partnerRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.partnerAvatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #c9d6ff, #e2e2e2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: #0f172a;
+}
+
+.partnerMeta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.partnerName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.partnerSub {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(15, 23, 42, 0.6);
+}
+
+.qualityChip {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(16, 209, 171, 0.12);
+  color: #0a9d7e;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.connectionCopy {
+  font-size: 0.95rem;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.waveform {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 64px;
+}
+
+.waveform span {
+  flex: 1;
+  max-width: 6px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.15));
+  transition: height 90ms ease-out;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.metaItem {
+  padding: 0.75rem 0.85rem;
+  border-radius: 1rem;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.metaLabel {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(15, 23, 42, 0.45);
+  margin: 0 0 0.2rem 0;
+}
+
+.metaValue {
+  font-size: 1rem;
+  margin: 0;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.micButton {
+  margin-top: auto;
+  border: none;
+  border-radius: 1rem;
+  padding: 0.9rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #0f172a;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.micButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.micButton:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 25px rgba(15, 23, 42, 0.25);
+}
+
+.helperCopy {
+  margin-top: auto;
+  font-size: 0.92rem;
+  color: rgba(15, 23, 42, 0.6);
+}
+
+@media (max-width: 600px) {
+  .timerDisplay {
+    font-size: 1.8rem;
+  }
+
+  .metaGrid {
+    grid-template-columns: 1fr;
+  }
+}.heroCard {
+  width: min(420px, 88vw);
+  height: min(420px, 88vw);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.heroAvatar {
+  width: 160px;
+  height: 160px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.heroMeta {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.heroMeta span {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.partnerCopy {
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+.qualityChip {
+  margin-top: 0.25rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(12, 207, 168, 0.18);
+  border: 1px solid rgba(12, 207, 168, 0.35);
+  color: #10d1ab;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.heroCta {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  border: none;
+  background: #ffffff;
+  color: #080919;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+.heroCta:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.heroCta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.helperCopy {
+  margin-top: 1.5rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+  text-align: center;
+  max-width: 240px;
+}
+
+.timerDisplay {
+  font-size: 2.2rem;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.callStateBadge {
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.waveform {
+  position: absolute;
+  inset: 8%;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.waveform span {
+  width: 6px;
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.2) 100%);
+  border-radius: 999px;
+  transition: height 80ms ease-out;
+}
+
+@media (max-width: 600px) {
+  .heroCard {
+    width: 90vw;
+    height: 90vw;
+  }
+
+  .heroAvatar {
+    width: 140px;
+    height: 140px;
+    font-size: 52px;
+  }
+}

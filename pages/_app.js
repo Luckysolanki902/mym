@@ -154,7 +154,6 @@ export default function App({ Component, pageProps }) {
           <Image
             style={{ width: '130px', height: 'auto' }}
             src={'/gifs/rhombus.gif'}
-            priority
             width={200}
             height={200}
             loading='eager'
@@ -232,7 +231,6 @@ export default function App({ Component, pageProps }) {
                     <Image
                       style={{ width: '120px', height: '120px' }}
                       src={'/gifs/rhombus.gif'}
-                      priority
                       width={200}
                       height={200}
                       alt='loading'
