@@ -1,0 +1,55 @@
+.container {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.messageCard {
+  padding: 1rem 1.75rem;
+  border-radius: 20px;
+  border: 1.5px solid;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  font-family: 'Jost', sans-serif;
+}
+
+.waveIcon {
+  font-size: 1.75rem;
+  line-height: 1;
+  transform-origin: 70% 70%;
+}
+
+.messageText {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.75);
+  letter-spacing: 0.2px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    top: 15%;
+  }
+  
+  .messageCard {
+    padding: 0.875rem 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .waveIcon {
+    font-size: 1.5rem;
+  }
+  
+  .messageText {
+    font-size: 1rem;
+  }
+}

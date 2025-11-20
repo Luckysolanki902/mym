@@ -157,11 +157,14 @@ const useAudioCallController = ({ userDetails, context }) => {
     setError,
     setWaveformData,
     setCallDuration,
+    setCallStartTime,
     setQualityScore,
     setIsMuted,
     isMuted,
     speakerEnabled,
     setSpeakerEnabled,
+    partnerDisconnected,
+    setPartnerDisconnected,
     mediaStreamRef,
     analyserRef,
     heartbeatRef,
@@ -343,10 +346,12 @@ const useAudioCallController = ({ userDetails, context }) => {
         stopTones('connected');
         stopTones('disconnected');
         player.stop();
+        player.volume(0.25); // Lowered from default for soothing effect
         player.play();
       } else {
         stopTones('dial');
         player.stop();
+        player.volume(0.3);
         player.play();
       }
     },
@@ -471,11 +476,12 @@ const useAudioCallController = ({ userDetails, context }) => {
       clearInterval(callTimerRef.current);
     }
     const startedAt = Date.now();
+    setCallStartTime(startedAt);
     setCallDuration(0);
     callTimerRef.current = setInterval(() => {
       setCallDuration(Date.now() - startedAt);
     }, 1000);
-  }, [setCallDuration]);
+  }, [setCallDuration, setCallStartTime]);
 
   const startHeartbeat = useCallback(() => {
     if (!userDetails) return;
@@ -796,13 +802,14 @@ const useAudioCallController = ({ userDetails, context }) => {
       setCallState(CALL_STATE.DIALING);
       setPairingState('DIALING');
       setIsFindingPair(false);
+      setPartnerDisconnected(false);
       setError(null);
       setTelemetry((prev) => ({ ...prev, waitTime: payload.waitTime || 0 }));
       playTone('dial');
       peerServerRef.current = payload.peer?.server || null;
       createPeerInstance(payload.peer?.token, payload.peer?.rtcConfig, peerServerRef.current, payload.room);
     },
-    [createPeerInstance, playTone, setCallState, setError, setIsFindingPair, setPartner, setPairingState, setRoomId, setTelemetry]
+    [createPeerInstance, playTone, setCallState, setError, setIsFindingPair, setPartner, setPartnerDisconnected, setPairingState, setRoomId, setTelemetry]
   );
 
   const handleRemoteReady = useCallback(
@@ -823,11 +830,13 @@ const useAudioCallController = ({ userDetails, context }) => {
       });
       stopTones();
       cleanupPeer();
-      resetQueueState();
-      setError(reason === 'hangup' ? 'Partner ended the call.' : 'Partner left the call.');
+      setPartnerDisconnected(true);
+      setCallState(CALL_STATE.ENDED);
+      setPairingState('DISCONNECTED');
+      setIsFindingPair(false);
       audioDebugLog('callEnded cleanup complete');
     },
-    [cleanupPeer, resetQueueState, setError, stopTones]
+    [cleanupPeer, setCallState, setIsFindingPair, setPartnerDisconnected, setPairingState, stopTones]
   );
 
   useEffect(() => {
@@ -910,9 +919,12 @@ const useAudioCallController = ({ userDetails, context }) => {
         hasActivePeer: !!peerRef.current,
         hasActiveCall: !!callRef.current,
       });
+      socketHandlersRef.current.stopTones?.();
       socketHandlersRef.current.cleanupPeer?.();
-      socketHandlersRef.current.resetQueueState?.();
-      setError('They left the conversation. Tap Find New.');
+      setPartnerDisconnected(true);
+      setCallState(CALL_STATE.ENDED);
+      setPairingState('DISCONNECTED');
+      setIsFindingPair(false);
       audioDebugLog('pairDisconnected cleanup complete');
     });
     newSocket.on('remoteReady', (payload) => socketHandlersRef.current.handleRemoteReady?.(payload));
@@ -956,7 +968,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       socketUrlRef.current = null;
       setSocket(null);
     };
-  }, [socketUrl, setSocket, setError, setFilterDescription, setFilterLevel, setIsFindingPair, setPairingState, setCallState, setMicStatus]);
+  }, [socketUrl, setSocket, setError, setFilterDescription, setFilterLevel, setIsFindingPair, setPairingState, setCallState, setMicStatus, setPartnerDisconnected]);
 
   useEffect(() => {
     if (!socketRef.current?.connected) return;

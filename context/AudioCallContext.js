@@ -40,12 +40,14 @@ export const AudioCallProvider = ({ children }) => {
   const [dialToneEnabled, setDialToneEnabled] = useState(true);
   const [waveformData, setWaveformData] = useState([]);
   const [callDuration, setCallDuration] = useState(0);
+  const [callStartTime, setCallStartTime] = useState(null);
   const [qualityScore, setQualityScore] = useState(null);
   const [pairingState, setPairingState] = useState('IDLE');
   const [telemetry, setTelemetry] = useState(defaultTelemetry);
   const [error, setError] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
   const [speakerEnabled, setSpeakerEnabled] = useState(false);
+  const [partnerDisconnected, setPartnerDisconnected] = useState(false);
 
   const mediaStreamRef = useRef(null);
   const analyserRef = useRef(null);
@@ -82,6 +84,8 @@ export const AudioCallProvider = ({ children }) => {
       setWaveformData,
       callDuration,
       setCallDuration,
+      callStartTime,
+      setCallStartTime,
       qualityScore,
       setQualityScore,
       pairingState,
@@ -94,6 +98,8 @@ export const AudioCallProvider = ({ children }) => {
       setIsMuted,
       speakerEnabled,
       setSpeakerEnabled,
+      partnerDisconnected,
+      setPartnerDisconnected,
       mediaStreamRef,
       analyserRef,
       heartbeatRef,
@@ -114,12 +120,14 @@ export const AudioCallProvider = ({ children }) => {
       dialToneEnabled,
       waveformData,
       callDuration,
+      callStartTime,
       qualityScore,
       pairingState,
       telemetry,
       error,
       isMuted,
       speakerEnabled,
+      partnerDisconnected,
     ]
   );
 
