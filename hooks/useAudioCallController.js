@@ -774,9 +774,8 @@ const useAudioCallController = ({ userDetails, context }) => {
 
   const resetQueueState = useCallback(() => {
     audioDebugLog('resetQueueState called', {
-      currentCallState: callStateRef.current,
-      currentPairingState: pairingStateRef.current,
-      isFindingPair: isFindingPairRef.current,
+      currentCallState: callState,
+      isFindingPair: isFindingPair,
     });
     setIsFindingPair(false);
     setPairingState('IDLE');
@@ -784,11 +783,8 @@ const useAudioCallController = ({ userDetails, context }) => {
     setQueueSize(0);
     setCallState((prev) => (prev === CALL_STATE.CONNECTED ? prev : CALL_STATE.IDLE));
     setTelemetry((prev) => ({ ...prev, waitTime: 0 }));
-    audioDebugLog('resetQueueState complete', {
-      callStateAfter: callStateRef.current,
-      pairingStateAfter: pairingStateRef.current,
-    });
-  }, [setCallState, setIsFindingPair, setPairingState, setQueuePosition, setQueueSize, setTelemetry]);
+    audioDebugLog('resetQueueState complete');
+  }, [callState, isFindingPair, setCallState, setIsFindingPair, setPairingState, setQueuePosition, setQueueSize, setTelemetry]);
 
   const handlePairingSuccess = useCallback(
     (payload) => {
@@ -822,8 +818,6 @@ const useAudioCallController = ({ userDetails, context }) => {
     ({ reason }) => {
       audioDebugLog('callEnded event from server', {
         reason,
-        currentCallState: callStateRef.current,
-        currentPairingState: pairingStateRef.current,
         hasActivePeer: !!peerRef.current,
         hasActiveCall: !!callRef.current,
       });
@@ -831,10 +825,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       cleanupPeer();
       resetQueueState();
       setError(reason === 'hangup' ? 'Partner ended the call.' : 'Partner left the call.');
-      audioDebugLog('callEnded cleanup complete', {
-        callStateAfter: callStateRef.current,
-        pairingStateAfter: pairingStateRef.current,
-      });
+      audioDebugLog('callEnded cleanup complete');
     },
     [cleanupPeer, resetQueueState, setError, stopTones]
   );
@@ -916,18 +907,13 @@ const useAudioCallController = ({ userDetails, context }) => {
     newSocket.on('pairingSuccess', (payload) => socketHandlersRef.current.handlePairingSuccess?.(payload));
     newSocket.on('pairDisconnected', () => {
       audioDebugLog('pairDisconnected event', {
-        currentCallState: callStateRef.current,
-        currentPairingState: pairingStateRef.current,
         hasActivePeer: !!peerRef.current,
         hasActiveCall: !!callRef.current,
       });
       socketHandlersRef.current.cleanupPeer?.();
       socketHandlersRef.current.resetQueueState?.();
       setError('They left the conversation. Tap Find New.');
-      audioDebugLog('pairDisconnected cleanup complete', {
-        callStateAfter: callStateRef.current,
-        pairingStateAfter: pairingStateRef.current,
-      });
+      audioDebugLog('pairDisconnected cleanup complete');
     });
     newSocket.on('remoteReady', (payload) => socketHandlersRef.current.handleRemoteReady?.(payload));
     newSocket.on('callEnded', (payload) => socketHandlersRef.current.handleServerCallEnded?.(payload));
