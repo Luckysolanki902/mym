@@ -536,11 +536,42 @@ const useAudioCallController = ({ userDetails, context }) => {
   );
 
   const maybeInitiateCall = useCallback(() => {
-    if (!peerRef.current || !mediaStreamRef.current || !remotePeerIdRef.current) return;
-    if (!localPeerIdRef.current) return;
-    if (callRef.current) return;
+    audioDebugLog('maybeInitiateCall called', {
+      hasPeer: !!peerRef.current,
+      hasMediaStream: !!mediaStreamRef.current,
+      hasRemotePeerId: !!remotePeerIdRef.current,
+      hasLocalPeerId: !!localPeerIdRef.current,
+      hasExistingCall: !!callRef.current,
+      localPeerId: localPeerIdRef.current,
+      remotePeerId: remotePeerIdRef.current,
+    });
+    
+    if (!peerRef.current || !mediaStreamRef.current || !remotePeerIdRef.current) {
+      audioDebugLog('maybeInitiateCall aborted: missing requirements', {
+        hasPeer: !!peerRef.current,
+        hasMediaStream: !!mediaStreamRef.current,
+        hasRemotePeerId: !!remotePeerIdRef.current,
+      });
+      return;
+    }
+    if (!localPeerIdRef.current) {
+      audioDebugLog('maybeInitiateCall aborted: no local peer ID');
+      return;
+    }
+    if (callRef.current) {
+      audioDebugLog('maybeInitiateCall aborted: call already exists');
+      return;
+    }
     const shouldInitiate = localPeerIdRef.current.localeCompare(remotePeerIdRef.current) > 0;
-    if (!shouldInitiate) return;
+    audioDebugLog('maybeInitiateCall decision', {
+      localPeer: localPeerIdRef.current,
+      remotePeer: remotePeerIdRef.current,
+      shouldInitiate,
+    });
+    if (!shouldInitiate) {
+      audioDebugLog('maybeInitiateCall: waiting for partner to initiate (lexically lower peer ID)');
+      return;
+    }
     try {
       audioDebugLog('Initiating PeerJS call', {
         localPeer: localPeerIdRef.current,
