@@ -71,7 +71,7 @@ const Sidebar = () => {
   }, [userDetails]);
 
   useEffect(() => {
-    const paths = ['/', '/textchat', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion'];
+    const paths = ['/', '/textchat', '/audiocall', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion'];
     const index = paths.findIndex(path => path === router.pathname);
     setActiveIndex(index !== -1 ? index : null);
   }, [router.pathname]);
@@ -112,7 +112,20 @@ const Sidebar = () => {
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 2 ? styles.active : ''}`}
-          onClick={() => handleSetActive(2, '/all-confessions')}
+          onClick={() => handleSetActive(2, '/audiocall')}
+          data-title="Audio Call"
+        >
+          <Image
+            src={'/images/sidebaricons/audiocall.png'}
+            width={1080 / 10}
+            height={720 / 10}
+            alt='icon'
+            className={styles.iconspng2}
+          />
+        </div>
+        <div
+          className={`${styles.icons} ${activeIndex === 3 ? styles.active : ''}`}
+          onClick={() => handleSetActive(3, '/all-confessions')}
           data-title="Read Confessions"
         >
           <Image
@@ -124,8 +137,8 @@ const Sidebar = () => {
           />
         </div>
         <div
-          className={`${styles.icons} ${activeIndex === 3 ? styles.active : ''}`}
-          onClick={() => handleSetActive(3, '/create-confession')}
+          className={`${styles.icons} ${activeIndex === 4 ? styles.active : ''}`}
+          onClick={() => handleSetActive(4, '/create-confession')}
           data-title="Create Confession"
         >
           <Image
@@ -137,8 +150,8 @@ const Sidebar = () => {
           />
         </div>
         <div
-          className={`${styles.icons} ${activeIndex === 4 ? styles.active : ''}`}
-          onClick={() => handleSetActive(4, '/inbox')}
+          className={`${styles.icons} ${activeIndex === 5 ? styles.active : ''}`}
+          onClick={() => handleSetActive(5, '/inbox')}
           data-title="Inbox"
         >
           <StyledBadge badgeContent={unseenCount} color="primary">

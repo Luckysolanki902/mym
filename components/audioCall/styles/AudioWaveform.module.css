@@ -1,0 +1,48 @@
+.waveformContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+    width: 100%;
+}
+
+.waveform {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 80px;
+}
+
+.bar {
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+    transform-origin: center;
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .waveformContainer {
+        padding: 1.5rem 0;
+    }
+
+    .waveform {
+        height: 60px;
+        gap: 3px;
+    }
+
+    .bar {
+        width: 3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .waveformContainer {
+        padding: 1rem 0;
+    }
+
+    .waveform {
+        height: 50px;
+    }
+}

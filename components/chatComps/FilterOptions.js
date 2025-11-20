@@ -3,7 +3,6 @@ import styles from './styles/filteroptions.module.css';
 import { IoFilterSharp } from 'react-icons/io5';
 import { Chip, createTheme, ThemeProvider } from '@mui/material';
 import { useFilters } from '@/context/FiltersContext';
-import { useTextChat } from '@/context/TextChatContext';
 import { useSpring, animated } from 'react-spring';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,7 +15,7 @@ const darkTheme = createTheme({
   },
 });
 
-const FilterOptions = ({ userDetails }) => {
+const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired }) => {
   const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000';
 
   const [openFilterMenu, setOpenFilterMenu] = useState(false);
@@ -37,9 +36,6 @@ const FilterOptions = ({ userDetails }) => {
 
   // Filter contexts
   const { preferredGender, setPreferredGender, preferredCollege, setPreferredCollege } = useFilters();
-  
-  // Chat context for socket and queue status
-  const { socket, isFindingPair, hasPaired } = useTextChat();
   
   // Track temporary filter changes
   const [tempGender, setTempGender] = useState(preferredGender);

@@ -124,6 +124,7 @@ export default function SwipeableTemporaryDrawer() {
     const paths = [
       '/',
       '/textchat',
+      '/audiocall',
       '/all-confessions',
       '/create-confession',
       '/inbox',
@@ -189,6 +190,7 @@ export default function SwipeableTemporaryDrawer() {
           {[
             { text: 'Home', href: '/' },
             { text: 'Random Chat', href: '/textchat' },
+            { text: 'Audio Call', href: '/audiocall' },
             { text: 'Read Confessions', href: '/all-confessions' },
             { text: 'Write Confession', href: '/create-confession' },
             { text: 'Inbox', href: '/inbox' },
@@ -221,13 +223,21 @@ export default function SwipeableTemporaryDrawer() {
                         />
                       ) : index === 2 ? (
                         <Image
+                          src={'/images/sidebaricons/audiocall.png'}
+                          width={108}
+                          height={72}
+                          alt="icon"
+                          className={`${styles.iconspng2} ${styles.sideIcon}`}
+                        />
+                      ) : index === 3 ? (
+                        <Image
                           src={'/images/sidebaricons/confessions.png'}
                           width={54.5}
                           height={72}
                           alt="icon"
                           className={`${styles.iconspng3} ${styles.sideIcon}`}
                         />
-                      ) : index === 3 ? (
+                      ) : index === 4 ? (
                         <Image
                           src={'/images/sidebaricons/createconfession.png'}
                           width={112.5}
@@ -235,11 +245,11 @@ export default function SwipeableTemporaryDrawer() {
                           alt="icon"
                           className={`${styles.iconspng4} ${styles.sideIcon}`}
                         />
-                      ) : index === 4 ? (
+                      ) : index === 5 ? (
                         <StyledBadge badgeContent={unseenCount} color="primary">
                           <MailIcon fontSize="medium" style={{ color: 'white' }} />
                         </StyledBadge>
-                      ) : index === 5 ? (
+                      ) : index === 6 ? (
                         <Image
                           src={'/images/sidebaricons/bulb.png'}
                           width={150}
@@ -264,8 +274,8 @@ export default function SwipeableTemporaryDrawer() {
           <ListItem className={styles.sideBarListItem}>
             <Link href="/settings" passHref style={{ width: '100%', textDecoration: 'none' }}>
               <div
-                style={{ backgroundColor: activeIndex === 6 ? 'rgba(211, 211, 211, 0.2)' : 'transparent' }}
-                onClick={() => handleNavigation('/settings', 6)}
+                style={{ backgroundColor: activeIndex === 7 ? 'rgba(211, 211, 211, 0.2)' : 'transparent' }}
+                onClick={() => handleNavigation('/settings', 7)}
                 className={`${styles.sideBarLinks}`}
               >
                 <ListItemIcon className={styles.listItemIcon}>

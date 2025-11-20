@@ -1,125 +1,149 @@
-.dockCard {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 1.5rem;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
-  padding: 1rem 1.25rem;
+/* Glassmorphism fixed footer */
+.dockContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 1.5rem;
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  z-index: 100;
 }
 
 .controlsRow {
   display: flex;
-  justify-content: center;
+  gap: 1.5rem;
   align-items: center;
-  gap: 0.85rem;
-  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .controlButton {
-  width: 54px;
-  height: 54px;
-  border-radius: 18px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: #ffffff;
-  color: #0f172a;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.controlButton svg {
-  font-size: 1.35rem;
+  transition: all 0.2s ease;
+  font-size: 1.5rem;
+  background: rgba(0, 0, 0, 0.05);
+  color: #2D2D2D;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .controlButton:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
-.controlButton:not(:disabled):hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 25px rgba(15, 23, 42, 0.15);
+.controlButton:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.08);
+  transform: scale(1.05);
 }
 
-.controlButtonPrimary {
-  background: linear-gradient(135deg, #ff5f6d, #ffc371);
-  color: white;
-  border: none;
+.controlButton:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
-.controlButtonSecondary {
-  background: rgba(15, 23, 42, 0.02);
+.controlButtonActive {
+  background: rgba(0, 0, 0, 0.12);
 }
 
-@media (max-width: 540px) {
-  .dockCard {
-    padding: 0.85rem;
-  }
-
-  .controlsRow {
-    justify-content: space-between;
-  }
-
-  .controlButton {
-    flex: 1 1 64px;
-    min-width: 48px;
-  }
-}.dockCard {
-  width: 100%;
-  padding: 1rem;
-  border-radius: 1.5rem;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(18px);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.controlsRow {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-  gap: 1rem;
-}
-
-.controlButton {
-  border: none;
-  border-radius: 999px;
-  height: 64px;
+/* Primary action button - larger and prominent */
+.primaryButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: none;
   cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-  background: rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+  font-size: 1.8rem;
+  color: white;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
 }
 
-.controlButton:active {
-  transform: scale(0.96);
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.controlButtonPrimary {
-  background: #ff3b30;
+/* Hangup button - red */
+.hangupButton {
+  background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
 }
 
-.controlButtonSecondary {
-  background: rgba(255, 255, 255, 0.15);
+.hangupButton:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 6px 32px rgba(255, 71, 87, 0.4);
 }
 
-.controlLabel {
-  text-align: center;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.75);
+.hangupButton:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
-@media (max-width: 540px) {
+/* Dial button - green */
+.dialButton {
+  background: linear-gradient(135deg, #26de81 0%, #20bf6b 100%);
+}
+
+.dialButton:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 6px 32px rgba(38, 222, 129, 0.4);
+}
+
+.dialButton:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .dockContainer {
+    padding: 1rem 1.25rem;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
   .controlsRow {
-    grid-template-columns: repeat(3, minmax(64px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .controlButton {
+    width: 52px;
+    height: 52px;
+    font-size: 1.4rem;
+  }
+
+  .primaryButton {
+    width: 65px;
+    height: 65px;
+    font-size: 1.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .controlsRow {
+    gap: 1rem;
+  }
+
+  .controlButton {
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
+  }
+
+  .primaryButton {
+    width: 60px;
+    height: 60px;
+    font-size: 1.6rem;
   }
 }

@@ -321,9 +321,9 @@ const useAudioCallController = ({ userDetails, context }) => {
     }
     if (!tonePlayersRef.current.dial) {
       const HowlCtor = howlerRef.current;
-      tonePlayersRef.current.dial = new HowlCtor({ src: ['/audio/tones/dial.wav'], loop: true, volume: 0.25 });
-      tonePlayersRef.current.connected = new HowlCtor({ src: ['/audio/tones/connected.wav'], volume: 0.35 });
-      tonePlayersRef.current.disconnected = new HowlCtor({ src: ['/audio/tones/disconnected.wav'], volume: 0.35 });
+      tonePlayersRef.current.dial = new HowlCtor({ src: ['/audio/tone/ringing_tone.mp3'], loop: true, volume: 0.25 });
+      tonePlayersRef.current.connected = new HowlCtor({ src: ['/audio/tone/paired_success_connected_tone.mp3'], volume: 0.35 });
+      tonePlayersRef.current.disconnected = new HowlCtor({ src: ['/audio/tone/hang_up-tone.mp3'], volume: 0.35 });
     }
     return tonePlayersRef.current;
   }, []);
@@ -556,7 +556,7 @@ const useAudioCallController = ({ userDetails, context }) => {
   }, [attachCallHandlers, mediaStreamRef, setError]);
 
   const createPeerInstance = useCallback(
-    async (token, rtcConfig, serverDescriptor = null) => {
+    async (token, rtcConfig, serverDescriptor = null, currentRoomId = null) => {
       if (!token || typeof window === 'undefined') return;
       const PeerCtor = await requestPeerLibrary();
       if (peerRef.current) {
@@ -594,13 +594,14 @@ const useAudioCallController = ({ userDetails, context }) => {
         serverSource: serverDescriptor ? 'server-payload' : 'resolved-url',
         hasRtcConfig: Boolean(peerOptions.config),
         token: token?.slice?.(-12),
+        roomId: currentRoomId,
       });
       const peer = new PeerCtor(token, peerOptions);
       peerRef.current = peer;
       peer.on('open', (id) => {
-        audioDebugLog('PeerJS connection open', { id, tokenSuffix: token?.slice?.(-8) });
+        audioDebugLog('PeerJS connection open', { id, tokenSuffix: token?.slice?.(-8), roomId: currentRoomId });
         localPeerIdRef.current = id;
-        emitSocket('callReady', { userMID: userDetails?.mid, peerId: id, roomId });
+        emitSocket('callReady', { userMID: userDetails?.mid, peerId: id, roomId: currentRoomId });
       });
       peer.on('call', (incomingCall) => {
         try {
@@ -630,7 +631,7 @@ const useAudioCallController = ({ userDetails, context }) => {
         cleanupPeer();
       });
     },
-    [attachCallHandlers, cleanupPeer, emitSocket, mediaStreamRef, requestPeerLibrary, resolvedServer, roomId, setError, userDetails?.mid]
+    [attachCallHandlers, cleanupPeer, emitSocket, mediaStreamRef, requestPeerLibrary, resolvedServer, setError, userDetails?.mid]
   );
 
   const buildQueuePayload = useCallback(() => {
@@ -721,8 +722,10 @@ const useAudioCallController = ({ userDetails, context }) => {
         setCallState(CALL_STATE.WAITING);
       }
       setPairingState('WAITING');
+      // Ensure ringing tone is playing while waiting
+      playTone('dial');
     },
-    [callState, setCallState, setFilterDescription, setFilterLevel, setPairingState, setQueuePosition, setQueueSize, setTelemetry]
+    [callState, playTone, setCallState, setFilterDescription, setFilterLevel, setPairingState, setQueuePosition, setQueueSize, setTelemetry]
   );
 
   const resetQueueState = useCallback(() => {
@@ -748,7 +751,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       setTelemetry((prev) => ({ ...prev, waitTime: payload.waitTime || 0 }));
       playTone('dial');
       peerServerRef.current = payload.peer?.server || null;
-      createPeerInstance(payload.peer?.token, payload.peer?.rtcConfig, peerServerRef.current);
+      createPeerInstance(payload.peer?.token, payload.peer?.rtcConfig, peerServerRef.current, payload.room);
     },
     [createPeerInstance, playTone, setCallState, setError, setIsFindingPair, setPartner, setPairingState, setRoomId, setTelemetry]
   );
@@ -836,6 +839,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       setCallState(CALL_STATE.WAITING);
       setError(null);
       clearTimeout(findingTimeoutRef.current);
+      socketHandlersRef.current.playTone?.('dial');
     });
     newSocket.on('noUsersAvailable', () => {
       audioDebugLog('noUsersAvailable event');

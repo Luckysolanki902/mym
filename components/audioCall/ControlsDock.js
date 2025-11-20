@@ -1,114 +1,103 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import styles from './styles/ControlsDock.module.css';
 import CallEndRoundedIcon from '@mui/icons-material/CallEndRounded';
+import CallRoundedIcon from '@mui/icons-material/CallRounded';
 import MicRoundedIcon from '@mui/icons-material/MicRounded';
 import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
-import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
-import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-import { useAudioCall, CALL_STATE } from '@/context/AudioCallContext';
+import HeadsetRoundedIcon from '@mui/icons-material/HeadsetRounded';
+import { useAudioCall, CALL_STATE, MIC_STATE } from '@/context/AudioCallContext';
 
 const ControlsDock = ({ controller = {} }) => {
   const { callState, isMuted, speakerEnabled, isFindingPair, micStatus } = useAudioCall();
-  const { toggleMute, toggleSpeaker, skip, findNew, hangup, requestMicAccess } = controller;
+  const { toggleMute, toggleSpeaker, findNew, hangup } = controller;
 
   const isActiveCall = callState === CALL_STATE.CONNECTED || callState === CALL_STATE.DIALING;
-  const canSkip = typeof skip === 'function' && !isFindingPair && micStatus === 'GRANTED';
-  const canFindNew = typeof findNew === 'function' && !isFindingPair;
-  const canHang = typeof hangup === 'function' && isActiveCall;
+  const isIdle = callState === CALL_STATE.IDLE || callState === CALL_STATE.ENDED;
+  const canInteract = micStatus === MIC_STATE.GRANTED;
+
+  // Haptic feedback function
+  const triggerHaptic = () => {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(10); // Short haptic feedback
+    }
+  };
 
   const handleMuteToggle = () => {
-    if (typeof toggleMute === 'function') {
+    if (typeof toggleMute === 'function' && canInteract) {
+      triggerHaptic();
       toggleMute();
     }
   };
 
   const handleSpeakerToggle = () => {
-    if (typeof toggleSpeaker === 'function') {
+    if (typeof toggleSpeaker === 'function' && canInteract) {
+      triggerHaptic();
       toggleSpeaker();
     }
   };
 
-  const handleHangup = () => {
-    if (canHang) {
-      hangup();
+  const handlePrimaryAction = () => {
+    triggerHaptic();
+    if (isActiveCall) {
+      // Hangup (which works as skip)
+      if (typeof hangup === 'function') {
+        hangup('skip');
+      }
+    } else if (isIdle && canInteract) {
+      // Start finding
+      if (typeof findNew === 'function') {
+        findNew();
+      }
     }
   };
-
-  const handleSkip = () => {
-    if (canSkip) {
-      skip();
-    } else if (typeof findNew === 'function' && !isFindingPair) {
-      findNew();
-    }
-  };
-
-  const handleFindNew = () => {
-    if (canFindNew) {
-      findNew();
-    } else if (typeof requestMicAccess === 'function') {
-      requestMicAccess();
-    }
-  };
-
-  const controls = [
-    {
-      id: 'mute',
-      label: isMuted ? 'Unmute' : 'Mute',
-      icon: isMuted ? <MicOffRoundedIcon /> : <MicRoundedIcon />,
-      onClick: handleMuteToggle,
-    },
-    {
-      id: 'speaker',
-      label: speakerEnabled ? 'Speaker off' : 'Speaker on',
-      icon: speakerEnabled ? <VolumeOffRoundedIcon /> : <VolumeUpRoundedIcon />,
-      onClick: handleSpeakerToggle,
-    },
-    {
-      id: 'skip',
-      label: 'Skip',
-      icon: <SkipNextRoundedIcon />,
-      onClick: handleSkip,
-    },
-    {
-      id: 'find-new',
-      label: 'Find New',
-      icon: <RefreshRoundedIcon />,
-      onClick: handleFindNew,
-    },
-  ];
 
   return (
-    <div className={styles.dockCard}>
+    <motion.div
+      className={styles.dockContainer}
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
       <div className={styles.controlsRow}>
-        {controls.map((control) => (
-          <button
-            key={control.id}
-            type="button"
-            onClick={control.onClick}
-            className={`${styles.controlButton} ${styles.controlButtonSecondary}`}
-            aria-label={control.label}
-            aria-pressed={control.id === 'mute' ? isMuted : control.id === 'speaker' ? speakerEnabled : undefined}
-            disabled={
-              (control.id === 'skip' && !canSkip) ||
-              (control.id === 'find-new' && !canFindNew && typeof requestMicAccess !== 'function')
-            }
-          >
-            {control.icon}
-          </button>
-        ))}
-        <button
+        {/* Mute/Unmute */}
+        <motion.button
           type="button"
-          onClick={handleHangup}
-          className={`${styles.controlButton} ${styles.controlButtonPrimary}`}
-          aria-label="Hang up"
-          disabled={!canHang}
+          onClick={handleMuteToggle}
+          className={`${styles.controlButton} ${isMuted ? styles.controlButtonActive : ''}`}
+          aria-label={isMuted ? 'Unmute' : 'Mute'}
+          disabled={!canInteract || !isActiveCall}
+          whileTap={{ scale: 0.9 }}
         >
-          <CallEndRoundedIcon />
-        </button>
+          {isMuted ? <MicOffRoundedIcon /> : <MicRoundedIcon />}
+        </motion.button>
+
+        {/* Primary Action Button - Hangup/Dial */}
+        <motion.button
+          type="button"
+          onClick={handlePrimaryAction}
+          className={`${styles.primaryButton} ${isActiveCall ? styles.hangupButton : styles.dialButton}`}
+          aria-label={isActiveCall ? 'Hang up' : 'Find new'}
+          disabled={!canInteract}
+          whileTap={{ scale: 0.9 }}
+        >
+          {isActiveCall ? <CallEndRoundedIcon /> : <CallRoundedIcon />}
+        </motion.button>
+
+        {/* Speaker/Earpiece */}
+        <motion.button
+          type="button"
+          onClick={handleSpeakerToggle}
+          className={`${styles.controlButton} ${speakerEnabled ? styles.controlButtonActive : ''}`}
+          aria-label={speakerEnabled ? 'Earpiece' : 'Speaker'}
+          disabled={!canInteract || !isActiveCall}
+          whileTap={{ scale: 0.9 }}
+        >
+          {speakerEnabled ? <VolumeUpRoundedIcon /> : <HeadsetRoundedIcon />}
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
