@@ -292,6 +292,11 @@ const useAudioCallController = ({ userDetails, context }) => {
   }, [cleanupAnalyser, remoteAudioRef, setCallDuration, setQualityScore, setWaveformData, stopHeartbeat]);
 
   const cleanupPeer = useCallback(() => {
+    audioDebugLog('cleanupPeer called', {
+      hasPeer: !!peerRef.current,
+      localPeerId: localPeerIdRef.current,
+      remotePeerId: remotePeerIdRef.current,
+    });
     cleanupStreams();
     if (peerRef.current) {
       peerRef.current.destroy();
@@ -302,6 +307,7 @@ const useAudioCallController = ({ userDetails, context }) => {
     peerServerRef.current = null;
     setPartner(null);
     setRoomId(null);
+    audioDebugLog('cleanupPeer complete');
   }, [cleanupStreams, setPartner, setRoomId]);
 
   const stopTones = useCallback((toneKey) => {
@@ -588,9 +594,16 @@ const useAudioCallController = ({ userDetails, context }) => {
 
   const createPeerInstance = useCallback(
     async (token, rtcConfig, serverDescriptor = null, currentRoomId = null) => {
+      audioDebugLog('createPeerInstance called', {
+        hasToken: !!token,
+        token: token,
+        roomId: currentRoomId,
+        existingPeer: !!peerRef.current,
+      });
       if (!token || typeof window === 'undefined') return;
       const PeerCtor = await requestPeerLibrary();
       if (peerRef.current) {
+        audioDebugLog('destroying existing peer');
         peerRef.current.destroy();
       }
       const win = typeof window !== 'undefined' ? window : undefined;
@@ -760,12 +773,21 @@ const useAudioCallController = ({ userDetails, context }) => {
   );
 
   const resetQueueState = useCallback(() => {
+    audioDebugLog('resetQueueState called', {
+      currentCallState: callStateRef.current,
+      currentPairingState: pairingStateRef.current,
+      isFindingPair: isFindingPairRef.current,
+    });
     setIsFindingPair(false);
     setPairingState('IDLE');
     setQueuePosition(0);
     setQueueSize(0);
     setCallState((prev) => (prev === CALL_STATE.CONNECTED ? prev : CALL_STATE.IDLE));
     setTelemetry((prev) => ({ ...prev, waitTime: 0 }));
+    audioDebugLog('resetQueueState complete', {
+      callStateAfter: callStateRef.current,
+      pairingStateAfter: pairingStateRef.current,
+    });
   }, [setCallState, setIsFindingPair, setPairingState, setQueuePosition, setQueueSize, setTelemetry]);
 
   const handlePairingSuccess = useCallback(
@@ -798,11 +820,21 @@ const useAudioCallController = ({ userDetails, context }) => {
 
   const handleServerCallEnded = useCallback(
     ({ reason }) => {
-      audioDebugLog('callEnded event from server', { reason });
+      audioDebugLog('callEnded event from server', {
+        reason,
+        currentCallState: callStateRef.current,
+        currentPairingState: pairingStateRef.current,
+        hasActivePeer: !!peerRef.current,
+        hasActiveCall: !!callRef.current,
+      });
       stopTones();
       cleanupPeer();
       resetQueueState();
       setError(reason === 'hangup' ? 'Partner ended the call.' : 'Partner left the call.');
+      audioDebugLog('callEnded cleanup complete', {
+        callStateAfter: callStateRef.current,
+        pairingStateAfter: pairingStateRef.current,
+      });
     },
     [cleanupPeer, resetQueueState, setError, stopTones]
   );
@@ -883,10 +915,19 @@ const useAudioCallController = ({ userDetails, context }) => {
     });
     newSocket.on('pairingSuccess', (payload) => socketHandlersRef.current.handlePairingSuccess?.(payload));
     newSocket.on('pairDisconnected', () => {
-      audioDebugLog('pairDisconnected event');
+      audioDebugLog('pairDisconnected event', {
+        currentCallState: callStateRef.current,
+        currentPairingState: pairingStateRef.current,
+        hasActivePeer: !!peerRef.current,
+        hasActiveCall: !!callRef.current,
+      });
       socketHandlersRef.current.cleanupPeer?.();
       socketHandlersRef.current.resetQueueState?.();
       setError('They left the conversation. Tap Find New.');
+      audioDebugLog('pairDisconnected cleanup complete', {
+        callStateAfter: callStateRef.current,
+        pairingStateAfter: pairingStateRef.current,
+      });
     });
     newSocket.on('remoteReady', (payload) => socketHandlersRef.current.handleRemoteReady?.(payload));
     newSocket.on('callEnded', (payload) => socketHandlersRef.current.handleServerCallEnded?.(payload));
