@@ -11,6 +11,7 @@ import Sidebar from '@/components/appComps/Sidebar';
 import CustomHead from '@/components/seo/CustomHead';
 import TypeAdminPassword from '@/components/fullPageComps/TypeAdminPassword';
 import ComingSoon from '@/components/fullPageComps/ComingSoon';
+import SoothingLoader from '@/components/loadings/SoothingLoader';
 
 import { store, persistor } from '@/store/store';
 import '@/styles/globals.css';
@@ -184,24 +185,7 @@ export default function App({ Component, pageProps }) {
     return (
       <ThemeProvider theme={mymtheme}>
         <CssBaseline />
-        <div
-          style={{
-            width: '100vw',
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Image
-            style={{ width: '130px', height: 'auto' }}
-            src={'/gifs/rhombus.gif'}
-            width={200}
-            height={200}
-            loading='eager'
-            alt='loading'
-          />
-        </div>
+        <SoothingLoader />
       </ThemeProvider>
     );
   }
@@ -244,31 +228,7 @@ export default function App({ Component, pageProps }) {
             <CustomHead />
             <Topbar />
             <Sidebar />
-            {showLoadingGif && (
-              <div
-                style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  width: '100vw',
-                  height: '100vh',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: 'white',
-                  zIndex: '999',
-                }}
-              >
-                <Image
-                  style={{ width: '120px', height: '120px' }}
-                  src={'/gifs/rhombus.gif'}
-                  width={200}
-                  height={200}
-                  alt='loading'
-                  loading='eager'
-                />
-              </div>
-            )}
+            {showLoadingGif && <SoothingLoader />}
             <div
               style={{
                 paddingTop: 'var(--topbarheight)',
