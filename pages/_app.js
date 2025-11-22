@@ -272,7 +272,7 @@ export default function App({ Component, pageProps }) {
             <div
               style={{
                 paddingTop: 'var(--topbarheight)',
-                paddingLeft: 'var(--sidebarwidth)',
+                paddingLeft: '0',
                 minHeight: '100vh',
                 width: '100%',
               }}

@@ -2,36 +2,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { getSession, signOut } from 'next-auth/react';
-import {
-  Container,
-  Typography,
-  Box,
-  Button,
-  Avatar,
-  Grid,
-  Paper,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
 import Image from 'next/image';
 import Link from 'next/link';
-
-const SettingsContainer = styled(Container)(() => ({
-  paddingTop: '1rem',
-  paddingBottom: '1rem',
-}));
-
-const ProfileBox = styled(Paper)(() => ({
-  padding: '1rem',
-  textAlign: 'center',
-}));
+import styles from './settings.module.css';
 
 const SettingsPage = ({ userDetails }) => {
   const [session, setSession] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchSession = async () => {
       const sess = await getSession();
       setSession(sess);
+      setIsLoading(false);
     };
     fetchSession();
   }, []);
@@ -40,94 +23,100 @@ const SettingsPage = ({ userDetails }) => {
     signOut();
   };
 
+  // Get background gradient based on user gender
+  const getBackgroundGradient = () => {
+    if (userDetails?.gender === 'male') {
+      return 'linear-gradient(180deg, #e0f7fa 0%, #ffffff 100%)';
+    } else if (userDetails?.gender === 'female') {
+      return 'linear-gradient(180deg, #fce4ec 0%, #ffffff 100%)';
+    }
+    return 'linear-gradient(180deg, #fdfbfb 0%, #ebedee 100%)';
+  };
+
+  // Get card class based on user gender
+  const getCardClass = () => {
+    if (userDetails?.gender === 'male') {
+      return styles.maleCard;
+    } else if (userDetails?.gender === 'female') {
+      return styles.femaleCard;
+    }
+    return styles.neutralCard;
+  };
+
+  if (isLoading) {
+    return (
+      <div className={styles.settingsContainer} style={{ background: getBackgroundGradient() }}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingSpinner}></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <SettingsContainer maxWidth="md">
-      <Typography variant="h4" gutterBottom align="center">
-        Settings
-      </Typography>
+    <div className={styles.settingsContainer} style={{ background: getBackgroundGradient(), transition: 'background 2.5s cubic-bezier(0.4, 0, 0.2, 1)' }}>
+      <div className={styles.settingsContent}>
+        <h1 className={styles.pageTitle}>Settings</h1>
 
-      {session ? (
-        <>
-          <ProfileBox elevation={3}>
-            <Avatar
-              alt={session.user.name}
-              src={session.user.image}
-              sx={{ width: 100, height: 100, margin: '0 auto', mb: 2 }}
-            />
-            <Typography variant="h6">{'Anonymous'}</Typography>
-          </ProfileBox>
+        {session ? (
+          <>
+            <div className={`${styles.profileCard} ${getCardClass()}`}>
+              {/* <div className={styles.avatarContainer}>
+                <Image
+                  src={session.user.image || '/images/default-avatar.png'}
+                  alt={session.user.name || 'User'}
+                  width={100}
+                  height={100}
+                  className={styles.avatar}
+                />
+              </div> */}
+              <h2 className={styles.userName}>Anonymous</h2>
+              <p className={styles.userEmail}>{session.user.email}</p>
+            </div>
 
-          <Box mt={4}>
-            <Grid container spacing={3}>
-              {/* Example Settings Option */}
+            {userDetails && (
+              <div className={styles.detailsGrid}>
+                <div className={`${styles.detailCard} ${getCardClass()}`}>
+                  <div className={styles.detailContent}>
+                    <span className={styles.detailLabel}>Gender</span>
+                    <span className={styles.detailValue}>{userDetails.gender}</span>
+                  </div>
+                </div>
 
-              {userDetails && <Grid item xs={12} sm={6}>
-                <Box >
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    sx={{ height: '100%', textTransform: 'capitalize' }}
-                  >
-                    {userDetails?.gender}
-                  </Button>
-                </Box>
-              </Grid>}
+                <div className={`${styles.detailCard} ${getCardClass()}`}>
+                  <div className={styles.detailContent}>
+                    <span className={styles.detailLabel}>College</span>
+                    <span className={styles.detailValue}>{userDetails.college}</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
-              {userDetails && <Grid item xs={12} sm={6}>
-                <Box >
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    sx={{ height: '100%', textTransform: 'none' }}
-                  >
-                    {userDetails?.college}
-                  </Button>
-                </Box>
-              </Grid>}
+            <p className={styles.infoText}>
+              You can&apos;t change these details.
+            </p>
 
-              {/* Add more settings options here as needed */}
-              <Grid item xs={12}>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    fontStyle: 'italic',
-                    color: 'rgba(0, 0, 0, 0.6)',
-                    textAlign: 'center',
-                    mt: 2,
-                    fontFamily: 'Jost',
-                  }}
-                >
-                  You can't change these details.
-                </Typography>
-              </Grid>
-
-              {/* Logout Button */}
-              <Grid item xs={12}>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  fullWidth
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </>
-      ) : (
-        <Box textAlign="center" mt={5}>
-          <Typography variant="h6" gutterBottom>
-            You are not logged in.
-          </Typography>
-          <Link href="/api/auth/signin" passHref>
-            <Button variant="contained" color="primary">
-              Sign In
-            </Button>
-          </Link>
-        </Box>
-      )}
-    </SettingsContainer>
+            <button
+              className={styles.logoutButton}
+              onClick={handleLogout}
+            >
+              LOGOUT
+            </button>
+          </>
+        ) : (
+          <div className={`${styles.signInCard} ${styles.neutralCard}`}>
+            <div className={styles.signInIcon}>🔐</div>
+            <h2 className={styles.signInTitle}>You are not logged in</h2>
+            <p className={styles.signInText}>Please sign in to access your settings</p>
+            <Link href="/api/auth/signin" passHref>
+              <button className={styles.signInButton}>
+                Sign In
+              </button>
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

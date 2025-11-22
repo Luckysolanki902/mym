@@ -37,7 +37,7 @@ const Topbar = () => {
     <div className={`topbarheight ${styles.mainDiv}`}>
       <Image 
         onClick={() => router.push('/')} 
-        src={'/images/mym_logos/mymshadow.png'} 
+        src={'/images/spyll_logos/spyll_black_logo.png'} 
         width={724 / 3} 
         height={338 / 3} 
         alt='mym' 
