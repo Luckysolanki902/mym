@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import styles from '../componentStyles/inboxStyles.module.css';
 
 const truncateText = (text, maxLength) => {
@@ -13,6 +14,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const InboxCard = ({ entry, userDetails }) => {
+    const router = useRouter();
     const cardRef = useRef(null);
     const [inputValues, setInputValues] = useState([]);
     const [showInputIndex, setShowInputIndex] = useState(-1);
@@ -224,125 +226,27 @@ const InboxCard = ({ entry, userDetails }) => {
         reversedReplies.map(() => React.createRef())
     ), [reversedReplies]);
 
+    const handleCardClick = () => {
+        if (!disabled) {
+            router.push(`/inbox/conversation/${entry?.confessionId}`);
+        }
+    };
+
     return (
-        <div ref={cardRef}  className={`${styles.box} ${entry?.confessorGender === 'female' ? styles.femaleBox : styles.maleBox}`}>
+        <div 
+            ref={cardRef}  
+            className={`${styles.box} ${entry?.confessorGender === 'female' ? styles.femaleBox : styles.maleBox}`}
+            onClick={handleCardClick}
+        >
             <div className={styles.confession} id={entry?.confessorGender === 'male' ? styles.maleConfession : styles.femaleConfession}>
-                <Link style={{ width:'100%', display: 'block', textAlign: entry.confessionContent.length > 60 ? 'justify' : 'right' }} href={disabled ? '' : `/confession/${entry?.confessionId}`}  passHref>
-                    {truncateText(entry?.confessionContent, 200)}
-                </Link>
+                {truncateText(entry?.confessionContent, 150)}
             </div>
-
-            <div className={styles.repliesBox}>
-                {reversedReplies.filter(reply => reply?.reply !== '').map((reply, index) => {
-                    const isUnseen = !reply.seen.includes(userDetails.mid);
-
-                    const unseenSecondaryRepliesCount = reply.secondaryReplies.filter(
-                        secondaryReply => !secondaryReply.seen.includes(userDetails.mid)
-                    ).length;
-
-                    return (
-                        <div style={{ width: "100%", position: 'relative' }} key={index}>
-                            {isUnseen && (
-                                <div style={{
-                                    position: 'absolute',
-                                    top: '10px',
-                                    right: '10px',
-                                    width: '5px',
-                                    height: '5px',
-                                    backgroundColor: 'green',
-                                    borderRadius: '50%',
-                                }}></div>
-                            )}
-                            <div className={`reply-observer ${styles.reply}`} data-confession-id={entry?.confessionId} data-confessor-mid={entry?.confessorMid} data-replier-mid={reply?.replierMid} data-seen={isUnseen ? '' : 'true'}>
-                                <div className={styles.markup} id={reply?.replierGender === 'male' ? styles.maleReply : styles.femaleReply}></div>
-                                <div className={styles.replyContent}>{reply?.reply ? reply.reply.charAt(0).toUpperCase() + reply.reply.slice(1) : ''}</div>
-                            </div>
-
-                            {/* Reply Button for Primary Replies */}
-                            {reply?.secondaryReplies?.length === 0 && (
-                                <button className={styles.replyButton} onClick={() => handleReplyButtonClick(index)}>
-                                    Reply
-                                </button>
-                            )}
-
-                            {/* View All Replies Button */}
-                            {reply?.secondaryReplies?.length > 0 && (
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <button className={styles.replyButton} onClick={() => handleViewAllReplies(index, reply?._id)}>
-                                        {showAllRepliesState[index] ? 'Hide all replies' : 'View all replies'}
-                                    </button>
-                                    {!showAllRepliesState[index] && unseenSecondaryRepliesCount > 0 && (
-                                        <div style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                        }}>
-                                            <div style={{
-                                                width: '5px',
-                                                height: '5px',
-                                                backgroundColor: 'green',
-                                                borderRadius: '50%',
-                                            }}></div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Secondary Replies */}
-                            <div className={styles.secRepMainCont}>
-                                {showAllRepliesState[index] && reply?.secondaryReplies?.map((secondaryReply, secIndex) => {
-                                    const isSecUnseen = !secondaryReply.seen.includes(userDetails?.mid);
-                                    return (
-                                        <div key={secIndex} className={styles.secRep} style={{ position: 'relative' }}>
-                                            {isSecUnseen && (
-                                                <div style={{
-                                                    position: 'absolute',
-                                                    top: '5px',
-                                                    right: '5px',
-                                                    width: '5px',
-                                                    height: '5px',
-                                                    backgroundColor: 'green',
-                                                    borderRadius: '50%',
-                                                }}></div>
-                                            )}
-                                            <div className={styles.replyContent} style={{ display: 'flex', gap: '0.6rem' }}>
-                                                <div>
-                                                    {secondaryReply?.sentByConfessor ? 'You:' :
-                                                        secondaryReply?.replierGender === 'female' ? 'Her:' : 'Him:'}
-                                                </div>
-                                                {secondaryReply?.content}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-
-                                {/* Reply Input Field */}
-                                {showInputIndex === index && (
-                                    <div className={styles.secRep}>
-                                        <div className={styles.markup} id={userDetails.gender === 'male' ? styles.maleReply : styles.femaleReply}></div>
-                                        <input
-                                            type="text"
-                                            value={inputValues[index] || ''}
-                                            onChange={(e) => handleInputChange(e, index)}
-                                            onKeyDown={(e) => handleInputKeyDown(e, index, reply?.replierMid)}
-                                            onBlur={handleInputBlur}
-                                            className={styles.replyInput}
-                                            placeholder="Type your reply..."
-                                            ref={el => inputRefs.current[index] = el}
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Reply Button for Secondary Replies */}
-                                {showInputIndex !== index && reply?.secondaryReplies?.length > 0 && showAllRepliesState[index] && (
-                                    <button className={styles.replyButton} onClick={() => handleReplyButtonClick(index)}>
-                                        Reply
-                                    </button>
-                                )}
-                                <div ref={lastRefs[index]}></div>
-                            </div>
-                        </div>
-                    );
-                })}
+            <div style={{ 
+                fontSize: '0.85rem', 
+                color: entry?.confessorGender === 'male' ? 'rgba(1, 87, 155, 0.6)' : 'rgba(157, 0, 65, 0.6)',
+                fontFamily: 'Jost'
+            }}>
+                {reversedReplies?.length} {reversedReplies?.length === 1 ? 'reply' : 'replies'}
             </div>
         </div>
     );

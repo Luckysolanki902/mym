@@ -2,15 +2,28 @@ import React from 'react';
 import Confession from '@/components/fullPageComps/Confession';
 import { getSession } from 'next-auth/react';
 import Link from 'next/link';
+import styles from './confession.module.css';
 
 const ConfessionPage = ({ confession, userDetails }) => {
+  const confessionGender = confession?.gender || 'neutral';
+  
   return (
-    <>
-        {confession && <Confession confession={confession} userDetails={userDetails || null} applyGenderBasedGrandients={true}/>}
-        <div style={{width:"100%", display:'flex', justifyContent:'center', alignItems:'center'}}>
-        <Link style={{margin:'auto', textDecoration:'none'}} href={'/all-confessions'}>click to see all confessions</Link>
-        </div>
-    </>
+    <div className={`${styles.confessionPageWrapper} ${
+      confessionGender === 'male' ? styles.maleTheme : 
+      confessionGender === 'female' ? styles.femaleTheme : 
+      styles.neutralTheme
+    }`}>
+      {confession && <Confession confession={confession} userDetails={userDetails || null} applyGenderBasedGrandients={true}/>}
+      <div className={styles.linkContainer}>
+        <Link className={`${styles.allConfessionsLink} ${
+          confessionGender === 'male' ? styles.maleLink : 
+          confessionGender === 'female' ? styles.femaleLink : 
+          styles.neutralLink
+        }`} href={'/all-confessions'}>
+          View all confessions →
+        </Link>
+      </div>
+    </div>
   );
 };
 

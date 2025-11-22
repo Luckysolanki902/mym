@@ -1,292 +1,363 @@
-.cotainer {
-    padding: 2rem;
-}
+/* Complete Modern Redesign - No Strips, Clean UI */
 
-.h1 {
-    font-family: 'Jost';
-    text-align: left;
-    font-weight: 400;
-
-}
-
+/* Simple Minimal Card Container */
 .box {
-    background-color: white;
-    width: 60%;
-    margin: auto;
-    padding: 0.7rem;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(30px) saturate(150%);
+    -webkit-backdrop-filter: blur(30px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 1.5rem;
-    /* box-shadow: 3px 3px 6px rgba(39, 39, 39, 0.5); */
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    gap: 1rem;
     position: relative;
-    max-width: 40rem;
-    border-bottom-right-radius: 0;
+    box-shadow: 0 4px 16px -4px rgba(31, 38, 135, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
 }
 
+.box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -6px rgba(31, 38, 135, 0.12);
+}
+
+/* Male Theme - Clean Blue */
 .maleBox {
-    box-shadow: 5px 4px 4px 0px rgba(64, 151, 244, 0.20);
-
+    background: linear-gradient(135deg,
+        rgba(240, 250, 255, 0.85) 0%,
+        rgba(225, 245, 254, 0.8) 100%);
+    border: 1px solid rgba(131, 231, 253, 0.35);
 }
 
+.maleBox:hover {
+    background: linear-gradient(135deg,
+        rgba(240, 250, 255, 0.95) 0%,
+        rgba(225, 245, 254, 0.9) 100%);
+    border-color: rgba(131, 231, 253, 0.5);
+}
+
+/* Female Theme - Clean Pink */
 .femaleBox {
-    box-shadow: 5px 4px 4px 0px rgba(255, 118, 159, 0.2);
-
+    background: linear-gradient(135deg,
+        rgba(255, 245, 250, 0.85) 0%,
+        rgba(252, 231, 243, 0.8) 100%);
+    border: 1px solid rgba(255, 182, 210, 0.35);
 }
 
+.femaleBox:hover {
+    background: linear-gradient(135deg,
+        rgba(255, 245, 250, 0.95) 0%,
+        rgba(252, 231, 243, 0.9) 100%);
+    border-color: rgba(255, 182, 210, 0.5);
+}
+
+/* Simple Confession Content */
 .confession {
     width: 100%;
-    padding: 1rem 0rem 2rem 4rem;
-    border-radius: 1.5rem;
-    transition: all 0.3s ease-out;
-    cursor: pointer;
-    text-align: justify;
-}
-
-.confession:hover {
-    filter: hue-rotate(20deg);
+    font-family: 'Jost', sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
 }
 
 .confession a {
-    margin-left: 0rem;
-    text-align: right;
-    color: rgba(0, 0, 0, 0.793);
     text-decoration: none;
-    font-family: 'Jost';
-    font-size: 1rem;
-    /* font-weight: 400; */
+    display: block;
 }
 
-.replierConfession {
-    align-self: flex-end;
-    float: right;
-    width: 70%;
-    margin-bottom: 0.2rem;
-    padding: 1rem 2rem;
-
+#maleConfession,
+#maleConfession a {
+    color: rgba(1, 87, 155, 0.85);
 }
 
-.replierConfession a {
-    font-family: 'Jost', sans-serif;
-    font-size: 0.8rem;
-
+#femaleConfession,
+#femaleConfession a {
+    color: rgba(157, 0, 65, 0.85);
 }
 
+/* Simple Badge */
 .youReplied {
-    width: 100%;
-    text-align: right;
+    width: fit-content;
+    padding: 0.4rem 1rem;
     font-size: 0.8rem;
-    margin-right: 1rem;
+    font-family: 'Jost', sans-serif;
+    font-weight: 600;
+    border-radius: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
-.br {
-    width: 97%;
-    border-radius: 1rem;
-    margin: 1rem auto;
-    height: 4px;
-    background-color: #9B9B9B;
+.youReplied::before {
+    content: '↩';
+    font-size: 0.9rem;
 }
 
+/* Replies Container */
 .repliesBox {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-
+    gap: 1.5rem;
 }
 
+/* Individual Reply - Modern Clean Design */
 .reply {
     width: 100%;
     display: flex;
-    /* box-shadow: 0px 0 5px rgba(39, 39, 39, 0.9); */
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 1.2rem;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.6) 0%,
+        rgba(250, 250, 252, 0.55) 100%);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px -2px rgba(31, 38, 135, 0.06);
     position: relative;
-    border-radius: 0.7rem;
-    /* border: 1px solid red; */
-    overflow: hidden;
-    font-family: 'Jost', sans-serif;
-    border: 1px solid rgba(128, 128, 128, 0.586);
-    text-align: right;
 }
 
+.reply:hover {
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.7) 0%,
+        rgba(250, 250, 252, 0.65) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px -3px rgba(31, 38, 135, 0.1);
+}
+
+/* NO MORE MARKUP STRIPS! Clean accent bar instead */
+.reply::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 1.2rem 0 0 1.2rem;
+    transition: width 0.3s ease;
+}
+
+.reply:hover::before {
+    width: 6px;
+}
+
+.reply[data-replier-mid*="male"]::before {
+    background: linear-gradient(180deg,
+        rgba(79, 195, 247, 0.8) 0%,
+        rgba(131, 231, 253, 0.6) 100%);
+}
+
+.reply[data-replier-mid*="female"]::before {
+    background: linear-gradient(180deg,
+        rgba(236, 64, 122, 0.8) 0%,
+        rgba(255, 118, 159, 0.6) 100%);
+}
 
 .replyContent {
-    padding: 1rem 3rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(45, 45, 45, 0.85);
+    padding-left: 0.5rem;
 }
 
+/* Hidden markup class - not used anymore but kept for compatibility */
 .markup {
-    width: 0.5rem;
-    min-width: 0.5rem;
-    max-width: 0.5rem;
-    flex-shrink: 0;
-    box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.2) inset;
-    border-top-left-radius: 0.7rem;
-    border-bottom-left-radius: 0.7rem;
+    display: none;
 }
 
-#maleReply {
-    background-color: #2CBFDF;
+/* Reply Button - Modern Floating Style */
+.replyButton {
+    width: fit-content;
+    padding: 0.65rem 1.5rem;
+    border: none;
+    outline: none;
+    background: linear-gradient(135deg,
+        rgba(131, 231, 253, 0.2) 0%,
+        rgba(79, 195, 247, 0.15) 100%);
+    backdrop-filter: blur(15px) saturate(150%);
+    -webkit-backdrop-filter: blur(15px) saturate(150%);
+    border-radius: 2rem;
+    color: rgba(1, 87, 155, 0.95);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px -2px rgba(79, 195, 247, 0.25);
+    align-self: flex-start;
+    margin-top: 0.5rem;
 }
 
-#femaleReply {
-    background-color: #df2c7a;
+.replyButton:hover {
+    background: linear-gradient(135deg,
+        rgba(131, 231, 253, 0.3) 0%,
+        rgba(79, 195, 247, 0.25) 100%);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 4px 12px -3px rgba(79, 195, 247, 0.35);
 }
 
-#femaleConfession {
-    /* background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #AE67AF 79.73%); */
-    /* box-shadow: 5px 4px 4px 0px rgba(255, 118, 159, 0.2); */
+.replyButton:active {
+    transform: translateY(0);
 }
 
-#maleConfession {
-    /* background: linear-gradient(204deg, rgba(38, 38, 38, 0.8) 30.1%, #2CBFDF 79.73%); */
-    /* box-shadow: 5px 4px 4px 0px rgba(64, 151, 244, 0.20); */
-
-}
-
-.greenDot {
-    width: 7px;
-    height: 7px;
-    border-radius: 70%;
-    background-color: rgb(1, 209, 1);
-    margin: 2px;
-    position: absolute;
-    top: 6px;
-    right: 6px;
-
-}
-
+/* Secondary Replies Container - Clean Nested Design */
 .secRepMainCont {
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    /* Adjust as per your layout needs */
-    align-items: flex-start;
-    /* Adjust as per your layout needs */
-    padding-left: 3rem;
-    padding-right: 1rem;
+    gap: 1rem;
+    padding: 1rem 0 0.5rem 1.5rem;
     margin-top: 1rem;
-    margin-bottom: 1rem;
-    gap: 0rem;
-    max-height: 300px;
-    /* Maximum height to maintain */
+    border-left: 2px solid rgba(79, 195, 247, 0.2);
+    max-height: 400px;
     overflow-y: auto;
-    /* Show scrollbar only when necessary */
 }
 
+/* Secondary Reply Card */
 .secRep {
     width: 100%;
-    display: flex;
-    border-radius: 0.7rem;
+    padding: 1rem 1.25rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
     position: relative;
     font-family: 'Jost', sans-serif;
-    /* border: 1px solid rgba(128, 128, 128, 0.586); */
-    margin-bottom: 0rem;
-    /* Add some space between posts */
-    height: 100%;
-
 }
 
-/* WebKit Scrollbar Styling */
+.secRep:hover {
+    background: rgba(255, 255, 255, 0.65);
+    box-shadow: 0 2px 8px -2px rgba(31, 38, 135, 0.1);
+}
+
+.secRep .replyContent {
+    font-size: 0.95rem;
+    color: rgba(45, 45, 45, 0.8);
+}
+
+/* Reply Input - Modern Floating Input */
+.secRep input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    outline: none;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(79, 195, 247, 0.3);
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.7) 0%,
+        rgba(250, 250, 252, 0.65) 100%);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.95rem;
+    color: rgba(45, 45, 45, 0.9);
+    transition: all 0.3s ease;
+    box-shadow: 
+        inset 0 2px 8px -2px rgba(31, 38, 135, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.secRep input::placeholder {
+    color: rgba(45, 45, 45, 0.4);
+}
+
+.secRep input:focus {
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.85) 0%,
+        rgba(250, 250, 252, 0.8) 100%);
+    border-color: rgba(79, 195, 247, 0.5);
+    box-shadow: 
+        0 0 0 3px rgba(79, 195, 247, 0.1),
+        inset 0 2px 8px -2px rgba(31, 38, 135, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Scrollbar for secondary replies */
 .secRepMainCont::-webkit-scrollbar {
-    display: block;
-    width: 10px;
+    width: 6px;
 }
 
 .secRepMainCont::-webkit-scrollbar-track {
-    display: block;
-    background: rgba(0, 0, 0, 0.0);
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 10px;
 }
 
 .secRepMainCont::-webkit-scrollbar-thumb {
-    display: block;
-    background-color: #D9D9D9;
+    background: linear-gradient(180deg,
+        rgba(79, 195, 247, 0.3) 0%,
+        rgba(131, 231, 253, 0.2) 100%);
     border-radius: 10px;
-    /* border: 2px solid rgba(0, 0, 0, 0); */
 }
 
 .secRepMainCont::-webkit-scrollbar-thumb:hover {
-    display: block;
-    background-color: rgba(169, 169, 169, 0.7);
+    background: linear-gradient(180deg,
+        rgba(79, 195, 247, 0.4) 0%,
+        rgba(131, 231, 253, 0.3) 100%);
 }
 
-
-.secRep:first-child {
-    margin-top: 1rem;
-
-
+/* Divider - Removed old br class, kept for compatibility */
+.br {
+    display: none;
 }
 
-.secRep input {
-    width: 100%;
-    height: 100%;
-    outline: none;
-    border-radius: 0.7rem;
-    border: none;
-    font-family: 'Jost', sans-serif;
-    padding: 1rem 3rem;
-    font-size: 1rem;
-}
-
-
-
-.replyButton {
-    width: 100%;
-    border: none;
-    outline: none;
-    background-color: transparent;
-    text-transform: none;
-    color: rgb(40, 40, 40);
-    text-align: right;
-    cursor: pointer;
-
-}
-
-@media (width<800px) {
-    .h1 {
-        margin-left: 1rem;
-    }
-
-
-
+/* Responsive Design */
+@media (max-width: 768px) {
     .box {
-        justify-content: flex-start;
-        width: 90%;
+        padding: 1.5rem;
+        border-radius: 1.5rem;
     }
 
-    .reply {
-        border-radius: 0.5rem;
-        /* box-shadow: 0px 0 3px rgba(39, 39, 39, 0.7); */
-        border: 1px solid gray;
-
-    }
-
-    .confession a {
+    .confession {
+        padding: 1.25rem;
         font-size: 1rem;
     }
 
+    .reply {
+        padding: 1rem 1.25rem;
+    }
+
     .replyContent {
-        padding: 0.6rem 3rem;
+        font-size: 0.95rem;
     }
 
-    .markup {
-        width: 0.4rem;
-        /* box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.2) inset; */
-        /* box-shadow: 5px 4px 4px 0px rgba(255, 118, 159, 0.2); */
-        min-width: 0.5rem;
-        border-top-left-radius: 0.5rem;
-        border-bottom-left-radius: 0.5rem;
+    .secRepMainCont {
+        padding-left: 1rem;
+        max-height: 300px;
     }
 
-    .br {
-        height: 3px;
+    .secRep {
+        padding: 0.875rem 1rem;
+    }
+
+    .replyButton {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.875rem;
     }
 }
 
-@media (width> 800px) {
-    .hdiv {
-        max-width: 40vw;
+@media (max-width: 480px) {
+    .box {
+        padding: 1.25rem;
+        border-radius: 1.25rem;
+        gap: 1.25rem;
+    }
 
+    .confession {
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .reply {
+        padding: 0.875rem 1rem;
+    }
+
+    .secRepMainCont {
+        padding-left: 0.75rem;
     }
 }

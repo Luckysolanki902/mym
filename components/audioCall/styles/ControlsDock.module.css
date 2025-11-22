@@ -8,12 +8,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.25rem 1.5rem;
-  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 1.5rem 1.5rem;
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(252, 252, 254, 0.75) 100%);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-top: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 -4px 24px -8px rgba(31, 38, 135, 0.08);
   z-index: 100;
 }
 
@@ -28,16 +31,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 1.5rem;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   color: #2D2D2D;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 4px 16px -4px rgba(31, 38, 135, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .controlButton:disabled {
@@ -46,16 +54,22 @@
 }
 
 .controlButton:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.08);
-  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.65);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    0 6px 20px -4px rgba(31, 38, 135, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .controlButton:active:not(:disabled) {
-  transform: scale(0.95);
+  transform: translateY(0) scale(0.95);
 }
 
 .controlButtonActive {
-  background: rgba(0, 0, 0, 0.12);
+  background: linear-gradient(135deg,
+    rgba(100, 100, 100, 0.15) 0%,
+    rgba(80, 80, 80, 0.12) 100%);
+  color: #1a1a1a;
 }
 
 /* Primary action button - larger and prominent */
@@ -63,15 +77,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 70px;
-  height: 70px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 1.8rem;
   color: white;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 
+    0 4px 24px -4px rgba(0, 0, 0, 0.15),
+    0 8px 40px -8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .primaryButton:disabled {
@@ -82,29 +99,39 @@
 /* Hangup button - red */
 .hangupButton {
   background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .hangupButton:hover:not(:disabled) {
-  transform: scale(1.05);
-  box-shadow: 0 6px 32px rgba(255, 71, 87, 0.4);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    0 6px 32px -4px rgba(255, 71, 87, 0.4),
+    0 12px 48px -8px rgba(255, 71, 87, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .hangupButton:active:not(:disabled) {
-  transform: scale(0.95);
+  transform: translateY(0) scale(0.95);
 }
 
 /* Dial button - green */
 .dialButton {
   background: linear-gradient(135deg, #26de81 0%, #20bf6b 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .dialButton:hover:not(:disabled) {
-  transform: scale(1.05);
-  box-shadow: 0 6px 32px rgba(38, 222, 129, 0.4);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    0 6px 32px -4px rgba(38, 222, 129, 0.4),
+    0 12px 48px -8px rgba(38, 222, 129, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .dialButton:active:not(:disabled) {
-  transform: scale(0.95);
+  transform: translateY(0) scale(0.95);
 }
 
 @media (max-width: 768px) {

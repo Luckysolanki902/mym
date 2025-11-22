@@ -70,7 +70,7 @@ const Sidebar = () => {
   }, [userDetails]);
 
   useEffect(() => {
-    const navPaths = ['/', '/textchat', '/audiocall', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion', '/settings'];
+    const navPaths = ['/', '/random-chat', '/random-call', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion', '/settings'];
     const currentPath = router.asPath.split('?')[0].replace(/\/$/, '') || '/';
     const normalizedPath = currentPath === '' ? '/' : currentPath;
     const matchIndex = navPaths.findIndex((path) => {
@@ -111,7 +111,7 @@ const Sidebar = () => {
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 1 ? styles.active : ''}`}
-          onClick={() => handleSetActive(1, '/textchat')}
+          onClick={() => handleSetActive(1, '/random-chat')}
           data-title="Random Chat"
         >
           <div className={styles.iconImageSlot}>
@@ -126,8 +126,8 @@ const Sidebar = () => {
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 2 ? styles.active : ''}`}
-          onClick={() => handleSetActive(2, '/audiocall')}
-          data-title="Audio Call"
+          onClick={() => handleSetActive(2, '/random-call')}
+          data-title="Random Call"
         >
           <div className={styles.iconImageSlot}>
             <Image

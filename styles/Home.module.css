@@ -101,7 +101,8 @@
   font-size: 3rem;
   text-align: center;
   margin: 3rem 2rem;
-  color: #373737;
+  color: rgba(55, 55, 55, 0.85);
+  transition: all 0.3s ease;
 }
 
 
@@ -109,12 +110,15 @@
   font-family: "Jost", sans-serif;
   font-size: 8rem;
   margin-bottom: -2rem;
-  color: #83E7FD;
+  color: rgba(131, 231, 253, 0.9);
   text-align: center;
+  transition: all 0.3s ease;
+  text-shadow: 0 2px 20px rgba(131, 231, 253, 0.2);
 }
 
 .ourgoal span {
-  color: #F85279;
+  color: rgba(248, 82, 121, 0.9);
+  text-shadow: 0 2px 20px rgba(248, 82, 121, 0.2);
 }
 
 .ourgoalP {
@@ -132,17 +136,18 @@
   justify-content: center;
   gap: 10rem;
   margin-top: 4rem; 
-margin-bottom: 3rem;
+  margin-bottom: 3rem;
 } 
 
 .homepageBtns button{
   padding: 1.3rem 3rem;
-  border-radius: 3rem;
-  border: 1px solid white;
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
   text-transform: uppercase;
   color: white;
   font-size: 1.3rem;
-  box-shadow: 0px 3px 2px 2px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
   font-family: Jost;
   width: 13rem;
   display: flex;
@@ -150,18 +155,74 @@ margin-bottom: 3rem;
   align-items: center;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3 cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.homepageBtns button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.8) 50%, 
+    transparent 100%);
 }
 
 .homepageBtns button:hover{
-  transform: scale(0.97);
-  filter: hue-rotate(-5deg);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 12px 40px -8px rgba(0, 0, 0, 0.25),
+    0 6px 20px -4px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
+
+.homepageBtns button:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
 .chatbtn{
-  background-color: #FF769F;
+  background: linear-gradient(135deg, 
+    rgba(255, 118, 159, 0.8) 0%, 
+    rgba(236, 64, 122, 0.75) 100%);
+  box-shadow: 
+    0 8px 32px -8px rgba(255, 118, 159, 0.4),
+    0 4px 16px -4px rgba(236, 64, 122, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
+
+.chatbtn:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 118, 159, 0.9) 0%, 
+    rgba(236, 64, 122, 0.85) 100%);
+  box-shadow: 
+    0 12px 40px -8px rgba(255, 118, 159, 0.5),
+    0 6px 20px -4px rgba(236, 64, 122, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
 .confessbtn{
-  background-color: #83E7FD;
+  background: linear-gradient(135deg, 
+    rgba(131, 231, 253, 0.8) 0%, 
+    rgba(79, 195, 247, 0.75) 100%);
+  box-shadow: 
+    0 8px 32px -8px rgba(131, 231, 253, 0.4),
+    0 4px 16px -4px rgba(79, 195, 247, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.confessbtn:hover {
+  background: linear-gradient(135deg, 
+    rgba(131, 231, 253, 0.9) 0%, 
+    rgba(79, 195, 247, 0.85) 100%);
+  box-shadow: 
+    0 12px 40px -8px rgba(131, 231, 253, 0.5),
+    0 6px 20px -4px rgba(79, 195, 247, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .notohmegle{
@@ -478,6 +539,7 @@ left: 0;
     padding: 1rem 2.3rem;
     font-size: 1.15rem;
     width: 9rem;
+    border-radius: 1.8rem;
   }
   
 
@@ -553,6 +615,7 @@ left: 0;
     padding: 1rem 2rem;
     font-size: 1rem;
     width: 9rem;
+    border-radius: 1.5rem;
   }
   
   

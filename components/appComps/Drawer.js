@@ -6,7 +6,6 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MenuIcon from '@mui/icons-material/Menu';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './styles/topbar.module.css';
@@ -121,10 +120,10 @@ export default function SwipeableTemporaryDrawer() {
 
   // Set activeIndex based on current path
   useEffect(() => {
-    const paths = [
+    const navPaths = [
       '/',
-      '/textchat',
-      '/audiocall',
+      '/random-chat',
+      '/random-call',
       '/all-confessions',
       '/create-confession',
       '/inbox',
@@ -132,7 +131,7 @@ export default function SwipeableTemporaryDrawer() {
       '/settings',
     ];
     const currentPath = router.asPath.split('?')[0].replace(/\/$/, ''); // Remove query params and trailing slash
-    const index = paths.findIndex(
+    const index = navPaths.findIndex(
       (path) => path === currentPath
     );
     setActiveIndex(index !== -1 ? index : null);
@@ -189,8 +188,8 @@ export default function SwipeableTemporaryDrawer() {
         >
           {[
             { text: 'Home', href: '/' },
-            { text: 'Random Chat', href: '/textchat' },
-            { text: 'Audio Call', href: '/audiocall' },
+            { text: 'Random Chat', href: '/random-chat' },
+            { text: 'Random Call', href: '/random-call' },
             { text: 'Read Confessions', href: '/all-confessions' },
             { text: 'Write Confession', href: '/create-confession' },
             { text: 'Inbox', href: '/inbox' },
@@ -223,7 +222,7 @@ export default function SwipeableTemporaryDrawer() {
                         />
                       ) : index === 2 ? (
                         <Image
-                          src={'/images/sidebaricons/audiocall.png'}
+                          src={'/images/sidebaricons/random_call_black3.png'}
                           width={108}
                           height={72}
                           alt="icon"
@@ -247,7 +246,17 @@ export default function SwipeableTemporaryDrawer() {
                         />
                       ) : index === 5 ? (
                         <StyledBadge badgeContent={unseenCount} color="primary">
-                          <MailIcon fontSize="medium" style={{ color: 'var(--mymblack)' }} />
+                          <MailIcon 
+                            fontSize="medium" 
+                            className={styles.sideIcon}
+                            style={{ 
+                              width: '1.5rem',
+                              height: '1.5rem',
+                              opacity: 0.5,
+                              transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+                              filter: 'brightness(0) saturate(100%)'
+                            }} 
+                          />
                         </StyledBadge>
                       ) : index === 6 ? (
                         <Image
@@ -279,7 +288,17 @@ export default function SwipeableTemporaryDrawer() {
                 className={`${styles.sideBarLinks}`}
               >
                 <ListItemIcon className={styles.listItemIcon}>
-                  <SettingsIcon fontSize="medium" style={{ color: 'var(--mymblack)' }} />
+                  <SettingsIcon 
+                    fontSize="medium" 
+                    className={styles.sideIcon}
+                    style={{ 
+                      width: '1.5rem',
+                      height: '1.5rem',
+                      opacity: 0.5,
+                      transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+                      filter: 'brightness(0) saturate(100%)'
+                    }} 
+                  />
                 </ListItemIcon>
                 <ListItemText
                   primary={<div className={styles.linkText}>Settings</div>}
@@ -301,14 +320,31 @@ export default function SwipeableTemporaryDrawer() {
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: 'transparent',
-          padding: '0',
+          padding: '0.5rem',
           margin: '0',
           outline: 'none',
           border: 'none',
+          cursor: 'pointer',
         }}
         onClick={toggleDrawer(true)}
+        className={styles.hamburgerButton}
       >
-        <MenuIcon className={styles.menuIcon} style={{ fontSize: '40px' }} />
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={styles.hamburgerIcon}
+        >
+          <path
+            d="M3 6h18M3 12h18M3 18h18"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
       <SwipeableDrawer
         anchor="right"

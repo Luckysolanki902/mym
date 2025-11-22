@@ -65,7 +65,7 @@ export default function Home({ session, trendingConfessions, totalConfessions })
 
         {/* Buttons for chat page and confession page */}
         <div className={styles.homepageBtns}>
-          <button className={styles.chatbtn} onClick={() => router.push('/textchat')}>CHAT</button>
+          <button className={styles.chatbtn} onClick={() => router.push('/random-chat')}>CHAT</button>
           <button className={styles.confessbtn} onClick={() => router.push('/create-confession')}>CONFESS</button>
         </div>
 
@@ -79,7 +79,7 @@ export default function Home({ session, trendingConfessions, totalConfessions })
 
         {/* <h3 className={styles.unlock}>AN ANOYNYMOUS INTERCOLLEGE SOCIAL MEDIA  PLATFORM</h3> */}
 
-        <div onClick={() => router.push('/textchat')} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+        <div onClick={() => router.push('/random-chat')} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
           <Image src={'/images/showcase/confessionfeaturesl.png'} width={1716} height={966} alt='chatfeatures' className={styles.featuresBg}></Image>
           <div className={styles.chatfeatures}>
             {/* Chat features */}

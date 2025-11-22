@@ -90,71 +90,142 @@ const InboxPage = ({ personalReplies, userDetails, repliesToReplies }) => {
     fetchData();
   };
 
+  const userGender = userDetails?.gender || 'male';
+  const isMale = userGender === 'male';
+
   return (
-    <div className={styles.container} style={{ position: 'relative' }}>
-      <Button
-        style={{
-          position: 'fixed',
-          right: '1rem',
-          backgroundColor: 'white',
-          color: 'black',
-          zIndex: '19',
-          marginTop: '1rem',
-        }}
-        variant='contained'
-        onClick={() => fetchData()}
-      >
-        <span style={{ marginRight: '0.5rem' }}>Refresh</span>
-        {fetchingData ? <CircularProgress size={20} /> : <RefreshIcon />}
-      </Button>
-      <div style={{ display: 'flex', justifyContent: 'center', width: '100%', maxWidth: '100vw' }}>
-        <div style={{ display: 'flex', justifyContent: 'flex-start', width: '100%' }} className={styles.hdiv}>
-          <h1 className={styles.h1} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width:'100%', textAlign:'left' }}>
-            Inbox <span>({count})</span>
-          </h1>
+    <div className={`${styles2.inboxWrapper} ${isMale ? styles2.maleTheme : styles2.femaleTheme}`}>
+      {/* Floating Action Bar */}
+      <div className={styles2.floatingBar}>
+        <div className={`${styles2.barContent} ${isMale ? styles2.maleBar : styles2.femaleBar}`}>
+          <div className={styles2.titleGroup}>
+            <div className={`${styles2.iconBubble} ${isMale ? styles2.maleIcon : styles2.femaleIcon}`}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <div>
+              <h1 className={`${styles2.mainTitle} ${isMale ? styles2.maleTitle : styles2.femaleTitle}`}>Messages</h1>
+              <p className={styles2.subtitle}>{count > 0 ? `${count} unread` : 'All caught up'}</p>
+            </div>
+          </div>
+          <button
+            className={`${styles2.refreshBtn} ${isMale ? styles2.maleRefresh : styles2.femaleRefresh}`}
+            onClick={() => fetchData()}
+            disabled={fetchingData}
+          >
+            {fetchingData ? (
+              <CircularProgress size={18} style={{ color: 'inherit' }} />
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+              </svg>
+            )}
+          </button>
         </div>
       </div>
 
-      <Tabs value={tabIndex} onChange={handleTabChange} centered style={{ marginBottom: "4rem" }}>
-        <Tab style={{ maxWidth: '170px' }} label="Replies to Your Confessions" />
-        <Tab style={{ maxWidth: '170px' }} label="Replies to Your Replies" />
-      </Tabs>
-      {tabIndex === 0 && (
-        <div>
-          {personalRepliesLatest?.length > 0 ? (
-            personalRepliesLatest.map((entry, index) => (
-              <div key={`${entry._id}${index}`} style={{ marginBottom: '5rem' }}>
-                <InboxCard style={{ marginBottom: '4.5rem' }} entry={entry} userDetails={userDetails} />
-              </div>
-            ))
-          ) : (
-            <div className={styles2.msgIllustration}>
-              <Image src={'/images/illustrations/replies.png'} width={960} height={695} alt="start chat" />
-              <div>
-                <span>Replies</span> to your <span>confessions</span> will appear here
-              </div>
-            </div>
+      {/* Filter Pills */}
+      <div className={styles2.filterSection}>
+        <button
+          className={`${styles2.filterPill} ${tabIndex === 0 ? (isMale ? styles2.filterActiveMale : styles2.filterActiveFemale) : ''}`}
+          onClick={(e) => handleTabChange(e, 0)}
+        >
+          <span className={styles2.pillIcon}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </span>
+          <span>Confessions</span>
+          {personalRepliesLatest?.length > 0 && (
+            <span className={`${styles2.pillBadge} ${isMale ? styles2.maleBadge : styles2.femaleBadge}`}>{personalRepliesLatest.length}</span>
           )}
-        </div>
-      )}
-      {tabIndex === 1 && (
-        <div>
-          {repliesToRepliesLatest?.length > 0 ? (
-            repliesToRepliesLatest.map((entry, index) => (
-              <div key={`${entry._id}${index}`} style={{ marginBottom: '5rem' }}>
-                <InboxCard2 style={{ marginBottom: '4.5rem' }} entry={entry} userDetails={userDetails} />
-              </div>
-            ))
-          ) : (
-            <div className={styles2.msgIllustration}>
-              <Image src={'/images/illustrations/replies.png'} width={960} height={695} alt="start chat" />
-              <div>
-                <span>Replies</span> to your <span>replies</span> will appear here
-              </div>
-            </div>
+        </button>
+        <button
+          className={`${styles2.filterPill} ${tabIndex === 1 ? (isMale ? styles2.filterActiveMale : styles2.filterActiveFemale) : ''}`}
+          onClick={(e) => handleTabChange(e, 1)}
+        >
+          <span className={styles2.pillIcon}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <polyline points="9 11 12 14 22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+          </span>
+          <span>Your Replies</span>
+          {repliesToRepliesLatest?.length > 0 && (
+            <span className={`${styles2.pillBadge} ${isMale ? styles2.maleBadge : styles2.femaleBadge}`}>{repliesToRepliesLatest.length}</span>
           )}
-        </div>
-      )}
+        </button>
+      </div>
+
+      {/* Messages Grid */}
+      <div className={styles2.messagesContainer}>
+        {tabIndex === 0 && (
+          <>
+            {personalRepliesLatest?.length > 0 ? (
+              <div className={styles2.masonryGrid}>
+                {personalRepliesLatest.map((entry, index) => (
+                  <div 
+                    key={`${entry._id}${index}`} 
+                    className={styles2.masonryItem}
+                    style={{ animationDelay: `${index * 0.08}s` }}
+                  >
+                    <InboxCard entry={entry} userDetails={userDetails} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles2.emptyView}>
+                <div className={styles2.emptyContent}>
+                  <div className={styles2.emptyIllustration}>
+                    <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                      <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                  </div>
+                  <h3 className={styles2.emptyHeading}>No replies yet</h3>
+                  <p className={styles2.emptyDescription}>
+                    When someone replies to your confessions, they'll show up here
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+        {tabIndex === 1 && (
+          <>
+            {repliesToRepliesLatest?.length > 0 ? (
+              <div className={styles2.masonryGrid}>
+                {repliesToRepliesLatest.map((entry, index) => (
+                  <div 
+                    key={`${entry._id}${index}`} 
+                    className={styles2.masonryItem}
+                    style={{ animationDelay: `${index * 0.08}s` }}
+                  >
+                    <InboxCard2 entry={entry} userDetails={userDetails} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles2.emptyView}>
+                <div className={styles2.emptyContent}>
+                  <div className={styles2.emptyIllustration}>
+                    <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                      <path d="M8 10h.01M12 10h.01M16 10h.01"/>
+                    </svg>
+                  </div>
+                  <h3 className={styles2.emptyHeading}>Start a conversation</h3>
+                  <p className={styles2.emptyDescription}>
+                    Replies to your messages will appear here
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
