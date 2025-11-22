@@ -10,6 +10,7 @@ import CustomHead from '@/components/seo/CustomHead';
 import FilterOptions from '@/components/confessionComps/FilterOptions';
 import AuthPrompt from '@/components/commonComps/AuthPrompt';
 import ScrollToTop2 from '@/components/commonComps/ScrollToTop2';
+import ConfessionSkeleton from '@/components/loadings/ConfessionSkeleton';
 
 const Index = ({ userDetails }) => {
   const [confessions, setConfessions] = useState([]);
@@ -146,27 +147,7 @@ const Index = ({ userDetails }) => {
             setActiveGender={setActiveGender}
           />
         ))}
-        {loading && (
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              marginBottom: '3rem',
-              marginTop: '0',
-              alignItems: 'center',
-              fontWeight: '200',
-              color: 'gray',
-            }}
-            className={styles.isLoading}
-          >
-            <p>Loading confessions</p>
-            <span>
-              <Image src={'/gifs/istyping4.gif'} width={400} height={300} alt='Loading...' />
-            </span>
-          </div>
-        )}
+        {loading && <ConfessionSkeleton />}
         <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
         {!hasMore && (
           <div
@@ -193,7 +174,7 @@ const Index = ({ userDetails }) => {
               boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
               border: '1px solid rgba(255,255,255,0.5)'
             }}>
-              That’s the last confession for now... new stories will unfold soon! ✨
+              That’s the last confession for now... new stories will unfold soon!
             </p>
           </div>
         )}

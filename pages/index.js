@@ -13,6 +13,7 @@ import CollegeCards from '@/components/justhomepage/CollegeCards';
 import InstagramCard from '@/components/justhomepage/InstagramCard';
 import Link from 'next/link';
 import { useMediaQuery } from '@mui/material';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 
 
@@ -22,7 +23,20 @@ export default function Home({ session, trendingConfessions, totalConfessions })
     to: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
   });
  const isSmallDevice = useMediaQuery('(max-width:600px)');
-  const router = useRouter()
+  const router = useRouter();
+
+  // Scroll-based gradient animation
+  const { scrollYProgress } = useScroll();
+  const backgroundColor = useTransform(
+    scrollYProgress,
+    [0, 0.33, 0.66, 1],
+    [
+      'linear-gradient(180deg, #e0f7fa 0%, #ffffff 100%)',
+      'linear-gradient(180deg, #fce4ec 0%, #ffffff 100%)',
+      'linear-gradient(180deg, #e0f7fa 0%, #ffffff 100%)',
+      'linear-gradient(180deg, #fce4ec 0%, #ffffff 100%)'
+    ]
+  )
 
 
   const chatFeatures = [
@@ -41,7 +55,14 @@ export default function Home({ session, trendingConfessions, totalConfessions })
 
   return (
     <>
-      <animated.div style={containerSpring} className={styles.mainContainer}>
+      <motion.div 
+        style={{ 
+          background: backgroundColor,
+          transition: 'background 0.3s ease-out'
+        }} 
+        className={styles.scrollBgWrapper}
+      >
+        <animated.div style={containerSpring} className={styles.mainContainer}>
         {session ? (
           <>
             {/* Content to be shown only for session users */}
@@ -151,6 +172,7 @@ export default function Home({ session, trendingConfessions, totalConfessions })
           <Footer />
         </footer>
       </animated.div >
+      </motion.div>
     </>
   );
 }

@@ -1,13 +1,16 @@
+.scrollBgWrapper {
+  width: 100%;
+  min-height: 100vh;
+  transition: background 0.3s ease-out;
+}
+
 .mainContainer {
   width: 100%;
-  /* background-image: url('/images/patterns/leatherhome2.jpg'); */
-  background-repeat: repeat;
   margin: 0;
   padding: 0;
-  /* padding-bottom: 5rem; */
   padding-top: 2rem;
   overflow-x: hidden;
-  
+  padding-left: calc(1.5rem + var(--sidebarwidth));
 }
 
 
@@ -233,6 +236,7 @@
 .featuresBg{
   width: 100%;
   height: auto;
+  opacity: 0.8;
 }
 
 .chatfeatures{

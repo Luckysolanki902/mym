@@ -1,0 +1,54 @@
+/* Confession Skeleton - Minimal Soothing */
+
+.skeletonWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem;
+  margin-bottom: 4rem;
+  width: 100%;
+}
+
+.skeletonCard {
+  width: 50vw;
+  min-height: 40vh;
+  border-radius: 2rem;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 10px 40px -10px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Responsive */
+@media (width < 1500px) {
+  .skeletonCard {
+    width: 60vw;
+  }
+}
+
+@media (width < 1200px) {
+  .skeletonCard {
+    width: 70vw;
+  }
+}
+
+@media (width < 1000px) {
+  .skeletonCard {
+    width: 80vw;
+  }
+}
+
+@media (width < 800px) {
+  .skeletonWrapper {
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .skeletonCard {
+    width: 90vw;
+  }
+}
