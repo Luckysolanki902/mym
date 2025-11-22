@@ -204,23 +204,25 @@ const Sidebar = () => {
         </div>
 
       {userDetails && (
-        <div
-          className={`${styles.icons} ${activeIndex === 7 ? styles.active : ''}`}
-          onClick={() => handleSetActive(7, '/settings')}
-          data-title="Settings"
-          style={{ position: 'absolute', bottom: '2rem' }}
-        >
-          <div className={styles.iconImageSlot}>
-            <Image
-              src={'/images/sidebaricons/settings.png'}
-              width={225 / 2}
-              height={272 / 2}
-              alt='icon'
-              style={{transform:'scale(0.9)'}}
-              className={styles.iconspng4}
-            />
+        <>
+          <div style={{ flex: 1, minHeight: '1rem' }} />
+          <div
+            className={`${styles.icons} ${activeIndex === 7 ? styles.active : ''}`}
+            onClick={() => handleSetActive(7, '/settings')}
+            data-title="Settings"
+          >
+            <div className={styles.iconImageSlot}>
+              <Image
+                src={'/images/sidebaricons/settings.png'}
+                width={225 / 2}
+                height={272 / 2}
+                alt='icon'
+                style={{transform:'scale(0.9)'}}
+                className={styles.iconspng4}
+              />
+            </div>
           </div>
-        </div>
+        </>
       )}
       </div>
     </div>
