@@ -24,21 +24,22 @@ const CreateConfessionForm = ({ userDetails }) => {
         confessionContent: confessionValue,
       };
 
-      const moderationResponse = await fetch('/api/confession/content-moderation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend),
-      });
+      // Bypass moderation
+      // const moderationResponse = await fetch('/api/confession/content-moderation', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(dataToSend),
+      // });
 
-      if (!moderationResponse.ok) {
-        throw new Error('Error checking content moderation');
-      }
+      // if (!moderationResponse.ok) {
+      //   throw new Error('Error checking content moderation');
+      // }
 
-      const moderationResult = await moderationResponse.json();
+      // const moderationResult = await moderationResponse.json();
 
-      if (moderationResult.isFitForSubmission) {
+      // if (moderationResult.isFitForSubmission) {
         const confessResponse = await fetch('/api/confession/confess', {
           method: 'POST',
           headers: {
@@ -58,14 +59,14 @@ const CreateConfessionForm = ({ userDetails }) => {
 
         // Redirect to thank you page with confessionId
         router.push(`/thank-you/${confessionId}`);
-      } else {
-        setDialogContent({
-          problematicSentences: moderationResult.problematicSentences,
-          warning: moderationResult.warning,
-          advice: moderationResult.advice
-        });
-        setDialogOpen(true);
-      }
+      // } else {
+      //   setDialogContent({
+      //     problematicSentences: moderationResult.problematicSentences,
+      //     warning: moderationResult.warning,
+      //     advice: moderationResult.advice
+      //   });
+      //   setDialogOpen(true);
+      // }
     } catch (error) {
       console.error('Error:', error);
     } finally {

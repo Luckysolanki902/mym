@@ -5,6 +5,8 @@ import { Close } from '@mui/icons-material';
 import styles from '../componentStyles/confession.module.css';
 import { FaHeart } from 'react-icons/fa';
 import Image from 'next/image';
+import { getTimeAgo } from '../../utils/generalUtilities';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const CommentsDrawer = ({
   isOpen,
@@ -116,6 +118,9 @@ const CommentsDrawer = ({
         style: {
           borderTopLeftRadius: '16px',
           borderTopRightRadius: '16px',
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
         },
         className: styles.customPaper, // Optional: Use a CSS class for more styling
       }}
@@ -125,8 +130,8 @@ const CommentsDrawer = ({
           <div className={styles.reply2}>
             <div className={styles.puller}></div>
             {replyingState.replying && (
-              <div>
-                Replying to: {replyingState.replyingToContent}{' '}
+              <div style={{ paddingLeft: '0.5rem', fontSize: '0.85rem', color: '#666', fontFamily: 'Quicksand, sans-serif' }}>
+                Replying to: {replyingState.replyingToContent.substring(0, 30)}...{' '}
                 <span
                   onClick={() =>
                     setReplyingState({
@@ -135,16 +140,23 @@ const CommentsDrawer = ({
                       replyingToContent: '',
                     })
                   }
-                  style={{ cursor: 'pointer', color: 'red' }}
+                  style={{ cursor: 'pointer', color: '#ff7675', marginLeft: '0.5rem' }}
                 >
-                  <Close />
+                  <Close fontSize="small" style={{ verticalAlign: 'middle' }} />
                 </span>
               </div>
             )}
-            <div>
+            <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                background: 'rgba(255,255,255,0.5)', 
+                borderRadius: '1.5rem', 
+                padding: '0.2rem 0.5rem',
+                border: '1px solid rgba(255,255,255,0.6)',
+                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+            }}>
               <textarea
                 rows={1}
-
                 ref={inputRef}
                 type="text"
                 placeholder="Add a comment..."
@@ -155,7 +167,12 @@ const CommentsDrawer = ({
                   height: '100%',
                   outline: 'none',
                   border: 'none',
-                  padding: '0.5rem',
+                  padding: '0.6rem 0.8rem',
+                  background: 'transparent',
+                  resize: 'none',
+                  fontFamily: 'Quicksand, sans-serif',
+                  fontSize: '0.95rem',
+                  color: '#2d3436'
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && e.target.value.trim() !== '') {
@@ -170,12 +187,7 @@ const CommentsDrawer = ({
                 spellCheck="false"
                 autoCorrect="off"
               />
-              <Image
-                src={'/images/othericons/sendFill.png'}
-                width={108}
-                height={72}
-                alt="icon"
-                className={styles.sendIconPhone}
+              <div 
                 onClick={(e) => {
                   if (commentValue.trim() !== '') {
                     e.preventDefault();
@@ -184,7 +196,22 @@ const CommentsDrawer = ({
                       : handleCommentSubmit();
                   }
                 }}
-              />
+                style={{ 
+                    cursor: 'pointer', 
+                    padding: '0.4rem', 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    opacity: commentValue.trim() ? 1 : 0.5,
+                    transition: 'opacity 0.3s'
+                }}
+              >
+                  <Image
+                    src={'/images/othericons/sendFill.png'}
+                    width={24}
+                    height={24}
+                    alt="icon"
+                  />
+              </div>
 
             </div>
           </div>
@@ -200,22 +227,34 @@ const CommentsDrawer = ({
           >
             <div className={styles.comments}>
               <div ref={bottomRef}></div>
-              {comments.map((comment) => (
-                <div
-                  key={comment._id} // Removed Math.random() for stable keys
+              <AnimatePresence mode='popLayout'>
+              {comments.map((comment, index) => (
+                <motion.div
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                  transition={{ duration: 0.4, delay: index * 0.05, type: "spring", stiffness: 100 }}
+                  key={comment._id} 
                   style={{ display: 'flex', flexDirection: 'column' }}
                 >
                   <div className={styles.comment}>
-                    <div className={styles.commentContent}>
-                      <span
-                        className={
-                          comment.gender === 'male'
-                            ? styles.maleAvatar
-                            : styles.femaleAvatar
-                        }
-                      >
-                        {comment.gender === 'male' ? 'Some Boy:' : 'Some Girl:'}
+                    <div className={styles.commentHeader}>
+                      <div className={styles.commentUser}>
+                        <span
+                          className={
+                            comment.gender === 'male'
+                              ? styles.maleAvatar
+                              : styles.femaleAvatar
+                          }
+                        >
+                          {comment.gender === 'male' ? 'Some Boy' : 'Some Girl'}
+                        </span>
+                      </div>
+                      <span className={styles.commentTimestamp}>
+                        {getTimeAgo(comment.createdAt)}
                       </span>
+                    </div>
+                    <div className={styles.commentText}>
                       {comment.commentContent}
                     </div>
 
@@ -241,7 +280,6 @@ const CommentsDrawer = ({
                     </div>
                     */}
                   </div>
-
                   {/* Uncomment and style replies as needed
                   <div
                     style={{
@@ -279,8 +317,9 @@ const CommentsDrawer = ({
                     ))}
                   </div>
                   */}
-                </div>
+                </motion.div>
               ))}
+              </AnimatePresence>
               {comments.length < 1 && <>No comments Yet</>}
             </div>
           </div>

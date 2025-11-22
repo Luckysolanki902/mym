@@ -1,12 +1,10 @@
 /* fonts */
-@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;1,100;1,300&family=Inknut+Antiqua:wght@300;400;500;600;700;800&family=Krona+One&family=Abhaya+Libre:wght@400;500;600;700;800&family=Aclonica&family=Belgrano&family=Jomhuria&family=Courgette&family=Trade+Winds&family=David+Libre:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;1,100;1,300&family=Inknut+Antiqua:wght@300;400;500;600;700;800&family=Krona+One&family=Abhaya+Libre:wght@400;500;600;700;800&family=Aclonica&family=Belgrano&family=Jomhuria&family=Courgette&family=Trade+Winds&family=David+Libre:wght@400;500;700&family=Quicksand:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 :root {
   --sidebarwidth: 6vw;
   --topbarheight: 4.5rem;
   --inputboxheight: 3rem;
-  --remwidth: calc(100vw - var(--sidebarwidth));
-  --remheight: calc(100vh - var(--topbarheight));
   --mymblack: #2D2D2D;
   --lightpink: rgba(128, 0, 128, 0.359);
 }
@@ -14,6 +12,36 @@
 
 * {
   box-sizing: border-box;
+}
+
+/* Custom laser pointer cursor */
+* {
+  cursor: none !important;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transition: background 0.15s ease, transform 0.1s ease;
+  mix-blend-mode: difference;
+  opacity: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transition: background 0.15s ease, transform 0.1s ease;
+  opacity: 0;
 }
 
 
@@ -70,7 +98,7 @@ button {
 
 .sidebardim {
   width: var(--sidebarwidth);
-  height: var(--remheight);
+  height: calc(100vh - var(--topbarheight));
 }
 
 
@@ -122,25 +150,9 @@ button {
   }
 }
 
-.remcomponents {
-  width: var(--remwidth);
-  height: var(--remheight);
-  overflow: hidden;
-}
-
 * {
   -webkit-tap-highlight-color: transparent !important;
   -webkit-focus-ring-color: transparent !important;
-}
-
-.remcheight{
-  margin-top: var(--topbarheight);
-  height: var(--remheight);
-
-}
-
-.remcwidth{
-  margin-left: var(--sidebarwidth);
 }
 
 .loadingGif{

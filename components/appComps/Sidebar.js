@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
-import MailIcon from '@mui/icons-material/Mail';
 import Image from 'next/image';
 import styles from './styles/sidebar.module.css';
-import { getSession, signOut } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -22,7 +21,7 @@ const Sidebar = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [unseenCount, setUnseenCount] = useState(0);
   const [userDetails, setUserDetails] = useState(null);
-  const [fetching, setFetching] = useState(false);
+  const fetchingRef = useRef(false);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -47,8 +46,8 @@ const Sidebar = () => {
     const fetchUnseenCount = async () => {
       if (userDetails && userDetails.email) {
         try {
-          if (fetching) return;
-          setFetching(true);
+          if (fetchingRef.current) return;
+          fetchingRef.current = true;
           const response = await fetch(`/api/inbox/unseen-count?mid=${userDetails?.mid}`);
           if (response.ok) {
             const data = await response.json();
@@ -60,7 +59,7 @@ const Sidebar = () => {
         } catch (error) {
           console.error('Error fetching unseen count:', error);
         } finally {
-          setFetching(false);
+          fetchingRef.current = false;
         }
       }
     };
@@ -71,128 +70,156 @@ const Sidebar = () => {
   }, [userDetails]);
 
   useEffect(() => {
-    const paths = ['/', '/textchat', '/audiocall', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion'];
-    const index = paths.findIndex(path => path === router.pathname);
-    setActiveIndex(index !== -1 ? index : null);
-  }, [router.pathname]);
+    const navPaths = ['/', '/textchat', '/audiocall', '/all-confessions', '/create-confession', '/inbox', '/give-your-suggestion', '/settings'];
+    const currentPath = router.asPath.split('?')[0].replace(/\/$/, '') || '/';
+    const normalizedPath = currentPath === '' ? '/' : currentPath;
+    const matchIndex = navPaths.findIndex((path) => {
+      if (path === '/settings') {
+        return normalizedPath.startsWith('/settings');
+      }
+      return path === normalizedPath;
+    });
+    setActiveIndex(matchIndex !== -1 ? matchIndex : null);
+  }, [router.asPath]);
 
   const handleSetActive = (index, path) => {
     setActiveIndex(index);
-    router.push(path);
+    const normalizedCurrent = router.asPath.split('?')[0];
+    if (normalizedCurrent !== path) {
+      router.push(path);
+    }
   };
 
   return (
+    // All these pngs are black icons images located in public/images/sidebaricons/
     <div className='sidebarvisibility'>
-      <div className={`${styles.mainSidebarDiv} sidebardim`}>
+      <div className={`${styles.mainSidebarDiv}`}>
         <div
           className={`${styles.icons} ${activeIndex === 0 ? styles.activeAndAtHome : ''}`}
           onClick={() => handleSetActive(0, '/')}
           data-title="Home"
         >
-          <Image
-            src={'/images/sidebaricons/home.png'}
-            width={512 / 3}
-            height={512 / 3}
-            alt='icon'
-            className={styles.iconspng1}
-          />
+          <div className={styles.iconImageSlot}>
+            <Image
+              src={'/images/sidebaricons/home.png'}
+              width={512 / 3}
+              height={512 / 3}
+              alt='icon'
+              className={styles.iconspng1}
+            />
+          </div>
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 1 ? styles.active : ''}`}
           onClick={() => handleSetActive(1, '/textchat')}
           data-title="Random Chat"
         >
-          <Image
-            src={'/images/sidebaricons/randomchat.png'}
-            width={1080 / 10}
-            height={720 / 10}
-            alt='icon'
-            className={styles.iconspng2}
-          />
+          <div className={styles.iconImageSlot}>
+            <Image
+              src={'/images/sidebaricons/randomchat.png'}
+              width={1080 / 10}
+              height={720 / 10}
+              alt='icon'
+              className={styles.iconspng2}
+            />
+          </div>
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 2 ? styles.active : ''}`}
           onClick={() => handleSetActive(2, '/audiocall')}
           data-title="Audio Call"
         >
-          <Image
-            src={'/images/sidebaricons/audiocall.png'}
-            width={1080 / 10}
-            height={720 / 10}
-            alt='icon'
-            className={styles.iconspng2}
-          />
+          <div className={styles.iconImageSlot}>
+            <Image
+              src={'/images/sidebaricons/random_call_black3.png'}
+              width={1080 / 10}
+              height={720 / 10}
+              alt='icon'
+              style={{transform: `scale(0.9) translateY(3px)`}}
+              className={styles.iconspng2}
+            />
+          </div>
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 3 ? styles.active : ''}`}
           onClick={() => handleSetActive(3, '/all-confessions')}
           data-title="Read Confessions"
         >
-          <Image
-            src={'/images/sidebaricons/confessions.png'}
-            width={545 / 10}
-            height={720 / 10}
-            alt='icon'
-            className={styles.iconspng3}
-          />
+          <div className={styles.iconImageSlot}>
+            <Image
+              src={'/images/sidebaricons/confessions.png'}
+              width={545 / 10}
+              height={720 / 10}
+              alt='icon'
+              className={styles.iconspng3}
+            />
+          </div>
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 4 ? styles.active : ''}`}
           onClick={() => handleSetActive(4, '/create-confession')}
           data-title="Create Confession"
         >
-          <Image
-            src={'/images/sidebaricons/createconfession.png'}
-            width={225 / 2}
-            height={272 / 2}
-            alt='icon'
-            className={styles.iconspng4}
-          />
+          <div className={styles.iconImageSlot}>
+            <Image
+              src={'/images/sidebaricons/createconfession.png'}
+              width={225 / 2}
+              height={272 / 2}
+              alt='icon'
+              className={styles.iconspng4}
+            />
+          </div>
         </div>
         <div
           className={`${styles.icons} ${activeIndex === 5 ? styles.active : ''}`}
           onClick={() => handleSetActive(5, '/inbox')}
           data-title="Inbox"
         >
-          <StyledBadge badgeContent={unseenCount} color="primary">
+          <div className={styles.iconImageSlot}>
+            <StyledBadge badgeContent={unseenCount} color="primary">
+              <Image
+                src={'/images/sidebaricons/inbox.png'}
+                width={225 / 2}
+                height={272 / 2}
+                alt='icon'
+                className={styles.iconspng4}
+              />
+            </StyledBadge>
+          </div>
+        </div>
+        <div
+          className={`${styles.icons} ${activeIndex === 6 ? styles.active : ''}`}
+          onClick={() => handleSetActive(6, '/give-your-suggestion')}
+          data-title="Suggestions"
+        >
+          <div className={styles.iconImageSlot}>
             <Image
-              src={'/images/sidebaricons/inbox.png'}
+              src={'/images/sidebaricons/bulb.png'}
               width={225 / 2}
               height={272 / 2}
               alt='icon'
               className={styles.iconspng4}
             />
-          </StyledBadge>
-        </div>
-        <div
-          className={`${styles.icons} ${activeIndex === 5 ? styles.active : ''}`}
-          onClick={() => handleSetActive(5, '/give-your-suggestion')}
-          data-title="Suggestions"
-        >
-          <Image
-            src={'/images/sidebaricons/bulb.png'}
-            width={225 / 2}
-            height={272 / 2}
-            alt='icon'
-            className={styles.iconspng4}
-          />
+          </div>
         </div>
 
       {userDetails && (
         <div
-          className={`${styles.icons}`}
-          onClick={() => router.push('/settings')}
+          className={`${styles.icons} ${activeIndex === 7 ? styles.active : ''}`}
+          onClick={() => handleSetActive(7, '/settings')}
           data-title="Settings"
           style={{ position: 'absolute', bottom: '2rem' }}
         >
-          <Image
-            src={'/images/sidebaricons/settings.png'}
-            width={225 / 2}
-            height={272 / 2}
-            alt='icon'
-            style={{transform:'scale(0.9)'}}
-            className={styles.iconspng4}
-          />
+          <div className={styles.iconImageSlot}>
+            <Image
+              src={'/images/sidebaricons/settings.png'}
+              width={225 / 2}
+              height={272 / 2}
+              alt='icon'
+              style={{transform:'scale(0.9)'}}
+              className={styles.iconspng4}
+            />
+          </div>
         </div>
       )}
       </div>

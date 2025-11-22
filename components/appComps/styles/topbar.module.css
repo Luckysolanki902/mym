@@ -1,10 +1,13 @@
+/* Topbar with ultra-premium glassmorphism */
 .mainDiv {
     display: flex;
-    width: 100vw;
+    width: 100%;
     position: fixed;
     top: 0;
     left: 0;
-    background-color: var(--mymblack);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     justify-content: center;
     align-items: center;
     padding-left: 1rem;
@@ -12,6 +15,9 @@
     z-index: 999; 
     flex-shrink: 0;
     height: var(--topbarheight);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 24px rgba(31, 38, 135, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .drawermain {
@@ -22,16 +28,20 @@
     padding: 0;
 }
 
-/* Drawer__________________________ */
+/* Drawer with ultra-premium glassmorphism */
 
 .MainCont {
     width: 290px;
-    background-color: var(--mymblack);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
     height: 100%;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
+    border-left: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: -4px 0 24px rgba(31, 38, 135, 0.15);
 }
 
 .MainCont * {
@@ -45,7 +55,6 @@
     padding: 0.5rem;
     align-items: center;
     width: 100%;
-    /* The justify-content: space-between is applied inline in the component */
 }
 
 .link {
@@ -62,108 +71,229 @@
     display: flex;
     justify-content: center;
     overflow: hidden;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .logoImage {
     width: 60%;
     height: auto;
     overflow: hidden;
+    opacity: 0.75;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.logoImage:hover {
+    opacity: 0.7;
+    transform: scale(1.02);
+}
 
+.brandmark {
+    height: 60%;
+    width: auto;
+    opacity: 0.75;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.brandmark:hover {
+    opacity: 0.95;
+    transform: scale(1.02);
+}
+
+/* Beautiful drawer links with smooth transitions */
 .sideBarLinks {
     display: flex;
     align-items: center;
     overflow: hidden;
     width: 100%;
-    border-radius: 1rem;    
+    border-radius: 1.1rem;    
     background-color: transparent;
-    padding: 0.5rem 0.8rem;
+    padding: 0.7rem 1rem;
     width: 100%;
     flex: 1;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.sideBarLinks:hover {
-    background-color: rgba(211, 211, 211, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
 }
 
-.activeListItem {
-    background-color: rgba(211, 211, 211, 0.2);
+.sideBarLinks:hover {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transform: translateX(-3px);
+    box-shadow: 0 4px 12px rgba(31, 38, 135, 0.1),
+                inset 0 1px 1px rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.sideBarLinks:active {
+    transform: translateX(-3px) scale(0.98);
+}
+
+.activeListItem,
+.sideBarListItem [style*="rgba(211, 211, 211"] .sideBarLinks {
+    background: rgba(255, 255, 255, 0.45) !important;
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    border: 1px solid rgba(200, 200, 200, 0.35);
+    box-shadow: 0 4px 12px rgba(31, 38, 135, 0.12),
+                0 1px 3px rgba(31, 38, 135, 0.08),
+                inset 0 1px 1px rgba(255, 255, 255, 0.6);
     text-decoration: none;
     width: 100%;
+    position: relative;
 }
 
+/* Subtle accent indicator for active drawer item */
+.activeListItem::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 25%;
+    bottom: 25%;
+    width: 3px;
+    background: linear-gradient(180deg, 
+        rgba(79, 195, 247, 0.8) 0%, 
+        rgba(144, 206, 240, 0.6) 100%);
+    border-radius: 0 2px 2px 0;
+}
 
 .sideIcon {
     width: 1.5rem;
-    filter: invert(1);
+    opacity: 0.5;
     height: auto;
     font-size: 25px;
-    color: rgb(255, 255, 255);
     cursor: pointer;
     overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: brightness(0) saturate(100%);
+}
+
+.sideBarLinks:hover .sideIcon {
+    opacity: 0.75;
+    transform: scale(1.05);
 }
 
 .iconspng1 {
     width: 1.4rem;
 }
+
 .iconspng2 {
     width: 2rem;
 }
+
 .iconspng3 {
     width: 1.6rem;
 }
 
-
-
 .sideBarListItem .sideBarLinks .linkText {
-    color: white;
-    font-weight: 400;
-    font-family: 'Jost', Inter;
+    color: rgba(45, 45, 45, 0.8);
+    font-weight: 500;
+    font-family: 'Inter', 'Jost', sans-serif;
     text-decoration: none;
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.95rem;
     width: 100%;
+    letter-spacing: 0.2px;
+    transition: all 0.3s ease;
 }
 
-/* The hamburger icon_____________________ */
+.sideBarLinks:hover .linkText {
+    color: rgba(45, 45, 45, 1);
+}
+
+/* Hamburger menu icon with smooth transitions */
 .menuIcon {
-    color: white;
-    font-size: 55px;
+    color: rgba(45, 45, 45, 0.6);
+    font-size: 36px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.menuIcon:hover {
+    color: rgba(45, 45, 45, 0.8);
+    transform: scale(1.05);
+}
 
-.sessionButtons{
+.menuIcon:active {
+    transform: scale(0.95);
+}
+
+/* Beautiful session buttons with glassmorphism */
+.sessionButtons {
     position: absolute;
     right: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
-    
-    }
-    
-    .sessionButtons button{
-        outline: none;
-        border: none;
-        padding: 0.7rem;
-        font-weight: 600;
-        border-radius: 0.5rem;
-        font-family: Inter;
-        cursor: pointer;
-    }
-    .login{
-        background-color: white;
-        color: black;
-    }
-    .signup{
-        background-color: #0C8CE9;
-        color: white;
-    }
+    gap: 0.75rem;
+}
+
+.sessionButtons button {
+    outline: none;
+    border: none;
+    padding: 0.65rem 1.3rem;
+    font-weight: 600;
+    border-radius: 1.1rem;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+}
+
+.sessionButtons button:hover {
+    transform: translateY(-2px);
+}
+
+.sessionButtons button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.login {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    color: rgba(45, 45, 45, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06),
+                inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+.login:hover {
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08),
+                inset 0 1px 1px rgba(255, 255, 255, 0.9);
+}
+
+.signup {
+    background: linear-gradient(135deg, 
+        rgba(177, 225, 245, 0.7) 0%, 
+        rgba(144, 206, 240, 0.65) 100%);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    color: rgba(1, 87, 155, 0.95);
+    border: 1px solid rgba(177, 225, 245, 0.6);
+    box-shadow: 0 4px 16px rgba(79, 195, 247, 0.15),
+                inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+.signup:hover {
+    background: linear-gradient(135deg, 
+        rgba(177, 225, 245, 0.85) 0%, 
+        rgba(144, 206, 240, 0.8) 100%);
+    box-shadow: 0 6px 20px rgba(79, 195, 247, 0.2),
+                inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
 
 @media (max-width: 800px) {
     .mainDiv {
         justify-content: space-between;
+    }
+    
+    .menuIcon {
+        font-size: 36px;
     }
 }
 
@@ -174,12 +304,4 @@
     .drawermain {
         display: none;
     }
-}
-
-
-
-.activeListItem {
-    background-color: rgba(211, 211, 211, 0.2);
-    text-decoration: none;
-    width: 100%;
 }

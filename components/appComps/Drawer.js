@@ -161,7 +161,7 @@ export default function SwipeableTemporaryDrawer() {
       <div className={styles.imageCont}>
         <Image
           className={styles.logoImage}
-          src={'/images/mym_logos/mymlogoinvert2.png'}
+          src={'/images/mym_logos/mymshadow.png'}
           width={362}
           height={169}
           alt="mym"
@@ -247,7 +247,7 @@ export default function SwipeableTemporaryDrawer() {
                         />
                       ) : index === 5 ? (
                         <StyledBadge badgeContent={unseenCount} color="primary">
-                          <MailIcon fontSize="medium" style={{ color: 'white' }} />
+                          <MailIcon fontSize="medium" style={{ color: 'var(--mymblack)' }} />
                         </StyledBadge>
                       ) : index === 6 ? (
                         <Image
@@ -279,7 +279,7 @@ export default function SwipeableTemporaryDrawer() {
                 className={`${styles.sideBarLinks}`}
               >
                 <ListItemIcon className={styles.listItemIcon}>
-                  <SettingsIcon fontSize="medium" style={{ color: 'white' }} />
+                  <SettingsIcon fontSize="medium" style={{ color: 'var(--mymblack)' }} />
                 </ListItemIcon>
                 <ListItemText
                   primary={<div className={styles.linkText}>Settings</div>}

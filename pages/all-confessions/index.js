@@ -24,6 +24,7 @@ const Index = ({ userDetails }) => {
   const [authPromptShown, setAuthPromptShown] = useState(false); // Prevent multiple prompts
   const [limitReached, setLimitReached] = useState(false); // New state to track limit
   const scrollContainerRef = useRef(null); // Create a ref for the scrollable div
+  const [activeGender, setActiveGender] = useState('neutral'); // State for background gradient
 
   useEffect(() => {
     if (userDetails && !userDetails?.isVerified) {
@@ -105,12 +106,30 @@ const Index = ({ userDetails }) => {
     setFilters(newFilters);
   };
 
+  const getBackgroundGradient = () => {
+    switch (activeGender) {
+      case 'male':
+        return 'linear-gradient(180deg, #e0f7fa 0%, #ffffff 100%)';
+      case 'female':
+        return 'linear-gradient(180deg, #fce4ec 0%, #ffffff 100%)';
+      default:
+        return 'linear-gradient(180deg, #fdfbfb 0%, #ebedee 100%)';
+    }
+  };
+
   return (
     <>
       <CustomHead title={'Read Confessions from Various Colleges | MYM - Meet Your Mate'} />
       <div
         ref={scrollContainerRef} // Assign the ref to the div
-        style={{ width: '100%', paddingTop: '2rem', height: '100vh', overflowY: 'auto' }} // Make the div scrollable
+        style={{ 
+          width: '100%', 
+          paddingTop: '2rem', 
+          height: '100vh', 
+          overflowY: 'auto',
+          background: getBackgroundGradient(),
+          transition: 'background 2.5s cubic-bezier(0.4, 0, 0.2, 1)'
+        }} // Make the div scrollable
       >
         <div className={styles.chipContainer}>
           <h1 className={styles.mainHeading}>Confessions</h1>
@@ -119,7 +138,13 @@ const Index = ({ userDetails }) => {
           {/* {userDetails && <FilterOptions userDetails={userDetails} onChange={handleFiltersChange} />} */}
         </div>
         {confessions.map(confession => (
-          <Confession key={confession._id} confession={confession} userDetails={userDetails} applyGenderBasedGrandients={true} />
+          <Confession 
+            key={confession._id} 
+            confession={confession} 
+            userDetails={userDetails} 
+            applyGenderBasedGrandients={true} 
+            setActiveGender={setActiveGender}
+          />
         ))}
         {loading && (
           <div
@@ -154,8 +179,21 @@ const Index = ({ userDetails }) => {
             }}
             className={styles.isLoading}
           >
-            <p style={{ padding: '1rem', textAlign: 'center', opacity: '0.7', transform: 'scale(0.8)', fontWeight: '200' }}>
-              That’s the last confession for now... new stories will unfold soon!
+            <p style={{ 
+              padding: '1.5rem 2rem', 
+              textAlign: 'center', 
+              opacity: '0.8', 
+              fontWeight: '500',
+              fontFamily: 'Quicksand, sans-serif',
+              fontSize: '1.1rem',
+              color: '#636e72',
+              background: 'rgba(255, 255, 255, 0.4)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '2rem',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+              border: '1px solid rgba(255,255,255,0.5)'
+            }}>
+              That’s the last confession for now... new stories will unfold soon! ✨
             </p>
           </div>
         )}

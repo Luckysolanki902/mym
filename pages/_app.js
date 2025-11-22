@@ -54,6 +54,48 @@ export default function App({ Component, pageProps }) {
   const launchDateNTime = new Date('30 Dec, 2024 18:00:00 GMT+0530').getTime();
 
   useEffect(() => {
+    // Custom cursor effect
+    const cursor = document.createElement('div');
+    cursor.style.cssText = `
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transition: background 0.15s ease;
+      mix-blend-mode: normal;
+    `;
+    document.body.appendChild(cursor);
+
+    const updateCursor = (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      const screenMidpoint = window.innerWidth / 2;
+      
+      cursor.style.left = `${x - 4}px`;
+      cursor.style.top = `${y - 4}px`;
+      
+      if (x < screenMidpoint) {
+        cursor.style.background = 'rgba(79, 195, 247, 0.9)';
+        cursor.style.boxShadow = '0 0 12px rgba(79, 195, 247, 0.6), 0 0 4px rgba(79, 195, 247, 0.8)';
+      } else {
+        cursor.style.background = 'rgba(236, 64, 122, 0.9)';
+        cursor.style.boxShadow = '0 0 12px rgba(236, 64, 122, 0.6), 0 0 4px rgba(236, 64, 122, 0.8)';
+      }
+    };
+
+    document.addEventListener('mousemove', updateCursor);
+    
+    return () => {
+      document.removeEventListener('mousemove', updateCursor);
+      if (cursor.parentNode) {
+        cursor.parentNode.removeChild(cursor);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     // Combined Initialization
     // 1. Check if the site is launched yet
     // 2. If on an admin route, verify the token
@@ -202,44 +244,40 @@ export default function App({ Component, pageProps }) {
             <CustomHead />
             <Topbar />
             <Sidebar />
-
+            {showLoadingGif && (
+              <div
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  width: '100vw',
+                  height: '100vh',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                  zIndex: '999',
+                }}
+              >
+                <Image
+                  style={{ width: '120px', height: '120px' }}
+                  src={'/gifs/rhombus.gif'}
+                  width={200}
+                  height={200}
+                  alt='loading'
+                  loading='eager'
+                />
+              </div>
+            )}
             <div
               style={{
-                display: 'flex',
-                flex: 1,
-                overflowY: 'scroll',
-                position: 'relative',
+                paddingTop: 'var(--topbarheight)',
+                paddingLeft: 'var(--sidebarwidth)',
+                minHeight: '100vh',
+                width: '100%',
               }}
-              className='remcheight'
             >
-              <div style={{ overflow: 'auto', flex: 1 }} className='remcwidth'>
-                {showLoadingGif && (
-                  <div
-                    style={{
-                      width: 'var(--remwidth)',
-                      height: '100%',
-                      display: 'flex',
-                      position: 'absolute',
-                      top: '0',
-                      right: '0',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      backgroundColor: 'white',
-                      zIndex: '999',
-                    }}
-                  >
-                    <Image
-                      style={{ width: '120px', height: '120px' }}
-                      src={'/gifs/rhombus.gif'}
-                      width={200}
-                      height={200}
-                      alt='loading'
-                      loading='eager'
-                    />
-                  </div>
-                )}
-                <Component {...pageProps} />
-              </div>
+              <Component {...pageProps} />
             </div>
           </ThemeProvider>
         </SessionProvider>

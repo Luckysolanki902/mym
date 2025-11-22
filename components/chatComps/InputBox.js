@@ -48,7 +48,7 @@ const InputBox = ({
                 }}
             >
                 <Tooltip 
-                    title={!socket?.connected ? 'Connecting...' : (isFindingPair && !hasPaired) ? 'Finding...' : 'Find New'} 
+                    title={!socket?.connected ? 'Connecting...' : (isFindingPair && !hasPaired) ? 'Finding pair...' : 'Find New'} 
                     placement="top" 
                     arrow
                 >
@@ -92,7 +92,7 @@ const InputBox = ({
                             name="messageBox"
                             spellCheck="false"
                             autoCorrect="off"
-                            placeholder={socket?.connected ? (hasPaired ? "Type your message..." : "Find a pair to start chatting") : "Waiting for a pair..."}
+                            placeholder={socket?.connected ? ((isFindingPair && !hasPaired) ? "Finding a pair..." : (hasPaired ? "Type your message..." : "Find a pair to start chatting")) : "Connecting..."}
                             autoFocus
                             id="messageBox"
                             value={textValue}

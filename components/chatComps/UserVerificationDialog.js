@@ -3,94 +3,135 @@ import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
-  DialogTitle,
   Typography,
   Button,
   IconButton,
-  Stepper,
-  Step,
-  StepLabel,
   Box,
-  Grid,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   TextField,
-  Paper,
+  Chip,
+  Stack,
+  Fade
 } from '@mui/material';
-import WarningIcon from '@mui/icons-material/Warning';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { getSession } from 'next-auth/react'; // Updated import
+import CloseIcon from '@mui/icons-material/Close';
+import LoginIcon from '@mui/icons-material/Login';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import { getSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setUnverifiedUserDetails,
   setLastDialogShownAt,
 } from '@/store/slices/unverifiedUserDetailsSlice';
 import { useRouter } from 'next/router';
-import axios from 'axios';
+import styled from '@emotion/styled';
 
-const steps = ['Guidelines', 'Sign In or Not', 'Gender & College'];
+// --- Styled Components for Glassmorphism ---
+const GlassDialogContent = styled(DialogContent)({
+  padding: '2.5rem',
+  background: 'rgba(255, 255, 255, 0.85)',
+  backdropFilter: 'blur(24px) saturate(180%)',
+  WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+  borderRadius: '1.5rem',
+  border: '1px solid rgba(255, 255, 255, 0.6)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+  textAlign: 'center',
+  position: 'relative',
+});
+
+const StyledButton = styled(Button)(({ variant, gender }) => ({
+  borderRadius: '2rem',
+  padding: '0.8rem 2rem',
+  fontWeight: 600,
+  textTransform: 'none',
+  fontSize: '1rem',
+  fontFamily: 'Quicksand, sans-serif',
+  boxShadow: variant === 'contained' 
+    ? (gender === 'male' ? '0 4px 15px rgba(9, 132, 227, 0.3)' 
+      : gender === 'female' ? '0 4px 15px rgba(214, 48, 49, 0.3)' 
+      : '0 4px 15px rgba(0,0,0,0.1)')
+    : 'none',
+  transition: 'all 0.3s ease',
+  background: gender === 'male' 
+    ? 'linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)'
+    : gender === 'female'
+      ? 'linear-gradient(135deg, #ff7675 0%, #d63031 100%)'
+      : variant === 'contained' ? '#2d3436' : 'transparent',
+  color: variant === 'contained' ? '#fff' : '#636e72',
+  ':hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: variant === 'contained' 
+      ? (gender === 'male' ? '0 6px 20px rgba(9, 132, 227, 0.4)' 
+        : gender === 'female' ? '0 6px 20px rgba(214, 48, 49, 0.4)' 
+        : '0 6px 20px rgba(0,0,0,0.15)')
+      : 'none',
+    background: gender === 'male' 
+      ? 'linear-gradient(135deg, #0984e3 0%, #74b9ff 100%)'
+      : gender === 'female'
+        ? 'linear-gradient(135deg, #d63031 0%, #ff7675 100%)'
+        : variant === 'contained' ? '#000' : 'rgba(0,0,0,0.05)',
+  },
+}));
+
+const StyledChip = styled(Chip)(({ selected, gender }) => ({
+  borderRadius: '12px',
+  padding: '0.5rem 0.5rem',
+  fontSize: '0.95rem',
+  fontWeight: 600,
+  fontFamily: 'Quicksand, sans-serif',
+  backgroundColor: selected 
+    ? (gender === 'male' ? 'rgba(79, 195, 247, 0.2)' : 'rgba(236, 64, 122, 0.2)') 
+    : 'rgba(0, 0, 0, 0.05)',
+  color: selected 
+    ? (gender === 'male' ? 'rgba(79, 195, 247, 1)' : 'rgba(236, 64, 122, 1)')
+    : '#636e72',
+  border: selected 
+    ? (gender === 'male' ? '1px solid rgba(79, 195, 247, 0.4)' : '1px solid rgba(236, 64, 122, 0.4)')
+    : '1px solid transparent',
+  '&:hover': {
+    backgroundColor: selected 
+      ? (gender === 'male' ? 'rgba(79, 195, 247, 0.3)' : 'rgba(236, 64, 122, 0.3)') 
+      : 'rgba(0, 0, 0, 0.1)',
+  },
+}));
 
 const UserVerificationDialog = ({ mode = 'textchat' }) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const experienceLabel = mode === 'audiocall' ? 'Audio Call' : 'Text Chat';
+  // Keys for localStorage
   const startFlagKey = mode === 'audiocall' ? 'hasStartedAudioCall' : 'hasStartedChatting';
-  const lastDialogSignedInKey =
-    mode === 'audiocall' ? 'lastDialogShownAtSignedInAudio' : 'lastDialogShownAtSignedIn';
+  const lastDialogSignedInKey = mode === 'audiocall' ? 'lastDialogShownAtSignedInAudio' : 'lastDialogShownAtSignedIn';
 
   const unverifiedUserDetails = useSelector((state) => state.unverifiedUserDetails);
   const [open, setOpen] = useState(false);
-  const [activeStep, setActiveStep] = useState(0);
+  const [view, setView] = useState('choice'); // 'choice' | 'form'
 
-  // Classify user:
-  //   "signedIn" -> session truthy
-  //   "unverifiedHasDetails" -> no session, but unverifiedUserDetails.mid
-  //   "unverifiedNoDetails" -> no session, and no unverifiedUserDetails.mid
+  // User State
   const [userType, setUserType] = useState(null);
-
-  // Session state
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // For Step 2 form data
-  const [colleges, setColleges] = useState([]);
+  // Form State
   const [gender, setGender] = useState('');
   const [college, setCollege] = useState('');
   const [collegeName, setCollegeName] = useState('');
-  const [showButtonLoading, setShowButtonLoading] = useState(false)
+  const [colleges, setColleges] = useState([]);
+  const [showButtonLoading, setShowButtonLoading] = useState(false);
 
-  // --- Title-case utility ---
-  const toTitleCase = (str) =>
-    str.replace(/\w\S*/g, (txt) => {
-      return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
-    });
-
-  // -------------------------
-  // 1. Fetch session manually
-  // -------------------------
+  // 1. Fetch Session
   useEffect(() => {
     const fetchSession = async () => {
       const sessionData = await getSession();
       setSession(sessionData);
       setLoading(false);
     };
-
     fetchSession();
   }, []);
 
-  // -------------------------
-  // 2. Determine userType (sync once on load or changes)
-  // -------------------------
+  // 2. Determine User Type
   useEffect(() => {
-    if (loading) return; // Wait until session is fetched
-
-    let timeoutId;
+    if (loading) return;
     const decideUserType = () => {
-      if (session && session.user && session.user.email) {
+      if (session?.user?.email) {
         setUserType('signedIn');
       } else if (unverifiedUserDetails?.mid) {
         setUserType('unverifiedHasDetails');
@@ -98,50 +139,18 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
         setUserType('unverifiedNoDetails');
       }
     };
-
-    timeoutId = setTimeout(decideUserType, 1000);
-    return () => clearTimeout(timeoutId);
+    decideUserType();
   }, [session, unverifiedUserDetails.mid, loading]);
 
-  // -------------------------
-  // 3. Decide if we should show dialog based on userType + time checks
-  // -------------------------
-  useEffect(() => {
-    const hasStartedExperience = localStorage.getItem(startFlagKey);
-    if (hasStartedExperience === 'true') {
-      setOpen(false); // Ensure dialog stays closed if already started chatting
-      return;
-    }
-
-    if (!userType) return; // Wait until we know userType
-
-    const now = Date.now();
-    const oneHour = 60 * 60 * 1000;
-
-    if (userType === 'signedIn') {
-      const lastShown = localStorage.getItem(lastDialogSignedInKey);
-      if (!lastShown || now - parseInt(lastShown, 10) > oneHour) {
-        setOpen(true);
-      }
-    } else if (userType === 'unverifiedHasDetails') {
-      const lastShown = unverifiedUserDetails.lastDialogShownAt;
-      if (!lastShown || now - lastShown > oneHour) {
-        setOpen(true);
-      }
-    } else if (userType === 'unverifiedNoDetails') {
-      setOpen(true);
-    }
-  }, [userType, unverifiedUserDetails.lastDialogShownAt]);
-
-
-  // -------------------------
-  // 4. Fetch colleges once
-  // -------------------------
+  // Fetch Colleges
   useEffect(() => {
     const fetchColleges = async () => {
       try {
-        const response = await axios.get('/api/admin/getdetails/getcolleges');
-        setColleges(response.data);
+        const response = await fetch('/api/admin/getdetails/getcolleges');
+        if (response.ok) {
+          const data = await response.json();
+          setColleges(data);
+        }
       } catch (error) {
         console.error('Error fetching colleges:', error);
       }
@@ -149,54 +158,59 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
     fetchColleges();
   }, []);
 
-  // -------------------------
-  // Dialog Handlers
-  // -------------------------
+  // 3. Open Logic
+  useEffect(() => {
+    const hasStartedExperience = localStorage.getItem(startFlagKey);
+    if (hasStartedExperience === 'true') {
+      return;
+    }
+
+    if (!userType) return;
+
+    const now = Date.now();
+    const oneHour = 60 * 60 * 1000;
+
+    const checkAndOpen = () => {
+      if (userType === 'signedIn') {
+        const lastShown = localStorage.getItem(lastDialogSignedInKey);
+        if (!lastShown || now - parseInt(lastShown, 10) > oneHour) {
+          setOpen(true);
+        }
+      } else if (userType === 'unverifiedHasDetails') {
+        const lastShown = unverifiedUserDetails.lastDialogShownAt;
+        if (!lastShown || now - lastShown > oneHour) {
+          setOpen(true);
+        }
+      } else if (userType === 'unverifiedNoDetails') {
+        setOpen(true);
+      }
+    };
+
+    const timer = setTimeout(checkAndOpen, 100);
+    return () => clearTimeout(timer);
+  }, [userType, unverifiedUserDetails.lastDialogShownAt, startFlagKey, lastDialogSignedInKey]);
+
   const handleClose = () => {
     setOpen(false);
     const now = new Date().getTime();
-
     if (userType === 'signedIn') {
       localStorage.setItem(lastDialogSignedInKey, now.toString());
     } else {
-      // unverifiedHasDetails or unverifiedNoDetails
       dispatch(setLastDialogShownAt(now));
     }
-  };
-
-  // Next button on each step
-  const handleNext = () => {
-    if (activeStep === 0) {
-      // Step 0 -> Step 1 if unverified
-      // If signed in, close immediately
-      if (userType === 'signedIn') {
-        handleClose();
-      } else {
-        setActiveStep(1);
-      }
-    } else if (activeStep === 1) {
-      // Step 1 -> Step 2
-      setActiveStep(2);
-    }
-  };
-
-  // Back button
-  const handleBack = () => {
-    if (activeStep > 0) {
-      setActiveStep((prev) => prev - 1);
-    }
+    // Reset view for next time
+    setTimeout(() => setView('choice'), 300);
   };
 
   const handleSignIn = () => {
     router.push('/auth/signin');
   };
 
-  const handleContinueWithoutSignIn = () => {
-    setActiveStep(2);
+  const handleContinueGuest = () => {
+    setView('form');
   };
 
-  // Final step: store details to Redux
-  const handleStartExperience = () => {
+  const handleStart = () => {
     if (!gender || !college) {
       alert('Please select both gender and college.');
       return;
@@ -208,291 +222,202 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
         alert('Please provide a college name.');
         return;
       }
-      finalCollegeName = toTitleCase(collegeName.trim());
+      finalCollegeName = collegeName.trim();
     }
 
-    // Save details
-    dispatch(
-      setUnverifiedUserDetails({
-        gender,
-        college: finalCollegeName,
-      })
-    );
-
-    // Set loading state
     setShowButtonLoading(true);
+    
+    dispatch(setUnverifiedUserDetails({
+      gender,
+      college: finalCollegeName
+    }));
 
-    // Use a flag to avoid reopening
-  localStorage.setItem(startFlagKey, 'true');
+    localStorage.setItem(startFlagKey, 'true');
 
-    // Close dialog after loading finishes
     setTimeout(() => {
       setShowButtonLoading(false);
-      setOpen(false); // Close dialog definitively
-    }, 1000);
+      setOpen(false);
+    }, 800);
   };
 
-
-
-
-  // -------------------------
-  // Step-by-step UI
-  // -------------------------
-  const renderStepContent = () => {
-    // Step 0: Verified vs Unverified info
-    if (activeStep === 0) {
-      return (
-        <Box>
-          <Grid container alignItems="center" spacing={2}>
-            <Grid item>
-              <WarningIcon color="warning" fontSize="large" />
-            </Grid>
-            <Grid item>
-              <Typography variant="h6" fontWeight="bold">
-                Unverified User
-              </Typography>
-            </Grid>
-          </Grid>
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            Unverified Users are those who are {mode === 'audiocall' ? 'calling' : 'chatting'} without signing in.
-            They have not confirmed their college and might not be so trustworthy.
-          </Typography>
-
-          <Grid container alignItems="center" spacing={2} sx={{ mt: 3 }}>
-            <Grid item>
-              <CheckCircleIcon color="success" fontSize="large" />
-            </Grid>
-            <Grid item>
-              <Typography variant="h6" fontWeight="bold">
-                Verified User
-              </Typography>
-            </Grid>
-          </Grid>
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            Verified users have signed in and confirmed their college with otp.
-            You can trust that they are honest about their college. Sign in to make others trust you before joining {experienceLabel}.
-          </Typography>
-
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-          
-            <Button
-              variant="outlined"
-              onClick={()=> router.push('/')}
-            >
-              Back to Home
-            </Button>
-
-            <Button
-              variant="contained"
-              onClick={handleNext}
-              sx={{
-                backgroundColor: '#2d2d2d',
-                ':hover': { backgroundColor: 'rgba(45, 45, 45, 0.9)' },
-              }}
-            >
-              {userType !== 'unverifiedNoDetails' ? 'Okay' : 'Next'}
-            </Button>
-          </Box>
-        </Box>
-      );
-    }
-
-    // Step 1: Sign In or Continue
-    if (activeStep === 1) {
-      return (
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <IconButton onClick={handleBack}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="body1" sx={{ ml: 1, fontWeight:'600', fontSize:"1.1rem" }}>
-              Sign In or Continue
-            </Typography>
-          </Box>
-
-          <Typography variant="body2" gutterBottom>
-            You can sign in (or create an account) to become a verified user,
-            or continue as an unverified user.
-          </Typography>
-
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              mt: 3,
-              flexDirection: {
-                xs: 'column', // column direction for small screens
-                sm: 'row', // row direction for medium and larger screens
-              },
-              gap:'1rem',
-            }}
-
-          >
-            <Button
-              variant="contained"
-              onClick={handleSignIn}
-              sx={{
-                backgroundColor: 'black',
-                color: 'white',
-                ':hover': {
-                  backgroundColor: '#333',
-                  fontsize: '0.7rem',
-                },
-              }}
-            >
-              Sign In
-            </Button>
-
-            <Button
-              variant="outlined"
-              onClick={handleContinueWithoutSignIn}
-              sx={{
-                color: 'black',
-                borderColor: 'black',
-                ':hover': {
-                  borderColor: '#666',
-                  color: '#444',
-                  fontsize: '0.7rem',
-                },
-              }}
-            >
-              Continue without Signing In
-            </Button>
-          </Box>
-        </Box>
-      );
-    }
-
-    // Step 2: Enter Details
-    if (activeStep === 2) {
-      return (
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <IconButton onClick={handleBack}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h6" sx={{ ml: 2 }}>
-              Enter Your Details
-            </Typography>
-          </Box>
-
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel id="gender-label">Gender</InputLabel>
-            <Select
-              labelId="gender-label"
-              value={gender}
-              label="Gender"
-              onChange={(e) => setGender(e.target.value)}
-            >
-              <MenuItem value="male">Male</MenuItem>
-              <MenuItem value="female">Female</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl fullWidth sx={{ mt: 3 }}>
-            <InputLabel id="college-label">College</InputLabel>
-            <Select
-              labelId="college-label"
-              value={college}
-              label="College"
-              onChange={(e) => {
-                setCollege(e.target.value);
-                if (e.target.value !== 'other') {
-                  setCollegeName('');
-                }
-              }}
-            >
-              {colleges.map((col) => (
-                <MenuItem key={col._id} value={col.college}>
-                  {col.college}
-                </MenuItem>
-              ))}
-              <MenuItem value="other">Other</MenuItem>
-            </Select>
-          </FormControl>
-
-          {college === 'other' && (
-            <TextField
-              fullWidth
-              label="College Name"
-              placeholder="Enter your college name"
-              variant="outlined"
-              sx={{ mt: 3 }}
-              value={collegeName}
-              onChange={(e) => setCollegeName(e.target.value)}
-            />
-          )}
-
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-            <Button
-              variant="contained"
-              onClick={handleStartExperience}
-              disabled={showButtonLoading} // Disable button while loading
-              sx={{
-                backgroundColor: showButtonLoading ? '#ccc' : '#2d2d2d',
-                ':hover': { backgroundColor: showButtonLoading ? '#ccc' : 'rgba(45,45,45,0.9)' },
-              }}
-            >
-              {showButtonLoading ? 'Working...' : `Start ${experienceLabel}!`}
-            </Button>
-          </Box>
-
-        </Box>
-      );
-    }
-
-    return null;
-  };
-
-  // Optional: Render nothing or a loader while loading
-  if (loading) {
-    return null; // Or a loader component like <CircularProgress />
-  }
+  if (loading) return null;
 
   return (
     <Dialog
       open={open}
-      onClose={() => { }}
-      disableEscapeKeyDown
-      aria-labelledby="user-verification-dialog"
-      fullWidth
+      onClose={handleClose}
       maxWidth="sm"
-      sx={{
-        '& .MuiPaper-root': {
-          borderRadius: 4,
-          overflow: 'hidden',
+      fullWidth
+      PaperProps={{
+        style: {
+          borderRadius: '1.5rem',
+          background: 'transparent',
+          boxShadow: 'none',
+          overflow: 'visible' // Allow close button to overflow if needed
         },
       }}
     >
-      <DialogTitle>
-        <Stepper
-          activeStep={activeStep}
-          alternativeLabel
+      <GlassDialogContent>
+        <IconButton
+          onClick={handleClose}
           sx={{
-            mb: 2,
-            '& .MuiStepIcon-root.Mui-active': { color: '#2d2d2d' },
-            '& .MuiStepIcon-root.Mui-completed': { color: '#4caf50' },
+            position: 'absolute',
+            right: 16,
+            top: 16,
+            color: '#636e72',
+            '&:hover': { color: '#2d3436', background: 'rgba(0,0,0,0.05)' }
           }}
         >
-          {steps.map((label, index) => (
-            <Step key={label} completed={activeStep > index}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-      </DialogTitle>
+          <CloseIcon />
+        </IconButton>
 
-      <DialogContent>
-        <Paper
-          elevation={0}
-          sx={{
-            p: 2,
-            backgroundColor: '#fdfdfd',
-          }}
-        >
-          {renderStepContent()}
-        </Paper>
-      </DialogContent>
+        {view === 'choice' ? (
+          <Fade in={view === 'choice'}>
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="h4" sx={{ fontFamily: 'Quicksand, sans-serif', fontWeight: 700, mb: 2, color: '#2d3436' }}>
+                Verification
+              </Typography>
+              <Typography variant="body1" sx={{ fontFamily: 'Quicksand, sans-serif', color: '#636e72', mb: 4, lineHeight: 1.6 }}>
+                Join our community of verified students for the best experience. 
+                Verified users are more trusted and get better matches.
+              </Typography>
+
+              <Stack spacing={2} direction="column" alignItems="center">
+                <StyledButton
+                  variant="contained"
+                  fullWidth
+                  onClick={handleSignIn}
+                  startIcon={<LoginIcon />}
+                  sx={{ 
+                    maxWidth: '300px'
+                  }}
+                >
+                  Sign In (Recommended)
+                </StyledButton>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: '300px', py: 1 }}>
+                  <div style={{ flex: 1, height: '1px', background: '#dfe6e9' }}></div>
+                  <Typography variant="caption" sx={{ px: 2, color: '#b2bec3' }}>OR</Typography>
+                  <div style={{ flex: 1, height: '1px', background: '#dfe6e9' }}></div>
+                </Box>
+
+                <StyledButton
+                  variant="outlined"
+                  fullWidth
+                  onClick={handleContinueGuest}
+                  startIcon={<PersonOutlineIcon />}
+                  sx={{ 
+                    borderColor: '#b2bec3',
+                    color: '#636e72',
+                    maxWidth: '300px',
+                    '&:hover': { borderColor: '#636e72', background: 'rgba(0,0,0,0.02)' }
+                  }}
+                >
+                  Continue as Guest
+                </StyledButton>
+              </Stack>
+            </Box>
+          </Fade>
+        ) : (
+          <Fade in={view === 'form'}>
+            <Box sx={{ mt: 1, textAlign: 'left' }}>
+              <Typography variant="h5" sx={{ fontFamily: 'Quicksand, sans-serif', fontWeight: 700, mb: 3, textAlign: 'center', color: '#2d3436' }}>
+                Guest Details
+              </Typography>
+
+              <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: '#636e72', fontFamily: 'Quicksand, sans-serif' }}>
+                Gender
+              </Typography>
+              <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+                <StyledChip 
+                  label="Male" 
+                  onClick={() => setGender('male')}
+                  selected={gender === 'male'}
+                  gender="male"
+                  clickable
+                />
+                <StyledChip 
+                  label="Female" 
+                  onClick={() => setGender('female')}
+                  selected={gender === 'female'}
+                  gender="female"
+                  clickable
+                />
+              </Stack>
+
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, color: '#636e72', fontFamily: 'Quicksand, sans-serif' }}>
+                College
+              </Typography>
+              <select
+                value={college}
+                onChange={(e) => {
+                  setCollege(e.target.value);
+                  if (e.target.value !== 'other') {
+                    setCollegeName('');
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  padding: '1rem',
+                  borderRadius: '1rem',
+                  border: '1px solid #dfe6e9',
+                  background: 'rgba(255,255,255,0.5)',
+                  fontFamily: 'Quicksand, sans-serif',
+                  fontSize: '1rem',
+                  marginBottom: '1.5rem',
+                  cursor: 'pointer',
+                  outline: 'none'
+                }}
+              >
+                <option value="">Select your college</option>
+                {colleges.map((col) => (
+                  <option key={col._id} value={col.college}>
+                    {col.college}
+                  </option>
+                ))}
+                <option value="other">Other</option>
+              </select>
+
+              {college === 'other' && (
+                <TextField
+                  fullWidth
+                  placeholder="Enter your college name"
+                  value={collegeName}
+                  onChange={(e) => setCollegeName(e.target.value)}
+                  sx={{ 
+                    mb: 4,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '1rem',
+                      fontFamily: 'Quicksand, sans-serif',
+                      background: 'rgba(255,255,255,0.5)',
+                      '& fieldset': { borderColor: '#dfe6e9' },
+                      '&:hover fieldset': { borderColor: '#b2bec3' },
+                      '&.Mui-focused fieldset': { 
+                        borderColor: gender === 'male' ? 'rgba(79, 195, 247, 0.6)' : 'rgba(236, 64, 122, 0.6)'
+                      },
+                    }
+                  }}
+                />
+              )}
+
+              <Box sx={{ textAlign: 'center' }}>
+                <StyledButton
+                  variant="contained"
+                  onClick={handleStart}
+                  disabled={showButtonLoading}
+                  gender={gender}
+                  sx={{ 
+                    minWidth: '200px',
+                    opacity: showButtonLoading ? 0.7 : 1
+                  }}
+                >
+                  {showButtonLoading ? 'Starting...' : 'Start Chatting'}
+                </StyledButton>
+              </Box>
+            </Box>
+          </Fade>
+        )}
+      </GlassDialogContent>
     </Dialog>
   );
 };

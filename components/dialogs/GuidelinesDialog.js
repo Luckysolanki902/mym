@@ -8,24 +8,31 @@ import styled from '@emotion/styled';
 const StyledDialogContent = styled(DialogContent)({
     padding: '3rem',
     borderRadius: '1.5rem',
-    backgroundColor: '#ffffff',
+    background: 'rgba(255, 255, 255, 0.85)',
+    backdropFilter: 'blur(24px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(24px) saturate(180%)',
     textAlign: 'center',
-    boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+    border: '1px solid rgba(255, 255, 255, 0.6)',
 }); 
 
 const StyledButton = styled(Button)(({ userGender }) => ({
     marginTop: '2rem',
-    backgroundColor: userGender === 'male' ? 'rgba(83, 195, 255, 0.9)' : 'rgba(255, 115, 147, 0.91)',
+    background: userGender === 'male' 
+        ? 'linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)' 
+        : 'linear-gradient(135deg, #ff7675 0%, #d63031 100%)',
     color: '#fff',
-    padding: '0.9rem 2rem',
-    borderRadius: '1rem',
-    fontWeight: 700,
+    padding: '0.8rem 2.5rem',
+    borderRadius: '2rem',
+    fontWeight: 600,
     fontSize: '1rem',
     textTransform: 'capitalize',
-    transition: 'background-color 0.3s ease, transform 0.2s ease',
+    fontFamily: 'Quicksand, sans-serif',
+    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     ':hover': {
-        backgroundColor: userGender === 'male' ? 'rgba(83, 175, 235, 0.8)' : 'rgba(255, 95, 127, 0.8)',
-        transform: 'scale(0.98)',
+        transform: 'translateY(-2px)',
+        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)',
     },
 }));
 
@@ -39,6 +46,8 @@ const GuidelinesDialog = ({ open, onClose, userGender }) => {
                     borderRadius: '1.5rem',
                     overflow: 'hidden',
                     maxWidth: '650px',
+                    background: 'transparent',
+                    boxShadow: 'none',
                 },
             }}
         >
@@ -46,7 +55,12 @@ const GuidelinesDialog = ({ open, onClose, userGender }) => {
                 <Typography
                     variant="h5"
                     gutterBottom
-                    style={{ fontWeight: 800, color: '#2c3e50', marginBottom: '2rem' }}
+                    style={{ 
+                        fontWeight: 700, 
+                        color: '#2d3436', 
+                        marginBottom: '2rem',
+                        fontFamily: 'Quicksand, sans-serif'
+                    }}
                 >
                     Guidelines to Follow
                 </Typography>
@@ -55,17 +69,19 @@ const GuidelinesDialog = ({ open, onClose, userGender }) => {
                     textAlign: 'left',
                     margin: '0 auto',
                     maxWidth: '520px',
-                    color: '#555',
-                    lineHeight: '1.9',
-                    fontSize: '1.1rem',
+                    color: '#636e72',
+                    lineHeight: '1.8',
+                    fontSize: '1.05rem',
+                    fontFamily: 'Quicksand, sans-serif',
+                    fontWeight: 500
                 }}>
-                    <Typography variant="body1" style={{ marginBottom: '1.2rem' }}>
+                    <Typography variant="body1" style={{ marginBottom: '1.2rem', fontFamily: 'inherit' }}>
                         <strong>1. Be Real:</strong> Say what you feel, not what you think others want to hear. True words have power to touch hearts.
                     </Typography>
-                    <Typography variant="body1" style={{ marginBottom: '1.2rem' }}>
-                        <strong>2. Be Kind:</strong> Life is beautiful and is all about <span style={{ color: '#df2c7a' }}>love</span> and not hatred. Keep your words as gentle as your intentions.
+                    <Typography variant="body1" style={{ marginBottom: '1.2rem', fontFamily: 'inherit' }}>
+                        <strong>2. Be Kind:</strong> Life is beautiful and is all about <span style={{ color: '#e84393', fontWeight: 700 }}>love</span> and not hatred. Keep your words as gentle as your intentions.
                     </Typography>
-                    <Typography variant="body1" style={{ marginBottom: '1.2rem' }}>
+                    <Typography variant="body1" style={{ marginBottom: '1.2rem', fontFamily: 'inherit' }}>
                         <strong>3. Respect Privacy:</strong> Avoid revealing personal details about yourself or others.
                     </Typography>
                 </div>

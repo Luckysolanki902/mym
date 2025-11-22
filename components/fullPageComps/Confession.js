@@ -26,6 +26,7 @@ const Confession = ({
   applyGenderBasedGrandients,
   isAdmin = false, // Indicates if the user is an admin
   onDelete, // Callback function to handle deletion
+  setActiveGender, // New prop for background gradient
 }) => {
   const isSmallDevice = useMediaQuery('(max-width:800px)');
   const [isAnonymousReplyDialogOpen, setAnonymousReplyDialogOpen] = useState(false);
@@ -375,8 +376,16 @@ const Confession = ({
   };
 
   const [ref, inView] = useInView({
-    triggerOnce: true,
+    threshold: 0,
+    rootMargin: '-45% 0px -45% 0px',
+    triggerOnce: false,
   });
+
+  useEffect(() => {
+    if (inView && setActiveGender) {
+      setActiveGender(confession.gender || 'neutral');
+    }
+  }, [inView, confession.gender, setActiveGender]);
 
   // Handlers for delete dialog
   const handleDeleteClick = () => {

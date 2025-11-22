@@ -3,6 +3,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import { Button, CircularProgress } from '@mui/material';
 import { CloseRounded } from '@mui/icons-material';
+import { motion } from 'framer-motion';
 
 const AnonymDialog = ({
   open,
@@ -79,6 +80,11 @@ const AnonymDialog = ({
           // Add top-left and top-right radii
           borderTopLeftRadius: '1.5rem',
           borderTopRightRadius: '1.5rem',
+          background: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+          border: '1px solid rgba(255, 255, 255, 0.6)',
         },
       }}
     >
@@ -92,7 +98,13 @@ const AnonymDialog = ({
         </div>
       </DialogTitle>
       */}
-      <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '1.5rem' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
+        >
         <textarea
           id="anonymous-reply-textarea" // Added ID for easier access
           type="text"
@@ -102,10 +114,13 @@ const AnonymDialog = ({
             border: 'none',
             outline: 'none',
             flex: 1,
-            fontFamily: 'Roboto, sans-serif',
-            fontSize: '0.9rem',
-            color: 'rgb(50, 50, 50)',
+            fontFamily: 'Quicksand, sans-serif',
+            fontSize: '1rem',
+            fontWeight: '500',
+            color: '#2d3436',
             resize: 'none',
+            background: 'transparent',
+            lineHeight: '1.6',
           }}
           value={anonymousReplyValue}
           onChange={(e) => setAnonymousReplyValue(e.target.value)}
@@ -130,12 +145,29 @@ const AnonymDialog = ({
             width: 'fit-content',
             alignSelf: 'flex-end',
             textTransform: 'none',
-            backgroundColor: 'rgb(60, 60, 60)',
-            borderRadius: '0.655rem',
+            background: 'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            borderRadius: '2rem',
+            padding: '0.5rem 1.5rem',
+            fontFamily: 'Quicksand, sans-serif',
+            fontWeight: '600',
+            boxShadow: '0 4px 15px rgba(108, 92, 231, 0.3)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #5f27cd 0%, #8e44ad 100%)',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 6px 20px rgba(108, 92, 231, 0.4)',
+            },
+            '&:disabled': {
+              background: 'rgba(150, 150, 150, 0.3)',
+              boxShadow: 'none',
+            },
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         >
           {sending ? <CircularProgress size={24} color="inherit" /> : 'Send'}
         </Button>
+        </motion.div>
       </DialogContent>
       {/* Optional: Add a close button in the top-right corner */}
       {/* <Button

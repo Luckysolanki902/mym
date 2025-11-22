@@ -8,6 +8,8 @@ import ReplyIcon from '@mui/icons-material/Reply';
 import ShareDialog from '../dialogs/ShareDialog';
 import { Button } from '@mui/material';
 import ConfessionFooter from './ConfessionFooter';
+import { getTimeAgo } from '../../utils/generalUtilities';
+import { motion } from 'framer-motion';
 
 const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession, userDetails, commentsCount, toggleCommentsDialog, handleClick, handleOpenAuthPrompt, isAdmin, ondeleteClick }) => {
   // const [content, setContent] = useState('');
@@ -55,87 +57,16 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession, userDet
   //   }
   // }, [index, inView, isTyping, showFullContent, confession?.confessionContent?.length]);
 
-  const getTimeAgo = (timestamp) => {
-    const now = new Date();
-    const confessionDate = new Date(timestamp);
-
-    const seconds = Math.floor((now - confessionDate) / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    const weeks = Math.floor(days / 7);
-    const months = Math.floor(days / 30);
-    const years = Math.floor(days / 365);
-
-    if (seconds < 60) {
-      return `A few seconds ago`;
-    } else if (minutes < 60) {
-      if (minutes === 1) {
-        return `A minute ago`;
-      } else if (minutes === 2) {
-        return `2 minutes ago`;
-      } else if (minutes === 3) {
-        return `3 minutes ago`;
-      } else {
-        return `A few minutes ago`;
-      }
-    } else if (hours < 24) {
-      if (hours === 1) {
-        return `An hour ago`;
-      } else if (hours === 2) {
-        return `2 hours ago`;
-      } else if (hours === 3) {
-        return `3 hours ago`;
-      } else {
-        return `A few hours ago`;
-      }
-    } else if (days < 7) {
-      if (days === 1) {
-        return `A day ago`;
-      } else if (days === 2) {
-        return `2 days ago`;
-      } else if (days === 3) {
-        return `3 days ago`;
-      } else {
-        return `A few days ago`;
-      }
-    } else if (weeks < 4) {
-      if (weeks === 1) {
-        return `A week ago`;
-      } else if (weeks === 2) {
-        return `2 weeks ago`;
-      } else if (weeks === 3) {
-        return `3 weeks ago`;
-      } else {
-        return `A few weeks ago`;
-      }
-    } else if (months < 12) {
-      if (months === 1) {
-        return `A month ago`;
-      } else if (months === 2) {
-        return `2 months ago`;
-      } else if (months === 3) {
-        return `3 months ago`;
-      } else {
-        return `A few months ago`;
-      }
-    } else {
-      if (years === 1) {
-        return `A year ago`;
-      } else if (years === 2) {
-        return `2 years ago`;
-      } else if (years === 3) {
-        return `3 years ago`;
-      } else {
-        return `A few years ago`;
-      }
-    }
-  };
-
-
   return (
     <>
-      <div ref={ref} style={{ position: 'relative' }} className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Gradient`] : ''}`}
+      <motion.div 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        ref={ref} 
+        style={{ position: 'relative' }} 
+        className={`${styles.mainContainer} ${gender && applyGenderBasedGrandients ? styles[`${gender}Card`] : ''}`}
       //  onClick={handleBoxClick}
        >
         <div 
@@ -179,7 +110,7 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession, userDet
 
 
         <ShareDialog open={isShareDialogOpen} shareLink={confession._id} onClose={() => setShareDialogOpen(false)} confessorGender={confession?.gender} />
-      </div>
+      </motion.div>
 
 
 
