@@ -15,7 +15,13 @@
 .mainHeading{
     font-family: 'Jost', sans-serif;
     font-weight: 500;
-    padding-left: 2rem;
+    padding-left: calc(2rem + var(--sidebarwidth));
+}
+
+@media (max-width: 800px) {
+    .mainHeading {
+        padding-left: 0;
+    }
 }
 
 .chipParent {
@@ -59,9 +65,6 @@
     .isLoading {
         font-size: 1.2rem;
     }
-    .mainHeading{
-        padding-left: 0rem;
-    }
 }
 
 
@@ -94,15 +97,3 @@
         width: 80vw;
     }
 }
-
-@media (width>600px){
-    .mainHeading{
-        padding-left: 0rem;
-    }
-}
-@media (width>800px){
-    .mainHeading{
-        padding-left: 2rem;
-    }
-}
-

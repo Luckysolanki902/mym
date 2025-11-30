@@ -197,6 +197,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                 anonymousReplyValue={anonymousReplyValue}
                 setAnonymousReplyValue={setAnonymousReplyValue}
                 isLoading={sendingAnonymousReply} // Pass loading state to dialog
+                userGender={userDetails?.gender}
             />
         </div>
     );

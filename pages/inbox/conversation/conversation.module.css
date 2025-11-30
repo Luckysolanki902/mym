@@ -3,7 +3,14 @@
 .conversationWrapper {
     min-height: 100vh;
     padding: calc(var(--topbarheight) + 0.5rem) 0 3rem 0;
+    padding-left: calc(1rem + var(--sidebarwidth));
     position: relative;
+}
+
+@media (max-width: 800px) {
+    .conversationWrapper {
+        padding-left: 0;
+    }
 }
 
 .maleTheme {

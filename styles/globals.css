@@ -88,6 +88,12 @@ button:focus {
   src: url('/fonts/tan-pearl.otf');
 }
 
+@font-face {
+  font-family: 'Liquids';
+  src: url('/fonts/Liquids.ttf') format('truetype'),
+       url('/fonts/Liquids.otf') format('opentype');
+}
+
 button {
   -webkit-tap-highlight-color: transparent;
 }

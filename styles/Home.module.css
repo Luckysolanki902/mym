@@ -385,6 +385,9 @@ left: 0;
     /* padding-right: 2rem; */
     font-size: 1.4rem;
   }
+  .mainContainer{
+    padding-left: 0;
+  } 
 }
 
 @media(width<700px){

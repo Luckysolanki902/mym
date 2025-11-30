@@ -35,14 +35,23 @@ const Topbar = () => {
 
   return (
     <div className={`topbarheight ${styles.mainDiv}`}>
-      <Image 
+      <div 
         onClick={() => router.push('/')} 
-        src={'/images/spyll_logos/spyll_main.png'} 
-        width={724 / 3} 
-        height={338 / 3} 
-        alt='mym' 
         className={styles.brandmark}
-      />
+        style={{
+          fontFamily: "'Liquids', sans-serif",
+          fontWeight: 400,
+          fontSize: '2rem',
+          letterSpacing: '-1.5px',
+          color: '#000000',
+          cursor: 'pointer',
+          userSelect: 'none',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        spyll
+      </div>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {user && <SwipeableTemporaryDrawer />}
         {!loading && !user && (

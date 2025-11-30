@@ -18,7 +18,7 @@ const Footer = () => {
                             <Image className={styles.contactIcon} width={95} height={89} alt='Email icon' src={'/images/othericons/mail.png'} />
                         </span>
                         <span>
-                            <a className={styles.contactLink} href="mailto: connect.meetyourmate@gmail.com">connect.meetyourmate@gmail.com</a>
+                            <a className={styles.contactLink} href="mailto: connect.meetyourmate@gmail.com">connect.spyll@gmail.com</a>
                         </span>
                     </div>
                     <div className={styles.contactContent}>
@@ -26,7 +26,7 @@ const Footer = () => {
                             <Image className={styles.contactIcon} width={95} height={89} alt='Instagram icon' src={'/images/othericons/instagramw.png'} />
                         </span>
                         <span>
-                            <a target={'_blank'} rel='noreferrer' className={styles.contactLink} href="https://instagram.com/meetyourmate_?igshid=NGVhN2U2NjQ0Yg==">@meetyourmate_</a>
+                            <a target={'_blank'} rel='noreferrer' className={styles.contactLink} href="https://instagram.com/meetyourmate_?igshid=NGVhN2U2NjQ0Yg==">@spyll_app</a>
                         </span>
                     </div>
                 </div>
@@ -36,7 +36,7 @@ const Footer = () => {
                         <span className={styles.separator}>/</span>
                         <Link href={'/how-we-protect-anonymity'}>How We Protect Anonymity</Link>
                     </div>
-                    <p className={styles.copy}>© {currentYear} Meet Your Mate</p>
+                    <p className={styles.copy}>© {currentYear} Spyll</p>
                 </div>
             </div>
         </footer>

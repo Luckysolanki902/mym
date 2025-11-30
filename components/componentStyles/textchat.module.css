@@ -1,6 +1,7 @@
 .mainC {
   padding: 0;
   margin: 0;
+  padding-left: calc(1rem + var(--sidebarwidth));
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -8,6 +9,12 @@
   overflow: auto;
   overflow-x: hidden;
   position: relative;
+}
+
+@media (max-width: 800px) {
+  .mainC {
+    padding-left: 0;
+  }
 }
 
 /* Dating-themed background with subtle pattern */
@@ -43,13 +50,15 @@
 
 .messCon {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
+  justify-content: flex-end;
   flex: 1;
   overflow-y: scroll;
-  margin-bottom: 4rem;
+  margin-bottom: 3.8rem;
   padding-top: 5rem;
-  padding-bottom: 1rem;
+  padding-bottom: 0.2rem;
   position: relative;
+  min-height: calc(100vh - 10rem);
 }
 
 .morePadding {
@@ -608,6 +617,10 @@
 
 
 @media (width<800px) {
+  .messCon {
+    margin-bottom: 3.2rem;
+  }
+
   .inputContainerMainDiv {
     padding-left: 0.75rem;
     padding-right: 0.75rem;

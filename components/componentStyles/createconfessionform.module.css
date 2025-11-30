@@ -3,6 +3,13 @@
     justify-content: center;
     align-items: center;
     margin: 0;
+    padding-left: calc(var(--sidebarwidth));
+}
+
+@media (max-width: 800px) {
+    .mainDiv {
+        padding-left: 0;
+    }
 }
 
 .mainPageHeading{

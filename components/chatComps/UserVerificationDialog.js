@@ -230,10 +230,8 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
 
     const checkAndOpen = () => {
       if (userType === 'signedIn') {
-        const lastShown = localStorage.getItem(lastDialogSignedInKey);
-        if (!lastShown || now - parseInt(lastShown, 10) > oneHour) {
-          setOpen(true);
-        }
+        // Signed in users are already verified
+        return;
       } else if (userType === 'unverifiedHasDetails') {
         const lastShown = unverifiedUserDetails.lastDialogShownAt;
         if (!lastShown || now - lastShown > oneHour) {
@@ -469,7 +467,7 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
                     opacity: showButtonLoading ? 0.7 : 1
                   }}
                 >
-                  {showButtonLoading ? 'Starting...' : 'Start Chatting'}
+                  {showButtonLoading ? 'Starting...' : (mode === 'audiocall' ? 'Start Calling' : 'Start Chatting')}
                 </StyledButton>
               </Box>
             </Box>

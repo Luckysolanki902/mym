@@ -4,10 +4,17 @@
   min-height: 100vh;
   width: 100%;
   padding: 3rem 2rem;
+  padding-left: calc(2rem + var(--sidebarwidth));
   display: flex;
   justify-content: center;
   align-items: flex-start;
   overflow-y: auto;
+}
+
+@media (max-width: 800px) {
+  .settingsContainer {
+    padding-left: 2rem;
+  }
 }
 
 .settingsContent {
@@ -342,10 +349,6 @@
 }
 
 @media (width < 800px) {
-  .settingsContainer {
-    padding: 2rem 1rem;
-  }
-
   .settingsContent {
     max-width: 90vw;
     padding-top: 1rem;

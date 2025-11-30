@@ -40,24 +40,24 @@ export default function Home({ session, trendingConfessions, totalConfessions })
 
 
   const chatFeatures = [
-    "Just friends is what we believe, rest you decide.",
-    "RIP Ohmegle, say hi to Mym! Enjoy random chats and laughs with fellow students.",
-    "Customize your chat filters. Talk with students from your college or connect with people from everywhere. Choose to chat with a guy or a girl.",
-    "Start with a hi and see where the conversation takes you."
+    "Just friends? We'll let you decide.",
+    "RIP Omegle, say hi to Spyll! The vibe check you've been waiting for.",
+    "Filter your vibe. Connect with campus or go global. Guy or girl, you choose.",
+    "Slide in with a hi and let the chaos unfold."
   ];
 
   const confessionFeatures = [
-    "Let your secrets fly free! Anonymously share your thoughts, dreams, and confessions with your college community.",
-    "Like, comment, and share confessions without revealing your identity.",
-    "Send direct replies to confessions, without showing it in public comments.",
-    "Get more likes and comments to make your confession trend."
+    "Spill the tea! Anonymously drop your secrets, dreams, and campus gossip.",
+    "React, roast, and relate without blowing your cover.",
+    "Slide into DMs anonymously. Shoot your shot without the public drama.",
+    "Go viral on campus. Make your confession the talk of the town."
   ];
 
   return (
     <>
       <motion.div 
         style={{ 
-          background: backgroundColor,
+          // background: backgroundColor,
           transition: 'background 0.3s ease-out'
         }} 
         className={styles.scrollBgWrapper}
@@ -91,7 +91,7 @@ export default function Home({ session, trendingConfessions, totalConfessions })
         </div>
 
 
-        <p className={styles.desc}>“Because No One Should Walk Out of College Alone”</p>
+        <p className={styles.desc}>“Don&apos;t bottle it up, Spyll it out.”</p>
 
 
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

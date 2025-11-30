@@ -1,9 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import styles from '../componentStyles/textchat.module.css';
-import { useTextChat } from '@/context/TextChatContext';
 
-const Message = ({ msg, userDetails, isTypingMsg = false, strangerGender }) => {
+const Message = React.forwardRef(({ msg, userDetails, isTypingMsg = false, strangerGender, ...props }, ref) => {
 
   // Determine classes based on sender and receiver genders
   const determineClasses = () => {
@@ -28,11 +27,9 @@ const Message = ({ msg, userDetails, isTypingMsg = false, strangerGender }) => {
   if (isTypingMsg) {
     return (
       <motion.div 
+        ref={ref}
         className={`${styles.message} ${styles.left}`}
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -20 }}
-        transition={{ duration: 0.3 }}
+        {...props}
       >
         <div
           style={{
@@ -73,17 +70,11 @@ const Message = ({ msg, userDetails, isTypingMsg = false, strangerGender }) => {
 
   return (
     <motion.div
+      ref={ref}
       className={`${styles.message} ${
         msg.sender === userDetails?.mid ? styles.right : styles.left
       }`}
-      initial={{ opacity: 0, y: 15, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ 
-        duration: 0.28,
-        ease: [0.34, 1.56, 0.64, 1], // Smooth spring-like easing
-        opacity: { duration: 0.25 },
-        scale: { duration: 0.3 }
-      }}
+      {...props}
     >
       <div
         className={`${styles.text} ${
@@ -94,6 +85,8 @@ const Message = ({ msg, userDetails, isTypingMsg = false, strangerGender }) => {
       </div>
     </motion.div>
   );
-};
+});
+
+Message.displayName = 'Message';
 
 export default Message;

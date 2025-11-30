@@ -1,12 +1,12 @@
 import React from 'react';
 import Head from 'next/head';
 
-const DEFAULT_TITLE = 'MYM - Meet Your Mate | Random Chats and Anonymous Confessions for College Students';
+const DEFAULT_TITLE = 'Spyll - Your Campus Confidential | Random Chats and Anonymous Confessions';
 const DEFAULT_DESCRIPTION =
-    "Meet Your Mate (MYM) is your ultimate destination for anonymous chats and heartfelt confessions. Connect with college students nationwide, share stories, and explore new friendships—all while maintaining your privacy. Join us now for an unforgettable online experience!";
+    "Spyll is your ultimate destination for anonymous chats and heartfelt confessions. Connect with college students nationwide, share stories, and explore new friendships—all while maintaining your privacy. Join us now for an unforgettable online experience!";
 const DEFAULT_KEYWORDS = [
-    'mym',
-    'meetyourmate',
+    'spyll',
+    'spyll app',
     'random chat',
     'anonymous',
     'random',
@@ -62,7 +62,7 @@ const CustomHead = ({
             <meta property="og:title" content={title} />
             <meta property="og:description" content={description} />
             <meta property="og:url" content={`meetyourmate.in`} />
-            <meta property="og:site_name" content="MYM" />
+            <meta property="og:site_name" content="Spyll" />
             <meta name="twitter:title" content={title} key="tw-title" />
             <meta name="twitter:description" content={description} key="tw-desc" />
             <meta name="twitter:card" content="summary_large_image" key="tw-card" />
@@ -76,7 +76,7 @@ const CustomHead = ({
                 __html: JSON.stringify({
                     "@context": "https://schema.org",
                     "@type": "Organization",
-                    "name": "Meet Your Mate",
+                    "name": "Spyll",
                     "url": "https://www.meetyourmate.in",
                     "logo": "https://www.meetyourmate.in/images/mym_logos/mymshadow.png",
                     "contactPoint": [
@@ -99,11 +99,11 @@ const CustomHead = ({
                     "@context": "https://schema.org",
                     "@type": "WebSite",
                     "url": "https://www.meetyourmate.in",
-                    "name": "Meet Your Mate",
-                    "description": "Discover a new way to connect with fellow students at Meet Your Mate. Share secrets, chat anonymously, and forge meaningful connections with your college community. Join today and unlock a world of friendships and support.",
+                    "name": "Spyll",
+                    "description": "Discover a new way to connect with fellow students at Spyll. Share secrets, chat anonymously, and forge meaningful connections with your college community. Join today and unlock a world of friendships and support.",
                     "publisher": {
                         "@type": "Organization",
-                        "name": "Meet Your Mate",
+                        "name": "Spyll",
                         "logo": {
                             "@type": "ImageObject",
                             "url": "https://www.meetyourmate.in/images/mym_logos/mymshadow.png"

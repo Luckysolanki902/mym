@@ -4,6 +4,7 @@ import DialogContent from '@mui/material/DialogContent';
 import { Button, CircularProgress } from '@mui/material';
 import { CloseRounded } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import styles from '../componentStyles/confession.module.css';
 
 const AnonymDialog = ({
   open,
@@ -11,6 +12,7 @@ const AnonymDialog = ({
   handleAnonymousReply,
   anonymousReplyValue,
   setAnonymousReplyValue,
+  userGender
 }) => {
   const [sending, setSending] = useState(false);
   const isDialogOpenRef = useRef(open); // Ref to track dialog state
@@ -68,11 +70,14 @@ const AnonymDialog = ({
     }
   };
 
+  const isFemale = userGender === 'female';
+
   return (
     <Dialog
       open={open}
       onClose={handleClose}
       PaperProps={{
+        className: isFemale ? styles.femaleGradient : styles.maleGradient,
         style: {
           minHeight: '40vh',
           width: 'calc(100% - 40px)',
@@ -80,11 +85,11 @@ const AnonymDialog = ({
           // Add top-left and top-right radii
           borderTopLeftRadius: '1.5rem',
           borderTopRightRadius: '1.5rem',
-          background: 'rgba(255, 255, 255, 0.85)',
-          backdropFilter: 'blur(24px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
-          border: '1px solid rgba(255, 255, 255, 0.6)',
+          // background: 'rgba(255, 255, 255, 0.85)', // Handled by class
+          // backdropFilter: 'blur(24px) saturate(180%)', // Handled by class
+          // WebkitBackdropFilter: 'blur(24px) saturate(180%)', // Handled by class
+          // boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)', // Handled by class
+          // border: '1px solid rgba(255, 255, 255, 0.6)', // Handled by class
         },
       }}
     >
@@ -140,23 +145,24 @@ const AnonymDialog = ({
           color="primary"
           onClick={handleSendReply}
           disabled={anonymousReplyValue.trim() === ''}
+          className={isFemale ? styles.femaleButton : styles.maleButton}
           sx={{
             marginTop: '1rem',
             width: 'fit-content',
             alignSelf: 'flex-end',
             textTransform: 'none',
-            background: 'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)',
+            // background: 'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)', // Handled by class
             backdropFilter: 'blur(10px)',
             WebkitBackdropFilter: 'blur(10px)',
             borderRadius: '2rem',
             padding: '0.5rem 1.5rem',
             fontFamily: 'Quicksand, sans-serif',
             fontWeight: '600',
-            boxShadow: '0 4px 15px rgba(108, 92, 231, 0.3)',
+            // boxShadow: '0 4px 15px rgba(108, 92, 231, 0.3)', // Handled by class
             '&:hover': {
-              background: 'linear-gradient(135deg, #5f27cd 0%, #8e44ad 100%)',
+              // background: 'linear-gradient(135deg, #5f27cd 0%, #8e44ad 100%)', // Handled by class
               transform: 'translateY(-2px)',
-              boxShadow: '0 6px 20px rgba(108, 92, 231, 0.4)',
+              // boxShadow: '0 6px 20px rgba(108, 92, 231, 0.4)', // Handled by class
             },
             '&:disabled': {
               background: 'rgba(150, 150, 150, 0.3)',

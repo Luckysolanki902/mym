@@ -157,15 +157,19 @@ export default function SwipeableTemporaryDrawer() {
 
   const list = () => (
     <div className={styles.MainCont} role="presentation">
-      <div className={styles.imageCont}>
-        <Image
-          className={styles.logoImage}
-          src={'/images/mym_logos/mymshadow.png'}
-          width={362}
-          height={169}
-          alt="mym"
-          title="maddy logo"
-        />
+      <div className={styles.imageCont} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2rem 0' }}>
+        <div 
+          style={{
+            fontFamily: "'Jost', sans-serif",
+            fontWeight: 800,
+            fontSize: '2.5rem',
+            letterSpacing: '-2px',
+            color: '#2D2D2D',
+            userSelect: 'none'
+          }}
+        >
+          spyll
+        </div>
       </div>
       <List
         className={styles.list}
