@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styles from './styles/filteroptions.module.css';
-import { IoFilterSharp } from 'react-icons/io5';
+import DerivativeIcon from '../commonComps/DerivativeIcon';
 import { Chip, createTheme, ThemeProvider } from '@mui/material';
 import { useFilters } from '@/context/FiltersContext';
 import { useSpring, animated } from 'react-spring';
@@ -201,12 +201,8 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired }) => {
     <ThemeProvider theme={darkTheme}>
       <div className={styles.mainfiltercont} ref={mainFilterContainerRef}>
         {!openFilterMenu && (
-          <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
-            <IoFilterSharp
-              className={styles.filterIcon}
-              onClick={handleFilterToggle}
-              style={{ backgroundColor: 'white', borderRadius: '1rem', padding: '0.3rem' }}
-            />
+          <div className={styles.filterTrigger} onClick={handleFilterToggle} title="Adjust match formula">
+            <DerivativeIcon size={22} color="#1a1a1a" isOpen={openFilterMenu} />
           </div>
         )}
         {(openFilterMenu) && (

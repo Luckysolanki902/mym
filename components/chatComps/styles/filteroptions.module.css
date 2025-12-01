@@ -217,6 +217,28 @@
     font-family: Jost, sans-serif;
 }
 
+.filterTrigger {
+    width: 2.6rem;
+    height: 2.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filterTrigger:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.18);
+}
+
+.filterTrigger:active {
+    transform: scale(0.97);
+}
+
 .filterIcon {
     width: 2.2rem;
     height: 2.2rem;

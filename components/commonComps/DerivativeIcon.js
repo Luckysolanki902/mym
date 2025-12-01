@@ -19,10 +19,11 @@ const DerivativeIcon = ({ size = 24, color = 'currentColor', isOpen = false }) =
         >
             {/* d */}
             <text
-                x="3"
-                y="22"
+                x="16"
+                y="13"
+                textAnchor="middle"
                 fontFamily="'Times New Roman', serif"
-                fontSize="16"
+                fontSize="14"
                 fontStyle="italic"
                 fontWeight="400"
                 fill={color}
@@ -31,9 +32,9 @@ const DerivativeIcon = ({ size = 24, color = 'currentColor', isOpen = false }) =
             </text>
             {/* fraction bar */}
             <motion.line
-                x1="2"
+                x1="6"
                 y1="16"
-                x2="15"
+                x2="26"
                 y2="16"
                 stroke={color}
                 strokeWidth="1.5"
@@ -41,41 +42,17 @@ const DerivativeIcon = ({ size = 24, color = 'currentColor', isOpen = false }) =
             />
             {/* dx */}
             <text
-                x="2"
-                y="30"
+                x="16"
+                y="27"
+                textAnchor="middle"
                 fontFamily="'Times New Roman', serif"
-                fontSize="12"
+                fontSize="14"
                 fontStyle="italic"
                 fontWeight="400"
                 fill={color}
             >
                 dx
             </text>
-            {/* decorative funnel dots (filter hint) */}
-            <motion.circle
-                cx="24"
-                cy="10"
-                r="2.5"
-                fill={color}
-                animate={{ scale: isOpen ? 1.15 : 1 }}
-                transition={{ duration: 0.2 }}
-            />
-            <motion.circle
-                cx="24"
-                cy="18"
-                r="2"
-                fill={color}
-                animate={{ scale: isOpen ? 1.1 : 1 }}
-                transition={{ duration: 0.2, delay: 0.05 }}
-            />
-            <motion.circle
-                cx="24"
-                cy="25"
-                r="1.5"
-                fill={color}
-                animate={{ scale: isOpen ? 1.05 : 1 }}
-                transition={{ duration: 0.2, delay: 0.1 }}
-            />
         </motion.svg>
     );
 };

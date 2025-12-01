@@ -31,10 +31,18 @@ const PhoneMockup = ({
   autoRotate = true,
   rotateInterval = 5000,
   tilt = 'right',
-  className = ''
+  className = '',
+  onModeChange = null
 }) => {
   const [activeMode, setActiveMode] = useState(mode === 'auto' ? 'chat' : mode);
   const [callTimer, setCallTimer] = useState(0);
+
+  // Sync with external mode prop when controlled
+  useEffect(() => {
+    if (mode !== 'auto') {
+      setActiveMode(mode);
+    }
+  }, [mode]);
 
   // Auto-rotate between modes
   // Handle mode auto-rotation
@@ -66,6 +74,9 @@ const PhoneMockup = ({
       setCallTimer(0);
     }
     setActiveMode(newMode);
+    if (onModeChange) {
+      onModeChange(newMode);
+    }
   };
 
   const formatTime = (seconds) => {
