@@ -107,17 +107,21 @@
 /* Male to male chat (receiver bubble) - Left aligned */
 .mmMsg{
   border-radius: 18px 18px 18px 4px;
-  background: #E1F5FE;
-  color: #01579B;
-  font-weight: 400;
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  color: #0D47A1;
+  font-weight: 500;
+  border: 1px solid rgba(79, 195, 247, 0.2);
+  box-shadow: 0 2px 8px rgba(79, 195, 247, 0.15);
 }
 
 /* Female to female chat (receiver bubble) - Left aligned */
 .ffMsg{
   border-radius: 18px 18px 18px 4px;
-  background: #FCE4EC;
-  color: #880E4F;
-  font-weight: 400;
+  background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 100%);
+  color: #AD1457;
+  font-weight: 500;
+  border: 1px solid rgba(236, 64, 122, 0.2);
+  box-shadow: 0 2px 8px rgba(236, 64, 122, 0.15);
 }
 
 /* System messages */
@@ -265,6 +269,18 @@
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.3px;
+}
+
+.verifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem 0.4rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  transition: all 0.2s ease;
 }
 
 .startMessage {
@@ -739,14 +755,14 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0 0.5rem;
-  font-size: 0.9rem;
-  color: white;
+  font-size: 0.88rem;
 }
 
 .typingText {
   font-weight: 500;
   letter-spacing: 0.3px;
   font-family: 'Inter', sans-serif;
+  opacity: 0.95;
 }
 
 .typingDots {
@@ -758,9 +774,10 @@
 .typingDot {
   width: 6px;
   height: 6px;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: currentColor;
+  opacity: 0.8;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .dots {

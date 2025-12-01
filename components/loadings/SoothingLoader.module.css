@@ -1,4 +1,4 @@
-/* Soothing Loader - Minimal Gradient Design */
+/* Soothing Loader - Spyll Logo Animation */
 
 .loaderContainer {
   position: fixed;
@@ -11,24 +11,60 @@
   align-items: center;
   z-index: 9999;
   overflow: hidden;
+  background: linear-gradient(135deg, #fafafa 0%, #fff5f8 50%, #fef0f5 100%);
 }
 
-.loadingText {
-  font-family: 'Jost', 'Quicksand', sans-serif;
-  font-size: 1.5rem;
+.logoWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.spyllLogo {
+  font-family: 'Liquids', sans-serif;
   font-weight: 400;
-  color: rgba(45, 45, 45, 0.5);
-  letter-spacing: 0.3px;
+  font-size: 5rem;
+  letter-spacing: -2.5px;
+  color: #000000;
+  user-select: none;
+}
+
+.dotsContainer {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF6BA0 0%, #EC407A 100%);
+  box-shadow: 0 2px 8px rgba(255, 107, 160, 0.3);
 }
 
 @media (max-width: 768px) {
-  .loadingText {
-    font-size: 1.3rem;
+  .spyllLogo {
+    font-size: 3.5rem;
+    letter-spacing: -2px;
+  }
+  
+  .dot {
+    width: 10px;
+    height: 10px;
   }
 }
 
 @media (max-width: 480px) {
-  .loadingText {
-    font-size: 1.1rem;
+  .spyllLogo {
+    font-size: 2.5rem;
+    letter-spacing: -1.5px;
+  }
+  
+  .dot {
+    width: 8px;
+    height: 8px;
   }
 }

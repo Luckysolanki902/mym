@@ -37,6 +37,7 @@ const mymthemeDark = createTheme({
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
+  const pageSeo = Component?.seo || pageProps?.seo || null;
 
   // Admin state
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -56,34 +57,44 @@ export default function App({ Component, pageProps }) {
 
   useEffect(() => {
     // Custom cursor effect
+    // Only enable on large screens with a fine pointer (mouse)
+    if (typeof window === 'undefined') return;
+    
+    const isCoarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const isSmallScreen = window.innerWidth < 800;
+    
+    if (isCoarsePointer || isSmallScreen) {
+      return;
+    }
+
     const cursor = document.createElement('div');
+    
+    // Minimal Gen Z aesthetic arrow (Black with white outline)
+    const svgCursor = `
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 3L10.5 20.5L13.5 13.5L20.5 10.5L3 3Z" fill="black" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+    `;
+    const encodedSvg = encodeURIComponent(svgCursor);
+
     cursor.style.cssText = `
       position: fixed;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
+      width: 24px;
+      height: 24px;
       pointer-events: none;
       z-index: 99999;
-      transition: background 0.15s ease;
-      mix-blend-mode: normal;
+      background-image: url("data:image/svg+xml;charset=utf-8,${encodedSvg}");
+      background-size: contain;
+      background-repeat: no-repeat;
+      top: 0;
+      left: 0;
+      display: none;
     `;
     document.body.appendChild(cursor);
 
     const updateCursor = (e) => {
-      const x = e.clientX;
-      const y = e.clientY;
-      const screenMidpoint = window.innerWidth / 2;
-      
-      cursor.style.left = `${x - 4}px`;
-      cursor.style.top = `${y - 4}px`;
-      
-      if (x < screenMidpoint) {
-        cursor.style.background = 'rgba(79, 195, 247, 0.9)';
-        cursor.style.boxShadow = '0 0 12px rgba(79, 195, 247, 0.6), 0 0 4px rgba(79, 195, 247, 0.8)';
-      } else {
-        cursor.style.background = 'rgba(236, 64, 122, 0.9)';
-        cursor.style.boxShadow = '0 0 12px rgba(236, 64, 122, 0.6), 0 0 4px rgba(236, 64, 122, 0.8)';
-      }
+      cursor.style.display = 'block';
+      cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
     };
 
     document.addEventListener('mousemove', updateCursor);
@@ -185,6 +196,7 @@ export default function App({ Component, pageProps }) {
     return (
       <ThemeProvider theme={mymtheme}>
         <CssBaseline />
+        <CustomHead {...(pageSeo || {})} />
         <SoothingLoader />
       </ThemeProvider>
     );
@@ -195,7 +207,7 @@ export default function App({ Component, pageProps }) {
     return (
       <ThemeProvider theme={mymthemeDark}>
         <CssBaseline />
-        <CustomHead />
+        <CustomHead {...(pageSeo || {})} />
         {isAdminLoggedIn ? (
           <Component {...pageProps} />
         ) : (
@@ -211,7 +223,7 @@ export default function App({ Component, pageProps }) {
     return (
       <ThemeProvider theme={mymtheme}>
         <CssBaseline />
-        <CustomHead />
+        <CustomHead {...(pageSeo || {})} />
         <ComingSoon />
       </ThemeProvider>
     );
@@ -225,7 +237,7 @@ export default function App({ Component, pageProps }) {
           <ThemeProvider theme={mymtheme}>
             <CssBaseline />
             <GoogleAnalytics />
-            <CustomHead />
+            <CustomHead {...(pageSeo || {})} />
             <Topbar />
             <Sidebar />
             {showLoadingGif && <SoothingLoader />}

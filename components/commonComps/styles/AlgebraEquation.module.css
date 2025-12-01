@@ -1,0 +1,187 @@
+.equationContainer {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.6rem 1rem;
+    border-radius: 1.2rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid;
+    font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.equationWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.equation {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.term {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.15rem;
+}
+
+.coefficient {
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+.variable {
+    font-size: 1em;
+    font-style: italic;
+    font-weight: 600;
+}
+
+.operator {
+    font-size: 0.95em;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.constant {
+    font-size: 1em;
+    font-weight: 600;
+}
+
+.equals {
+    font-size: 0.95em;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.result {
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+.hint {
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0.75;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.3px;
+}
+
+/* Hint color overrides */
+.cyanHint {
+    color: rgba(1, 87, 155, 0.85) !important;
+}
+
+.pinkHint {
+    color: rgba(136, 14, 79, 0.85) !important;
+}
+
+.purpleHint {
+    color: rgba(74, 20, 140, 0.85) !important;
+}
+
+/* Theme: Cyan (for male/default) */
+.cyan {
+    background: linear-gradient(135deg, 
+        rgba(79, 195, 247, 0.15) 0%,
+        rgba(64, 165, 223, 0.12) 100%);
+    border-color: rgba(79, 195, 247, 0.3);
+    color: rgba(13, 71, 161, 0.95);
+}
+
+.cyan .coefficient,
+.cyan .result {
+    color: rgba(1, 87, 155, 1);
+}
+
+/* Theme: Pink (for female) */
+.pink {
+    background: linear-gradient(135deg, 
+        rgba(236, 64, 122, 0.15) 0%,
+        rgba(223, 44, 122, 0.12) 100%);
+    border-color: rgba(236, 64, 122, 0.3);
+    color: rgba(136, 14, 79, 0.95);
+}
+
+.pink .coefficient,
+.pink .result {
+    color: rgba(136, 14, 79, 1);
+}
+
+/* Theme: Purple (neutral/other) */
+.purple {
+    background: linear-gradient(135deg, 
+        rgba(149, 117, 205, 0.15) 0%,
+        rgba(126, 87, 194, 0.12) 100%);
+    border-color: rgba(149, 117, 205, 0.3);
+    color: rgba(74, 20, 140, 0.95);
+}
+
+.purple .coefficient,
+.purple .result {
+    color: rgba(74, 20, 140, 1);
+}
+
+/* Size: Small (for filter menu) */
+.small {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+.small .equation {
+    gap: 0.35rem;
+}
+
+.small .hint {
+    font-size: 0.65rem;
+}
+
+/* Size: Medium (default) */
+.medium {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+}
+
+/* Size: Large (for main pairing UI) */
+.large {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+}
+
+.large .equation {
+    gap: 0.6rem;
+}
+
+.large .hint {
+    font-size: 0.75rem;
+}
+
+/* Hover effect */
+.equationContainer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .medium {
+        font-size: 0.8rem;
+        padding: 0.55rem 0.9rem;
+    }
+
+    .large {
+        font-size: 0.88rem;
+        padding: 0.65rem 1.1rem;
+    }
+
+    .small {
+        font-size: 0.72rem;
+        padding: 0.4rem 0.7rem;
+    }
+}

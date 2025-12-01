@@ -14,7 +14,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const EventsContainerMemoized = React.memo(EventsContainer);
 
-const MessageDisplay = React.memo(({ userDetails, isStrangerVerified }) => {
+const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCount = 0 }) => {
     const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping, isFindingPair, paddingDivRef, setStrangerIsTyping, socket } = useTextChat();
 
     const shouldRenderPaddingDiv = strangerDisconnectedMessageDiv;
@@ -37,7 +37,7 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified }) => {
             }, 50);
         }
         prevMessageCountRef.current = messages.length;
-    }, [messages, strangerIsTyping]); // Also scroll when typing status changes
+    }, [messages, strangerIsTyping, paddingDivRef]); // Also scroll when typing status changes
 
     // Animation for padding div
     const paddingDivAnimation = useSpring({
@@ -78,12 +78,25 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified }) => {
                         >
                             {strangerGender === 'male' ? 'a boy' : 'a girl'}
                         </span>
-                        {!isStrangerVerified && (
-                            <>
-                                <span className={styles.verificationDot}></span>
-                                <span className={styles.verificationText}>not verified</span>
-                            </>
-                        )}
+                        <span 
+                            className={styles.verifiedBadge}
+                            style={{
+                                backgroundColor: isStrangerVerified ? 'transparent' : 'rgba(255, 193, 7, 0.15)',
+                                color: isStrangerVerified ? '#5bab5fff' : '#F57C00'
+                            }}
+                        >
+                            {isStrangerVerified ? (
+                                <>
+                                    <span style={{ marginRight: '0.25rem' }}>✓</span>
+                                    <span>verified</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span style={{ marginRight: '0.25rem' }}>●</span>
+                                    <span>guest</span>
+                                </>
+                            )}
+                        </span>
                     </motion.div>
                     <motion.div 
                         className={styles.startMessage}
@@ -107,7 +120,7 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified }) => {
                     alignItems: 'center',
                     padding: '2rem 1rem'
                 }}>
-                    <PairingStatusDisplay userGender={userDetails.gender} />
+                    <PairingStatusDisplay userGender={userDetails.gender} onlineCount={onlineCount} />
                 </div>
             )}
 
@@ -173,5 +186,7 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified }) => {
         </div>
     );
 });
+
+MessageDisplay.displayName = 'MessageDisplay';
 
 export default MessageDisplay;

@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getSession, useSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
-import CustomHead from '@/components/seo/CustomHead';
 import AudioCallWrapper from '@/components/fullPageComps/AudioCallWrapper';
 import UserVerificationDialog from '@/components/chatComps/UserVerificationDialog';
 import ExitConfirmationDialog from '@/components/commonComps/ExitConfirmationDialog';
+import { DEFAULT_OG_IMAGE, SITE_URL } from '@/utils/seo';
 
 const AudioCallPage = ({ userDetails }) => {
   const bottomRef = useRef(null);
@@ -56,10 +56,6 @@ const AudioCallPage = ({ userDetails }) => {
 
   return (
     <>
-      <CustomHead
-        title="Discover Real Voices From Your Campus | MyM Audio"
-        description="Hop into spontaneous audio conversations with verified students from your college network. Our queue keeps things fair, while filters ensure you meet people who match your vibe."
-      />
       <UserVerificationDialog mode="audiocall" />
       <AudioCallWrapper userDetails={userDetails} />
       <div ref={bottomRef} />
@@ -97,3 +93,72 @@ export async function getServerSideProps(context) {
 }
 
 export default AudioCallPage;
+
+const randomCallUrl = `${SITE_URL}/random-call`;
+
+AudioCallPage.seo = {
+  title: 'Random College Voice Calls | Spyll Audio',
+  description:
+    'Match into voice calls with real students from Indian campuses, protected by safety prompts, queue visibility, and quick report tools so you can talk freely without sharing your identity.',
+  keywords: [
+    'college voice call',
+    'anonymous audio chat',
+    'random call india',
+    'student voice rooms',
+    'spyll audio',
+  ],
+  canonicalUrl: randomCallUrl,
+  seoImage: DEFAULT_OG_IMAGE,
+  structuredData: [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: 'Spyll Random Call',
+      serviceType: 'Anonymous college voice conversations',
+      areaServed: 'IN',
+      provider: {
+        '@type': 'Organization',
+        name: 'Spyll',
+        url: SITE_URL,
+      },
+      url: randomCallUrl,
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'INR',
+      },
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Conversation filters',
+        itemListElement: [
+          {
+            '@type': 'Offer',
+            name: 'Gender preference',
+          },
+          {
+            '@type': 'Offer',
+            name: 'Verified college-only queue',
+          },
+        ],
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${SITE_URL}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Random Call',
+          item: randomCallUrl,
+        },
+      ],
+    },
+  ],
+};

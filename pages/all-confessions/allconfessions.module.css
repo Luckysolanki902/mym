@@ -33,12 +33,54 @@
     align-items: center;
     gap: 2rem;
     margin: auto;
-    /* width: 100%; */
-    margin: auto;
     width: 50vw;
-    /* margin-bottom: 5rem; */
     overflow: auto;
     white-space: nowrap;
+}
+
+.tabsContainer {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1.5rem auto 1rem;
+    width: 50vw;
+    padding-left: calc(2rem + var(--sidebarwidth));
+}
+
+.tab {
+    padding: 0.5rem 1.25rem;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 100px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: #334155;
+}
+
+.activeTab {
+    background: linear-gradient(135deg, #FF6BA0 0%, #FF5973 100%);
+    color: white;
+    border-color: transparent;
+}
+
+.activeTab:hover {
+    background: linear-gradient(135deg, #FF6BA0 0%, #FF5973 100%);
+    color: white;
+}
+
+@media (max-width: 800px) {
+    .tabsContainer {
+        padding-left: 1rem;
+        width: calc(100% - 2rem);
+    }
 }
 
 .chip {

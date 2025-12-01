@@ -198,6 +198,8 @@ const useAudioCallController = ({ userDetails, context }) => {
   const findNewDebounceRef = useRef(false);
   const peerConnectionTimeoutRef = useRef(null);
   const hangupRef = useRef(() => {});
+  const audioRouteTargetsRef = useRef({ speaker: 'default', earpiece: 'communications' });
+  const outputSelectionLockRef = useRef(false);
 
   const locationSignature = typeof window === 'undefined' ? 'ssr' : window.location?.href || 'client';
 
@@ -417,6 +419,10 @@ const useAudioCallController = ({ userDetails, context }) => {
     const audioEl = document.createElement('audio');
     audioEl.autoplay = true;
     audioEl.playsInline = true;
+    audioEl.setAttribute('playsinline', 'true');
+    audioEl.setAttribute('webkit-playsinline', 'true');
+    audioEl.setAttribute('x5-playsinline', 'true');
+    audioEl.setAttribute('x-webkit-airplay', 'deny');
     audioEl.controls = false;
     audioEl.muted = false;
     audioEl.setAttribute('data-role', 'audio-call-remote');
@@ -430,6 +436,71 @@ const useAudioCallController = ({ userDetails, context }) => {
     return audioEl;
   }, [remoteAudioRef]);
 
+  const discoverAudioOutputs = useCallback(async () => {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.enumerateDevices) {
+      return;
+    }
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const outputs = devices.filter((device) => device.kind === 'audiooutput');
+      if (!outputs.length) return;
+      const speakerCandidate =
+        outputs.find((device) => /speaker|default/i.test(device.label)) || outputs.find((device) => device.deviceId === 'default') || outputs[0];
+      const earpieceCandidate =
+        outputs.find((device) => /earpiece|phone|communications/i.test(device.label)) || outputs.find((device) => device.deviceId === 'communications');
+
+      if (speakerCandidate?.deviceId) {
+        audioRouteTargetsRef.current.speaker = speakerCandidate.deviceId;
+      }
+      if (earpieceCandidate?.deviceId) {
+        audioRouteTargetsRef.current.earpiece = earpieceCandidate.deviceId;
+      }
+    } catch (error) {
+      console.warn('[AudioCall] Unable to enumerate audio outputs', error?.message || error);
+    }
+  }, []);
+
+  const applyAudioRoutePreference = useCallback(
+    (preferSpeaker) => {
+      const audioElement = ensureRemoteAudioElement();
+      if (!audioElement) return;
+      audioElement.volume = preferSpeaker ? 1 : 0.65;
+
+      if (typeof audioElement.setSinkId !== 'function') {
+        return;
+      }
+
+      const desiredDeviceId = preferSpeaker
+        ? audioRouteTargetsRef.current.speaker || 'default'
+        : audioRouteTargetsRef.current.earpiece || 'communications';
+
+      audioElement
+        .setSinkId(desiredDeviceId)
+        .catch(async (error) => {
+          if (!preferSpeaker && navigator?.mediaDevices?.selectAudioOutput && !outputSelectionLockRef.current) {
+            try {
+              outputSelectionLockRef.current = true;
+              const selection = await navigator.mediaDevices.selectAudioOutput({
+                deviceId: 'communications',
+                hearingAidCompatibility: true,
+              });
+              outputSelectionLockRef.current = false;
+              if (selection?.deviceId) {
+                audioRouteTargetsRef.current.earpiece = selection.deviceId;
+                await audioElement.setSinkId(selection.deviceId);
+                return;
+              }
+            } catch (selectError) {
+              outputSelectionLockRef.current = false;
+              console.warn('[AudioCall] selectAudioOutput failed', selectError?.message || selectError);
+            }
+          }
+          console.warn('[AudioCall] setSinkId failed', error?.message || error);
+        });
+    },
+    [ensureRemoteAudioElement]
+  );
+
   const attachRemoteStream = useCallback(
     (remoteStream) => {
       if (!remoteStream) return;
@@ -437,7 +508,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       if (!audioElement) return;
       audioElement.srcObject = remoteStream;
       audioElement.muted = false;
-      audioElement.volume = speakerEnabled ? 1 : 0.65;
+      applyAudioRoutePreference(speakerEnabled);
       const playAttempt = audioElement.play();
       if (playAttempt?.catch) {
         playAttempt.catch((error) => {
@@ -445,8 +516,32 @@ const useAudioCallController = ({ userDetails, context }) => {
         });
       }
     },
-    [ensureRemoteAudioElement, speakerEnabled]
+    [applyAudioRoutePreference, ensureRemoteAudioElement, speakerEnabled]
   );
+
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices) return;
+    discoverAudioOutputs();
+    const mediaDevices = navigator.mediaDevices;
+    const handleDeviceChange = () => {
+      discoverAudioOutputs();
+    };
+    if (mediaDevices.addEventListener) {
+      mediaDevices.addEventListener('devicechange', handleDeviceChange);
+      return () => mediaDevices.removeEventListener('devicechange', handleDeviceChange);
+    }
+    const previousHandler = mediaDevices.ondevicechange;
+    mediaDevices.ondevicechange = handleDeviceChange;
+    return () => {
+      if (mediaDevices.ondevicechange === handleDeviceChange) {
+        mediaDevices.ondevicechange = previousHandler || null;
+      }
+    };
+  }, [discoverAudioOutputs]);
+
+  useEffect(() => {
+    applyAudioRoutePreference(speakerEnabled);
+  }, [applyAudioRoutePreference, speakerEnabled]);
 
   const requestPeerLibrary = useCallback(async () => {
     if (peerModuleRef.current) return peerModuleRef.current;
@@ -1252,10 +1347,8 @@ const useAudioCallController = ({ userDetails, context }) => {
   const handleSpeakerToggle = useCallback(() => {
     const next = !speakerEnabled;
     setSpeakerEnabled(next);
-    if (remoteAudioRef.current) {
-      remoteAudioRef.current.volume = next ? 1 : 0.65;
-    }
-  }, [remoteAudioRef, setSpeakerEnabled, speakerEnabled]);
+    applyAudioRoutePreference(next);
+  }, [applyAudioRoutePreference, setSpeakerEnabled, speakerEnabled]);
 
   const emitFindNew = useCallback(
     (eventName = 'findNewPair') => {

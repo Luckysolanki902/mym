@@ -1,0 +1,99 @@
+.scrollerContainer {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, white 10%, white 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, white 10%, white 90%, transparent);
+}
+
+.scroller {
+  display: flex;
+  min-width: 100%;
+  flex-shrink: 0;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  width: max-content;
+  flex-wrap: nowrap;
+}
+
+.animateScroll {
+  animation: scroll var(--animation-duration, 40s) linear infinite;
+  animation-direction: var(--animation-direction, forwards);
+}
+
+.pauseOnHover:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - 0.75rem));
+  }
+}
+
+.card {
+  width: 320px;
+  max-width: 90vw;
+  position: relative;
+  flex-shrink: 0;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+}
+
+.blockquote {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.quote {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: #334155;
+  font-weight: 400;
+  margin: 0 0 1.25rem 0;
+  flex: 1;
+}
+
+.author {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.authorName {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.authorTitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+  color: #64748b;
+  font-weight: 400;
+}
+
+@media (max-width: 600px) {
+  .card {
+    width: 280px;
+    padding: 1.25rem;
+  }
+  
+  .quote {
+    font-size: 0.875rem;
+  }
+}

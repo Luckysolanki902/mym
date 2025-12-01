@@ -2,6 +2,7 @@
   width: 100%;
   min-height: 100vh;
   transition: background 0.3s ease-out;
+
 }
 
 .mainContainer {
@@ -10,7 +11,7 @@
   padding: 0;
   padding-top: 2rem;
   overflow-x: hidden;
-  padding-left: calc(1.5rem + var(--sidebarwidth));
+  padding-left: calc(2.5rem + var(--sidebarwidth));
 }
 
 

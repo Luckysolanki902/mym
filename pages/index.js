@@ -1,214 +1,151 @@
-import { useSpring, animated } from 'react-spring';
-import Head from 'next/head';
-import { getSession, signOut } from 'next-auth/react';
-import Image from 'next/image';
-import styles from '@/styles/Home.module.css';
-import { useRouter } from 'next/router';
-import TrendingConfessions from '@/components/commonComps/TrendingConfessions';
-import Typewriter from 'typewriter-effect';
-import { Skeleton } from '@mui/material';
-// import CollegeCards from '@/components/justhomepage/CollegeCards';
-import Footer from '@/components/commonComps/Footer';
-import CollegeCards from '@/components/justhomepage/CollegeCards';
-import InstagramCard from '@/components/justhomepage/InstagramCard';
-import Link from 'next/link';
-import { useMediaQuery } from '@mui/material';
-import { motion, useScroll, useTransform } from 'framer-motion';
-
-
+import { getSession } from 'next-auth/react';
+import {
+  Hero,
+  ModeSwitcher,
+  TrendingConfessionsSection,
+  HowItWorks,
+  WhyVerify,
+  Safety,
+  Testimonials,
+  NewFooter
+} from '@/components/homepage-redesign';
+import { DEFAULT_OG_IMAGE, SITE_URL } from '@/utils/seo';
 
 export default function Home({ session, trendingConfessions, totalConfessions }) {
-  const containerSpring = useSpring({
-    from: { opacity: 0, transform: 'translate3d(0, -50px, 0)' },
-    to: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
-  });
- const isSmallDevice = useMediaQuery('(max-width:600px)');
-  const router = useRouter();
-
-  // Scroll-based gradient animation
-  const { scrollYProgress } = useScroll();
-  const backgroundColor = useTransform(
-    scrollYProgress,
-    [0, 0.33, 0.66, 1],
-    [
-      'linear-gradient(180deg, #e0f7fa 0%, #ffffff 100%)',
-      'linear-gradient(180deg, #fce4ec 0%, #ffffff 100%)',
-      'linear-gradient(180deg, #e0f7fa 0%, #ffffff 100%)',
-      'linear-gradient(180deg, #fce4ec 0%, #ffffff 100%)'
-    ]
-  )
-
-
-  const chatFeatures = [
-    "Just friends? We'll let you decide.",
-    "RIP Omegle, say hi to Spyll! The vibe check you've been waiting for.",
-    "Filter your vibe. Connect with campus or go global. Guy or girl, you choose.",
-    "Slide in with a hi and let the chaos unfold."
-  ];
-
-  const confessionFeatures = [
-    "Spill the tea! Anonymously drop your secrets, dreams, and campus gossip.",
-    "React, roast, and relate without blowing your cover.",
-    "Slide into DMs anonymously. Shoot your shot without the public drama.",
-    "Go viral on campus. Make your confession the talk of the town."
-  ];
-
   return (
-    <>
-      <motion.div 
-        style={{ 
-          // background: backgroundColor,
-          transition: 'background 0.3s ease-out'
-        }} 
-        className={styles.scrollBgWrapper}
-      >
-        <animated.div style={containerSpring} className={styles.mainContainer}>
-        {session ? (
-          <>
-            {/* Content to be shown only for session users */}
-            {/* <button onClick={signOut}>log out</button> */}
-          </>
-        ) : (
-          <>
-            {/* Content to be shown only for non-session users */}
-          </>
-        )}
-
-        {/* Content to show to both */}
-        {/* <div className={styles.hiuser}>
-          <Image src={'/images/large_pngs/hiuser.png'} width={1080 / 3} height={720 / 3} alt='hi user' />
-        </div> */}
-
-        {/* Trending Confessions */}
-        <div style={{ width: "100%", height: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <TrendingConfessions trendingConfessions={trendingConfessions} totalConfessions={totalConfessions} />
-        </div>
-
-        {/* Buttons for chat page and confession page */}
-        <div className={styles.homepageBtns}>
-          <button className={styles.chatbtn} onClick={() => router.push('/random-chat')}>CHAT</button>
-          <button className={styles.confessbtn} onClick={() => router.push('/create-confession')}>CONFESS</button>
-        </div>
-
-
-        <p className={styles.desc}>“Don&apos;t bottle it up, Spyll it out.”</p>
-
-
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Image src={'/images/showcase/makingfriends.png'} width={1516 / 2} height={511 / 2} alt='notohmegle' className={styles.notohmegle}></Image>
-        </div>
-
-        {/* <h3 className={styles.unlock}>AN ANOYNYMOUS INTERCOLLEGE SOCIAL MEDIA  PLATFORM</h3> */}
-
-        <div onClick={() => router.push('/random-chat')} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
-          <Image src={'/images/showcase/confessionfeaturesl.png'} width={1716} height={966} alt='chatfeatures' className={styles.featuresBg}></Image>
-          <div className={styles.chatfeatures}>
-            {/* Chat features */}
-            <div>
-
-              <Typewriter
-                options={{
-                  strings: chatFeatures,
-                  autoStart: true,
-                  loop: true,
-                  delay: 40,
-                  deleteSpeed: 10
-                }}
-              />
-            </div>
-
-          </div>
-        </div>
-
-        <div onClick={() => router.push('/all-confessions')} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
-          <Image src={'/images/showcase/chatfeaturesl.png'} width={1716} height={966} alt='chatfeatures' className={styles.featuresBg}></Image>
-          <div className={styles.confessionfeatures}>
-            <div>
-
-              <Typewriter
-                options={{
-                  strings: confessionFeatures,
-                  autoStart: true,
-                  loop: true,
-                  delay: 40,
-                  deleteSpeed: 10
-                }}
-              />
-            </div>
-
-          </div>
-        </div>
-
-
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '90%', margin: 'auto', marginTop: '3rem', marginBottom: '3rem' }} >
-        {!isSmallDevice ?
-          <Image src={'/images/illustrations/roadmapforphone.png'} className={styles.featuresBg} width={5032 / 3} height={3144 / 3} alt='roadmap'></Image>
-          :
-          <Image src={'/images/illustrations/roadmap-low-width.png'} className={styles.featuresBg} width={5032 / 3} height={3144 / 3} alt='roadmap'></Image>}
-
-        </div>
-
-        <Link href={'https://www.instagram.com/meetyourmate_/'} target="_blank" rel="noopener noreferrer" style={{ width: '100%', marginTop: '1rem', marginBottom: '2rem' }}>
-          <Image src={'/images/showcase/follow2.png'} className={styles.featuresBg} width={5120 / 4} height={470 / 4} alt='instagram_link'></Image>
-        </Link>
-
-        {/* <InstagramCard /> */}
-
-        <div className={styles.ourgoal}>
-          Our <span>Goal</span>
-        </div>
-        <p className={styles.ourgoalP}>23IITs , 31NITs , and every other bachelor colleges on our platform</p>
-        <div className={styles.comingsoonCards}>
-          {/* <Image src={'/images/showcase/cards.png'} width={1348} height={688} alt='cards'  ></Image> */}
-          <CollegeCards />
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Image src={'/images/illustrations/die-single.png'} width={1516} height={511} alt='notohmegle' className={styles.notohmegle}></Image>
-        </div>
-        {/* <CollegeCards /> */}
-        {/* <div style={{ width: '100%', height: '10em' }}></div> */}
-        <footer>
-          <Footer />
-        </footer>
-      </animated.div >
-      </motion.div>
-    </>
+    <main style={{ 
+      background: 'linear-gradient(180deg, #fafafa 0%, #ffffff 100%)',
+      minHeight: '100vh',
+      overflowX: 'hidden',
+      marginTop: 0,
+      paddingTop: 0
+    }}>
+      {/* Hero Section */}
+      <Hero />
+      
+      {/* Mode Switcher */}
+      <ModeSwitcher />
+      
+      {/* Trending Confessions Carousel */}
+      <TrendingConfessionsSection 
+        confessions={trendingConfessions} 
+        totalConfessions={totalConfessions} 
+      />
+      
+      {/* How It Works */}
+      <HowItWorks />
+      
+      {/* Why Verify Section */}
+      <WhyVerify />
+      
+      {/* Safety Section */}
+      <Safety />
+      
+      {/* Social Proof / Testimonials */}
+      <Testimonials />
+      
+      {/* Footer */}
+      <NewFooter />
+    </main>
   );
 }
 
+const homepageUrl = `${SITE_URL}/`;
+
+Home.seo = {
+  title: "Spyll | India's Anonymous College Network",
+  description:
+    'Meet verified students from 10+ campuses, jump into anonymous text or voice chats, and read real confessions backed by smart safety systems—Spyll keeps your identity private while the conversations stay real.',
+  keywords: [
+    'anonymous college network',
+    'verified student chat',
+    'india college confessions',
+    'campus voice chat',
+    'anonymous college forum',
+    'spyll app',
+    'mym platform',
+  ],
+  canonicalUrl: homepageUrl,
+  seoImage: DEFAULT_OG_IMAGE,
+  structuredData: [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      '@id': `${homepageUrl}#webpage`,
+      url: homepageUrl,
+      name: "Spyll | India's Anonymous College Network",
+      description:
+        'Spyll helps Indian college students find verified peers for anonymous chats, voice calls, and confession threads with community moderation.',
+      inLanguage: 'en-IN',
+      isPartOf: { '@id': `${SITE_URL}/#website` },
+      primaryImageOfPage: {
+        '@type': 'ImageObject',
+        url: DEFAULT_OG_IMAGE,
+      },
+      about: [
+        { '@type': 'Thing', name: 'Anonymous college chat' },
+        { '@type': 'Thing', name: 'Verified student community' },
+        { '@type': 'Thing', name: 'Indian college confessions' },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'How does Spyll keep college chats anonymous?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text:
+              'Spyll verifies every student with campus documents and then masks personal identifiers in chat, voice, and confession features while still allowing reporting and moderation.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I filter who I meet on Spyll?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text:
+              'Yes. You can filter by college, gender, or queue priority when matching for random chat or call, ensuring the experience feels relevant to your campus life.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Is Spyll available outside India?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text:
+              'Spyll currently focuses on Indian colleges so local communities stay trusted. Additional campuses are vetted before being onboarded.',
+          },
+        },
+      ],
+    },
+  ],
+};
+
 export async function getServerSideProps(context) {
-  // Fetch session and user details
   const session = await getSession(context);
   const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
-  const res = await fetch(pageurl + '/api/confession/gettrendingconfessions');
-  const data = await res.json();
-  // If session is null, return null as session
-  if (!session) {
+  
+  try {
+    const res = await fetch(pageurl + '/api/confession/gettrendingconfessions');
+    const data = await res.json();
+    
     return {
       props: {
-        session: null,
-        trendingConfessions: data.trendingConfessions,
-        totalConfessions: data.totalConfessions, 
+        session: session || null,
+        trendingConfessions: data.trendingConfessions || [],
+        totalConfessions: data.totalConfessions || 50,
       },
     };
-  }
-
-  if (session && !data.trendingConfessions) {
+  } catch (error) {
     return {
       props: {
-        session: null,
+        session: session || null,
         trendingConfessions: [],
         totalConfessions: 50,
       },
-    }
+    };
   }
-
-  return {
-    props: {
-      session,
-      trendingConfessions: data.trendingConfessions,
-      totalConfessions: data.totalConfessions,
-    },
-  };
 }

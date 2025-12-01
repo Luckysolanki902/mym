@@ -3,10 +3,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getSession, useSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
-import CustomHead from '@/components/seo/CustomHead';
 import TextChatWrapper from '@/components/fullPageComps/TextChatWrapper';
 import UserVerificationDialog from '@/components/chatComps/UserVerificationDialog';
 import ExitConfirmationDialog from '@/components/commonComps/ExitConfirmationDialog';
+import { DEFAULT_OG_IMAGE, SITE_URL } from '@/utils/seo';
 
 const TextChatPage = ({ userDetails }) => {
   const bottomRef = useRef(null);
@@ -85,12 +85,6 @@ const TextChatPage = ({ userDetails }) => {
 
   return (
     <>
-      {/* SEO Component */}
-      <CustomHead
-        title="Chat Anonymously With Your College Peers | MyM"
-        description="Experience the buzz of anonymous chatting with MyM TextChat! Say goodbye to the usual small talk and dive into genuine conversations with your fellow college mates. It's like Omegle, but exclusive to your campus. Filter your matches by gender, college, and more, ensuring every chat is tailored to your preferences. Unveil the excitement of anonymous connections, share stories, and forge bonds—all within the safe confines of your college community. Join MyM TextChat today and let the conversations begin!"
-      />
-
       {/* User Verification Dialog */}
       <UserVerificationDialog />
 
@@ -140,3 +134,63 @@ export async function getServerSideProps(context) {
 }
 
 export default TextChatPage;
+
+const randomChatUrl = `${SITE_URL}/random-chat`;
+
+TextChatPage.seo = {
+  title: 'Random College Chat | Spyll Text Rooms',
+  description:
+    'Queue up for intelligent, anonymous chat matches with verified Indian students. Filter by gender or college, share interests quickly, and keep every convo ephemeral and moderated.',
+  keywords: [
+    'college random chat',
+    'anonymous student chat',
+    'omegle alternative india',
+    'campus chat rooms',
+    'verified college chat',
+  ],
+  canonicalUrl: randomChatUrl,
+  seoImage: DEFAULT_OG_IMAGE,
+  structuredData: [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Spyll Random Chat',
+      url: randomChatUrl,
+      operatingSystem: 'Web',
+      applicationCategory: 'ChatApplication',
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        ratingCount: '420',
+      },
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'INR',
+      },
+      featureList: [
+        'Gender-based filters',
+        'Queue transparency',
+        'Message encryption',
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${SITE_URL}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Random Chat',
+          item: randomChatUrl,
+        },
+      ],
+    },
+  ],
+};

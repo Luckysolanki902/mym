@@ -1,8 +1,8 @@
 import { sendPasswordResetEmail } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "@/firebase";
-import { createTheme, ThemeProvider, Select, MenuItem, TextField, Button, CircularProgress, InputLabel } from '@mui/material';
-import Image from 'next/image';
+import { createTheme, ThemeProvider, TextField, Button, CircularProgress } from '@mui/material';
+import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 import styles from './signup.module.css'
 
 const mymtheme = createTheme({
@@ -49,7 +49,7 @@ export default function ForgotPassword() {
         <ThemeProvider theme={mymtheme}>
             <div className={styles.mainContainer}>
                 <div className={styles.mainBox}>
-                    <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
+                    <SpyllWordmark className={styles.spyllLogo} />
                     <form onSubmit={handleSubmit} className={styles.form}>
                         {!emailSent && (
                             <TextField

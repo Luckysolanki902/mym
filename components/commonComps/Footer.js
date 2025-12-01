@@ -26,7 +26,7 @@ const Footer = () => {
                             <Image className={styles.contactIcon} width={95} height={89} alt='Instagram icon' src={'/images/othericons/instagramw.png'} />
                         </span>
                         <span>
-                            <a target={'_blank'} rel='noreferrer' className={styles.contactLink} href="https://instagram.com/meetyourmate_?igshid=NGVhN2U2NjQ0Yg==">@spyll_app</a>
+                            <a target={'_blank'} rel='noreferrer' className={styles.contactLink} href="https://instagram.com/_spyll_">@_spyll_</a>
                         </span>
                     </div>
                 </div>

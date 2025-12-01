@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './styles/PairingStatusDisplay.module.css';
 import { useTextChat } from '@/context/TextChatContext';
 import { useFilters } from '@/context/FiltersContext';
+import AlgebraEquation from '../commonComps/AlgebraEquation';
+import { generateEquationWithContext } from '@/utils/algebraUtils';
 
-const PairingStatusDisplay = ({ userGender }) => {
+const PairingStatusDisplay = ({ userGender, onlineCount = 0 }) => {
     const {
         isFindingPair,
         queuePosition,
@@ -109,6 +111,22 @@ const PairingStatusDisplay = ({ userGender }) => {
                         <div className={styles.searchText}>
                             {highlightGenderText(getSearchDescription())}
                         </div>
+                        {onlineCount > 0 && (() => {
+                            const eq = generateEquationWithContext(onlineCount, 'people online');
+                            const userTheme = userGender === 'female' ? 'pink' : userGender === 'male' ? 'cyan' : 'purple';
+                            const oppositeTheme = userGender === 'female' ? 'cyan' : userGender === 'male' ? 'pink' : 'purple';
+                            return (
+                                <AlgebraEquation 
+                                    coefficient={eq.coefficient}
+                                    constant={eq.constant}
+                                    result={eq.result}
+                                    hint={eq.hint}
+                                    theme={userTheme}
+                                    hintTheme={oppositeTheme}
+                                    size="medium"
+                                />
+                            );
+                        })()}
                     </div>
 
                     {/* Searching Indicator */}

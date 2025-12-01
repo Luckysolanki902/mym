@@ -6,11 +6,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import styles from './allconfessions.module.css';
-import CustomHead from '@/components/seo/CustomHead';
 import FilterOptions from '@/components/confessionComps/FilterOptions';
 import AuthPrompt from '@/components/commonComps/AuthPrompt';
 import ScrollToTop2 from '@/components/commonComps/ScrollToTop2';
 import ConfessionSkeleton from '@/components/loadings/ConfessionSkeleton';
+import { DEFAULT_OG_IMAGE, SITE_URL } from '@/utils/seo';
 
 const Index = ({ userDetails }) => {
   const [confessions, setConfessions] = useState([]);
@@ -18,6 +18,7 @@ const Index = ({ userDetails }) => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({ college: 'all', gender: 'any' });
+  const [sortBy, setSortBy] = useState('new'); // 'trending', 'new', or 'myCollege'
   const sentinelRef = useRef(null);
   const router = useRouter();
   const MAX_CONFESSIONS_USER_CAN_SCROLL_WITHOUT_LOGIN = 20;
@@ -38,8 +39,9 @@ const Index = ({ userDetails }) => {
 
     setLoading(true);
     try {
+      const collegeFilter = sortBy === 'myCollege' ? userDetails?.college : filters.college;
       const response = await fetch(
-        `/api/confession/getdesiredconfessions?college=${filters.college}&gender=${filters.gender}&page=${page}&userCollege=${userDetails?.college}`
+        `/api/confession/getdesiredconfessions?college=${collegeFilter}&gender=${filters.gender}&page=${page}&userCollege=${userDetails?.college}&sortBy=${sortBy}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -65,7 +67,7 @@ const Index = ({ userDetails }) => {
   };
 
   useEffect(() => {
-    // Reset state when filters change
+    // Reset state when filters or sortBy change
     setConfessions([]);
     setPage(1);
     setHasMore(true);
@@ -73,7 +75,7 @@ const Index = ({ userDetails }) => {
     setLimitReached(false); // Reset limit when filters change
     fetchConfessions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, [filters, sortBy]);
 
   useEffect(() => {
     const handleIntersection = entries => {
@@ -120,7 +122,6 @@ const Index = ({ userDetails }) => {
 
   return (
     <>
-      <CustomHead title={'Read Confessions from Various Colleges | MYM - Meet Your Mate'} />
       <div
         ref={scrollContainerRef} // Assign the ref to the div
         style={{ 
@@ -134,6 +135,28 @@ const Index = ({ userDetails }) => {
       >
         <div className={styles.chipContainer}>
           <h1 className={styles.mainHeading}>Confessions</h1>
+        </div>
+        <div className={styles.tabsContainer}>
+          <div 
+            className={`${styles.tab} ${sortBy === 'trending' ? styles.activeTab : ''}`}
+            onClick={() => setSortBy('trending')}
+          >
+            Trending
+          </div>
+          <div 
+            className={`${styles.tab} ${sortBy === 'new' ? styles.activeTab : ''}`}
+            onClick={() => setSortBy('new')}
+          >
+            New
+          </div>
+          {userDetails && (
+            <div 
+              className={`${styles.tab} ${sortBy === 'myCollege' ? styles.activeTab : ''}`}
+              onClick={() => setSortBy('myCollege')}
+            >
+              My College
+            </div>
+          )}
         </div>
         <div className={styles.chipParent}>
           {/* {userDetails && <FilterOptions userDetails={userDetails} onChange={handleFiltersChange} />} */}
@@ -212,3 +235,66 @@ export async function getServerSideProps(context) {
 }
 
 export default Index;
+
+const confessionsUrl = `${SITE_URL}/all-confessions`;
+
+Index.seo = {
+  title: 'College Confessions Wall | Spyll',
+  description:
+    'Browse trending and recent anonymous confessions from verified Indian campuses. Filter by college or gender, react safely, and see what your peers are really talking about.',
+  keywords: [
+    'college confessions india',
+    'anonymous campus stories',
+    'student confession wall',
+    'hbtu confessions',
+    'spyll stories',
+  ],
+  canonicalUrl: confessionsUrl,
+  seoImage: DEFAULT_OG_IMAGE,
+  structuredData: [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Spyll Confessions',
+      url: confessionsUrl,
+      about: {
+        '@type': 'Thing',
+        name: 'Anonymous college confessions',
+      },
+      isPartOf: { '@id': `${SITE_URL}/#website` },
+      inLanguage: 'en-IN',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${SITE_URL}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Confessions',
+          item: confessionsUrl,
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Latest Confessions',
+      url: confessionsUrl,
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          url: confessionsUrl,
+          name: 'Anonymous confession stream',
+        },
+      ],
+    },
+  ],
+};

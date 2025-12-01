@@ -1,0 +1,285 @@
+.footer {
+  background: linear-gradient(180deg, #fff8fa 0%, #fdf2f5 50%, #fef5f7 100%);
+  padding: 4rem 2rem 2rem calc(2.5rem + var(--sidebarwidth));
+  color: #334155;
+  border-top: 1px solid rgba(255, 89, 115, 0.1);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* CTA Section */
+.ctaSection {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.ctaTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ctaSubtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  color: #64748b;
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  line-height: 1.7;
+}
+
+.ctaButtons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.primaryButton {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #FF6BA0 0%, #FF5973 100%);
+  border: none;
+  border-radius: 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 24px rgba(255, 89, 115, 0.4);
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(255, 89, 115, 0.5);
+}
+
+.secondaryButton {
+  padding: 1rem 2rem;
+  background: transparent;
+  border: 2px solid rgba(64, 165, 223, 0.4);
+  border-radius: 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #40A5DF;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.secondaryButton:hover {
+  background: rgba(64, 165, 223, 0.1);
+  border-color: rgba(64, 165, 223, 0.6);
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 89, 115, 0.15), transparent);
+  margin-bottom: 3rem;
+}
+
+/* Bottom Section */
+.bottomSection {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 3rem;
+  align-items: start;
+  margin-bottom: 2rem;
+}
+
+/* Brand Section */
+.brandSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.logo {
+  text-decoration: none;
+}
+
+.logoText {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #FF6BA0, #FF5973);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Links Section */
+.linksSection {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.footerLink {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footerLink:hover {
+  color: #FF5973;
+}
+
+/* Social Section */
+.socialSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.socialLinks {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.socialLink {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 89, 115, 0.08);
+  border: 1px solid rgba(255, 89, 115, 0.15);
+  border-radius: 10px;
+  color: #FF5973;
+  transition: all 0.3s ease;
+}
+
+.socialLink:hover {
+  background: rgba(255, 89, 115, 0.15);
+  color: #FF5973;
+  transform: translateY(-2px);
+}
+
+.socialLink svg {
+  width: 20px;
+  height: 20px;
+}
+
+.emailLink {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.emailLink:hover {
+  color: #FF5973;
+}
+
+.contactEmails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+/* Copyright */
+.copyright {
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 89, 115, 0.1);
+}
+
+.copyright p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .footer {
+    padding: 3rem 1.5rem 2rem calc(1rem + var(--sidebarwidth));
+  }
+  
+  .bottomSection {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+  
+  .brandSection {
+    align-items: center;
+  }
+  
+  .socialSection {
+    align-items: center;
+  }
+  
+  .contactEmails {
+    align-items: center;
+  }
+  
+  .linksSection {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .footer {
+    padding: 3rem 1rem 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer {
+    padding: 2rem 1rem 1.5rem;
+  }
+  
+  .ctaTitle {
+    font-size: 1.75rem;
+  }
+  
+  .ctaSubtitle {
+    font-size: 1rem;
+  }
+  
+  .ctaButtons {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .linksSection {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

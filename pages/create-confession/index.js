@@ -3,8 +3,8 @@ import CreateConfessionForm from '@/components/fullPageComps/CreateConfessionFor
 import GuidelinesDialog from '@/components/dialogs/GuidelinesDialog';
 import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import CustomHead from '@/components/seo/CustomHead';
 import styles from '@/components/componentStyles/createconfessionform.module.css';
+import { DEFAULT_OG_IMAGE, SITE_URL } from '@/utils/seo';
 
 const CreateConfession = ({ userDetails }) => {
   const router = useRouter();
@@ -38,7 +38,6 @@ const CreateConfession = ({ userDetails }) => {
 
   return (
     <>
-      <CustomHead title={'Share Your Secrets Anonymously | Create Confession | MyM'} description={"Ready to unload your thoughts? Create your confession anonymously on MyM and join a community of secret-sharers. No judgments, no worries—just pure anonymity. Pour your heart out, get it off your chest, and experience the liberating feeling of unburdening yourself. Plus, get more likes and comments to make your confession trend and spark conversations. Start sharing your secrets today with MyM's Create Confession feature."} keywords={ ['share secrets anonymously', 'confession creation', 'anonymous sharing', 'college confessions', 'unburden yourself', 'confession community', 'secret sharing platform', 'trending confessions']}/>
       <div style={{ height: '80%' }}>
         <h1 style={{ fontFamily: 'Jost', fontWeight: '500', marginTop: '2rem',  }} className={styles.mainPageHeading}>Create Confession</h1>
         <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'hidden', alignItems: 'center', height: '100%' }} className='remcomponents'>
@@ -86,3 +85,59 @@ export async function getServerSideProps(context) {
 }
 
 export default CreateConfession;
+
+const createConfessionUrl = `${SITE_URL}/create-confession`;
+
+CreateConfession.seo = {
+  title: 'Share Your Secret Anonymously | Spyll Confession Form',
+  description:
+    'Write a confession that only verified Indian students can see. Add a mood, keep your identity private, and publish stories that can trend in campus feeds.',
+  keywords: [
+    'create anonymous confession',
+    'college confession form',
+    'share secret online',
+    'spyll confession',
+    'campus anonymous post',
+  ],
+  canonicalUrl: createConfessionUrl,
+  seoImage: DEFAULT_OG_IMAGE,
+  structuredData: [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'How to publish a confession on Spyll',
+      description: 'Steps students follow to post an anonymous confession on the Spyll platform.',
+      totalTime: 'PT2M',
+      estimatedCost: {
+        '@type': 'MonetaryAmount',
+        currency: 'INR',
+        value: '0',
+      },
+      supply: [
+        { '@type': 'HowToSupply', name: 'Verified student account' },
+        { '@type': 'HowToSupply', name: 'Original confession text' },
+      ],
+      step: [
+        {
+          '@type': 'HowToStep',
+          position: 1,
+          name: 'Open the confession composer',
+          text: 'Visit the Create Confession page inside Spyll and agree to the community guidelines popup.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 2,
+          name: 'Write your story',
+          text: 'Add a headline, pick a mood, and write out your confession using the anonymous editor.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 3,
+          name: 'Publish and track responses',
+          text: 'Submit the confession to publish instantly and monitor likes or comments from verified peers.',
+        },
+      ],
+      url: createConfessionUrl,
+    },
+  ],
+};

@@ -1,5 +1,5 @@
 import { Typography, Box, Container, styled } from '@mui/material';
-import Image from 'next/image';
+import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 import TimerBox from '../chatComps/TimerBox';
 
 const Background = styled(Box)({
@@ -35,12 +35,13 @@ export default function ComingSoon() {
           flexDirection: 'column',
         }}
       >
-        <Image
-          width={1000}
-          height={1000}
-          alt='mym'
-          style={{ width: '250px', height: 'auto', marginBottom: '-3rem' }}
-          src={'/images/mym_logos/mymlogo.png'}
+        <SpyllWordmark
+          style={{
+            fontSize: '4rem',
+            letterSpacing: '-3px',
+            color: '#000000',
+            marginBottom: '-3rem',
+          }}
         />
         <Box
           sx={{

@@ -1,0 +1,219 @@
+.section {
+  padding: 4rem 2rem 4rem calc(2.5rem + var(--sidebarwidth));
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(255, 107, 160, 0.1) 0%, rgba(255, 89, 115, 0.1) 100%);
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #FF5973;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  color: #64748b;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Steps Grid */
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  position: relative;
+}
+
+.stepCard {
+  position: relative;
+  padding: 2.5rem 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 24px;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stepCard:hover {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  border-color: rgba(255, 89, 115, 0.2);
+}
+
+.stepNumber {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgba(255, 89, 115, 0.3);
+}
+
+.stepIcon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255, 107, 160, 0.1) 0%, rgba(255, 89, 115, 0.1) 100%);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.stepCard:hover .stepIcon {
+  background: linear-gradient(135deg, rgba(255, 107, 160, 0.2) 0%, rgba(255, 89, 115, 0.2) 100%);
+  transform: scale(1.05);
+}
+
+.stepIcon svg {
+  width: 32px;
+  height: 32px;
+  color: #FF5973;
+}
+
+.stepTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.75rem;
+}
+
+.stepDescription {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  color: #64748b;
+  line-height: 1.7;
+}
+
+/* Connector */
+.connector {
+  display: none;
+  position: absolute;
+  top: 50%;
+  right: -2rem;
+  width: 4rem;
+  height: 24px;
+  transform: translateY(-50%);
+}
+
+.connector svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* CTA */
+.cta {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.ctaLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #FF5973;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.ctaLink:hover {
+  background: rgba(255, 89, 115, 0.1);
+}
+
+.ctaLink svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.ctaLink:hover svg {
+  transform: translateX(4px);
+}
+
+/* Responsive */
+@media (min-width: 968px) {
+  .connector {
+    display: block;
+  }
+}
+
+@media (max-width: 968px) {
+  .section {
+    padding: 3rem 1.5rem 3rem calc(1rem + var(--sidebarwidth));
+  }
+  
+  .stepsGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .stepCard {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .section {
+    padding: 3rem 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .section {
+    padding: 2rem 1rem;
+  }
+  
+  .title {
+    font-size: 1.75rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .stepIcon {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .stepIcon svg {
+    width: 28px;
+    height: 28px;
+  }
+}

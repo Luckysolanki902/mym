@@ -1,0 +1,315 @@
+.section {
+  padding: 5rem 2rem 5rem calc(2.5rem + var(--sidebarwidth));
+  background: linear-gradient(180deg, #ffffff 0%, #fff8fa 50%, #fef5f7 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(255, 107, 160, 0.08) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(131, 231, 253, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+/* Left Content */
+.leftContent {
+  color: #0f172a;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(255, 107, 160, 0.12) 0%, rgba(255, 89, 115, 0.08) 100%);
+  border: 1px solid rgba(255, 89, 115, 0.2);
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #FF5973;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.description {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  color: #64748b;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+/* Benefits List */
+.benefitsList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.benefitItem {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  color: #334155;
+}
+
+.benefitIcon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.benefitIcon svg {
+  width: 16px;
+  height: 16px;
+  color: #10b981;
+}
+
+/* Verify Button */
+.verifyButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #FF6BA0 0%, #FF5973 100%);
+  border: none;
+  border-radius: 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 24px rgba(255, 89, 115, 0.4);
+}
+
+.verifyButton:hover {
+  box-shadow: 0 8px 32px rgba(255, 89, 115, 0.5);
+}
+
+.buttonIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Right Content - Stats Card */
+.rightContent {
+  display: flex;
+  justify-content: center;
+}
+
+.statsCard {
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 89, 115, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 8px 40px rgba(255, 89, 115, 0.08);
+}
+
+.statsHeader {
+  margin-bottom: 1.5rem;
+}
+
+.liveIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #10b981;
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.statItem {
+  text-align: center;
+  padding: 1.25rem 0.5rem;
+  background: linear-gradient(135deg, #fafafa 0%, #fff5f8 100%);
+  border: 1px solid rgba(255, 89, 115, 0.08);
+  border-radius: 16px;
+}
+
+.statNumber {
+  display: block;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #FF6BA0, #FF5973);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.statLabel {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+/* College Logos */
+.collegeLogos {
+  text-align: center;
+}
+
+.logoRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.collegeLogo {
+  padding: 0.5rem 0.875rem;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.collegeLogo span {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.logoText {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .section {
+    padding: 3rem 1.5rem 3rem calc(1rem + var(--sidebarwidth));
+  }
+  
+  .content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .leftContent {
+    text-align: center;
+  }
+  
+  .benefitsList {
+    align-items: center;
+  }
+  
+  .statsCard {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+  .section {
+    padding: 3rem 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .section {
+    padding: 2rem 1rem;
+  }
+  
+  .title {
+    font-size: 1.75rem;
+  }
+  
+  .description {
+    font-size: 1rem;
+  }
+  
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .statNumber {
+    font-size: 1.5rem;
+  }
+  
+  .collegeLogo {
+    padding: 0.375rem 0.625rem;
+  }
+  
+  .collegeLogo span {
+    font-size: 0.6875rem;
+  }
+}

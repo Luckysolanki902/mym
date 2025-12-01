@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { createTheme, ThemeProvider, TextField, Button, InputAdornment, IconButton } from '@mui/material';
-import Image from 'next/image';
 import styles from './signup.module.css'
 import CircularProgress from '@mui/material/CircularProgress';
 import Visibility from '@mui/icons-material/Visibility';
@@ -11,6 +10,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CustomHead from "@/components/seo/CustomHead";
 import { useSession } from 'next-auth/react';
 import { getSession } from "next-auth/react";
+import PhoneMockup from '@/components/commonComps/PhoneMockup';
 
 
 
@@ -78,15 +78,22 @@ export default function Signin({userDetails}) {
 
   return (
     <>
-      <CustomHead title={'Login to MYM - Meet Your Mate'} />
+      <CustomHead title={'Login to Spyll - Your Campus Confidential'} />
       <ThemeProvider theme={mymtheme}>
 
         <div className={styles.mainContainer}>
-          <div className={styles.macpng}>
-            <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview'></Image>
+          <div className={styles.mockupSection}>
+            <PhoneMockup
+              mode="auto"
+              variant="signup"
+              showToggle={false}
+              autoRotate={true}
+              rotateInterval={4000}
+              tilt="left"
+            />
           </div>
           <div className={styles.mainBox}>
-            <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo}></Image>
+            <div className={styles.spyllLogo}>spyll</div>
             {signInError && (<p style={{ color: 'red' }}>{signInError}</p>)}
             <form onSubmit={handleSignIn} className={styles.form}>
               <TextField

@@ -5,13 +5,14 @@ import { setSignupData, setOtpToken, setOtpSentAt, clearSignupData } from '@/sto
 import React, { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider, Select, MenuItem, TextField, Button, InputAdornment, IconButton, Alert } from '@mui/material';
-import Image from 'next/image';
 import styles from './signup.module.css';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CustomHead from '@/components/seo/CustomHead';
 import Link from 'next/link';
 import { getSession } from 'next-auth/react';
+import PhoneMockup from '@/components/commonComps/PhoneMockup';
+import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 
 const mymtheme = createTheme({
   palette: {
@@ -96,6 +97,13 @@ const Signup = ({ userDetails }) => {
 
     const emailDomain = emailValue.split('@')[1] || '';
 
+    // Check if it's a test ID first
+    if (testIds.includes(emailValue)) {
+      setCollege('Test Account');
+      setError(null);
+      return;
+    }
+
     // Check if any allowed email domain starts with the entered domain
     const matchedCollege = allowedEmails.find((allowedEmail) => allowedEmail.startsWith(emailDomain));
     if (matchedCollege) {
@@ -110,7 +118,7 @@ const Signup = ({ userDetails }) => {
     } else {
       setCollege('');
       if (emailValue.includes('@') && emailValue.includes('.')) {
-        setError('Your college is not on MYM yet.');
+        setError('Your college is not on Spyll yet.');
       } else {
         setError(null); // Clear error if email is empty
       }
@@ -138,7 +146,7 @@ const Signup = ({ userDetails }) => {
         );
         const isTestId = testIds.includes(email); // Check if email is one of the test IDs
         if (!isEmailAllowed && !isTestId) {
-          throw new Error('Your college is not on MYM yet.');
+          throw new Error('Your college is not on Spyll yet.');
         }
       }
 
@@ -185,19 +193,26 @@ const Signup = ({ userDetails }) => {
 
   return (
     <>
-      <CustomHead title={'Signup to MYM - Meet Your Mate'} />
+      <CustomHead title={'Signup to Spyll - Your Campus Confidential'} />
 
       <ThemeProvider theme={mymtheme}>
         <div className={styles.mainContainer}>
-          <div className={styles.macpng}>
-            <Image src={'/images/large_pngs/macbook_chat.png'} width={2400} height={1476} alt='preview' />
+          <div className={styles.mockupSection}>
+            <PhoneMockup
+              mode="auto"
+              variant="signup"
+              showToggle={false}
+              autoRotate={true}
+              rotateInterval={4000}
+              tilt="left"
+            />
           </div>
           <div className={styles.mainBox}>
-            <Image src={'/images/mym_logos/mymshadow.png'} width={1232} height={656} alt='mym' className={styles.mymLogo} />
+            <SpyllWordmark className={styles.spyllLogo} />
             {error && (
               <Alert severity="error" style={{ marginBottom: '15px' }}>
                 {error}{' '}
-                {error === 'Your college is not on MYM yet.' && (
+                {error === 'Your college is not on Spyll yet.' && (
                   <Link
                     style={{ color: 'rgb(0,0,0)', textDecoration: 'none', marginTop: '-1rem' }}
                     href={`/give-your-suggestion?category=add-college&collegedomain=${email.split('@')[1]}`}
@@ -261,6 +276,11 @@ const Signup = ({ userDetails }) => {
                 <MenuItem value="female">Female</MenuItem>
                 {/* <MenuItem value="other">Other</MenuItem> */}
               </Select>
+              {gender !== 'Select Gender' && (
+                <p className={styles.genderWarning}>
+                  You won&apos;t be able to change this field later
+                </p>
+              )}
               <TextField
                 variant='standard'
                 required

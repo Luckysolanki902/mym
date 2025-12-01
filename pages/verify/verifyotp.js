@@ -5,7 +5,7 @@ import { clearSignupData, setOtpToken, setOtpSentAt } from '@/store/slices/signu
 import React, { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider, TextField, Button, Alert } from '@mui/material';
-import Image from 'next/image';
+import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 import styles from './verifyotp.module.css'; // Ensure you have appropriate styles
 import CustomHead from '@/components/seo/CustomHead';
 import Link from 'next/link';
@@ -171,18 +171,12 @@ const VerifyOTP = () => {
 
   return (
     <>
-      <CustomHead title={'Verify OTP - MYM'} />
+      <CustomHead title={'Verify OTP - Spyll'} />
 
       <ThemeProvider theme={mymtheme}>
         <div className={styles.mainContainer}>
           <div className={styles.mainBox}>
-            <Image
-              src={'/images/mym_logos/mymshadow.png'}
-              width={1232}
-              height={656}
-              alt='mym'
-              className={styles.mymLogo}
-            />
+            <SpyllWordmark className={styles.spyllLogo} />
             {error && (
               <Alert severity="error" style={{ marginBottom: '15px' }}>
                 {error}

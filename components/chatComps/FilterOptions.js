@@ -5,6 +5,8 @@ import { Chip, createTheme, ThemeProvider } from '@mui/material';
 import { useFilters } from '@/context/FiltersContext';
 import { useSpring, animated } from 'react-spring';
 import { motion, AnimatePresence } from 'framer-motion';
+import AlgebraEquation from '../commonComps/AlgebraEquation';
+import { generateEquationWithContext } from '@/utils/algebraUtils';
 
 const darkTheme = createTheme({
   palette: {
@@ -186,41 +188,51 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired }) => {
         {(openFilterMenu) && (
           <animated.div style={filterContentAnimation} className={styles.filterContentWrapper}>
             <div className={styles.filterMenu}>
-              <div className={styles.filterSection}>
-                <div className={styles.filterLabel} style={{ float: 'right' }}>Online: {chatStats.totalUsers}</div>
+              <div className={styles.filterSection} style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+                {(() => {
+                  const eq = generateEquationWithContext(chatStats.totalUsers, 'people online');
+                  const userTheme = userDetails?.gender === 'female' ? 'pink' : userDetails?.gender === 'male' ? 'cyan' : 'purple';
+                  const oppositeTheme = userDetails?.gender === 'female' ? 'cyan' : userDetails?.gender === 'male' ? 'pink' : 'purple';
+                  return (
+                    <AlgebraEquation 
+                      coefficient={eq.coefficient}
+                      constant={eq.constant}
+                      result={eq.result}
+                      hint={eq.hint}
+                      theme={userTheme}
+                      hintTheme={oppositeTheme}
+                      size="small"
+                    />
+                  );
+                })()}
               </div>
               <div className={styles.filterSection}>
-                <div className={styles.filterLabel} style={{minWidth:'15rem'}}>College Preference</div>
+                <div className={styles.filterLabel}>College</div>
                 <div className={styles.chipsContainer}>
                   <div
-                    label="Any"
                     onClick={() => handleCollegeChange('any')}
                     className={tempCollege === 'any' ? styles.chipSelected : styles.chipDefault}
                   >
                     Any
                   </div>
                   <div
-                    label="Same College"
                     onClick={() => handleCollegeChange(userDetails?.college)}
                     className={tempCollege === userDetails?.college ? styles.chipSelected : styles.chipDefault}
-                  >Same College</div>
+                  >Yours</div>
                 </div>
               </div>
               <div className={styles.filterSection}>
                 <div className={styles.filterLabel}>Meet With</div>
                 <div className={styles.chipsContainer}>
                   <div
-                    label="Boys"
                     onClick={() => handleGenderChange('male')}
                     className={tempGender === 'male' ? styles.chipMale : styles.chipDefault}
                   >Boys</div>
                   <div
-                    label="Girls"
                     onClick={() => handleGenderChange('female')}
                     className={tempGender === 'female' ? styles.chipFemale : styles.chipDefault}
                   >Girls</div>
                   <div
-                    label="Anyone"
                     onClick={() => handleGenderChange('any')}
                     className={tempGender === 'any' ? styles.chipSelected : styles.chipDefault}
                   >Anyone</div>

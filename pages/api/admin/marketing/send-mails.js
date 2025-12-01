@@ -49,7 +49,7 @@ const handler = async (req, res) => {
                             <!-- Header Section -->
                             <tr>
                                 <td style="padding: 0px 0; text-align:center; background-color:rgb(50, 50, 50); color:#000000;">
-                                    <img src="https://www.meetyourmate.in/images/mym_logos/mymlogoinvert2.png" alt="mymlogo" style="width:40%; max-width:300px; display:block; margin:20px auto;">
+                                    <img src="https://www.meetyourmate.in/images/spyll_logos/spyll_main.png" alt="Spyll logo" style="width:40%; max-width:300px; display:block; margin:20px auto;">
                                     <p style="text-align:center; font-family: Jost, sans-serif; font-size:14px; color:#ffffff; margin:10px 0;">
                                         HBTU’s Anonymous Chat Platform <br>Is Waiting for You!
                                     </p>

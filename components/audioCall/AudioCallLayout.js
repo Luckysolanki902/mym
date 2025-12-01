@@ -11,14 +11,35 @@ import FilterOptions from '../chatComps/FilterOptions';
 import useAudioCallController from '@/hooks/useAudioCallController';
 
 const AudioCallLayout = ({ userDetails }) => {
+  const [onlineCount, setOnlineCount] = React.useState(0);
   const audioCallContext = useAudioCall();
   const controller = useAudioCallController({ userDetails, context: audioCallContext });
-  const { callState, micStatus, isFindingPair, partnerDisconnected, partner, callStartTime, remoteAudioRef } = audioCallContext;
+  const { callState, micStatus, isFindingPair, partnerDisconnected, partner, callStartTime, remoteAudioRef, socket } = audioCallContext;
 
   const showMicPrompt = micStatus !== MIC_STATE.GRANTED;
   const showDisconnectMessage = partnerDisconnected && !isFindingPair;
   const showTimer = callState === CALL_STATE.CONNECTED && callStartTime;
   const showPairingStatus = (isFindingPair || callState === CALL_STATE.DIALING || callState === CALL_STATE.CONNECTING) && !partnerDisconnected;
+
+  // Fetch online count periodically
+  React.useEffect(() => {
+    const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000';
+    const fetchOnlineCount = async () => {
+      try {
+        const response = await fetch(`${serverUrl.endsWith('/') ? serverUrl + 'api/user-stats' : serverUrl + '/api/user-stats'}`);
+        if (response.ok) {
+          const data = await response.json();
+          setOnlineCount(data.audioCallStats?.totalUsers || 0);
+        }
+      } catch (error) {
+        console.error('Error fetching online count:', error);
+      }
+    };
+    
+    fetchOnlineCount();
+    const interval = setInterval(fetchOnlineCount, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className={styles.canvas} data-user-gender={userDetails?.gender || 'other'}>
@@ -63,6 +84,7 @@ const AudioCallLayout = ({ userDetails }) => {
                 <AudioCallPairingStatus
                   key="pairing-status"
                   userGender={userDetails?.gender}
+                  onlineCount={onlineCount}
                 />
               )}
               {showTimer && (

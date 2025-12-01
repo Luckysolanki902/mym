@@ -1,0 +1,203 @@
+.modeSection {
+  padding: 4rem 2rem 4rem calc(2.5rem + var(--sidebarwidth));
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  color: #64748b;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Filters Container - LIGHT MODE like actual FilterOptions */
+.filtersContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 1.5rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.filterGroup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.filterLabel {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  color: #334155;
+  font-weight: 500;
+}
+
+.chipsContainer {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background-color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  color: #334155;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease-in-out;
+}
+
+
+
+.chipActive {
+  background-color: #494949;
+  color: white;
+  border-color: #494949;
+}
+
+.chipMale {
+  background-color: #40a5df;
+  color: white;
+  border-color: #40a5df;
+}
+
+.chipFemale {
+  background-color: #df2c7a;
+  color: white;
+  border-color: #df2c7a;
+}
+
+/* Feature Cards */
+.featureCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.featureCard {
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 24px;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.featureCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.cardIcon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255, 107, 160, 0.15) 0%, rgba(255, 89, 115, 0.15) 100%);
+  border-radius: 16px;
+}
+
+.cardIcon svg {
+  width: 28px;
+  height: 28px;
+  color: #FF5973;
+}
+
+.featureCard h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.75rem;
+}
+
+.featureCard p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .modeSection {
+    padding: 3rem 1.5rem 3rem calc(1rem + var(--sidebarwidth));
+  }
+  
+  .featureCards {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .filtersContainer {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+  .modeSection {
+    padding: 3rem 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .modeSection {
+    padding: 2rem 1rem;
+  }
+  
+  .title {
+    font-size: 1.75rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .filtersContainer {
+    padding: 1.5rem;
+  }
+  
+  .featureCard {
+    padding: 1.5rem;
+  }
+}

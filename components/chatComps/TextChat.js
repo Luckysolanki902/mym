@@ -19,6 +19,7 @@ const TextChat = ({ userDetails }) => {
   const [textValue, setTextValue] = useState('');
   const [inpFocus, setInpFocus] = useState(false);
   const [isChatAvailable, setIsChatAvailable] = useState(true); // Set to true if no time restrictions
+  const [onlineCount, setOnlineCount] = useState(0);
   const typingTimeoutRef = useRef(null);
   const isTypingRef = useRef(false); // Initialize isTypingRef
   const messagesContainerRef = useRef(null);
@@ -253,7 +254,7 @@ const TextChat = ({ userDetails }) => {
     <div className={styles.mainC} data-user-gender={userDetails?.gender}>
       {(isChatAvailable && userDetails) && (
         <>
-          <MessageDisplay userDetails={userDetails} isStrangerVerified={isStrangerVerified}/>
+          <MessageDisplay userDetails={userDetails} isStrangerVerified={isStrangerVerified} onlineCount={usersOnline}/>
           <InputBox
             handleFindNewButton={handleFindNewButton}
             handleSendButton={handleSendButton}

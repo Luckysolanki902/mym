@@ -11,17 +11,20 @@ const handler = async (req, res) => {
 
   const college = req.query.college || '';
   const gender = req.query.gender || '';
+  const sortBy = req.query.sortBy || 'new';
   const page = parseInt(req.query.page) || 1; // Parse the page parameter
   const perPage = 10; // Number of confessions per page
   const skip = (page - 1) * perPage;
 
   const query = {};
 
-  if (college) {
+  if (college && college !== 'all') {
     if (college === 'yourCollege') {
       query.college = req.query.userCollege;
     } else if (college === 'otherColleges') {
       query.college = { $ne: req.query.userCollege };
+    } else {
+      query.college = college;
     }
   }
 
@@ -30,9 +33,37 @@ const handler = async (req, res) => {
   }
 
   try {
-    // Fetch confessions with pagination and filtering, sorted by createdAt descending
-    const confessions = await Confession.find(query)
-      .sort({ createdAt: -1 })
+    // Determine sort order based on sortBy parameter
+    let sortOption = {};
+    if (sortBy === 'trending') {
+      // Sort by number of likes + comments (engagement)
+      sortOption = { createdAt: -1 }; // Will aggregate after fetch
+    } else {
+      // Default to 'new' - sort by creation date
+      sortOption = { createdAt: -1 };
+    }
+
+    // Fetch confessions with pagination and filtering
+    let confessions = await Confession.find(query)
+      .populate('likes')
+      .populate('comments')
+      .sort(sortOption)
+      .skip(skip)
+      .limit(sortBy === 'trending' ? perPage * 3 : perPage); // Fetch more for trending to sort properly
+
+    // If trending, sort by engagement
+    if (sortBy === 'trending') {
+      confessions = confessions
+        .map(conf => ({
+          ...conf.toObject(),
+          engagement: (conf.likes?.length || 0) + (conf.comments?.length || 0)
+        }))
+        .sort((a, b) => b.engagement - a.engagement)
+        .slice(0, perPage);
+    }
+
+    confessions = await Confession.find(query)
+      .sort(sortOption)
       .skip(skip)
       .limit(perPage);
 

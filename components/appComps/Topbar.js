@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import SwipeableTemporaryDrawer from '@/components/appComps/Drawer';
 import styles from './styles/topbar.module.css';
 import { useRouter } from 'next/router';
 import { getSession } from 'next-auth/react';
+import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 
 const Topbar = () => {
   const [loading, setLoading] = useState(true);
@@ -35,41 +35,28 @@ const Topbar = () => {
 
   return (
     <div className={`topbarheight ${styles.mainDiv}`}>
-      <div 
-        onClick={() => router.push('/')} 
+      <SpyllWordmark
+        onClick={() => router.push('/')}
         className={styles.brandmark}
         style={{
-          fontFamily: "'Liquids', sans-serif",
-          fontWeight: 400,
           fontSize: '2rem',
           letterSpacing: '-1.5px',
           color: '#000000',
           cursor: 'pointer',
-          userSelect: 'none',
           display: 'flex',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
-      >
-        spyll
-      </div>
+      />
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {user && <SwipeableTemporaryDrawer />}
         {!loading && !user && (
           <div className={styles.sessionButtons}>
-            {/* {isSignUpPage && (
-              <button className={styles.login} onClick={handleSignIn}>Log In Instead</button>
-            )}
-            {isSignInPage && (
-              <button className={styles.login} onClick={handleSignUp}>Sign Up Instead</button>
-            )} */}
             {!isSignUpPage && !isSignInPage && (
               <>
                 <button className={styles.login} onClick={handleSignIn}>Login</button>
-                {/* <button className={styles.signup} onClick={handleSignUp}>Sign Up</button> */}
               </>
             )}
             {<SwipeableTemporaryDrawer />}
-
           </div>
         )}
       </div>
