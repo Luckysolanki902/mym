@@ -37,7 +37,9 @@ const PhoneMockup = ({
   const [activeMode, setActiveMode] = useState(mode === 'auto' ? 'chat' : mode);
   const [callTimer, setCallTimer] = useState(0);
 
-  // Sync with external mode prop when controlled
+  console.log('PhoneMockup render:', { mode, autoRotate, rotateInterval, activeMode });
+
+  // Sync with external mode prop when controlled (only on initial mount or when mode prop changes)
   useEffect(() => {
     if (mode !== 'auto') {
       setActiveMode(mode);
@@ -45,15 +47,24 @@ const PhoneMockup = ({
   }, [mode]);
 
   // Auto-rotate between modes
-  // Handle mode auto-rotation
   useEffect(() => {
-    if (mode === 'auto' && autoRotate) {
-      const interval = setInterval(() => {
+    if (!autoRotate) return;
+    
+    const interval = setInterval(() => {
+      if (mode === 'auto') {
+        // Uncontrolled - just update internal state
         setActiveMode(prev => prev === 'chat' ? 'call' : 'chat');
-      }, rotateInterval);
-      return () => clearInterval(interval);
-    }
-  }, [mode, autoRotate, rotateInterval]);
+      } else {
+        // Controlled - update via callback so parent state changes
+        const nextMode = activeMode === 'chat' ? 'call' : 'chat';
+        if (onModeChange) {
+          onModeChange(nextMode);
+        }
+      }
+    }, rotateInterval);
+    
+    return () => clearInterval(interval);
+  }, [autoRotate, rotateInterval, mode, activeMode, onModeChange]);
 
   // Call timer simulation - increments when in call mode
   useEffect(() => {
@@ -70,6 +81,7 @@ const PhoneMockup = ({
 
   // Reset timer when switching away from call mode
   const handleModeChange = (newMode) => {
+    console.log('handleModeChange called with:', newMode, 'current activeMode:', activeMode);
     if (newMode === 'chat') {
       setCallTimer(0);
     }
@@ -131,8 +143,9 @@ const PhoneMockup = ({
         {/* Floating Cards */}
         <motion.div 
           className={styles.floatingCard1}
+          initial={{ y: 0 }}
           animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 3, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }}
         >
           <span className={styles.floatingEmoji}>🔒</span>
           <span className={styles.floatingText}>100% Anonymous</span>
@@ -140,8 +153,9 @@ const PhoneMockup = ({
         
         <motion.div 
           className={styles.floatingCard2}
+          initial={{ y: 0 }}
           animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+          transition={{ duration: 3.5, repeat: Infinity, repeatType: "loop", ease: "easeInOut", delay: 0.5 }}
         >
           <span className={styles.floatingEmoji}>✨</span>
           <span className={styles.floatingText}>College Verified</span>
@@ -216,8 +230,9 @@ const PhoneMockup = ({
                           <motion.div
                             key={i}
                             className={styles.typingDot}
+                            initial={{ scale: 1, opacity: 0.5 }}
                             animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-                            transition={{ duration: 1, repeat: Infinity, delay: i * 0.15 }}
+                            transition={{ duration: 1, repeat: Infinity, repeatType: "loop", delay: i * 0.15 }}
                           />
                         ))}
                       </div>
@@ -258,13 +273,15 @@ const PhoneMockup = ({
                     <div className={styles.avatarContainer}>
                       <motion.div
                         className={styles.pulseRing1}
+                        initial={{ scale: 1, opacity: 0.4 }}
                         animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
-                        transition={{ duration: 2, repeat: Infinity }}
+                        transition={{ duration: 2, repeat: Infinity, repeatType: "loop" }}
                       />
                       <motion.div
                         className={styles.pulseRing2}
+                        initial={{ scale: 1, opacity: 0.3 }}
                         animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }}
-                        transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                        transition={{ duration: 2, repeat: Infinity, repeatType: "loop", delay: 0.5 }}
                       />
                       <div className={styles.avatarRing}>
                         <div className={styles.avatar}>👤</div>
@@ -281,8 +298,9 @@ const PhoneMockup = ({
                     <div className={styles.timerCard}>
                       <motion.div
                         className={styles.timerDot}
+                        initial={{ scale: 1, opacity: 0.7 }}
                         animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
-                        transition={{ duration: 2, repeat: Infinity }}
+                        transition={{ duration: 2, repeat: Infinity, repeatType: "loop" }}
                       />
                       <span className={styles.timerDisplay}>{formatTime(callTimer)}</span>
                     </div>
@@ -293,12 +311,14 @@ const PhoneMockup = ({
                         <motion.div
                           key={i}
                           className={styles.waveBar}
+                          initial={{ height: '30%' }}
                           animate={{
                             height: ['30%', `${wave.height}%`, '30%']
                           }}
                           transition={{
                             duration: wave.duration,
                             repeat: Infinity,
+                            repeatType: "loop",
                             ease: "easeInOut",
                             delay: i * 0.1
                           }}

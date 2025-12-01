@@ -137,7 +137,7 @@ const Hero = () => {
             mode={mockupMode}
             variant="hero"
             showToggle={true}
-            autoRotate={false}
+            autoRotate={true}
             rotateInterval={5000}
             tilt="right"
             onModeChange={handleMockupModeChange}
