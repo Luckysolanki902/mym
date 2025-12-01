@@ -4,7 +4,7 @@ import styles from './styles/PairingStatusDisplay.module.css';
 import { useTextChat } from '@/context/TextChatContext';
 import { useFilters } from '@/context/FiltersContext';
 import AlgebraEquation from '../commonComps/AlgebraEquation';
-import { generateEquationWithContext } from '@/utils/algebraUtils';
+import { useTextChatOnlineStats } from '@/hooks/useOnlineStats';
 
 const PairingStatusDisplay = ({ userGender, onlineCount = 0 }) => {
     const {
@@ -17,6 +17,9 @@ const PairingStatusDisplay = ({ userGender, onlineCount = 0 }) => {
     } = useTextChat();
 
     const { preferredGender, preferredCollege } = useFilters();
+    
+    // Use Redux-managed equation (consistent across Filter and Main UI)
+    const { equation } = useTextChatOnlineStats(onlineCount);
 
     if (hasPaired || !isFindingPair) return null;
 
@@ -79,10 +82,11 @@ const PairingStatusDisplay = ({ userGender, onlineCount = 0 }) => {
         }
     };
 
-    const equationSource = onlineCount || queueSize || queuePosition || 1;
-    const eq = generateEquationWithContext(equationSource, 'people online');
     const userTheme = userGender === 'female' ? 'pink' : userGender === 'male' ? 'cyan' : 'purple';
     const oppositeTheme = userGender === 'female' ? 'cyan' : userGender === 'male' ? 'pink' : 'purple';
+
+    // Fallback equation if Redux hasn't initialized yet
+    const eq = equation || { coefficient: 11, constant: 1, result: 12, hint: 'n people online' };
 
     return (
         <AnimatePresence>

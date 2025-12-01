@@ -12,7 +12,7 @@ export const TextChatProvider = ({ children }) => {
     const [strangerGender, setStrangerGender] = useState('');
     const [hasPaired, setHasPaired] = useState(false);
     const [strangerIsTyping, setStrangerIsTyping] = useState(false);
-    const [usersOnline, setUsersOnline] = useState('');
+    const [usersOnline, setUsersOnline] = useState(0);
     const [messages, setMessages] = useState([]);
     const [isStrangerVerified, setIsStrangerVerified] = useState(true);
     

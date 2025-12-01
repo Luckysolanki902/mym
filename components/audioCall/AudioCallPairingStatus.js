@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './styles/AudioCallPairingStatus.module.css';
 import { useAudioCall, CALL_STATE } from '@/context/AudioCallContext';
 import { useFilters } from '@/context/FiltersContext';
 import AlgebraEquation from '../commonComps/AlgebraEquation';
-import { generateEquationWithContext } from '@/utils/algebraUtils';
+import { useAudioCallOnlineStats } from '@/hooks/useOnlineStats';
 
 const AudioCallPairingStatus = ({ userGender, onlineCount = 0 }) => {
     const {
@@ -17,18 +17,18 @@ const AudioCallPairingStatus = ({ userGender, onlineCount = 0 }) => {
     } = useAudioCall();
 
     const { preferredGender, preferredCollege } = useFilters();
+    
+    // Use Redux-managed equation (consistent across Filter and Main UI)
+    const { equation } = useAudioCallOnlineStats(onlineCount);
 
     const isConnected = callState === CALL_STATE.CONNECTED;
     const isDialing = callState === CALL_STATE.DIALING;
 
-    // Memoize the equation to prevent regenerating on every render
-    const eq = useMemo(() => {
-        const equationSource = onlineCount || queueSize || queuePosition || 1;
-        return generateEquationWithContext(equationSource, isDialing ? 'callers online' : 'people online');
-    }, [onlineCount, queueSize, queuePosition, isDialing]);
-
     const userTheme = userGender === 'female' ? 'pink' : userGender === 'male' ? 'cyan' : 'purple';
     const oppositeTheme = userGender === 'female' ? 'cyan' : userGender === 'male' ? 'pink' : 'purple';
+    
+    // Fallback equation if Redux hasn't initialized yet
+    const eq = equation || { coefficient: 11, constant: 1, result: 12, hint: 'n callers online' };
 
     if (isConnected || (!isFindingPair && !isDialing)) return null;
 

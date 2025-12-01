@@ -4,6 +4,7 @@ import { combineReducers } from 'redux';
 import signupReducer from './slices/signupSlice';
 import unverifiedUserDetailsReducer from './slices/unverifiedUserDetailsSlice';
 import onboardingReducer from './slices/onboardingSlice';
+import onlineStatsReducer from './slices/onlineStatsSlice';
 import {
   persistStore,
   persistReducer,
@@ -20,13 +21,14 @@ const rootReducer = combineReducers({
   signup: signupReducer,
   unverifiedUserDetails: unverifiedUserDetailsReducer,
   onboarding: onboardingReducer,
+  onlineStats: onlineStatsReducer,
   // Add other reducers here if needed
 });
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['signup', 'unverifiedUserDetails', 'onboarding'], // Persist signup, unverifiedUserDetails, and onboarding
+  whitelist: ['signup', 'unverifiedUserDetails', 'onboarding'], // Don't persist onlineStats - it should be fresh
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
