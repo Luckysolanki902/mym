@@ -9,12 +9,21 @@ import CallTimer from './CallTimer';
 import DisconnectMessage from './DisconnectMessage';
 import FilterOptions from '../chatComps/FilterOptions';
 import useAudioCallController from '@/hooks/useAudioCallController';
+import { useDispatch, useSelector } from 'react-redux';
+import OnboardingTour from '../commonComps/OnboardingTour';
+import { audioCallTourSteps } from '@/config/tourSteps';
+import { startTour, selectIsTourCompleted } from '@/store/slices/onboardingSlice';
 
 const AudioCallLayout = ({ userDetails }) => {
   const [onlineCount, setOnlineCount] = React.useState(0);
+  const filterOpenRef = React.useRef(null);
   const audioCallContext = useAudioCall();
   const controller = useAudioCallController({ userDetails, context: audioCallContext });
   const { callState, micStatus, isFindingPair, partnerDisconnected, partner, callStartTime, remoteAudioRef, socket } = audioCallContext;
+
+  // Redux for onboarding tour
+  const dispatch = useDispatch();
+  const isAudioCallTourCompleted = useSelector(selectIsTourCompleted('audioCall'));
 
   const showMicPrompt = micStatus !== MIC_STATE.GRANTED;
   const showDisconnectMessage = partnerDisconnected && !isFindingPair;
@@ -41,6 +50,28 @@ const AudioCallLayout = ({ userDetails }) => {
     return () => clearInterval(interval);
   }, []);
 
+  // Start onboarding tour for first-time visitors (after mic is granted, always show in debug mode)
+  const isDebugMode = process.env.NEXT_PUBLIC_NODE_ENV === 'debug';
+  React.useEffect(() => {
+    if (userDetails && socket?.connected && (isDebugMode || !isAudioCallTourCompleted) && micStatus === MIC_STATE.GRANTED) {
+      const timer = setTimeout(() => {
+        dispatch(startTour('audioCall'));
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [userDetails, socket?.connected, isAudioCallTourCompleted, micStatus, dispatch, isDebugMode]);
+
+  // Handle tour step changes
+  const handleTourStepChange = (stepIndex, step) => {
+    if (!filterOpenRef.current) return;
+    
+    if (step.action === 'open-filter') {
+      filterOpenRef.current.open();
+    } else if (step.action === 'close-filter') {
+      filterOpenRef.current.close();
+    }
+  };
+
   return (
     <div className={styles.canvas} data-user-gender={userDetails?.gender || 'other'}>
       <audio
@@ -54,12 +85,13 @@ const AudioCallLayout = ({ userDetails }) => {
       />
       
       {/* Filter Button - Top Right */}
-      <div className={styles.filterPosition}>
+      <div className={styles.filterPosition} data-tour="call-filter-button">
         <FilterOptions 
           userDetails={userDetails}
           socket={audioCallContext.socket}
           isFindingPair={isFindingPair}
           hasPaired={false}
+          filterOpenRef={filterOpenRef}
         />
       </div>
 
@@ -101,6 +133,23 @@ const AudioCallLayout = ({ userDetails }) => {
 
       {/* Fixed Footer Controls */}
       <ControlsDock controller={controller} />
+
+      {/* Onboarding Tour */}
+      <OnboardingTour
+        tourName="audioCall"
+        steps={audioCallTourSteps}
+        onStepChange={handleTourStepChange}
+        onComplete={() => {
+          if (filterOpenRef.current) {
+            filterOpenRef.current.close();
+          }
+        }}
+        onSkip={() => {
+          if (filterOpenRef.current) {
+            filterOpenRef.current.close();
+          }
+        }}
+      />
     </div>
   );
 };

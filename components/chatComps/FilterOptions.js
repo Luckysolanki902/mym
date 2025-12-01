@@ -17,7 +17,7 @@ const darkTheme = createTheme({
   },
 });
 
-const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired }) => {
+const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOpenRef }) => {
   const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000';
 
   const [openFilterMenu, setOpenFilterMenu] = useState(false);
@@ -46,6 +46,18 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired }) => {
 
   // Check if filters have changed
   const hasChanges = tempGender !== preferredGender || tempCollege !== preferredCollege;
+
+  // Expose filter state to parent via ref for tour control
+  useEffect(() => {
+    if (filterOpenRef) {
+      filterOpenRef.current = {
+        open: () => setOpenFilterMenu(true),
+        close: () => setOpenFilterMenu(false),
+        toggle: () => setOpenFilterMenu(prev => !prev),
+        isOpen: openFilterMenu
+      };
+    }
+  }, [filterOpenRef, openFilterMenu]);
 
   const handleFilterToggle = () => {
     if (!userDetails) {
@@ -201,12 +213,17 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired }) => {
     <ThemeProvider theme={darkTheme}>
       <div className={styles.mainfiltercont} ref={mainFilterContainerRef}>
         {!openFilterMenu && (
-          <div className={styles.filterTrigger} onClick={handleFilterToggle} title="Adjust match formula">
+          <div 
+            className={styles.filterTrigger} 
+            onClick={handleFilterToggle} 
+            title="Adjust match formula"
+            data-tour="filter-button"
+          >
             <DerivativeIcon size={22} color="#1a1a1a" isOpen={openFilterMenu} />
           </div>
         )}
         {(openFilterMenu) && (
-          <animated.div style={filterContentAnimation} className={styles.filterContentWrapper}>
+          <animated.div style={filterContentAnimation} className={styles.filterContentWrapper} data-tour="filter-menu">
             <div className={styles.filterMenu}>
               {renderEquationSummary()}
               <div className={styles.filterSection}>

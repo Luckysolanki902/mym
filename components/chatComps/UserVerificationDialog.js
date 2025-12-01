@@ -5,7 +5,6 @@ import {
   DialogContent,
   Typography,
   Button,
-  IconButton,
   Box,
   TextField,
   Chip,
@@ -17,10 +16,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { getSession } from 'next-auth/react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  setUnverifiedUserDetails,
-  setLastDialogShownAt,
-} from '@/store/slices/unverifiedUserDetailsSlice';
+import { setUnverifiedUserDetails } from '@/store/slices/unverifiedUserDetailsSlice';
 import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
 
@@ -155,10 +151,6 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  // Keys for localStorage
-  const startFlagKey = mode === 'audiocall' ? 'hasStartedAudioCall' : 'hasStartedChatting';
-  const lastDialogSignedInKey = mode === 'audiocall' ? 'lastDialogShownAtSignedInAudio' : 'lastDialogShownAtSignedIn';
-
   const unverifiedUserDetails = useSelector((state) => state.unverifiedUserDetails);
   const [open, setOpen] = useState(false);
   const [view, setView] = useState('choice'); // 'choice' | 'form'
@@ -168,9 +160,9 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Form State
-  const [gender, setGender] = useState('');
-  const [college, setCollege] = useState('');
+  // Form State - pre-fill from persisted Redux state
+  const [gender, setGender] = useState(unverifiedUserDetails?.gender || '');
+  const [college, setCollege] = useState(unverifiedUserDetails?.college || '');
   const [collegeName, setCollegeName] = useState('');
   const [colleges, setColleges] = useState([]);
   const [showButtonLoading, setShowButtonLoading] = useState(false);
@@ -216,46 +208,40 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
     fetchColleges();
   }, []);
 
-  // 3. Open Logic
+  // Sync form state with persisted Redux state
   useEffect(() => {
-    const hasStartedExperience = localStorage.getItem(startFlagKey);
-    if (hasStartedExperience === 'true') {
-      return;
+    if (unverifiedUserDetails?.gender) {
+      setGender(unverifiedUserDetails.gender);
     }
+    if (unverifiedUserDetails?.college) {
+      setCollege(unverifiedUserDetails.college);
+    }
+  }, [unverifiedUserDetails?.gender, unverifiedUserDetails?.college]);
 
+  // 3. Open Logic - simply check if user has mid in persisted Redux state
+  useEffect(() => {
     if (!userType) return;
-
-    const now = Date.now();
-    const oneHour = 60 * 60 * 1000;
 
     const checkAndOpen = () => {
       if (userType === 'signedIn') {
         // Signed in users are already verified
         return;
       } else if (userType === 'unverifiedHasDetails') {
-        const lastShown = unverifiedUserDetails.lastDialogShownAt;
-        if (!lastShown || now - lastShown > oneHour) {
-          setOpen(true);
-        }
+        // User already has details in persisted Redux - no need to show dialog
+        return;
       } else if (userType === 'unverifiedNoDetails') {
+        // First time guest - show dialog
         setOpen(true);
       }
     };
 
     const timer = setTimeout(checkAndOpen, 100);
     return () => clearTimeout(timer);
-  }, [userType, unverifiedUserDetails.lastDialogShownAt, startFlagKey, lastDialogSignedInKey]);
+  }, [userType]);
 
+  // Close redirects to home
   const handleClose = () => {
-    setOpen(false);
-    const now = new Date().getTime();
-    if (userType === 'signedIn') {
-      localStorage.setItem(lastDialogSignedInKey, now.toString());
-    } else {
-      dispatch(setLastDialogShownAt(now));
-    }
-    // Reset view for next time
-    setTimeout(() => setView('choice'), 300);
+    router.push('/');
   };
 
   const handleSignIn = () => {
@@ -288,8 +274,6 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
       college: finalCollegeName
     }));
 
-    localStorage.setItem(startFlagKey, 'true');
-
     setTimeout(() => {
       setShowButtonLoading(false);
       setOpen(false);
@@ -301,31 +285,47 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={() => {}} // Prevent backdrop click from closing
       maxWidth="sm"
       fullWidth
+      disableEscapeKeyDown
       PaperProps={{
         style: {
           borderRadius: '1.5rem',
           background: 'transparent',
           boxShadow: 'none',
-          overflow: 'visible' // Allow close button to overflow if needed
+          overflow: 'visible'
         },
       }}
     >
       <GlassDialogContent className={gender === 'male' ? 'male-selected' : gender === 'female' ? 'female-selected' : ''}>
-        <IconButton
-          onClick={handleClose}
-          sx={{
+        <a
+          href="/"
+          style={{
             position: 'absolute',
             right: 16,
             top: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 40,
+            height: 40,
+            borderRadius: '50%',
             color: '#636e72',
-            '&:hover': { color: '#2d3436', background: 'rgba(0,0,0,0.05)' }
+            textDecoration: 'none',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#2d3436';
+            e.currentTarget.style.background = 'rgba(0,0,0,0.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = '#636e72';
+            e.currentTarget.style.background = 'transparent';
           }}
         >
           <CloseIcon />
-        </IconButton>
+        </a>
 
         {view === 'choice' ? (
           <Fade in={view === 'choice'}>

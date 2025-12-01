@@ -81,6 +81,7 @@ const ControlsDock = ({ controller = {} }) => {
           aria-label={isActiveCall ? 'Hang up' : 'Find new'}
           disabled={!canInteract}
           whileTap={{ scale: 0.9 }}
+          data-tour="start-call-button"
         >
           {isActiveCall ? <CallEndRoundedIcon /> : <CallRoundedIcon />}
         </motion.button>

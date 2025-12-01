@@ -13,7 +13,10 @@ import InputBox from '../chatComps/InputBox';
 import MessageDisplay from '../chatComps/MessagesDisplay';
 import { useTextChat } from '@/context/TextChatContext';
 import { useFilters } from '@/context/FiltersContext';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import OnboardingTour from '../commonComps/OnboardingTour';
+import { textChatTourSteps } from '@/config/tourSteps';
+import { startTour, selectIsTourCompleted } from '@/store/slices/onboardingSlice';
 
 const TextChat = ({ userDetails }) => {
   const [textValue, setTextValue] = useState('');
@@ -25,6 +28,11 @@ const TextChat = ({ userDetails }) => {
   const messagesContainerRef = useRef(null);
   const inputRef = useRef(null);
   const findingTimeoutRef = useRef(null);
+  const filterOpenRef = useRef(null);
+
+  // Redux for onboarding tour
+  const dispatch = useDispatch();
+  const isTextChatTourCompleted = useSelector(selectIsTourCompleted('textChat'));
 
   // Using textchat contexts
   const {
@@ -250,11 +258,39 @@ const TextChat = ({ userDetails }) => {
     }
   };
 
+  // Start onboarding tour for first-time visitors (always show in debug mode)
+  const isDebugMode = process.env.NEXT_PUBLIC_NODE_ENV === 'debug';
+  useEffect(() => {
+    if (userDetails && socket?.connected && (isDebugMode || !isTextChatTourCompleted)) {
+      // Small delay to let the UI render
+      const timer = setTimeout(() => {
+        dispatch(startTour('textChat'));
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [userDetails, socket?.connected, isTextChatTourCompleted, dispatch, isDebugMode]);
+
+  // Handle tour step changes (open/close filter as needed)
+  const handleTourStepChange = (stepIndex, step) => {
+    if (!filterOpenRef.current) return;
+    
+    if (step.action === 'open-filter') {
+      filterOpenRef.current.open();
+    } else if (step.action === 'close-filter') {
+      filterOpenRef.current.close();
+    }
+  };
+
   return (
     <div className={styles.mainC} data-user-gender={userDetails?.gender}>
       {(isChatAvailable && userDetails) && (
         <>
-          <MessageDisplay userDetails={userDetails} isStrangerVerified={isStrangerVerified} onlineCount={usersOnline}/>
+          <MessageDisplay 
+            userDetails={userDetails} 
+            isStrangerVerified={isStrangerVerified} 
+            onlineCount={usersOnline}
+            filterOpenRef={filterOpenRef}
+          />
           <InputBox
             handleFindNewButton={handleFindNewButton}
             handleSendButton={handleSendButton}
@@ -269,6 +305,23 @@ const TextChat = ({ userDetails }) => {
             typingTimeoutRef={typingTimeoutRef}
             inputRef={inputRef}
             userDetails={userDetails}
+          />
+          
+          {/* Onboarding Tour */}
+          <OnboardingTour
+            tourName="textChat"
+            steps={textChatTourSteps}
+            onStepChange={handleTourStepChange}
+            onComplete={() => {
+              if (filterOpenRef.current) {
+                filterOpenRef.current.close();
+              }
+            }}
+            onSkip={() => {
+              if (filterOpenRef.current) {
+                filterOpenRef.current.close();
+              }
+            }}
           />
         </>
       )}

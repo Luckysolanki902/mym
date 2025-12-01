@@ -56,6 +56,7 @@ const InputBox = ({
                         disabled={!socket?.connected || (isFindingPair && !hasPaired)}
                         className={styles.newButton}
                         onClick={handleFindNewButton}
+                        data-tour="find-new-button"
                         style={{
                             opacity: (!socket?.connected || (isFindingPair && !hasPaired)) ? 0.5 : 1,
                             cursor: (!socket?.connected || (isFindingPair && !hasPaired)) ? 'not-allowed' : 'pointer',

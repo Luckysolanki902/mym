@@ -14,39 +14,18 @@
   box-sizing: border-box;
 }
 
-/* Custom cursor - hide native cursor only on large screens with mouse */
+/* Custom cursor - only on desktop with mouse */
 @media (pointer: fine) and (min-width: 800px) {
-  * {
-    cursor: none !important;
+  *,
+  *::before,
+  *::after {
+    cursor: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 3L10.5 20.5L13.5 13.5L20.5 10.5L3 3Z' fill='black' stroke='white' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 0 0, auto !important;
+  }
+  
+  a, button, [role="button"], input[type="submit"], .clickable {
+    cursor: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 3L10.5 20.5L13.5 13.5L20.5 10.5L3 3Z' fill='black' stroke='white' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 0 0, pointer !important;
   }
 }
-
-body::before {
-  content: '';
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99999;
-  transition: background 0.15s ease, transform 0.1s ease;
-  mix-blend-mode: difference;
-  opacity: 0;
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99999;
-  transition: background 0.15s ease, transform 0.1s ease;
-  opacity: 0;
-}
-
-
 
 body, html {
   margin: 0;
@@ -180,4 +159,91 @@ button {
     width: 5rem;
     height: auto;
   }
+}
+/* Driver.js Custom Styles */
+.driver-popover.driverjs-theme {
+  background-color: #ffffff;
+  color: #2d3436;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  font-family: 'Quicksand', sans-serif;
+  max-width: 320px;
+}
+
+.driver-popover.driverjs-theme .driver-popover-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #2d3436;
+}
+
+.driver-popover.driverjs-theme .driver-popover-description {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #636e72;
+  margin-bottom: 0;
+}
+
+.driver-popover.driverjs-theme button {
+  flex: 1;
+  text-align: center;
+  background-color: #2d2d2d;
+  color: #ffffff;
+  border: none;
+  text-shadow: none;
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+}
+
+.driver-popover.driverjs-theme button:hover {
+  background-color: #000000;
+  transform: translateY(-1px);
+}
+
+.driver-popover.driverjs-theme .driver-popover-navigation-btns {
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.driver-popover.driverjs-theme .driver-popover-btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.driver-popover.driverjs-theme .driver-popover-close-btn {
+  color: #b2bec3;
+  transition: color 0.2s;
+}
+
+.driver-popover.driverjs-theme .driver-popover-close-btn:hover {
+  color: #636e72;
+}
+
+/* Custom content styles */
+.driver-popover-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.driver-popover-icon {
+  font-size: 2rem;
+  margin-bottom: 4px;
+}
+
+.driver-popover-tip {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #636e72;
+  background: #f5f6fa;
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 3px solid #fdcb6e;
 }

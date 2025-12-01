@@ -1,11 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Confession from '@/components/fullPageComps/Confession';
 import { getSession } from 'next-auth/react';
 import Link from 'next/link';
 import styles from './confession.module.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectIsTourCompleted, completeTour } from '@/store/slices/onboardingSlice';
+import OnboardingTour from '@/components/commonComps/OnboardingTour';
+import { confessionDetailTourSteps } from '@/config/tourSteps';
 
 const ConfessionPage = ({ confession, userDetails }) => {
   const confessionGender = confession?.gender || 'neutral';
+  
+  // Tour state
+  const dispatch = useDispatch();
+  const isTourCompleted = useSelector(selectIsTourCompleted('confessionDetail'));
+  const [showTour, setShowTour] = useState(false);
+  const isDebugMode = process.env.NEXT_PUBLIC_NODE_ENV === 'debug';
+
+  // Show tour for first-time visitors (always show in debug mode)
+  useEffect(() => {
+    if ((isDebugMode || !isTourCompleted) && confession) {
+      const timer = setTimeout(() => setShowTour(true), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [isTourCompleted, confession, isDebugMode]);
+
+  const handleTourComplete = () => {
+    setShowTour(false);
+    dispatch(completeTour('confessionDetail'));
+  };
   
   return (
     <div className={`${styles.confessionPageWrapper} ${
@@ -23,6 +46,15 @@ const ConfessionPage = ({ confession, userDetails }) => {
           View all confessions →
         </Link>
       </div>
+
+      {/* Onboarding Tour */}
+      {showTour && (
+        <OnboardingTour
+          steps={confessionDetailTourSteps}
+          onComplete={handleTourComplete}
+          tourId="confessionDetail"
+        />
+      )}
     </div>
   );
 };

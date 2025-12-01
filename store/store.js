@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import signupReducer from './slices/signupSlice';
 import unverifiedUserDetailsReducer from './slices/unverifiedUserDetailsSlice';
+import onboardingReducer from './slices/onboardingSlice';
 import {
   persistStore,
   persistReducer,
@@ -18,13 +19,14 @@ import storage from 'redux-persist/lib/storage'; // defaults to localStorage for
 const rootReducer = combineReducers({
   signup: signupReducer,
   unverifiedUserDetails: unverifiedUserDetailsReducer,
+  onboarding: onboardingReducer,
   // Add other reducers here if needed
 });
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['signup', 'unverifiedUserDetails'], // Persist signup and unverifiedUserDetails
+  whitelist: ['signup', 'unverifiedUserDetails', 'onboarding'], // Persist signup, unverifiedUserDetails, and onboarding
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -14,7 +14,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const EventsContainerMemoized = React.memo(EventsContainer);
 
-const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCount = 0 }) => {
+const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCount = 0, filterOpenRef }) => {
     const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping, isFindingPair, paddingDivRef, setStrangerIsTyping, socket } = useTextChat();
 
     const shouldRenderPaddingDiv = strangerDisconnectedMessageDiv;
@@ -181,6 +181,7 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
                     socket={socket}
                     isFindingPair={isFindingPair}
                     hasPaired={hasPaired}
+                    filterOpenRef={filterOpenRef}
                 />
             </div>
         </div>

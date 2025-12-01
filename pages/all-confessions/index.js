@@ -8,6 +8,10 @@ import AuthPrompt from '@/components/commonComps/AuthPrompt';
 import ScrollToTop2 from '@/components/commonComps/ScrollToTop2';
 import ConfessionSkeleton from '@/components/loadings/ConfessionSkeleton';
 import { DEFAULT_OG_IMAGE, SITE_URL } from '@/utils/seo';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectIsTourCompleted, completeTour } from '@/store/slices/onboardingSlice';
+import OnboardingTour from '@/components/commonComps/OnboardingTour';
+import { confessionsTourSteps } from '@/config/tourSteps';
 
 const Index = ({ userDetails }) => {
   const [confessions, setConfessions] = useState([]);
@@ -25,6 +29,25 @@ const Index = ({ userDetails }) => {
   const [activeGender, setActiveGender] = useState('neutral'); // State for background gradient
   const nextPageRef = useRef(1);
   const confessionCountRef = useRef(0);
+
+  // Tour state
+  const dispatch = useDispatch();
+  const isTourCompleted = useSelector(selectIsTourCompleted('allConfessions'));
+  const [showTour, setShowTour] = useState(false);
+  const isDebugMode = process.env.NEXT_PUBLIC_NODE_ENV === 'debug';
+
+  // Show tour for first-time visitors after confessions load (always show in debug mode)
+  useEffect(() => {
+    if ((isDebugMode || !isTourCompleted) && confessions.length > 0 && !loading) {
+      const timer = setTimeout(() => setShowTour(true), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isTourCompleted, confessions.length, loading, isDebugMode]);
+
+  const handleTourComplete = () => {
+    setShowTour(false);
+    dispatch(completeTour('allConfessions'));
+  };
 
   useEffect(() => {
     if (userDetails && !userDetails?.isVerified) {
@@ -159,7 +182,7 @@ const Index = ({ userDetails }) => {
         <div className={styles.chipContainer}>
           <h1 className={styles.mainHeading}>Confessions</h1>
         </div>
-        <div className={styles.tabsContainer}>
+        <div className={styles.tabsContainer} data-tour="sort-tabs">
           <div 
             className={`${styles.tab} ${sortBy === 'trending' ? styles.activeTab : ''}`}
             onClick={() => setSortBy('trending')}
@@ -225,6 +248,15 @@ const Index = ({ userDetails }) => {
       </div>
       <ScrollToTop2 scrollContainerRef={scrollContainerRef} />
       <AuthPrompt open={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
+      
+      {/* Onboarding Tour */}
+      {showTour && (
+        <OnboardingTour
+          steps={confessionsTourSteps}
+          onComplete={handleTourComplete}
+          tourId="allConfessions"
+        />
+      )}
     </>
   );
 };

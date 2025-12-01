@@ -170,7 +170,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                         <div className={styles.count}>{commentsCount}</div>
                     </div>
 
-                    <button type="button" className={styles.shareAction} onClick={handleShareClick}>
+                    <button type="button" className={styles.shareAction} onClick={handleShareClick} data-tour="share-button">
                         <Image
                             src={'/images/othericons/send.png'}
                             width={28}
@@ -178,11 +178,10 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                             alt='Share confession'
                             className={styles.shareIcon}
                         />
-                        <span>Share</span>
                     </button>
                 </div>
 
-                {!isAdmin && <div className={styles.reply} onClick={handleClick}>
+                {!isAdmin && <div className={styles.reply} onClick={handleClick} data-tour="dm-reply-button">
                     <div onClick={() => setAnonymousReplyDialogOpen(!isAnonymousReplyDialogOpen)} className={styles.replybutton}><span>|</span>Reply anonymously...</div>
                 </div>}
                 {/* Delete Button for Admins */}

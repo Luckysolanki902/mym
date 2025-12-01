@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './styles/AudioCallPairingStatus.module.css';
 import { useAudioCall, CALL_STATE } from '@/context/AudioCallContext';
@@ -20,6 +20,15 @@ const AudioCallPairingStatus = ({ userGender, onlineCount = 0 }) => {
 
     const isConnected = callState === CALL_STATE.CONNECTED;
     const isDialing = callState === CALL_STATE.DIALING;
+
+    // Memoize the equation to prevent regenerating on every render
+    const eq = useMemo(() => {
+        const equationSource = onlineCount || queueSize || queuePosition || 1;
+        return generateEquationWithContext(equationSource, isDialing ? 'callers online' : 'people online');
+    }, [onlineCount, queueSize, queuePosition, isDialing]);
+
+    const userTheme = userGender === 'female' ? 'pink' : userGender === 'male' ? 'cyan' : 'purple';
+    const oppositeTheme = userGender === 'female' ? 'cyan' : userGender === 'male' ? 'pink' : 'purple';
 
     if (isConnected || (!isFindingPair && !isDialing)) return null;
 
@@ -73,11 +82,6 @@ const AudioCallPairingStatus = ({ userGender, onlineCount = 0 }) => {
             return `Waiting for more students to join`;
         }
     };
-
-    const equationSource = onlineCount || queueSize || queuePosition || 1;
-    const eq = generateEquationWithContext(equationSource, isDialing ? 'callers online' : 'people online');
-    const userTheme = userGender === 'female' ? 'pink' : userGender === 'male' ? 'cyan' : 'purple';
-    const oppositeTheme = userGender === 'female' ? 'cyan' : userGender === 'male' ? 'pink' : 'purple';
 
     return (
         <AnimatePresence>

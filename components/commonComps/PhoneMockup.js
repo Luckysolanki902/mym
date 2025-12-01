@@ -37,8 +37,6 @@ const PhoneMockup = ({
   const [activeMode, setActiveMode] = useState(mode === 'auto' ? 'chat' : mode);
   const [callTimer, setCallTimer] = useState(0);
 
-  console.log('PhoneMockup render:', { mode, autoRotate, rotateInterval, activeMode });
-
   // Sync with external mode prop when controlled (only on initial mount or when mode prop changes)
   useEffect(() => {
     if (mode !== 'auto') {
@@ -81,7 +79,6 @@ const PhoneMockup = ({
 
   // Reset timer when switching away from call mode
   const handleModeChange = (newMode) => {
-    console.log('handleModeChange called with:', newMode, 'current activeMode:', activeMode);
     if (newMode === 'chat') {
       setCallTimer(0);
     }
