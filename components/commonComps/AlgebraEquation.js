@@ -4,9 +4,9 @@ import styles from './styles/AlgebraEquation.module.css';
 
 /**
  * Beautiful algebraic equation display component
- * Shows equations like: 13x + 19 = 28 where x = people online
+ * Shows equations like: 13n + 19 = 28 where n = people online
  */
-const AlgebraEquation = ({ coefficient, constant, result, hint = "x people online", theme = "cyan", hintTheme = null, size = "medium" }) => {
+const AlgebraEquation = ({ coefficient, constant, result, hint = "n people online", theme = "cyan", hintTheme = null, size = "medium" }) => {
     const hintThemeClass = hintTheme ? styles[hintTheme] : styles[theme];
     
     return (
@@ -20,7 +20,7 @@ const AlgebraEquation = ({ coefficient, constant, result, hint = "x people onlin
                 <div className={styles.equation}>
                     <span className={styles.term}>
                         <span className={styles.coefficient}>{coefficient}</span>
-                        <span className={styles.variable}>x</span>
+                        <span className={styles.variable}>n</span>
                     </span>
                     <span className={styles.operator}>+</span>
                     <span className={styles.constant}>{constant}</span>

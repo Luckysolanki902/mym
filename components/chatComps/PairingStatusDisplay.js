@@ -41,17 +41,21 @@ const PairingStatusDisplay = ({ userGender, onlineCount = 0 }) => {
 
     // Highlight gender words with proper formatting
     const highlightGenderText = (text) => {
-        const parts = text.split(/(\bboys\b|\bgirls\b|\banyone\b)/gi);
+        if (preferredGender === 'any') return text;
+
+        const genderWord = preferredGender === 'male' ? 'boys' : 'girls';
+        const regex = new RegExp(`(${genderWord})`, 'gi');
+        const parts = text.split(regex);
+
         return parts.map((part, index) => {
-            const lowerPart = part.toLowerCase();
-            if (lowerPart === 'boys' || lowerPart === 'girls' || lowerPart === 'anyone') {
+            if (part.toLowerCase() === genderWord) {
                 return (
-                    <span key={index} className={styles.genderHighlight} style={{ color: theme.primary }}>
+                    <span key={`gender-${index}`} className={styles.genderHighlight} style={{ color: theme.primary }}>
                         {part}
                     </span>
                 );
             }
-            return <span key={index}>{part}</span>;
+            return <span key={`text-${index}`}>{part}</span>;
         });
     };
 
@@ -63,78 +67,46 @@ const PairingStatusDisplay = ({ userGender, onlineCount = 0 }) => {
         if (filterLevel === 1) {
             return `Finding ${genderText} from ${collegeText}`;
         } else if (filterLevel === 2) {
-            return `Couldn't find exact match • Now finding ${genderText} from any college`;
+            return `Finding ${genderText} from any college`;
         } else if (filterLevel === 3) {
-            return `Still searching • Now finding anyone available`;
+            return `Finding anyone available`;
         } else if (filterLevel === 4) {
-            return `No users available right now • Keep waiting, we'll pair you soon`;
+            return `Waiting for more students to join`;
         } else if (filterLevel === 5) {
-            return `Maximum wait time reached • Try again later`;
+            return `Try again later, campus is empty`;
         } else {
-            return `Keep waiting for more users to join`;
+            return `Finding the next best match`;
         }
     };
+
+    const equationSource = onlineCount || queueSize || queuePosition || 1;
+    const eq = generateEquationWithContext(equationSource, 'people online');
+    const userTheme = userGender === 'female' ? 'pink' : userGender === 'male' ? 'cyan' : 'purple';
+    const oppositeTheme = userGender === 'female' ? 'cyan' : userGender === 'male' ? 'pink' : 'purple';
 
     return (
         <AnimatePresence>
             <motion.div
                 className={styles.statusContainer}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
             >
-                <div className={styles.contentWrapper}>
-                    {/* Queue Position and Total People */}
-                    <div className={styles.statsRow}>
-                        <div className={styles.statCard}>
-                            <span className={styles.statValue} style={{ color: theme.primary }}>
-                                #{queuePosition}
-                            </span>
-                            <span className={styles.statLabel}>in queue</span>
-                        </div>
-                        {queueSize > 0 && (
-                            <>
-                                <span className={styles.statLabel}>•</span>
-                                <div className={styles.statCard}>
-                                    <span className={styles.statValue} style={{ color: theme.primary }}>
-                                        {queueSize}
-                                    </span>
-                                    <span className={styles.statLabel}>{queueSize === 1 ? 'person' : 'people'} waiting</span>
-                                </div>
-                            </>
-                        )}
-                    </div>
+                <div className={styles.equationCard}>
+                    <AlgebraEquation
+                        coefficient={eq.coefficient}
+                        constant={eq.constant}
+                        result={eq.result}
+                        hint={eq.hint}
+                        theme={userTheme}
+                        hintTheme={oppositeTheme}
+                        size="large"
+                    />
+                </div>
 
-                    {/* Search Description */}
-                    <div className={styles.searchDescription}>
-                        <div className={styles.searchText}>
-                            {highlightGenderText(getSearchDescription())}
-                        </div>
-                        {onlineCount > 0 && (() => {
-                            const eq = generateEquationWithContext(onlineCount, 'people online');
-                            const userTheme = userGender === 'female' ? 'pink' : userGender === 'male' ? 'cyan' : 'purple';
-                            const oppositeTheme = userGender === 'female' ? 'cyan' : userGender === 'male' ? 'pink' : 'purple';
-                            return (
-                                <AlgebraEquation 
-                                    coefficient={eq.coefficient}
-                                    constant={eq.constant}
-                                    result={eq.result}
-                                    hint={eq.hint}
-                                    theme={userTheme}
-                                    hintTheme={oppositeTheme}
-                                    size="medium"
-                                />
-                            );
-                        })()}
-                    </div>
-
-                    {/* Searching Indicator */}
-                    <div className={styles.searchingIndicator}>
-                        <span className={styles.findingText}>
-                            Finding your match
-                        </span>
-                    </div>
+                <div className={styles.searchNarrative}>
+                    {highlightGenderText(getSearchDescription())}
                 </div>
             </motion.div>
         </AnimatePresence>

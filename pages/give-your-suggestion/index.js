@@ -139,7 +139,7 @@ const FillForm = () => {
 
   return (
     <>
-      <CustomHead title={'Add My college or Give Feedback'} description={'Add your college to MeetYourMate (so, no worry if your college is not on mym yet) or provide feedback to improve our platform. Submit your college details, report bugs, suggest improvements, or request confession deletions with our easy-to-use form."'} />
+      <CustomHead title={'Add My college or Give Feedback'} description={'Add your college to Spyll (so, no worry if your college is not on spyll yet) or provide feedback to improve our platform. Submit your college details, report bugs, suggest improvements, or request confession deletions with our easy-to-use form."'} />
       
       <Box sx={{ 
         minHeight: '100vh', 
@@ -163,7 +163,7 @@ const FillForm = () => {
           </Typography>
           
           <Typography variant="body1" align="center" sx={{ mb: 6, color: '#636e72', fontFamily: 'Quicksand, sans-serif', maxWidth: '600px', mx: 'auto' }}>
-            Whether it's adding your college, reporting a bug, or sharing a brilliant idea, we're all ears. Help us make MeetYourMate better for everyone.
+            Whether it&apos;s adding your college, reporting a bug, or sharing a brilliant idea, we&apos;re all ears. Help us make Spyll better for everyone.
           </Typography>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

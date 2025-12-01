@@ -170,9 +170,16 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                         <div className={styles.count}>{commentsCount}</div>
                     </div>
 
-                    <div style={{ display:'flex', justifyContent:'center', alignItems:'center'}}>
-                        <Image src={'/images/othericons/send.png'} width={50} height={50} alt='' onClick={handleShareClick}  className={styles.shareIcon} />
-                    </div>
+                    <button type="button" className={styles.shareAction} onClick={handleShareClick}>
+                        <Image
+                            src={'/images/othericons/send.png'}
+                            width={28}
+                            height={28}
+                            alt='Share confession'
+                            className={styles.shareIcon}
+                        />
+                        <span>Share</span>
+                    </button>
                 </div>
 
                 {!isAdmin && <div className={styles.reply} onClick={handleClick}>

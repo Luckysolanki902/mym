@@ -403,6 +403,7 @@
   right: 0rem;
   display: flex;
   justify-content: center;
+  align-items: center;
   /* border: 1px solid red; */
 }
 

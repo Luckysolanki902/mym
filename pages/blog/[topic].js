@@ -1,12 +1,12 @@
 import AlternativesOfOmegle from '@/components/blogs/articles/AlternativesOfOmegle';
-import OmegleVsMeetYourMate from '@/components/blogs/articles/OmeglevsMeetYourMate';
+import OmegleVsSpyll from '@/components/blogs/articles/OmeglevsSpyll';
 import React from 'react'
 
 const topic = ({topic}) => {
 
     const articles = {
         'alternatives-to-omegle': AlternativesOfOmegle,
-        'omegle-vs-meetyourmate': OmegleVsMeetYourMate,
+        'omegle-vs-spyll': OmegleVsSpyll,
 
       };
 

@@ -39,7 +39,7 @@ const CloseButton = styled(Button)({
 
 const ShareDialog = ({ open, onClose, shareLink, confessorGender }) => {
     const [copied, setCopied] = useState(false);
-    const plainLink = 'https://www.meetyourmate.in/confession/' + shareLink;
+    const plainLink = 'https://spyll.in/confession/' + shareLink;
     const encodedShareLink = encodeURIComponent(plainLink);
 
     const isDialogOpenRef = useRef(open);
@@ -80,7 +80,7 @@ const ShareDialog = ({ open, onClose, shareLink, confessorGender }) => {
     };
 
     const shareOnWhatsApp = () => {
-        const shareDescription = encodeURIComponent("\n\nShh... Have you seen the latest anonymous confession on MyM?\n Click to dive in and spill your thoughts!");
+        const shareDescription = encodeURIComponent("\n\nShh... Have you seen the latest anonymous confession on Spyll?\n Click to dive in and spill your thoughts!");
         const whatsappURL = `https://api.whatsapp.com/send?text=${encodedShareLink}${shareDescription}`;
         window.open(whatsappURL, '_blank');
     };

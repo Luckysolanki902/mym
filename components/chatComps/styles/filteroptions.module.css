@@ -9,10 +9,11 @@
     font-size: 1.25rem;
     font-style: normal;
     font-weight: 400;
-    line-height: normal;
+    /* line-height: normal; */
     z-index: 9;
     margin-top: 0.4rem;
     margin-right: 1.5rem;
+    justify-content: center;
     /* background-color: black; */
 
 }
@@ -161,6 +162,55 @@
     border: 1px solid rgba(255, 255, 255, 0.6);
     z-index: 1000;
 }
+
+.filterMenu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.equationCard {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 1rem;
+    background: linear-gradient(135deg,
+        rgba(248, 249, 252, 0.95) 0%,
+        rgba(252, 252, 255, 0.9) 100%);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow:
+        0 12px 30px -20px rgba(15, 23, 42, 0.65),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.equationBadge {
+    flex-shrink: 0;
+}
+
+.equationMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+}
+
+.equationCaption {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12rem;
+    color: rgba(15, 23, 42, 0.6);
+}
+
+.equationStats {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-family: 'Inter', 'Jost', sans-serif;
+    color: rgba(15, 23, 42, 0.7);
+}
 .note{
     text-align: left;
     font-size: 0.9rem;
@@ -168,11 +218,18 @@
 }
 
 .filterIcon {
-    width: 2rem;
-    height: auto;
+    width: 2.2rem;
+    height: 2.2rem;
+    padding: 0.35rem;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     color: black;
-    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.396);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+    overflow: hidden;
 }
 
 .filterSection {

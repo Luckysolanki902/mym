@@ -44,7 +44,7 @@ const TypeAdminPassword = ({ onLogin }) => {
 
   return (
     <div style={{ padding: '2rem', width: '100vw', height: '100vh', display:'flex', flexDirection:'column', alignItems:'center' }}>
-    <div className={styles.maddyCustom} style={{ margin: '0' }}>MYM</div>
+    <div className={styles.maddyCustom} style={{ margin: '0' }}>Spyll</div>
     <div className={styles.adminPanel} style={{maxWidth:'40rem'}}>
       <h1 className={styles.heading}>Greetings, Admin</h1>
       <p className={styles.description}>Have a great day!</p>

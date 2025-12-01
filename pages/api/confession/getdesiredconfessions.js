@@ -33,47 +33,40 @@ const handler = async (req, res) => {
   }
 
   try {
-    // Determine sort order based on sortBy parameter
-    let sortOption = {};
-    if (sortBy === 'trending') {
-      // Sort by number of likes + comments (engagement)
-      sortOption = { createdAt: -1 }; // Will aggregate after fetch
-    } else {
-      // Default to 'new' - sort by creation date
-      sortOption = { createdAt: -1 };
-    }
+    const matchStage = { $match: query };
+    const engagementStage = {
+      $addFields: {
+        likesCount: { $size: { $ifNull: ['$likes', []] } },
+        commentsCount: { $size: { $ifNull: ['$comments', []] } },
+      },
+    };
+    const scoreStage = {
+      $addFields: {
+        engagementScore: {
+          $add: [
+            { $ifNull: ['$likesCount', 0] },
+            { $ifNull: ['$commentsCount', 0] },
+          ],
+        },
+      },
+    };
 
-    // Fetch confessions with pagination and filtering
-    let confessions = await Confession.find(query)
-      .populate('likes')
-      .populate('comments')
-      .sort(sortOption)
-      .skip(skip)
-      .limit(sortBy === 'trending' ? perPage * 3 : perPage); // Fetch more for trending to sort properly
+    const sortStage =
+      sortBy === 'trending'
+        ? { $sort: { engagementScore: -1, createdAt: -1 } }
+        : { $sort: { createdAt: -1 } };
 
-    // If trending, sort by engagement
-    if (sortBy === 'trending') {
-      confessions = confessions
-        .map(conf => ({
-          ...conf.toObject(),
-          engagement: (conf.likes?.length || 0) + (conf.comments?.length || 0)
-        }))
-        .sort((a, b) => b.engagement - a.engagement)
-        .slice(0, perPage);
-    }
+    const pipeline = [matchStage, engagementStage, scoreStage, sortStage, { $skip: skip }, { $limit: perPage }];
 
-    confessions = await Confession.find(query)
-      .sort(sortOption)
-      .skip(skip)
-      .limit(perPage);
-
-    // Decrypt the confession content
     const secretKeyHex = process.env.ENCRYPTION_SECRET_KEY;
+    const confessions = await Confession.aggregate(pipeline);
+
     const decryptedConfessions = confessions.map(confession => {
       const bytes = CryptoJS.AES.decrypt(confession.confessionContent, secretKeyHex);
       const decryptedContent = bytes.toString(CryptoJS.enc.Utf8);
+      const { engagementScore, likesCount, commentsCount, ...rest } = confession;
       return {
-        ...confession.toObject(),
+        ...rest,
         confessionContent: decryptedContent,
       };
     });

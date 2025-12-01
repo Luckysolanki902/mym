@@ -31,7 +31,7 @@ export const generateEquation = (actualNumber) => {
         constant: b,         // e.g., 19
         result: c,          // e.g., 28
         solution: x,        // The actual number (online count)
-        equation: `${a}x + ${b} = ${c}`
+        equation: `${a}n + ${b} = ${c}`
     };
 };
 
@@ -42,7 +42,7 @@ export const generateEquation = (actualNumber) => {
  */
 export const getEquationString = (actualNumber) => {
     const { coefficient, constant, result } = generateEquation(actualNumber);
-    return `${coefficient}x + ${constant} = ${result}`;
+    return `${coefficient}n + ${constant} = ${result}`;
 };
 
 /**
@@ -55,8 +55,8 @@ export const generateEquationWithContext = (actualNumber, context = "people onli
     const eq = generateEquation(actualNumber);
     return {
         ...eq,
-        hint: `x ${context}`,
-        fullText: `${eq.coefficient}x + ${eq.constant} = ${eq.result}`,
+        hint: `n ${context}`,
+        fullText: `${eq.coefficient}n + ${eq.constant} = ${eq.result}`,
         solution: eq.solution
     };
 };

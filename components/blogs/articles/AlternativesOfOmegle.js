@@ -31,10 +31,10 @@ const AlternativesOfOmegle = () => {
                     Omegle’s shutdown left a giant void for people who just wanted a spontaneous chat. While plenty of copycats popped up, very few of them feel safe enough for college students. Below are five platforms we recommend testing. Spyll leads the list because it brings structure, college-only verification, and thoughtful safeguards that anonymous chat apps usually ignore.
                 </Typography>
 
-                <Link href={'https://www.meetyourmate.in'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link href={'https://spyll.in'} style={{ textDecoration: 'none', color: 'inherit' }}>
                     <Typography variant="h5" style={{ marginTop: '3rem' }}>1. Spyll — Built for College-Only Anonymity</Typography>
                 </Link>
-                <Link href={'https://www.meetyourmate.in'} style={{ textDecoration: 'none' }}>
+                <Link href={'https://spyll.in'} style={{ textDecoration: 'none' }}>
                     <SpyllWordmark style={{ display: 'block', fontSize: '3rem', letterSpacing: '-2px', color: '#000000', margin: '1rem 0' }} />
                 </Link>
                 <Typography variant="body1" paragraph>
@@ -44,7 +44,7 @@ const AlternativesOfOmegle = () => {
                     Safety is embedded everywhere: OTP-protected logins, automated profanity filters, manual moderation, and a promise not to store message history beyond what is required for abuse review. Because transcripts disappear, students feel comfortable discussing crushes, campus drama, or mental health without worrying that screenshots will define them forever.
                 </Typography>
                 <Typography variant="body1" paragraph>
-                    If you want an Omegle alternative that actually understands student culture—and lets you request missing colleges—Spyll should be your first tap. <Link href={'https://www.meetyourmate.in'} style={{ textDecoration: 'none', marginLeft: '0.2rem', fontWeight: 600 }}>Start chatting on Spyll →</Link>
+                    If you want an Omegle alternative that actually understands student culture—and lets you request missing colleges—Spyll should be your first tap. <Link href={'https://spyll.in'} style={{ textDecoration: 'none', marginLeft: '0.2rem', fontWeight: 600 }}>Start chatting on Spyll →</Link>
                 </Typography>
 
                 <Typography variant='h4' style={{ marginTop: '3rem' }}>Other Platforms Worth Exploring</Typography>

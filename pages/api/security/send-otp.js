@@ -87,7 +87,7 @@ async function handler(req, res) {
                   <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color:#ffffff; border-radius:8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     <tr>
                       <td align="center" style="padding: 40px 20px 20px 20px; font-family: Arial, sans-serif;">
-                        <h2 style="color:#333333; margin:0 0 20px 0;">Welcome to MYM!</h2>
+                        <h2 style="color:#333333; margin:0 0 20px 0;">Welcome to Spyll!</h2>
                         <p style="color:#555555; font-size:16px; line-height:1.5;">
                           Thank you for signing up. Please use the verification code below to complete your registration.
                         </p>
@@ -110,7 +110,7 @@ async function handler(req, res) {
                     <tr>
                       <td align="center" style="padding: 20px 20px 40px 20px; font-family: Arial, sans-serif;">
                         <p style="color:#555555; font-size:14px; line-height:1.5;">
-                          Thank you,<br/>The MYM Team
+                          Thank you,<br/>The Spyll Team
                         </p>
                       </td>
                     </tr>
@@ -126,7 +126,7 @@ async function handler(req, res) {
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
-        subject: 'MYM - Verify Your Email',
+        subject: 'Spyll - Verify Your Email',
         html: htmlContent,
       };
 

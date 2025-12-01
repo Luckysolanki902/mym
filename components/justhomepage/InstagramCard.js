@@ -8,7 +8,7 @@ const InstagramCard = () => {
         <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', padding: "1rem    2rem", borderRadius: '1rem', width:'70%', margin:'auto', cursor:'pointer', transition:'0.3s all cubic-bezier(0.075, 0.82, 0.165, 1)' }}>
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <div><Image width={512} height={512} alt='Instagram_Full_text_logo' src={'/images/othericons/instagramplain.png'} style={{ width: '3rem', height: 'auto' }}></Image></div>
-                <div style={{ fontWeight: '500' }}>@meetyourmate_</div>
+                <div style={{ fontWeight: '500' }}>@_spyll_</div>
 
             </div>
             {!isMobile && <div style={{fontSize:'1.5rem', fontFamily:'Jost'}}>

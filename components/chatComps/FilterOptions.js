@@ -173,11 +173,35 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired }) => {
     return () => clearInterval(intervalId);
   }, [userDetails])
 
+  const renderEquationSummary = () => {
+    const eqSource = Math.max(chatStats?.totalUsers || 0, 1);
+    const eq = generateEquationWithContext(eqSource, 'students online');
+    const userTheme = userDetails?.gender === 'female' ? 'pink' : userDetails?.gender === 'male' ? 'cyan' : 'purple';
+    const accentTheme = userDetails?.gender === 'female' ? 'cyan' : userDetails?.gender === 'male' ? 'pink' : 'purple';
+    const genderText = tempGender === 'any' ? 'Anyone' : tempGender === 'male' ? 'Boys' : 'Girls';
+    const collegeText = tempCollege === 'any' ? 'Any college' : 'Your college';
+
+    return (
+        <div className={styles.equationBadge}>
+          <AlgebraEquation
+            coefficient={eq.coefficient}
+            constant={eq.constant}
+            result={eq.result}
+            hint={eq.hint}
+            theme={userTheme}
+            hintTheme={accentTheme}
+            size="small"
+          />
+        </div>
+
+    );
+  };
+
   return (
     <ThemeProvider theme={darkTheme}>
       <div className={styles.mainfiltercont} ref={mainFilterContainerRef}>
         {!openFilterMenu && (
-          <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
             <IoFilterSharp
               className={styles.filterIcon}
               onClick={handleFilterToggle}
@@ -188,24 +212,7 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired }) => {
         {(openFilterMenu) && (
           <animated.div style={filterContentAnimation} className={styles.filterContentWrapper}>
             <div className={styles.filterMenu}>
-              <div className={styles.filterSection} style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
-                {(() => {
-                  const eq = generateEquationWithContext(chatStats.totalUsers, 'people online');
-                  const userTheme = userDetails?.gender === 'female' ? 'pink' : userDetails?.gender === 'male' ? 'cyan' : 'purple';
-                  const oppositeTheme = userDetails?.gender === 'female' ? 'cyan' : userDetails?.gender === 'male' ? 'pink' : 'purple';
-                  return (
-                    <AlgebraEquation 
-                      coefficient={eq.coefficient}
-                      constant={eq.constant}
-                      result={eq.result}
-                      hint={eq.hint}
-                      theme={userTheme}
-                      hintTheme={oppositeTheme}
-                      size="small"
-                    />
-                  );
-                })()}
-              </div>
+              {renderEquationSummary()}
               <div className={styles.filterSection}>
                 <div className={styles.filterLabel}>College</div>
                 <div className={styles.chipsContainer}>

@@ -14,6 +14,8 @@
   width: 50vw;
   min-height: 40vh;
   border-radius: 2rem;
+  position: relative;
+  overflow: hidden;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.6);
@@ -21,6 +23,59 @@
     0 10px 40px -10px rgba(0, 0, 0, 0.08),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.skeletonCard::before {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), transparent 55%);
+  filter: blur(30px);
+  opacity: 0.65;
+  animation: glassDrift 7s ease-in-out infinite alternate;
+}
+
+.skeletonCard::after {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: -40%;
+  width: 70%;
+  height: 220%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: skewX(-15deg);
+  filter: blur(10px);
+  opacity: 0.25;
+  animation: shimmerSweep 2.8s linear infinite;
+}
+
+@keyframes glassDrift {
+  0% {
+    transform: translate(-10%, -5%) scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate(5%, 10%) scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-5%, 0%) scale(0.95);
+    opacity: 0.45;
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-120%) skewX(-15deg);
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.25;
+  }
+  100% {
+    transform: translateX(180%) skewX(-15deg);
+    opacity: 0.05;
+  }
 }
 
 /* Responsive */

@@ -1,12 +1,9 @@
 // pages/textchat.js
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Confession from '@/components/fullPageComps/Confession';
 import { getSession } from 'next-auth/react';
-import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 import styles from './allconfessions.module.css';
-import FilterOptions from '@/components/confessionComps/FilterOptions';
 import AuthPrompt from '@/components/commonComps/AuthPrompt';
 import ScrollToTop2 from '@/components/commonComps/ScrollToTop2';
 import ConfessionSkeleton from '@/components/loadings/ConfessionSkeleton';
@@ -15,9 +12,8 @@ import { DEFAULT_OG_IMAGE, SITE_URL } from '@/utils/seo';
 const Index = ({ userDetails }) => {
   const [confessions, setConfessions] = useState([]);
   const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({ college: 'all', gender: 'any' });
+  const [filters] = useState({ college: 'all', gender: 'any' });
   const [sortBy, setSortBy] = useState('new'); // 'trending', 'new', or 'myCollege'
   const sentinelRef = useRef(null);
   const router = useRouter();
@@ -27,6 +23,8 @@ const Index = ({ userDetails }) => {
   const [limitReached, setLimitReached] = useState(false); // New state to track limit
   const scrollContainerRef = useRef(null); // Create a ref for the scrollable div
   const [activeGender, setActiveGender] = useState('neutral'); // State for background gradient
+  const nextPageRef = useRef(1);
+  const confessionCountRef = useRef(0);
 
   useEffect(() => {
     if (userDetails && !userDetails?.isVerified) {
@@ -34,58 +32,87 @@ const Index = ({ userDetails }) => {
     }
   }, [userDetails, router]);
 
-  const fetchConfessions = async () => {
-    if (limitReached) return; // Prevent fetching if limit is reached
+  useEffect(() => {
+    if (userDetails) {
+      setLimitReached(false);
+      setAuthPromptShown(false);
+    }
+  }, [userDetails]);
 
-    setLoading(true);
-    try {
-      const collegeFilter = sortBy === 'myCollege' ? userDetails?.college : filters.college;
-      const response = await fetch(
-        `/api/confession/getdesiredconfessions?college=${collegeFilter}&gender=${filters.gender}&page=${page}&userCollege=${userDetails?.college}&sortBy=${sortBy}`
-      );
-      if (response.ok) {
+  const fetchConfessions = useCallback(
+    async ({ targetPage, reset = false } = {}) => {
+      if (limitReached && !reset) return;
+
+      const pageToFetch = targetPage ?? nextPageRef.current;
+
+      if (reset) {
+        setConfessions([]);
+        setHasMore(true);
+        setAuthPromptShown(false);
+        setLimitReached(false);
+        confessionCountRef.current = 0;
+        nextPageRef.current = 1;
+      }
+
+      setLoading(true);
+      try {
+        const collegeFilter = sortBy === 'myCollege' ? userDetails?.college || 'all' : filters.college;
+        const params = new URLSearchParams({
+          college: collegeFilter || 'all',
+          gender: filters.gender,
+          page: String(pageToFetch),
+          userCollege: userDetails?.college || '',
+          sortBy,
+        });
+
+        const response = await fetch(`/api/confession/getdesiredconfessions?${params.toString()}`);
+        if (!response.ok) {
+          console.error('Error fetching confessions:', response.status);
+          return;
+        }
+
         const data = await response.json();
-        const newConfessions = data.confessions;
+        const newConfessions = data.confessions || [];
+
+        setConfessions(prevConfessions => (reset ? newConfessions : [...prevConfessions, ...newConfessions]));
+
         if (newConfessions.length === 0) {
           setHasMore(false);
-        } else {
-          setConfessions(prevConfessions => [...prevConfessions, ...newConfessions]);
-          setPage(prevPage => prevPage + 1);
-
-          // Check if limit is reached after fetching
-          if (!userDetails && confessions.length + newConfessions.length >= MAX_CONFESSIONS_USER_CAN_SCROLL_WITHOUT_LOGIN) {
-            setLimitReached(true);
-          }
         }
-      } else {
-        console.error('Error fetching confessions:', response.status);
+
+        confessionCountRef.current += newConfessions.length;
+        nextPageRef.current = pageToFetch + 1;
+
+        if (!userDetails && confessionCountRef.current >= MAX_CONFESSIONS_USER_CAN_SCROLL_WITHOUT_LOGIN) {
+          setLimitReached(true);
+        }
+      } catch (error) {
+        console.error('Error fetching confessions:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching confessions:', error);
-    }
-    setLoading(false);
-  };
+    },
+    [limitReached, sortBy, filters.college, filters.gender, userDetails?.college, userDetails, MAX_CONFESSIONS_USER_CAN_SCROLL_WITHOUT_LOGIN]
+  );
 
   useEffect(() => {
-    // Reset state when filters or sortBy change
-    setConfessions([]);
-    setPage(1);
-    setHasMore(true);
-    setAuthPromptShown(false);
-    setLimitReached(false); // Reset limit when filters change
-    fetchConfessions();
+    fetchConfessions({ targetPage: 1, reset: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, sortBy]);
 
   useEffect(() => {
     const handleIntersection = entries => {
       const entry = entries[0];
-      if (entry.isIntersecting && hasMore && !loading && page !== 1) {
-        if (!userDetails && confessions.length >= MAX_CONFESSIONS_USER_CAN_SCROLL_WITHOUT_LOGIN && !authPromptShown) {
-          setShowAuthPrompt(true);
-          setAuthPromptShown(true); // Ensure prompt is shown only once
-          setLimitReached(true); // Prevent further fetching
-        } else if (!limitReached) {
+      if (entry.isIntersecting && hasMore && !loading && nextPageRef.current !== 1) {
+        if (!userDetails && limitReached) {
+          if (!authPromptShown) {
+            setShowAuthPrompt(true);
+            setAuthPromptShown(true);
+          }
+          return;
+        }
+
+        if (!limitReached) {
           fetchConfessions();
         }
       }
@@ -103,11 +130,7 @@ const Index = ({ userDetails }) => {
       }
       observer.disconnect();
     };
-  }, [hasMore, loading, filters, confessions.length, page, authPromptShown, limitReached, userDetails]);
-
-  const handleFiltersChange = newFilters => {
-    setFilters(newFilters);
-  };
+  }, [hasMore, loading, authPromptShown, limitReached, userDetails, fetchConfessions]);
 
   const getBackgroundGradient = () => {
     switch (activeGender) {
@@ -158,9 +181,7 @@ const Index = ({ userDetails }) => {
             </div>
           )}
         </div>
-        <div className={styles.chipParent}>
-          {/* {userDetails && <FilterOptions userDetails={userDetails} onChange={handleFiltersChange} />} */}
-        </div>
+        <div className={styles.chipParent}></div>
         {confessions.map(confession => (
           <Confession 
             key={confession._id} 

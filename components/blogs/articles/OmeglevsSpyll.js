@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const OmegleVsMeetYourMate = () => {
+const OmegleVsspyll = () => {
     const classes = useStyles();
 
     return (
@@ -31,7 +31,7 @@ const OmegleVsMeetYourMate = () => {
                     Introduction
                 </Typography>
                 <Typography variant="body1" paragraph>
-                    Omegle popularized instant conversations with strangers, but it never solved the safety problems that eventually shut it down. Spyll—formerly known as MeetYourMate—was built deliberately for college students who want the thrill of anonymous chats without the chaos. Let’s break down how both experiences compare.
+                    Omegle popularized instant conversations with strangers, but it never solved the safety problems that eventually shut it down. Spyll—formerly known as spyll—was built deliberately for college students who want the thrill of anonymous chats without the chaos. Let’s break down how both experiences compare.
                 </Typography>
 
                 <Typography variant="h4" style={{ marginTop: '2rem' }}>
@@ -44,10 +44,10 @@ const OmegleVsMeetYourMate = () => {
                 <Typography variant="h4" style={{ marginTop: '2rem' }}>
                     Spyll: The College-Only Successor
                 </Typography>
-                <Link href={'https://www.meetyourmate.in'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link href={'https://spyll.in'} style={{ textDecoration: 'none', color: 'inherit' }}>
                     <Typography variant="h5" style={{ marginTop: '3rem' }}>Why students switch to Spyll</Typography>
                 </Link>
-                <Link href={'https://www.meetyourmate.in'} style={{ textDecoration: 'none' }}>
+                <Link href={'https://spyll.in'} style={{ textDecoration: 'none' }}>
                     <SpyllWordmark style={{ display: 'block', fontSize: '3rem', letterSpacing: '-2px', color: '#000000', margin: '1rem 0' }} />
                 </Link>
                 <Typography variant="body1" paragraph>
@@ -117,11 +117,11 @@ const OmegleVsMeetYourMate = () => {
                     Conclusion
                 </Typography>
                 <Typography variant="body1" paragraph>
-                    If you miss the rush of talking to strangers but refuse to compromise on safety, Spyll is the logical upgrade. It keeps the spontaneity, filters out the noise, and anchors everything around real campuses. Visit <Link href={'https://www.meetyourmate.in'} style={{ textDecoration: 'none', fontWeight: 600 }}>Spyll</Link> to see how the new experience feels.
+                    If you miss the rush of talking to strangers but refuse to compromise on safety, Spyll is the logical upgrade. It keeps the spontaneity, filters out the noise, and anchors everything around real campuses. Visit <Link href={'https://spyll.in'} style={{ textDecoration: 'none', fontWeight: 600 }}>Spyll</Link> to see how the new experience feels.
                 </Typography>
             </Container>
         </>
     );
 };
 
-export default OmegleVsMeetYourMate;
+export default OmegleVsspyll;

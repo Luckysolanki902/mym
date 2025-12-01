@@ -36,7 +36,7 @@ const handler = async (req, res) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>MeetYourMate.in</title>
+        <title>Spyll.in</title>
     </head>
     <body style="Margin:0;padding:0;min-width:100%; background-color: rgb(50, 50, 50);>
         <center style="width: 100%; table-layout: fixed;">
@@ -49,14 +49,14 @@ const handler = async (req, res) => {
                             <!-- Header Section -->
                             <tr>
                                 <td style="padding: 0px 0; text-align:center; background-color:rgb(50, 50, 50); color:#000000;">
-                                    <img src="https://www.meetyourmate.in/images/spyll_logos/spyll_main.png" alt="Spyll logo" style="width:40%; max-width:300px; display:block; margin:20px auto;">
+                                    <img src="https://spyll.in/images/spyll_logos/spyll_main.png" alt="Spyll logo" style="width:40%; max-width:300px; display:block; margin:20px auto;">
                                     <p style="text-align:center; font-family: Jost, sans-serif; font-size:14px; color:#ffffff; margin:10px 0;">
                                         HBTU’s Anonymous Chat Platform <br>Is Waiting for You!
                                     </p>
-                                    <a href="https://www.meetyourmate.in" style="display:inline-block; text-decoration:none; background-color:#5EB3F0; color:rgb(250, 250, 250); padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; margin-bottom:20px;">
+                                    <a href="https://spyll.in" style="display:inline-block; text-decoration:none; background-color:#5EB3F0; color:rgb(250, 250, 250); padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; margin-bottom:20px;">
                                         Go to website
                                     </a>
-                                    <img src="https://www.meetyourmate.in/images/large_pngs/phone_mockup_mym_home2.png" alt="homepage-preview" style="width:80%; max-width:300px; display:block; Margin:0 auto;">
+                                    <img src="https://spyll.in/images/large_pngs/phone_mockup_mym_home2.png" alt="homepage-preview" style="width:80%; max-width:300px; display:block; Margin:0 auto;">
                                 </td>
                             </tr>
                             <!-- Main Content Section -->
@@ -75,10 +75,10 @@ const handler = async (req, res) => {
                                         to share long texts, inside jokes, and those dreamy walks across campus when the next semester begins.
                                     </p>
                                     <p style="font-size:14px; line-height:1.5; text-align:justify; color:rgb(250, 250, 250);">
-                                        Well, guess what? MeetYourMate.in is here to make your break way more exciting! 🚀
+                                        Well, guess what? spyll.in is here to make your break way more exciting! 🚀
                                     </p>
 
-                                    <h3 style="font-size:18px; margin:20px 0 10px 0; text-align:left; color:rgb(250, 250, 250);">What is MeetYourMate.in?</h3>
+                                    <h3 style="font-size:18px; margin:20px 0 10px 0; text-align:left; color:rgb(250, 250, 250);">What is spyll.in?</h3>
 
                                     <p style="font-size:14px; line-height:1.5; text-align:justify; color:rgb(250, 250, 250);">
                                         It’s a fun and easy way to chat with random students from HBTU—without even signing in! You can instantly
@@ -91,14 +91,14 @@ const handler = async (req, res) => {
                                     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; margin:0 auto; background-color:#1F1F1F;">
                                         <tr>
                                             <td style="width:50%; vertical-align:top; padding:10px; background-color:#1F1F1F;">
-                                                <img src="https://www.meetyourmate.in/images/othericons/bubble-chat2.png" alt="Anonymous Chats" style="width:50px; height:auto; display:block; Margin:0 auto; ">
+                                                <img src="https://spyll.in/images/othericons/bubble-chat2.png" alt="Anonymous Chats" style="width:50px; height:auto; display:block; Margin:0 auto; ">
                                                 <h4 style="font-size:16px; text-align:center; margin:10px 0 5px 0; color:rgb(250, 250, 250);">Anonymous Chats</h4>
                                                 <p style="font-size:14px; line-height:1.5; text-align:center; color:rgb(250, 250, 250);">
                                                     Say hello to random people from HBTU, without even revealing who you are. No more hiding behind a mask.
                                                 </p>
                                             </td>
                                             <td style="width:50%; vertical-align:top; padding:10px; background-color:#1F1F1F;">
-                                                <img src="https://www.meetyourmate.in/images/othericons/network2.png" alt="Real Connections" style="width:50px; height:auto; display:block; Margin:0 auto; ">
+                                                <img src="https://spyll.in/images/othericons/network2.png" alt="Real Connections" style="width:50px; height:auto; display:block; Margin:0 auto; ">
                                                 <h4 style="font-size:16px; text-align:center; margin:10px 0 5px 0; color:rgb(250, 250, 250);">Real Connections</h4>
                                                 <p style="font-size:14px; line-height:1.5; text-align:center; color:rgb(250, 250, 250);">
                                                     Imagine starting the new semester with a new friend who’s just as excited to see you as you are.
@@ -107,14 +107,14 @@ const handler = async (req, res) => {
                                         </tr>
                                         <tr>
                                             <td style="width:50%; vertical-align:top; padding:10px; background-color:#1F1F1F;">
-                                                <img src="https://www.meetyourmate.in/images/othericons/feather2.png" alt="Confession Space" style="width:50px; height:auto; display:block; Margin:0 auto; ">
+                                                <img src="https://spyll.in/images/othericons/feather2.png" alt="Confession Space" style="width:50px; height:auto; display:block; Margin:0 auto; ">
                                                 <h4 style="font-size:16px; text-align:center; margin:10px 0 5px 0; color:rgb(250, 250, 250);">Confession Space</h4>
                                                 <p style="font-size:14px; line-height:1.5; text-align:center; color:rgb(250, 250, 250);">
                                                     Spill your heart out anonymously. Write what you've been holding back. Read what other people have to say.
                                                 </p>
                                             </td>
                                             <td style="width:50%; vertical-align:top; padding:10px; background-color:#1F1F1F;">
-                                                <img src="https://www.meetyourmate.in/images/othericons/privacy2.png" alt="Total Privacy" style="width:50px; height:auto; display:block; Margin:0 auto; ">
+                                                <img src="https://spyll.in/images/othericons/privacy2.png" alt="Total Privacy" style="width:50px; height:auto; display:block; Margin:0 auto; ">
                                                 <h4 style="font-size:16px; text-align:center; margin:10px 0 5px 0; color:rgb(250, 250, 250);">Total Privacy</h4>
                                                 <p style="font-size:14px; line-height:1.5; text-align:center; color:rgb(250, 250, 250);">
                                                     Your chats are secure and private — end-to-end encryption and browser-to-browser chats with no storage involved.
@@ -124,20 +124,20 @@ const handler = async (req, res) => {
                                     </table>
 
                                     <p style="font-size:14px; line-height:1.5; text-align:justify; color:rgb(250, 250, 250);">
-                                        The best part? Everyone’s in the same boat right now. So why not take a chance, have fun, and see where it goes? MeetYourMate.in isn’t just an app. It’s your chance to make this winter unforgettable. ❄
+                                        The best part? Everyone’s in the same boat right now. So why not take a chance, have fun, and see where it goes? spyll.in isn’t just an app. It’s your chance to make this winter unforgettable. ❄
                                     </p>
                                     <p style="font-size:14px; line-height:1.5; text-align:justify; color:rgb(250, 250, 250);">
                                         Ready to connect, chat, and maybe find your perfect match?
                                     </p>
                                     <p style="font-size:14px; line-height:1.5; text-align:justify; color:rgb(250, 250, 250);">
-                                        Cheers to late-night conversations and future memories <br>Team MeetYourMate.in
+                                        Cheers to late-night conversations and future memories <br>Team spyll.in
                                     </p>
                                     <p style="font-size:14px; line-height:1.5; text-align:justify; color:rgb(250, 250, 250);">
                                         Don’t wait too long to make your move—your match might already be waiting for you! ⭐
                                     </p>
 
                                     <!-- Additional Go to Website Button -->
-                                    <a href="https://www.meetyourmate.in" style="display:inline-block; text-decoration:none; background-color:#5EB3F0; color:rgb(250, 250, 250); padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; margin:20px 0 20px 0;">
+                                    <a href="https://spyll.in" style="display:inline-block; text-decoration:none; background-color:#5EB3F0; color:rgb(250, 250, 250); padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; margin:20px 0 20px 0;">
                                         Go to website
                                     </a>
                                 </td>
