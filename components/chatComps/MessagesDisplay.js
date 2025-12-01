@@ -182,6 +182,8 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
                     isFindingPair={isFindingPair}
                     hasPaired={hasPaired}
                     filterOpenRef={filterOpenRef}
+                    onlineCount={onlineCount}
+                    pageType="textchat"
                 />
             </div>
         </div>

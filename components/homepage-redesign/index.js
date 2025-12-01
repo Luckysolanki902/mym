@@ -9,6 +9,7 @@ export { default as BackgroundGradient } from './ui/BackgroundGradient';
 
 // Section Components
 export { default as Hero } from './sections/Hero';
+export { default as CollegeStrip } from './sections/CollegeStrip';
 export { default as ModeSwitcher } from './sections/ModeSwitcher';
 export { default as TrendingConfessionsSection } from './sections/TrendingConfessions';
 export { default as HowItWorks } from './sections/HowItWorks';

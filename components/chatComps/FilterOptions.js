@@ -17,7 +17,7 @@ const darkTheme = createTheme({
   },
 });
 
-const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOpenRef }) => {
+const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOpenRef, onlineCount: propOnlineCount, pageType = 'textchat' }) => {
   const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000';
 
   const [openFilterMenu, setOpenFilterMenu] = useState(false);
@@ -28,13 +28,10 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOp
     config: { tension: 220, friction: 20 }
   });
   
-  const [chatStats, setChatStats] = useState({
-    totalUsers: 0,
-    maleUsers: 0,
-    femaleUsers: 0,
-    collegeStats: []
-  });
-  const [fetchingChatStats, setFetchingChatStats] = useState(false);
+  // Use prop online count if provided, otherwise fetch
+  const [fetchedOnlineCount, setFetchedOnlineCount] = useState(0);
+  const [lastFetchedTime, setLastFetchedTime] = useState(0);
+  const onlineCount = propOnlineCount !== undefined ? propOnlineCount : fetchedOnlineCount;
 
   // Filter contexts
   const { preferredGender, setPreferredGender, preferredCollege, setPreferredCollege } = useFilters();
@@ -76,6 +73,7 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOp
       setPreferredCollege('any');
       setTempCollege('any');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails]);
 
   // Sync temp values when actual values change
@@ -160,38 +158,46 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOp
       socket.off('filtersUpdated', handleFiltersUpdated);
       socket.off('filtersUpdateFailed', handleFiltersUpdateFailed);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, preferredGender, preferredCollege]);
 
-  const fetchChatStats = async () => {
-    try {
-      if (fetchingChatStats) return;
-      setFetchingChatStats(true);
-      const response = await fetch(`${serverUrl.endsWith('/') ? serverUrl + 'api/user-stats' : serverUrl + '/api/user-stats'}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch chat stats');
-      }
-      const data = await response.json();
-      setChatStats(data.textChatStats);
-    } catch (error) {
-      console.error('Error fetching chat stats:', error);
-    } finally {
-      setFetchingChatStats(false);
-    }
-  };
-
+  // Only fetch stats if not provided via prop - with 10 sec persistence for audio call
   useEffect(() => {
-    fetchChatStats()
-    const intervalId = setInterval(fetchChatStats, 3000);
+    // Skip fetching if online count is provided as prop
+    if (propOnlineCount !== undefined) return;
+
+    const fetchStats = async () => {
+      try {
+        const now = Date.now();
+        // For audio call, persist data for 10 seconds
+        if (pageType === 'audiocall' && lastFetchedTime && (now - lastFetchedTime < 10000)) {
+          return;
+        }
+        
+        const response = await fetch(`${serverUrl.endsWith('/') ? serverUrl + 'api/user-stats' : serverUrl + '/api/user-stats'}`);
+        if (!response.ok) throw new Error('Failed to fetch stats');
+        const data = await response.json();
+        
+        // Use appropriate stats based on page type
+        const stats = pageType === 'audiocall' ? data.audioCallStats : data.textChatStats;
+        setFetchedOnlineCount(stats?.totalUsers || 0);
+        setLastFetchedTime(now);
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    };
+
+    fetchStats();
+    const intervalId = setInterval(fetchStats, pageType === 'audiocall' ? 10000 : 3000);
     return () => clearInterval(intervalId);
-  }, [userDetails])
+  }, [userDetails, propOnlineCount, pageType, serverUrl, lastFetchedTime]);
 
   const renderEquationSummary = () => {
-    const eqSource = Math.max(chatStats?.totalUsers || 0, 1);
-    const eq = generateEquationWithContext(eqSource, 'students online');
+    const eqSource = Math.max(onlineCount || 0, 1);
+    const hintText = pageType === 'audiocall' ? 'callers online' : 'students online';
+    const eq = generateEquationWithContext(eqSource, hintText);
     const userTheme = userDetails?.gender === 'female' ? 'pink' : userDetails?.gender === 'male' ? 'cyan' : 'purple';
     const accentTheme = userDetails?.gender === 'female' ? 'cyan' : userDetails?.gender === 'male' ? 'pink' : 'purple';
-    const genderText = tempGender === 'any' ? 'Anyone' : tempGender === 'male' ? 'Boys' : 'Girls';
-    const collegeText = tempCollege === 'any' ? 'Any college' : 'Your college';
 
     return (
         <div className={styles.equationBadge}>

@@ -17,6 +17,7 @@ import { startTour, selectIsTourCompleted } from '@/store/slices/onboardingSlice
 const AudioCallLayout = ({ userDetails }) => {
   const [onlineCount, setOnlineCount] = React.useState(0);
   const filterOpenRef = React.useRef(null);
+  const tourStartedRef = React.useRef(false);
   const audioCallContext = useAudioCall();
   const controller = useAudioCallController({ userDetails, context: audioCallContext });
   const { callState, micStatus, isFindingPair, partnerDisconnected, partner, callStartTime, remoteAudioRef, socket } = audioCallContext;
@@ -53,13 +54,26 @@ const AudioCallLayout = ({ userDetails }) => {
   // Start onboarding tour for first-time visitors (after mic is granted, always show in debug mode)
   const isDebugMode = process.env.NEXT_PUBLIC_NODE_ENV === 'debug';
   React.useEffect(() => {
-    if (userDetails && socket?.connected && (isDebugMode || !isAudioCallTourCompleted) && micStatus === MIC_STATE.GRANTED) {
+    // Prevent re-triggering if already started
+    if (tourStartedRef.current) return;
+    
+    const shouldShowTour = userDetails && (isDebugMode || !isAudioCallTourCompleted) && micStatus === MIC_STATE.GRANTED;
+    
+    if (shouldShowTour) {
+      tourStartedRef.current = true;
       const timer = setTimeout(() => {
         dispatch(startTour('audioCall'));
-      }, 1000);
+      }, 1500); // Longer delay for audio call page to stabilize
       return () => clearTimeout(timer);
     }
-  }, [userDetails, socket?.connected, isAudioCallTourCompleted, micStatus, dispatch, isDebugMode]);
+  }, [userDetails, isAudioCallTourCompleted, micStatus, dispatch, isDebugMode]);
+
+  // Reset tour started ref when component unmounts or tour completes
+  React.useEffect(() => {
+    return () => {
+      tourStartedRef.current = false;
+    };
+  }, []);
 
   // Handle tour step changes
   const handleTourStepChange = (stepIndex, step) => {
@@ -92,6 +106,8 @@ const AudioCallLayout = ({ userDetails }) => {
           isFindingPair={isFindingPair}
           hasPaired={false}
           filterOpenRef={filterOpenRef}
+          onlineCount={onlineCount}
+          pageType="audiocall"
         />
       </div>
 

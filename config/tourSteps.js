@@ -10,19 +10,7 @@ export const textChatTourSteps = [
     placement: 'left',
     padding: 12,
     borderRadius: 16,
-    delay: 100,
     action: 'close-filter', // Signal to close filter if open
-  },
-  {
-    target: '[data-tour="filter-menu"]',
-    title: 'Choose Your Preferences',
-    description: 'Select your preferred gender and college to find the perfect match. You can chat with anyone or be specific!',
-    icon: '⚙️',
-    placement: 'left',
-    padding: 12,
-    borderRadius: 20,
-    delay: 300,
-    action: 'open-filter', // Signal to open filter
   },
   {
     target: '[data-tour="find-new-button"]',
@@ -32,7 +20,6 @@ export const textChatTourSteps = [
     placement: 'top',
     padding: 8,
     borderRadius: 100,
-    delay: 100,
     action: 'close-filter',
   },
   {
@@ -56,26 +43,14 @@ export const textChatTourSteps = [
 
 export const audioCallTourSteps = [
   {
-    target: '[data-tour="call-filter-button"] [data-tour="filter-button"]',
+    target: '[data-tour="filter-button"]',
     title: 'Filter Your Calls',
     description: 'Click the d/dx button to set your preferences for voice calls.',
     icon: '🎯',
     placement: 'left',
     padding: 12,
     borderRadius: 16,
-    delay: 100,
     action: 'close-filter',
-  },
-  {
-    target: '[data-tour="filter-menu"]',
-    title: 'Choose Who to Talk To',
-    description: 'Select gender and college preferences for your anonymous voice calls.',
-    icon: '⚙️',
-    placement: 'left',
-    padding: 12,
-    borderRadius: 20,
-    delay: 300,
-    action: 'open-filter',
   },
   {
     target: '[data-tour="start-call-button"]',
@@ -85,7 +60,6 @@ export const audioCallTourSteps = [
     placement: 'top',
     padding: 8,
     borderRadius: 100,
-    delay: 100,
     action: 'close-filter',
   },
   {
@@ -111,7 +85,7 @@ export const confessionsTourSteps = [
   {
     target: '[data-tour="sort-tabs"]',
     title: 'Sort Confessions',
-    description: 'Browse confessions by Trending (most liked), New (latest), or from your own college.',
+    description: 'Browse confessions by Trending, New (latest), or from your own college.',
     icon: '📊',
     placement: 'bottom',
     padding: 8,
@@ -121,10 +95,12 @@ export const confessionsTourSteps = [
   {
     target: null,
     title: 'Gender Colors',
-    description: 'Notice the background colors? 💗 Pink = Female confessor, 💙 Cyan/Blue = Male confessor. The color changes as you scroll!',
+    // Replace heart emojis with accent color circles (use Unicode colored circles)
+    description: 'Notice the background colors? <span style="color:#FF69B4;">●</span> Pink = Female confessor, <span style="color:#00BFFF;">●</span> Cyan/Blue = Male confessor. The color changes as you scroll!',
     icon: '🎨',
     placement: 'center',
     delay: 100,
+    isHtml: true, // If your tour library supports HTML in description
   },
   {
     target: '[data-tour="dm-reply-button"]',

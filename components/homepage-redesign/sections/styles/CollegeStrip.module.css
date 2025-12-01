@@ -1,0 +1,145 @@
+.section {
+  padding: 2.5rem 0;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
+}
+
+.stripWrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Heavy foggy fade effect on edges - B&W classy look */
+.fogLeft,
+.fogRight {
+  position: absolute;
+  top: -50%;
+  bottom: -50%;
+  width: 200px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.fogLeft {
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(250, 250, 250, 1) 0%,
+    rgba(250, 250, 250, 0.98) 20%,
+    rgba(250, 250, 250, 0.9) 40%,
+    rgba(250, 250, 250, 0.6) 60%,
+    rgba(250, 250, 250, 0.2) 80%,
+    transparent 100%
+  );
+}
+
+.fogRight {
+  right: 0;
+  background: linear-gradient(
+    270deg,
+    rgba(250, 250, 250, 1) 0%,
+    rgba(250, 250, 250, 0.98) 20%,
+    rgba(250, 250, 250, 0.9) 40%,
+    rgba(250, 250, 250, 0.6) 60%,
+    rgba(250, 250, 250, 0.2) 80%,
+    transparent 100%
+  );
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: max-content;
+  animation: scroll 40s linear infinite;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+.collegeName {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+  padding: 0 0.25rem;
+}
+
+.separator {
+  font-size: 0.5rem;
+  color: #1a1a1a;
+  opacity: 0.25;
+  padding: 0 1.5rem;
+  user-select: none;
+}
+
+/* Pause on hover for classy interaction */
+.stripWrapper:hover .track {
+  animation-play-state: paused;
+}
+
+.stripWrapper:hover .collegeName {
+  opacity: 0.9;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .section {
+    padding: 1.75rem 0;
+  }
+
+  .fogLeft,
+  .fogRight {
+    width: 100px;
+  }
+
+  .collegeName {
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+  }
+
+  .separator {
+    padding: 0 1rem;
+    font-size: 0.4rem;
+  }
+
+  .track {
+    animation-duration: 30s;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: 1.25rem 0;
+  }
+
+  .fogLeft,
+  .fogRight {
+    width: 60px;
+  }
+
+  .collegeName {
+    font-size: 0.8rem;
+  }
+
+  .separator {
+    padding: 0 0.75rem;
+  }
+
+  .track {
+    animation-duration: 25s;
+  }
+}

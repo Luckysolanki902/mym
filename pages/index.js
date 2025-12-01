@@ -1,6 +1,7 @@
 import { getSession } from 'next-auth/react';
 import {
   Hero,
+  CollegeStrip,
   ModeSwitcher,
   TrendingConfessionsSection,
   HowItWorks,
@@ -22,6 +23,9 @@ export default function Home({ session, trendingConfessions, totalConfessions })
     }}>
       {/* Hero Section */}
       <Hero />
+      
+      {/* College Strip - Animated marquee */}
+      <CollegeStrip />
       
       {/* Mode Switcher */}
       <ModeSwitcher />

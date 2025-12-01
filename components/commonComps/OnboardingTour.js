@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,6 +27,28 @@ const OnboardingTour = ({
   const dispatch = useDispatch();
   const activeTour = useSelector(selectActiveTour);
   const driverRef = useRef(null);
+  const currentStepIndexRef = useRef(0);
+
+  // Stable callback refs
+  const onCompleteRef = useRef(onComplete);
+  const onSkipRef = useRef(onSkip);
+  const onStepChangeRef = useRef(onStepChange);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+    onSkipRef.current = onSkip;
+    onStepChangeRef.current = onStepChange;
+  }, [onComplete, onSkip, onStepChange]);
+
+  const handleComplete = useCallback(() => {
+    dispatch(completeTour(tourName));
+    if (onCompleteRef.current) onCompleteRef.current();
+  }, [dispatch, tourName]);
+
+  const handleSkip = useCallback(() => {
+    dispatch(skipTour(tourName));
+    if (onSkipRef.current) onSkipRef.current();
+  }, [dispatch, tourName]);
 
   useEffect(() => {
     // Only run if this tour is active
@@ -39,8 +61,8 @@ const OnboardingTour = ({
     }
 
     // Map our steps to driver.js steps
-    const driveSteps = steps.map((step) => ({
-      element: step.target,
+    const driveSteps = steps.map((step, index) => ({
+      element: step.target || undefined, // undefined = no highlight (centered popover)
       popover: {
         title: step.title,
         description: `
@@ -50,66 +72,62 @@ const OnboardingTour = ({
             ${step.tip ? `<div class="driver-popover-tip">💡 ${step.tip}</div>` : ''}
           </div>
         `,
-        side: step.placement || 'bottom',
+        side: step.placement === 'center' ? 'over' : (step.placement || 'bottom'),
         align: 'center',
       },
-      // Keep reference to original step for callbacks
-      _originalStep: step
+      onHighlightStarted: () => {
+        currentStepIndexRef.current = index;
+        // Trigger step change callback for actions like opening filter
+        if (onStepChangeRef.current) {
+          onStepChangeRef.current(index, step);
+        }
+      },
     }));
 
-    // Initialize driver
+    // Initialize driver with proper configuration
     driverRef.current = driver({
       showProgress: true,
       animate: true,
-      allowClose: false, // Force use of buttons
+      allowClose: true,
+      overlayColor: 'rgba(0, 0, 0, 0.75)',
+      stagePadding: 12,
+      stageRadius: 12,
+      popoverClass: 'driverjs-theme',
       doneBtnText: 'Got it!',
       nextBtnText: 'Next',
       prevBtnText: 'Back',
+      showButtons: ['next', 'previous', 'close'],
       steps: driveSteps,
       
-      onHighlightStarted: (element, step, options) => {
-        if (onStepChange && step._originalStep) {
-          const index = steps.indexOf(step._originalStep);
-          onStepChange(index, step._originalStep);
-        }
-      },
-
-      onNextClick: (element, step, options) => {
-        const currentStepIndex = driveSteps.indexOf(step);
-        if (currentStepIndex === driveSteps.length - 1) {
-          // Last step
-          dispatch(completeTour(tourName));
-          if (onComplete) onComplete();
-          driverRef.current.destroy();
+      onDestroyStarted: () => {
+        // Check if we completed or skipped
+        const isLastStep = currentStepIndexRef.current === steps.length - 1;
+        if (isLastStep) {
+          handleComplete();
         } else {
-          driverRef.current.moveNext();
+          handleSkip();
+        }
+        if (driverRef.current) {
+          driverRef.current.destroy();
         }
       },
-
-      onPrevClick: () => {
-        driverRef.current.movePrevious();
-      },
-
-      onCloseClick: () => {
-        dispatch(skipTour(tourName));
-        if (onSkip) onSkip();
-        driverRef.current.destroy();
-      }
     });
 
-    // Start the tour
-    // Small delay to ensure DOM is ready if triggered immediately after a route change
+    // Start the tour with a delay to ensure DOM is ready
     const timer = setTimeout(() => {
-      driverRef.current.drive();
-    }, 100);
+      if (driverRef.current) {
+        driverRef.current.drive();
+      }
+    }, 300);
 
     return () => {
       clearTimeout(timer);
       if (driverRef.current) {
         driverRef.current.destroy();
+        driverRef.current = null;
       }
     };
-  }, [activeTour, tourName, steps, dispatch, onComplete, onSkip, onStepChange]);
+  }, [activeTour, tourName, steps, handleComplete, handleSkip]);
 
   return null;
 };
