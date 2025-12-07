@@ -8,4 +8,4 @@ const testEmailSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.models.TestEmail || mongoose.model('TestEmail', testEmailSchema);
+export default mongoose.models.TestEmail || mongoose.model('TestEmail', testEmailSchema);

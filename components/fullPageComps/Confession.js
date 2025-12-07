@@ -115,6 +115,7 @@ const Confession = ({
         commentContent: commentValue,
         gender: userDetails.gender,
         mid: mid,
+        createdAt: new Date().toISOString(), // Fix for "NaN ago"
       };
 
       setComments((prevComments) => [optimisticComment, ...prevComments]);

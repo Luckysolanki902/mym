@@ -43,4 +43,4 @@ const confessionSchema = new Schema({
 // Create the model
 const Confession =  mongoose.models.Confession || mongoose.model('Confession', confessionSchema);
 
-module.exports = Confession;
+export default Confession;

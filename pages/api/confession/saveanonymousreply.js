@@ -71,6 +71,76 @@ const handler = async (req, res) => {
     await personalReply.save();
 
     res.status(201).json({ success: true, message: 'Anonymous reply saved successfully' });
+
+    // --- Notification Logic (Async, Non-blocking) ---
+    (async () => {
+        try {
+            const { sendNotification, NOTIFICATION_TYPES } = await import('@/utils/emailService');
+            const { getEmailFromMid } = await import('@/utils/userHelpers');
+            const { getNewDMTemplate } = await import('@/utils/emailTemplates/newDM');
+
+            // Determine Recipient
+            let recipientMid;
+            // If userMid (sender) is the Confessor (decryptedMid), then recipient is the Replier (replyContent.replierMid)
+            // If userMid (sender) is the Replier, then recipient is the Confessor (decryptedMid)
+            
+            if (userMid === decryptedMid) {
+                // Sender is Confessor -> Notify Replier
+                recipientMid = replyContent.replierMid;
+            } else {
+                // Sender is Replier -> Notify Confessor
+                recipientMid = decryptedMid;
+            }
+
+            // Don't notify self
+            if (recipientMid === userMid) return;
+
+            const recipientEmail = await getEmailFromMid(recipientMid);
+
+            console.log(`[Notification Debug] 📩 New DM Notification Process Started`);
+            console.log(`[Notification Debug] 📤 Sender MID: ${userMid}`);
+            console.log(`[Notification Debug] 📥 Recipient MID: ${recipientMid}`);
+            console.log(`[Notification Debug] 🔄 Direction: ${userMid === decryptedMid ? 'Confessor -> Replier' : 'Replier -> Confessor'}`);
+
+            if (recipientEmail) {
+                console.log(`[Notification Debug] 📧 Recipient Email: ${recipientEmail}`);
+                
+                // Find the ID of the newly created subdocument for deduplication
+                let newReplyId;
+                const updatedReplyEntry = personalReply.replies.find(r => r.replierMid === replyContent.replierMid);
+                if (updatedReplyEntry) {
+                    if (existingReplyIndex > -1) {
+                        // It was a secondary reply. Get the last one.
+                        const lastSec = updatedReplyEntry.secondaryReplies[updatedReplyEntry.secondaryReplies.length - 1];
+                        newReplyId = lastSec?._id;
+                    } else {
+                        // It was a new main reply
+                        newReplyId = updatedReplyEntry._id;
+                    }
+                }
+
+                if (newReplyId) {
+                    const { subject, text } = getNewDMTemplate();
+
+                    await sendNotification({
+                        to: recipientEmail,
+                        type: NOTIFICATION_TYPES.NEW_DM,
+                        referenceId: newReplyId,
+                        subject,
+                        text
+                    });
+                    console.log(`[Notification Debug] ✅ DM Notification Sent to ${recipientEmail}`);
+                } else {
+                    console.log(`[Notification Debug] ⚠️ Could not determine new Reply ID for deduplication.`);
+                }
+            } else {
+                console.log(`[Notification Debug] ⚠️ No email found for Recipient, skipping.`);
+            }
+        } catch (err) {
+            console.error('[Notification Debug] ❌ Notification Error (DM):', err);
+        }
+    })();
+    // ------------------------------------------------
   } catch (error) {
     console.error('Error saving anonymous reply:', error);
     res.status(500).json({ error: 'Unable to save anonymous reply', detailedError: error.message });

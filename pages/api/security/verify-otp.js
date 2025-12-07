@@ -43,7 +43,7 @@ async function handler(req, res) {
       email: email.toLowerCase(),
       gender,
       college,
-      isVerified: !isTestId, // Mark as verified if not a test ID
+      isVerified: true, // User is verified (either via real OTP or Test ID bypass)
     });
 
     await newUser.save();
