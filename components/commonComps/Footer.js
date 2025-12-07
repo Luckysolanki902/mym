@@ -2,6 +2,7 @@ import React from 'react'
 import styles from './styles/footer.module.css'
 import Image from 'next/image'
 import Link from 'next/link'
+import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 const Footer = () => {
     const currentYear = new Date().getFullYear()
 
@@ -18,7 +19,7 @@ const Footer = () => {
                             <Image className={styles.contactIcon} width={95} height={89} alt='Email icon' src={'/images/othericons/mail.png'} />
                         </span>
                         <span>
-                            <a className={styles.contactLink} href="mailto: luckysolanki902@gmail.com">connect.spyll@gmail.com</a>
+                            <a className={styles.contactLink} href="mailto: luckysolanki902@gmail.com">connect@spyll.in</a>
                         </span>
                     </div>
                     <div className={styles.contactContent}>

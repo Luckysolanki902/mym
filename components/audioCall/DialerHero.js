@@ -3,7 +3,7 @@ import styles from './styles/DialerHero.module.css';
 import { useAudioCall, CALL_STATE, MIC_STATE } from '@/context/AudioCallContext';
 
 const CALL_STATE_COPY = {
-  [CALL_STATE.IDLE]: 'Enable microphone to start',
+  [CALL_STATE.IDLE]: 'Start call',
   [CALL_STATE.PREPARING_MIC]: 'Preparing mic…',
   [CALL_STATE.WAITING]: 'Waiting for partner…',
   [CALL_STATE.DIALING]: 'Dialing…',

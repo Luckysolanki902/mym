@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import styles from './styles/NewFooter.module.css';
+import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 
 const NewFooter = () => {
   const currentYear = new Date().getFullYear();
@@ -60,7 +61,7 @@ const NewFooter = () => {
           {/* Left - Logo & Tagline */}
           <div className={styles.brandSection}>
             <Link href="/" className={styles.logo}>
-              <span className={styles.logoText}>spyll</span>
+              <SpyllWordmark style={{color: '#FF6BA0', fontSize: '2rem'}} />
             </Link>
             <p className={styles.tagline}>
               India&apos;s anonymous college network. Made by Lucky Solanki &amp; Chaman Singh Narwar.
