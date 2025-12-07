@@ -48,6 +48,8 @@ export const AudioCallProvider = ({ children }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [speakerEnabled, setSpeakerEnabled] = useState(false);
   const [partnerDisconnected, setPartnerDisconnected] = useState(false);
+  const [userInitiatedEnd, setUserInitiatedEnd] = useState(false);
+  const [lastPartnerGender, setLastPartnerGender] = useState(null); // Preserve partner gender for disconnect UI
 
   const mediaStreamRef = useRef(null);
   const analyserRef = useRef(null);
@@ -100,6 +102,10 @@ export const AudioCallProvider = ({ children }) => {
       setSpeakerEnabled,
       partnerDisconnected,
       setPartnerDisconnected,
+      userInitiatedEnd,
+      setUserInitiatedEnd,
+      lastPartnerGender,
+      setLastPartnerGender,
       mediaStreamRef,
       analyserRef,
       heartbeatRef,
@@ -128,6 +134,8 @@ export const AudioCallProvider = ({ children }) => {
       isMuted,
       speakerEnabled,
       partnerDisconnected,
+      userInitiatedEnd,
+      lastPartnerGender,
     ]
   );
 

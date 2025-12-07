@@ -10,12 +10,14 @@ import HeadsetRoundedIcon from '@mui/icons-material/HeadsetRounded';
 import { useAudioCall, CALL_STATE, MIC_STATE } from '@/context/AudioCallContext';
 
 const ControlsDock = ({ controller = {} }) => {
-  const { callState, isMuted, speakerEnabled, isFindingPair, micStatus } = useAudioCall();
+  const { callState, isMuted, speakerEnabled, isFindingPair, micStatus, partnerDisconnected, userInitiatedEnd } = useAudioCall();
   const { toggleMute, toggleSpeaker, findNew, hangup } = controller;
 
   const isActiveCall = callState === CALL_STATE.CONNECTED || callState === CALL_STATE.DIALING;
   const isIdle = callState === CALL_STATE.IDLE || callState === CALL_STATE.ENDED;
   const canInteract = micStatus === MIC_STATE.GRANTED;
+  // Show dial button when call ended (either user initiated or partner disconnected) and not currently finding
+  const showDialButton = (isIdle || partnerDisconnected || userInitiatedEnd) && !isFindingPair;
 
   // Haptic feedback function
   const triggerHaptic = () => {
@@ -45,7 +47,7 @@ const ControlsDock = ({ controller = {} }) => {
       if (typeof hangup === 'function') {
         hangup('skip');
       }
-    } else if (isIdle && canInteract) {
+    } else if (showDialButton && canInteract) {
       // Start finding
       if (typeof findNew === 'function') {
         findNew();
@@ -79,7 +81,7 @@ const ControlsDock = ({ controller = {} }) => {
           onClick={handlePrimaryAction}
           className={`${styles.primaryButton} ${isActiveCall ? styles.hangupButton : styles.dialButton}`}
           aria-label={isActiveCall ? 'Hang up' : 'Find new'}
-          disabled={!canInteract}
+          disabled={!canInteract || isFindingPair}
           whileTap={{ scale: 0.9 }}
           data-tour="start-call-button"
         >

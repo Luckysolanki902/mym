@@ -19,7 +19,7 @@ const Footer = () => {
                             <Image className={styles.contactIcon} width={95} height={89} alt='Email icon' src={'/images/othericons/mail.png'} />
                         </span>
                         <span>
-                            <a className={styles.contactLink} href="mailto: luckysolanki902@gmail.com">connect@spyll.in</a>
+                            <a className={styles.contactLink} href="mailto:contact@spyll.in">connect@spyll.in</a>
                         </span>
                     </div>
                     <div className={styles.contactContent}>

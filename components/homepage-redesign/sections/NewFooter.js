@@ -64,7 +64,7 @@ const NewFooter = () => {
               <SpyllWordmark style={{color: '#FF6BA0', fontSize: '2rem'}} />
             </Link>
             <p className={styles.tagline}>
-              India&apos;s anonymous college network. Made by Lucky Solanki &amp; Chaman Singh Narwar.
+              India&apos;s anonymous college network. 
             </p>
           </div>
 
@@ -94,11 +94,8 @@ const NewFooter = () => {
               ))}
             </div>
             <div className={styles.contactEmails}>
-              <a href="mailto:luckysolanki902@gmail.com" className={styles.emailLink}>
-                luckysolanki902@gmail.com
-              </a>
-              <a href="mailto:csn6395@gmail.com" className={styles.emailLink}>
-                csn6395@gmail.com
+              <a href="mailto:contact@spyll.in" className={styles.emailLink}>
+                contact@spyll.in
               </a>
             </div>
           </div>

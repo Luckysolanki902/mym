@@ -110,21 +110,25 @@ const requestAudioStreamCompat = async () => {
   return Promise.reject(new Error('UNSUPPORTED_USER_MEDIA'));
 };
 
-const getPartnerLabel = (data, fallback = 'Friend') => {
-  if (!data) return fallback;
-  const base = data.nickname || data.userMID || fallback;
-  return base;
-};
-
 const derivePartnerShape = (payload) => {
   if (!payload) return null;
-  const initial = payload?.nickname?.[0] || payload?.userMID?.[0] || 'U';
+  // Server sends: strangerGender, stranger (UUID), isStrangerVerified
+  // No nickname is ever sent - don't assume it exists
+  const gender = payload.strangerGender || payload.gender;
+  
+  // Log warning if gender is missing - helps debug "Found someone" issue
+  if (!gender) {
+    audioDebugLog('WARNING: Partner gender is missing from payload', { 
+      payload,
+      strangerGender: payload.strangerGender,
+      gender: payload.gender 
+    });
+  }
+  
   return {
     mid: payload.stranger || payload.userMID,
-    gender: payload.strangerGender || payload.gender,
+    gender: gender,
     isVerified: payload.isStrangerVerified || payload.isVerified,
-    initials: initial.toUpperCase(),
-    nickname: getPartnerLabel(payload),
   };
 };
 
@@ -168,6 +172,10 @@ const useAudioCallController = ({ userDetails, context }) => {
     setSpeakerEnabled,
     partnerDisconnected,
     setPartnerDisconnected,
+    userInitiatedEnd,
+    setUserInitiatedEnd,
+    lastPartnerGender,
+    setLastPartnerGender,
     mediaStreamRef,
     analyserRef,
     heartbeatRef,
@@ -200,6 +208,7 @@ const useAudioCallController = ({ userDetails, context }) => {
   const hangupRef = useRef(() => {});
   const audioRouteTargetsRef = useRef({ speaker: 'default', earpiece: 'communications' });
   const outputSelectionLockRef = useRef(false);
+  const lastCallStateRef = useRef(callState); // Track last call state to prevent unnecessary updates
 
   const locationSignature = typeof window === 'undefined' ? 'ssr' : window.location?.href || 'client';
 
@@ -307,44 +316,48 @@ const useAudioCallController = ({ userDetails, context }) => {
   }, [cleanupAnalyser, remoteAudioRef, setCallDuration, setQualityScore, setWaveformData, stopHeartbeat]);
 
   const cleanupPeer = useCallback(() => {
-    if (isCleaningUpRef.current) {
-      audioDebugLog('cleanupPeer already in progress, skipping');
-      return;
-    }
-    isCleaningUpRef.current = true;
-    
+    // Note: isCleaningUpRef should be set by the caller (hangup/findNew) before calling this
+    // This function focuses on cleanup, not on managing the flag
     audioDebugLog('cleanupPeer called', {
       hasPeer: !!peerRef.current,
       localPeerId: localPeerIdRef.current,
       remotePeerId: remotePeerIdRef.current,
+      isCleaningUp: isCleaningUpRef.current,
     });
+    
+    // Clear any pending timeouts
+    if (peerConnectionTimeoutRef.current) {
+      clearTimeout(peerConnectionTimeoutRef.current);
+      peerConnectionTimeoutRef.current = null;
+    }
+    
     cleanupStreams();
+    
+    // Close any active call first
+    if (callRef.current) {
+      try {
+        callRef.current.close();
+      } catch (e) {
+        audioDebugLog('Error closing call', e?.message);
+      }
+      callRef.current = null;
+    }
+    
     if (peerRef.current) {
-      peerRef.current.destroy();
+      try {
+        peerRef.current.destroy();
+      } catch (e) {
+        audioDebugLog('Error destroying peer', e?.message);
+      }
       peerRef.current = null;
     }
+    
     localPeerIdRef.current = null;
     remotePeerIdRef.current = null;
     peerServerRef.current = null;
     setPartner(null);
     setRoomId(null);
     audioDebugLog('cleanupPeer complete');
-    
-    // Reset cleanup guard and verify cleanup
-    setTimeout(() => {
-      isCleaningUpRef.current = false;
-      
-      const state = {
-        peer: !!peerRef.current,
-        call: !!callRef.current,
-        localPeerId: !!localPeerIdRef.current,
-        remotePeerId: !!remotePeerIdRef.current,
-      };
-      const hasLeaks = Object.values(state).some(v => v);
-      if (hasLeaks) {
-        console.warn('[AudioCall] Cleanup incomplete', state);
-      }
-    }, 100);
   }, [cleanupStreams, setPartner, setRoomId]);
 
   const stopTones = useCallback((toneKey) => {
@@ -610,32 +623,58 @@ const useAudioCallController = ({ userDetails, context }) => {
   }, [emitSocket, heartbeatRef, stopHeartbeat, userDetails]);
 
   const handleCallLifecycle = useCallback(
-    ({ kind, stream }) => {
+    ({ kind, stream, activeRoomId }) => {
       if (kind === 'connected') {
+        // Clear any pending end states when successfully connected
+        setPartnerDisconnected(false);
+        setUserInitiatedEnd(false);
         setCallState(CALL_STATE.CONNECTED);
         setPairingState('CHATTING');
         playTone('connected');
         startCallTimer();
         startQualityInterval();
         startHeartbeat();
-        emitSocket('callConnected', { userMID: userDetails?.mid, roomId });
+        // Use the passed activeRoomId if available, otherwise fall back to context roomId
+        const effectiveRoomId = activeRoomId || roomId;
+        emitSocket('callConnected', { userMID: userDetails?.mid, roomId: effectiveRoomId });
         if (stream) {
           attachRemoteStream(stream);
         }
       } else if (kind === 'ended') {
+        // PeerJS call ended (could be remote close or error)
+        // Only process if we're not already cleaning up
+        if (isCleaningUpRef.current) {
+          audioDebugLog('handleCallLifecycle ended: skipping, cleanup in progress');
+          return;
+        }
+        // Also skip if user already initiated end (hangup was called)
+        // This prevents the PeerJS close event from overriding user's hangup
+        if (context.userInitiatedEnd) {
+          audioDebugLog('handleCallLifecycle ended: skipping, user initiated end');
+          return;
+        }
+        audioDebugLog('handleCallLifecycle ended: processing call end');
         stopTones();
         cleanupStreams();
+        // Save partner gender before clearing
+        const currentPartnerGender = context.partner?.gender;
+        if (currentPartnerGender) {
+          setLastPartnerGender(currentPartnerGender);
+        }
+        // Mark as partner disconnected since this is from PeerJS (not user hangup)
+        setPartnerDisconnected(true);
         setCallState(CALL_STATE.ENDED);
-        setPairingState('IDLE');
+        setPairingState('DISCONNECTED');
+        setIsFindingPair(false);
         setPartner(null);
         setRoomId(null);
       }
     },
-    [attachRemoteStream, cleanupStreams, emitSocket, playTone, roomId, setCallState, setPairingState, setPartner, setRoomId, startCallTimer, startHeartbeat, startQualityInterval, stopTones, userDetails?.mid]
+    [attachRemoteStream, cleanupStreams, context.partner?.gender, context.userInitiatedEnd, emitSocket, playTone, roomId, setCallState, setIsFindingPair, setLastPartnerGender, setPairingState, setPartner, setPartnerDisconnected, setRoomId, setUserInitiatedEnd, startCallTimer, startHeartbeat, startQualityInterval, stopTones, userDetails?.mid]
   );
 
   const attachCallHandlers = useCallback(
-    (call) => {
+    (call, activeRoomId) => {
       callRef.current = call;
       
       // Add timeout to detect stalled connections
@@ -645,7 +684,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       peerConnectionTimeoutRef.current = setTimeout(() => {
         if (callState === CALL_STATE.DIALING || callState === CALL_STATE.CONNECTING) {
           audioDebugLog('PeerJS connection timeout');
-          setError('Connection took too long. Retrying...');
+          setError('Connection took too long. Please try again.');
           // Clean up the stalled connection
           if (callRef.current) {
             try {
@@ -659,24 +698,13 @@ const useAudioCallController = ({ userDetails, context }) => {
           if (userDetails) {
             emitSocket('callEnded', { userMID: userDetails.mid, reason: 'connection_timeout' });
           }
-          // Auto-retry by emitting findNewPair
-          setTimeout(() => {
-            if (!userDetails) return;
-            const payload = {
-              userMID: userDetails.mid,
-              userGender: userDetails.gender,
-              userCollege: userDetails.college,
-              preferredGender: preferredGender || 'any',
-              preferredCollege: preferredCollege || 'any',
-              isVerified: Boolean(userDetails?.isVerified),
-            };
-            emitSocket('findNewPair', payload);
-            setIsFindingPair(true);
-            setPairingState('FINDING');
-            setCallState(CALL_STATE.WAITING);
-          }, 500);
+          // Show call ended UI instead of auto-retrying
+          cleanupPeer();
+          setCallState(CALL_STATE.ENDED);
+          setUserInitiatedEnd(true); // Show "Call Ended" UI so user can retry
+          setIsFindingPair(false);
         }
-      }, 10000); // 10s timeout
+      }, 15000); // 15s timeout (increased for slower networks)
       
       call.on('stream', (remoteStream) => {
         clearTimeout(peerConnectionTimeoutRef.current);
@@ -684,7 +712,7 @@ const useAudioCallController = ({ userDetails, context }) => {
           remotePeer: remotePeerIdRef.current,
           localPeer: localPeerIdRef.current,
         });
-        handleCallLifecycle({ kind: 'connected', stream: remoteStream });
+        handleCallLifecycle({ kind: 'connected', stream: remoteStream, activeRoomId });
       });
       call.on('close', () => {
         clearTimeout(peerConnectionTimeoutRef.current);
@@ -692,7 +720,7 @@ const useAudioCallController = ({ userDetails, context }) => {
           remotePeer: remotePeerIdRef.current,
           localPeer: localPeerIdRef.current,
         });
-        handleCallLifecycle({ kind: 'ended' });
+        handleCallLifecycle({ kind: 'ended', activeRoomId });
       });
       call.on('error', (err) => {
         clearTimeout(peerConnectionTimeoutRef.current);
@@ -701,11 +729,11 @@ const useAudioCallController = ({ userDetails, context }) => {
           message: err?.message,
           type: err?.type,
         });
-        setError('Connection interrupted. Trying to recover…');
-        handleCallLifecycle({ kind: 'ended' });
+        setError('Connection interrupted. Please try again.');
+        handleCallLifecycle({ kind: 'ended', activeRoomId });
       });
     },
-    [callState, emitSocket, handleCallLifecycle, preferredCollege, preferredGender, setCallState, setError, setIsFindingPair, setPairingState, userDetails]
+    [callState, cleanupPeer, emitSocket, handleCallLifecycle, setCallState, setError, setIsFindingPair, setUserInitiatedEnd, userDetails]
   );
 
   const maybeInitiateCall = useCallback(() => {
@@ -752,12 +780,12 @@ const useAudioCallController = ({ userDetails, context }) => {
         hasStream: Boolean(mediaStreamRef.current),
       });
       const call = peerRef.current.call(remotePeerIdRef.current, mediaStreamRef.current);
-      attachCallHandlers(call);
+      attachCallHandlers(call, roomId);
     } catch (error) {
       console.error('[AudioCall] Failed to initiate call', error);
       setError('Unable to reach partner. Retrying…');
     }
-  }, [attachCallHandlers, mediaStreamRef, setError]);
+  }, [attachCallHandlers, mediaStreamRef, setError, roomId]);
 
   const createPeerInstance = useCallback(
     async (token, rtcConfig, serverDescriptor = null, currentRoomId = null) => {
@@ -770,8 +798,10 @@ const useAudioCallController = ({ userDetails, context }) => {
       if (!token || typeof window === 'undefined') return;
       const PeerCtor = await requestPeerLibrary();
       if (peerRef.current) {
+        const oldPeer = peerRef.current;
+        peerRef.current = null;
         audioDebugLog('destroying existing peer');
-        peerRef.current.destroy();
+        oldPeer.destroy();
       }
       const win = typeof window !== 'undefined' ? window : undefined;
       const host = serverDescriptor?.host || resolvedServer?.hostname || win?.location?.hostname || 'localhost';
@@ -809,10 +839,28 @@ const useAudioCallController = ({ userDetails, context }) => {
       });
       const peer = new PeerCtor(token, peerOptions);
       peerRef.current = peer;
+      
+      // Add timeout for PeerJS server connection
+      const peerOpenTimeout = setTimeout(() => {
+        if (!localPeerIdRef.current) {
+          audioDebugLog('PeerJS open timeout - peer server not responding');
+          setError('Could not connect to call server. Please try again.');
+          cleanupPeer();
+          setCallState(CALL_STATE.ENDED);
+          setUserInitiatedEnd(true);
+          setIsFindingPair(false);
+          if (userDetails) {
+            emitSocket('callEnded', { userMID: userDetails.mid, reason: 'peer_server_timeout' });
+          }
+        }
+      }, 10000); // 10s timeout for peer server connection
+      
       peer.on('open', (id) => {
+        clearTimeout(peerOpenTimeout);
         audioDebugLog('PeerJS connection open', { id, tokenSuffix: token?.slice?.(-8), roomId: currentRoomId });
         localPeerIdRef.current = id;
         emitSocket('callReady', { userMID: userDetails?.mid, peerId: id, roomId: currentRoomId });
+        maybeInitiateCall();
       });
       peer.on('call', (incomingCall) => {
         try {
@@ -821,7 +869,7 @@ const useAudioCallController = ({ userDetails, context }) => {
             hasStream: Boolean(mediaStreamRef.current),
           });
           incomingCall.answer(mediaStreamRef.current);
-          attachCallHandlers(incomingCall);
+          attachCallHandlers(incomingCall, currentRoomId);
         } catch (error) {
           console.error('[AudioCall] Unable to answer call', error);
           audioDebugLog('Error answering incoming call', { message: error?.message });
@@ -834,20 +882,35 @@ const useAudioCallController = ({ userDetails, context }) => {
         setError('Peer connection lost. Reconnecting…');
       });
       peer.on('disconnected', () => {
-        audioDebugLog('PeerJS disconnected, attempting reconnect', { peerId: peer.id });
-        peer.reconnect();
+        audioDebugLog('PeerJS disconnected', { peerId: peer.id, isCleaningUp: isCleaningUpRef.current });
+        // Only attempt reconnect if we're not intentionally cleaning up
+        // This prevents reconnect attempts after hangup/skip
+        if (!isCleaningUpRef.current && peerRef.current === peer) {
+          audioDebugLog('Attempting PeerJS reconnect');
+          peer.reconnect();
+        }
       });
       peer.on('close', () => {
-        audioDebugLog('PeerJS instance closed', { peerId: peer.id });
-        cleanupPeer();
+        audioDebugLog('PeerJS instance closed', { peerId: peer.id, isCleaningUp: isCleaningUpRef.current });
+        // Only cleanup if we haven't already started cleanup
+        // This prevents double cleanup and state race conditions
+        if (!isCleaningUpRef.current) {
+          isCleaningUpRef.current = true;
+          cleanupPeer();
+          // Don't reset the flag here - let the caller manage it
+          // The 'close' event can fire during normal operation, not just errors
+          setTimeout(() => {
+            isCleaningUpRef.current = false;
+          }, 500);
+        }
       });
     },
-    [attachCallHandlers, cleanupPeer, emitSocket, mediaStreamRef, requestPeerLibrary, resolvedServer, setError, userDetails?.mid]
+    [attachCallHandlers, cleanupPeer, emitSocket, maybeInitiateCall, mediaStreamRef, requestPeerLibrary, resolvedServer, setCallState, setError, setIsFindingPair, setUserInitiatedEnd, userDetails]
   );
 
   const buildQueuePayload = useCallback(() => {
     if (!userDetails) return null;
-    return {
+    const payload = {
       userMID: userDetails.mid,
       userGender: userDetails.gender,
       userCollege: userDetails.college,
@@ -855,6 +918,13 @@ const useAudioCallController = ({ userDetails, context }) => {
       preferredCollege: preferredCollege || 'any',
       isVerified: Boolean(userDetails?.isVerified),
     };
+    // Debug: Log the payload to verify gender is being sent correctly
+    audioDebugLog('buildQueuePayload', { 
+      payload, 
+      rawGender: userDetails.gender,
+      rawMid: userDetails.mid 
+    });
+    return payload;
   }, [preferredCollege, preferredGender, userDetails]);
 
   const buildIdentifyPayload = useCallback(
@@ -879,6 +949,7 @@ const useAudioCallController = ({ userDetails, context }) => {
         connected: socketRef.current?.connected,
         micStatus: effectiveMicStatus,
         user: userDetails?.mid,
+        callState,
         reason,
         force,
       });
@@ -886,19 +957,23 @@ const useAudioCallController = ({ userDetails, context }) => {
       // Comprehensive pre-flight checks
       if (!socketRef.current?.connected) {
         audioDebugLog('identifyWithServer aborted: socket not connected');
-        setError('Not connected to server. Retrying...');
         return;
       }
       if (!userDetails?.mid) {
         audioDebugLog('identifyWithServer aborted: missing user details');
-        setError('User details missing. Please refresh.');
         return;
       }
-      if (callState === CALL_STATE.CONNECTED) {
+      // Only block on CONNECTED state - allow identifying during DIALING/WAITING for reconnection
+      if (callState === CALL_STATE.CONNECTED && !force) {
         audioDebugLog('identifyWithServer aborted: already in active call');
         return;
       }
-      if (isCleaningUpRef.current) {
+      // Block on ENDED only if not forced
+      if (!force && callState === CALL_STATE.ENDED) {
+        audioDebugLog('identifyWithServer aborted: call ended, user must click Find New', { callState });
+        return;
+      }
+      if (isCleaningUpRef.current && !force) {
         audioDebugLog('identifyWithServer aborted: cleanup in progress');
         return;
       }
@@ -912,25 +987,37 @@ const useAudioCallController = ({ userDetails, context }) => {
         audioDebugLog('identifyWithServer aborted: unable to build payload');
         return;
       }
+
+      // Determine if we should join the queue based on current state
+      // Only join if we are explicitly finding a pair OR if explicitly requested via options
+      const shouldJoinQueue = options.joinQueue !== undefined ? options.joinQueue : isFindingPair;
+
       audioDebugLog('identifyWithServer emitting identify', {
         userMID: payload.userMID,
         preferredGender: payload.preferredGender,
         preferredCollege: payload.preferredCollege,
         reason,
+        joinQueue: shouldJoinQueue,
+        currentCallState: callState
       });
-      emitSocket('identify', payload);
-      setIsFindingPair(true);
-      setPairingState('FINDING');
-      setCallState(CALL_STATE.WAITING);
-      setError(null);
-      clearTimeout(findingTimeoutRef.current);
-      findingTimeoutRef.current = setTimeout(() => {
-        setIsFindingPair(false);
-        setPairingState('IDLE');
-        setError('Taking longer than expected. Tap Find New to retry.');
-      }, WAIT_TIMEOUT_MS);
+      
+      emitSocket('identify', { ...payload, joinQueue: shouldJoinQueue });
+
+      // Only update state if we are actually joining the queue
+      if (shouldJoinQueue) {
+        setIsFindingPair(true);
+        setPairingState('FINDING');
+        setCallState(CALL_STATE.WAITING);
+        setError(null);
+        clearTimeout(findingTimeoutRef.current);
+        findingTimeoutRef.current = setTimeout(() => {
+          setIsFindingPair(false);
+          setPairingState('IDLE');
+          setError('Taking longer than expected. Tap Find New to retry.');
+        }, WAIT_TIMEOUT_MS);
+      }
     },
-    [buildIdentifyPayload, callState, emitSocket, micStatus, setCallState, setError, setIsFindingPair, setMicStatus, setPairingState, userDetails]
+    [buildIdentifyPayload, callState, emitSocket, micStatus, setCallState, setError, setIsFindingPair, setMicStatus, setPairingState, userDetails, isFindingPair]
   );
 
   const handleQueueStatus = useCallback(
@@ -941,10 +1028,15 @@ const useAudioCallController = ({ userDetails, context }) => {
       setFilterLevel(data.filterLevel || 1);
       setFilterDescription(data.filterDescription || 'Finding the best match for you');
       setTelemetry((prev) => ({ ...prev, waitTime: data.waitTime, estimatedWait: data.estimatedWait }));
-      if (callState !== CALL_STATE.CONNECTED) {
+      
+      // Only update state if we're not already in a call flow
+      // This prevents queue updates from overriding DIALING/CONNECTING states
+      if (callState !== CALL_STATE.CONNECTED && 
+          callState !== CALL_STATE.DIALING && 
+          callState !== CALL_STATE.CONNECTING) {
         setCallState(CALL_STATE.WAITING);
+        setPairingState('WAITING');
       }
-      setPairingState('WAITING');
     },
     [callState, setCallState, setFilterDescription, setFilterLevel, setPairingState, setQueuePosition, setQueueSize, setTelemetry]
   );
@@ -966,20 +1058,28 @@ const useAudioCallController = ({ userDetails, context }) => {
   const handlePairingSuccess = useCallback(
     (payload) => {
       clearTimeout(findingTimeoutRef.current);
-      audioDebugLog('pairingSuccess event', payload);
+      audioDebugLog('pairingSuccess event - full payload', {
+        payload,
+        strangerGender: payload?.strangerGender,
+        stranger: payload?.stranger,
+        room: payload?.room,
+        matchQuality: payload?.matchQuality,
+      });
       const partnerShape = derivePartnerShape(payload);
+      audioDebugLog('pairingSuccess - derived partner shape', { partnerShape });
       setPartner(partnerShape);
       setRoomId(payload.room);
       setCallState(CALL_STATE.DIALING);
       setPairingState('DIALING');
       setIsFindingPair(false);
       setPartnerDisconnected(false);
+      setUserInitiatedEnd(false); // Clear when new call starts
       setError(null);
       setTelemetry((prev) => ({ ...prev, waitTime: payload.waitTime || 0 }));
       peerServerRef.current = payload.peer?.server || null;
       createPeerInstance(payload.peer?.token, payload.peer?.rtcConfig, peerServerRef.current, payload.room);
     },
-    [createPeerInstance, setCallState, setError, setIsFindingPair, setPartner, setPartnerDisconnected, setPairingState, setRoomId, setTelemetry]
+    [createPeerInstance, setCallState, setError, setIsFindingPair, setPartner, setPartnerDisconnected, setPairingState, setRoomId, setTelemetry, setUserInitiatedEnd]
   );
 
   const handleRemoteReady = useCallback(
@@ -997,7 +1097,22 @@ const useAudioCallController = ({ userDetails, context }) => {
         reason,
         hasActivePeer: !!peerRef.current,
         hasActiveCall: !!callRef.current,
+        isCleaningUp: isCleaningUpRef.current,
       });
+      
+      // Skip if already cleaning up (user already hung up)
+      if (isCleaningUpRef.current) {
+        audioDebugLog('handleServerCallEnded: skipping, cleanup in progress');
+        return;
+      }
+      
+      isCleaningUpRef.current = true;
+      
+      // Save partner gender before cleanup clears it
+      const currentPartner = context.partner;
+      if (currentPartner?.gender) {
+        setLastPartnerGender(currentPartner.gender);
+      }
       stopTones();
       cleanupPeer();
       setPartnerDisconnected(true);
@@ -1005,9 +1120,42 @@ const useAudioCallController = ({ userDetails, context }) => {
       setPairingState('DISCONNECTED');
       setIsFindingPair(false);
       audioDebugLog('callEnded cleanup complete');
+      
+      // Reset cleanup flag after events settle
+      setTimeout(() => {
+        isCleaningUpRef.current = false;
+      }, 500);
     },
-    [cleanupPeer, setCallState, setIsFindingPair, setPartnerDisconnected, setPairingState, stopTones]
+    [cleanupPeer, context.partner, setCallState, setIsFindingPair, setLastPartnerGender, setPartnerDisconnected, setPairingState, stopTones]
   );
+
+  const handlePartnerDisconnected = useCallback(() => {
+    audioDebugLog('partnerDisconnected event');
+    
+    if (isCleaningUpRef.current) return;
+    isCleaningUpRef.current = true;
+
+    const currentPartnerGender = context.partner?.gender;
+    if (currentPartnerGender) {
+      setLastPartnerGender(currentPartnerGender);
+    }
+    stopTones();
+    cleanupPeer();
+    setPartnerDisconnected(true);
+    setCallState(CALL_STATE.ENDED);
+    setPairingState('DISCONNECTED');
+    setIsFindingPair(false);
+    audioDebugLog('pairDisconnected cleanup complete');
+    
+    setTimeout(() => {
+      isCleaningUpRef.current = false;
+    }, 500);
+  }, [cleanupPeer, context.partner?.gender, setCallState, setIsFindingPair, setLastPartnerGender, setPartnerDisconnected, setPairingState, stopTones]);
+
+  // Keep lastCallStateRef in sync with callState
+  useEffect(() => {
+    lastCallStateRef.current = callState;
+  }, [callState]);
 
   useEffect(() => {
     identifyRef.current = identifyWithServer;
@@ -1020,15 +1168,27 @@ const useAudioCallController = ({ userDetails, context }) => {
       handlePairingSuccess,
       handleRemoteReady,
       handleServerCallEnded,
+      handlePartnerDisconnected,
       playTone,
       resetQueueState,
       cleanupPeer,
       stopTones,
     };
-  }, [cleanupPeer, handlePairingSuccess, handleQueueStatus, handleRemoteReady, handleServerCallEnded, playTone, resetQueueState, stopTones]);
+  }, [cleanupPeer, handlePairingSuccess, handleQueueStatus, handleRemoteReady, handleServerCallEnded, handlePartnerDisconnected, playTone, resetQueueState, stopTones]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
+    
+    audioDebugLog('Socket Effect Triggered', {
+      socketUrl,
+      currentUrl: socketUrlRef.current,
+      hasSocket: !!socketRef.current,
+      dependencies: {
+        socketUrl,
+        // We can't easily log function equality, but we can log if they changed
+      }
+    });
+
     if (socketRef.current && socketUrlRef.current === socketUrl) {
       return undefined;
     }
@@ -1047,7 +1207,15 @@ const useAudioCallController = ({ userDetails, context }) => {
 
     newSocket.on('connect', () => {
       audioDebugLog('socket connected', { id: newSocket.id });
-      identifyRef.current({ reason: 'socket-connect' });
+      // Always re-identify on reconnect if we have user details
+      // This ensures user is in usersMap even after socket drops
+      // Skip only if actively cleaning up
+      if (isCleaningUpRef.current) {
+        audioDebugLog('socket connect: skipping identify, cleanup in progress');
+        return;
+      }
+      // Force identify even in DIALING/WAITING states to handle reconnection
+      identifyRef.current({ reason: 'socket-connect', force: true });
     });
 
     newSocket.on('connect_error', (error) => {
@@ -1066,10 +1234,28 @@ const useAudioCallController = ({ userDetails, context }) => {
       }
     });
     newSocket.on('queueJoined', () => {
-      audioDebugLog('queueJoined event received');
+      audioDebugLog('queueJoined event received', { 
+        currentCallState: lastCallStateRef.current,
+        isCleaningUp: isCleaningUpRef.current 
+      });
+      // Only process if we're expecting to join queue (not in active call or ended state)
+      if (isCleaningUpRef.current) {
+        audioDebugLog('queueJoined: ignoring, cleanup in progress');
+        return;
+      }
+      // Don't override DIALING/CONNECTED states - pairing may have already happened
+      if (lastCallStateRef.current === CALL_STATE.DIALING || 
+          lastCallStateRef.current === CALL_STATE.CONNECTING ||
+          lastCallStateRef.current === CALL_STATE.CONNECTED) {
+        audioDebugLog('queueJoined: ignoring, already in call flow', { lastState: lastCallStateRef.current });
+        return;
+      }
       setIsFindingPair(true);
       setPairingState('WAITING');
       setCallState(CALL_STATE.WAITING);
+      // Clear end states when entering queue
+      setPartnerDisconnected(false);
+      setUserInitiatedEnd(false);
       setError(null);
       clearTimeout(findingTimeoutRef.current);
     });
@@ -1084,18 +1270,7 @@ const useAudioCallController = ({ userDetails, context }) => {
     });
     newSocket.on('pairingSuccess', (payload) => socketHandlersRef.current.handlePairingSuccess?.(payload));
     newSocket.on('pairDisconnected', () => {
-      if (isCleaningUpRef.current) return;
-      audioDebugLog('pairDisconnected event', {
-        hasActivePeer: !!peerRef.current,
-        hasActiveCall: !!callRef.current,
-      });
-      socketHandlersRef.current.stopTones?.();
-      socketHandlersRef.current.cleanupPeer?.();
-      setPartnerDisconnected(true);
-      setCallState(CALL_STATE.ENDED);
-      setPairingState('DISCONNECTED');
-      setIsFindingPair(false);
-      audioDebugLog('pairDisconnected cleanup complete');
+      socketHandlersRef.current.handlePartnerDisconnected?.();
     });
     newSocket.on('remoteReady', (payload) => socketHandlersRef.current.handleRemoteReady?.(payload));
     newSocket.on('callEnded', (payload) => {
@@ -1122,15 +1297,17 @@ const useAudioCallController = ({ userDetails, context }) => {
       socketRef.current = null;
       socketUrlRef.current = null;
       setSocket(null);
-      const { cleanupPeer: cleanupPeerHandler, resetQueueState: resetQueueStateHandler, stopTones: stopTonesHandler } =
+      const { cleanupPeer: cleanupPeerHandler, stopTones: stopTonesHandler } =
         socketHandlersRef.current;
       cleanupPeerHandler?.();
-      resetQueueStateHandler?.();
       stopTonesHandler?.();
+      // Don't call resetQueueState - it would flip the UI from ENDED to IDLE
+      // Just stop finding if we were
+      setIsFindingPair(false);
     });
 
     return () => {
-      audioDebugLog('audio call controller cleanup');
+      audioDebugLog('Socket Effect Cleanup - Disconnecting Socket');
       const { cleanupPeer: cleanupPeerHandler, stopTones: stopTonesHandler } = socketHandlersRef.current;
       stopTonesHandler?.();
       cleanupPeerHandler?.();
@@ -1141,7 +1318,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       socketUrlRef.current = null;
       setSocket(null);
     };
-  }, [socketUrl, setSocket, setError, setFilterDescription, setFilterLevel, setIsFindingPair, setPairingState, setCallState, setMicStatus, setPartnerDisconnected]);
+  }, [socketUrl, setSocket, setError, setFilterDescription, setFilterLevel, setIsFindingPair, setPairingState, setCallState, setMicStatus, setPartnerDisconnected, setUserInitiatedEnd, setLastPartnerGender]);
 
   useEffect(() => {
     if (!socketRef.current?.connected) return;
@@ -1180,12 +1357,23 @@ const useAudioCallController = ({ userDetails, context }) => {
         setError('Microphone permission is blocked. Allow it from your browser settings to continue.');
         return;
       }
-      if (state === 'prompt' && micStatusRef.current !== MIC_STATE.PROMPT) {
-        setMicStatus(MIC_STATE.PROMPT);
+      if (state === 'prompt') {
+        // Only set to PROMPT if we haven't already acquired the stream
+        if (!hasLiveAudioTrack(mediaStreamRef.current) && micStatusRef.current !== MIC_STATE.GRANTED) {
+          setMicStatus(MIC_STATE.PROMPT);
+        }
         return;
       }
-      if (state === 'granted' && !hasLiveAudioTrack(mediaStreamRef.current)) {
-        setMicStatus((prev) => (prev === MIC_STATE.GRANTED ? MIC_STATE.PROMPT : prev));
+      if (state === 'granted') {
+        // Permission is granted by browser - if we have a live stream, set to GRANTED
+        // Otherwise, keep it as PROMPT so user can click to start (but show "Start Call" text)
+        if (hasLiveAudioTrack(mediaStreamRef.current)) {
+          setMicStatus(MIC_STATE.GRANTED);
+        } else if (micStatusRef.current !== MIC_STATE.GRANTED) {
+          // Permission granted but no stream yet - set to PROMPT but the UI will show "Start Call"
+          // because we can query permission status separately
+          setMicStatus(MIC_STATE.PROMPT);
+        }
       }
     };
 
@@ -1254,6 +1442,9 @@ const useAudioCallController = ({ userDetails, context }) => {
     const hasLiveTrack = hasLiveAudioTrack(mediaStreamRef.current);
     if (micStatus === MIC_STATE.GRANTED && hasLiveTrack) {
       if (callState === CALL_STATE.PREPARING_MIC) {
+        // If we were preparing mic, we can now proceed.
+        // If we were already finding a pair (e.g. user clicked "Find New" before mic was ready), go to WAITING.
+        // Otherwise, go to IDLE (Ready to Connect).
         setCallState(isFindingPair ? CALL_STATE.WAITING : CALL_STATE.IDLE);
       }
       return;
@@ -1270,7 +1461,8 @@ const useAudioCallController = ({ userDetails, context }) => {
   useEffect(() => {
     if (!socketRef.current?.connected) return;
     if (isFindingPair) return;
-    if ([CALL_STATE.WAITING, CALL_STATE.DIALING, CALL_STATE.CONNECTED].includes(callState)) return;
+    // Don't auto-identify if in any active/end call state - user should explicitly click Find New
+    if ([CALL_STATE.WAITING, CALL_STATE.DIALING, CALL_STATE.CONNECTING, CALL_STATE.CONNECTED, CALL_STATE.RECONNECTING, CALL_STATE.ENDED].includes(callState)) return;
     const normalized = normalizeMicState(micStatus);
     if (normalized !== MIC_STATE.GRANTED) return;
     identifyRef.current({ reason: 'mic-granted-effect' });
@@ -1313,9 +1505,15 @@ const useAudioCallController = ({ userDetails, context }) => {
         tracks: stream?.getAudioTracks?.().length,
       });
       handleWaveform(stream);
+      
+      // Auto-start finding a pair immediately after mic is granted
       setCallState(CALL_STATE.WAITING);
-  emitSocket('micPermissionResult', { userMID: userDetails?.mid, status: MIC_STATE.GRANTED });
-  identifyWithServer({ force: true, micStatusOverride: MIC_STATE.GRANTED, reason: 'mic-granted' });
+      setIsFindingPair(true);
+      setPairingState('FINDING');
+      
+      emitSocket('micPermissionResult', { userMID: userDetails?.mid, status: MIC_STATE.GRANTED });
+      // Pass joinQueue: true to identifyWithServer
+      identifyWithServer({ force: true, micStatusOverride: MIC_STATE.GRANTED, reason: 'mic-granted', joinQueue: true });
     } catch (error) {
       const errorName = error?.name || error?.code || 'unknown';
       console.error('[AudioCall] Microphone permission error', error);
@@ -1333,7 +1531,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       emitSocket('micPermissionResult', { userMID: userDetails?.mid, status: MIC_STATE.DENIED });
       audioDebugLog('Microphone permission denied', { message: error?.message, errorName });
     }
-  }, [emitSocket, handleWaveform, identifyWithServer, mediaStreamRef, micStatus, setCallState, setError, setMicStatus, userDetails?.mid]);
+  }, [emitSocket, handleWaveform, identifyWithServer, mediaStreamRef, micStatus, setCallState, setError, setMicStatus, userDetails?.mid, setIsFindingPair, setPairingState]);
 
   const handleMuteToggle = useCallback(() => {
     const next = !isMuted;
@@ -1362,19 +1560,33 @@ const useAudioCallController = ({ userDetails, context }) => {
   const hangup = useCallback(
     (reason = 'hangup') => {
       if (!userDetails) return;
+      
+      // Set cleanup flag FIRST to prevent race conditions with PeerJS events
+      isCleaningUpRef.current = true;
+      
       emitSocket('callEnded', { userMID: userDetails.mid, reason });
       stopTones();
       cleanupPeer();
-      resetQueueState();
-      // Force state cleanup to prevent glitches
-      setCallState(CALL_STATE.IDLE);
+      // Don't call resetQueueState() here - it sets callState to IDLE 
+      // which causes a brief flash before ENDED is set, triggering animation loops
+      // Instead, directly set the final state
+      setQueuePosition(0);
+      setQueueSize(0);
+      setPairingState('IDLE');
+      setCallState(CALL_STATE.ENDED);
       setIsFindingPair(false);
       setPartnerDisconnected(false);
+      setUserInitiatedEnd(true); // Mark that user initiated the hangup
       if (findingTimeoutRef.current) {
         clearTimeout(findingTimeoutRef.current);
       }
+      
+      // Reset cleanup flag after a short delay to allow all events to settle
+      setTimeout(() => {
+        isCleaningUpRef.current = false;
+      }, 500);
     },
-    [cleanupPeer, emitSocket, resetQueueState, stopTones, userDetails, setCallState, setIsFindingPair, setPartnerDisconnected]
+    [cleanupPeer, emitSocket, stopTones, userDetails, setCallState, setIsFindingPair, setPartnerDisconnected, setPairingState, setQueuePosition, setQueueSize, setUserInitiatedEnd]
   );
   
   // Update hangupRef for early useEffect hooks
@@ -1391,24 +1603,57 @@ const useAudioCallController = ({ userDetails, context }) => {
     }
     
     findNewDebounceRef.current = true;
-    hangup('skip');
-    emitFindNew('findNewPair');
+    isCleaningUpRef.current = false; // Reset cleanup flag since we're actively finding new
+    
+    // IMPORTANT: Set state to WAITING BEFORE any cleanup
+    // This prevents identifyWithServer from being blocked on socket reconnect
+    setCallState(CALL_STATE.WAITING);
+    setUserInitiatedEnd(false);
+    setPartnerDisconnected(false);
+    setLastPartnerGender(null);
     setIsFindingPair(true);
     setPairingState('FINDING');
-    setCallState(CALL_STATE.WAITING);
     setError(null);
+    
+    // Now cleanup - if socket disconnects/reconnects, state is already WAITING so identify will work
+    emitSocket('callEnded', { userMID: userDetails.mid, reason: 'skip' });
+    stopTones();
+    cleanupPeer();
+    
+    // Re-identify with server to ensure we're in the queue
+    // Build payload directly since we need fresh data
+    const payload = {
+      userMID: userDetails.mid,
+      userGender: userDetails.gender,
+      userCollege: userDetails.college,
+      preferredGender: preferredGender || 'any',
+      preferredCollege: preferredCollege || 'any',
+      isVerified: Boolean(userDetails?.isVerified),
+      pageType: 'audiocall',
+      micStatus: MIC_STATE.GRANTED,
+      joinQueue: true, // Explicitly request queue join
+    };
+    
+    // Use identify instead of findNewPair to ensure user is in usersMap
+    emitSocket('identify', payload);
+    
     setTelemetry((prev) => ({ ...prev, attempts: (prev?.attempts || 0) + 1 }));
     clearTimeout(findingTimeoutRef.current);
     findingTimeoutRef.current = setTimeout(() => {
-      setIsFindingPair(false);
-      setPairingState('IDLE');
+      // Only reset if we are still in WAITING state (haven't found a partner yet)
+      if (lastCallStateRef.current === CALL_STATE.WAITING) {
+        setIsFindingPair(false);
+        setPairingState('IDLE');
+        setCallState(CALL_STATE.IDLE);
+        setError('No one available. Tap to try again.');
+      }
     }, WAIT_TIMEOUT_MS);
     
     // Reset debounce after a short delay
     setTimeout(() => {
       findNewDebounceRef.current = false;
     }, 500);
-  }, [emitFindNew, hangup, setCallState, setError, setIsFindingPair, setPairingState, setTelemetry, userDetails]);
+  }, [cleanupPeer, emitSocket, preferredCollege, preferredGender, setCallState, setError, setIsFindingPair, setLastPartnerGender, setPartnerDisconnected, setPairingState, setTelemetry, setUserInitiatedEnd, stopTones, userDetails]);
 
   const skip = useCallback(() => {
     findNew();

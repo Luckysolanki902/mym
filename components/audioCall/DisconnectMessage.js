@@ -2,13 +2,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import styles from './styles/DisconnectMessage.module.css';
 
-const DisconnectMessage = ({ partnerGender, userGender }) => {
+const DisconnectMessage = ({ partnerGender, userGender, onFindNew }) => {
   const genderTheme = {
     male: { primary: '#79EAF7', secondary: '#0094d4' },
     female: { primary: '#FFA0BC', secondary: '#e3368d' }
   };
   
   const theme = genderTheme[partnerGender] || genderTheme.male;
+  const userTheme = genderTheme[userGender] || genderTheme.male;
   const pronoun = partnerGender === 'male' ? 'He' : 'She';
 
   return (
@@ -48,6 +49,23 @@ const DisconnectMessage = ({ partnerGender, userGender }) => {
           {' '}said goodbye
         </div>
       </div>
+      
+      {/* Find New Button */}
+      <motion.button
+        type="button"
+        className={styles.findNewButton}
+        onClick={onFindNew}
+        style={{
+          background: `linear-gradient(135deg, ${userTheme.secondary} 0%, ${userTheme.primary} 100%)`,
+        }}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.3 }}
+        whileHover={{ scale: 1.03, boxShadow: `0 8px 24px ${userTheme.secondary}40` }}
+        whileTap={{ scale: 0.97 }}
+      >
+        Find New Partner
+      </motion.button>
     </motion.div>
   );
 };

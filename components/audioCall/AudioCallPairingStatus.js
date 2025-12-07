@@ -13,7 +13,8 @@ const AudioCallPairingStatus = ({ userGender, onlineCount = 0 }) => {
         queueSize,
         filterLevel,
         callState,
-        partner
+        partner,
+        lastPartnerGender
     } = useAudioCall();
 
     const { preferredGender, preferredCollege } = useFilters();
@@ -66,7 +67,10 @@ const AudioCallPairingStatus = ({ userGender, onlineCount = 0 }) => {
 
     const getSearchDescription = () => {
         if (isDialing) {
-            return `Connecting with ${partner?.nickname || 'your match'}...`;
+            // Use partner gender to show appropriate text, falling back to lastPartnerGender if partner is cleared during transition
+            const gender = partner?.gender || lastPartnerGender;
+            const partnerGenderText = gender === 'male' ? 'a boy' : gender === 'female' ? 'a girl' : 'someone';
+            return `Found ${partnerGenderText}... Connecting`;
         }
 
         const genderText = preferredGender === 'any' ? 'anyone' : (preferredGender === 'male' ? 'boys' : 'girls');
