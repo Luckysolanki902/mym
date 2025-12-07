@@ -1,36 +1,35 @@
 export const getLikeMilestoneTemplate = ({ likeCount, confessionId }) => {
   const pageUrl = process.env.NEXT_PUBLIC_PAGEURL;
   
-  // Dynamic copy based on virality level
-  let title = `Your confession is heating up! 🔥`;
-  let subtitle = `You hit ${likeCount} likes.`;
+  let title = `Someone liked your confession`;
+  let subtitle = `Your anonymous post just got its first like. Someone relates to what you said.`;
   
   if (likeCount >= 10) {
-    title = `Okay, you're kinda famous now. 💅`;
-    subtitle = `${likeCount} people related to your story.`;
+    title = `Your confession is getting noticed`;
+    subtitle = `${likeCount} people have liked your post. It's starting to pick up.`;
+  }
+  if (likeCount >= 25) {
+    title = `25 likes on your confession`;
+    subtitle = `Your post is resonating with people. 25 likes and counting.`;
   }
   if (likeCount >= 50) {
-    title = `Your confession is going VIRAL. 🚀`;
-    subtitle = `${likeCount} likes and counting. The tea is hot.`;
+    title = `50 likes on your confession`;
+    subtitle = `Your post is resonating with people. 50 likes and counting.`;
   }
   if (likeCount >= 100) {
-    title = `Major Milestone Alert! 🚨`;
-    subtitle = `You just hit ${likeCount} likes. You're basically an influencer now.`;
+    title = `Your confession is blowing up 🔥`;
+    subtitle = `Over ${likeCount} people have liked your post. It's a hot topic right now.`;
   }
 
-  const subject = `${title} (${likeCount} Likes)`;
+  const subject = `${title}`;
   
   const text = `
 ${title}
 
 ${subtitle}
-Your anonymous confession is resonating with the community.
 
-Don't leave your fans waiting. Check out the activity and see if anyone's trying to guess who you are.
-
-View Confession: ${pageUrl}/confession/${confessionId}
-
-- The Spyll Team
+Check out the activity:
+${pageUrl}/confession/${confessionId}
   `.trim();
 
   return { subject, text };

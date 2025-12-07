@@ -46,7 +46,7 @@ const handler = async (req, res) => {
                     const { getLikeMilestoneTemplate } = await import('@/utils/emailTemplates/likeMilestone');
                     
                     const likeCount = updatedConfession.likes.length;
-                    const milestones = [1, 5, 10, 20, 50, 100, 500, 1000];
+                    const milestones = [1, 5, 10, 25, 50, 100, 500, 1000];
                     console.log(`[Notification Debug] ❤️ Like Count: ${likeCount} | Milestones: ${milestones.join(', ')}`);
 
                     if (milestones.includes(likeCount)) {
