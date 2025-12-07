@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './styles/PairingStatusDisplay.module.css';
 import { useTextChat } from '@/context/TextChatContext';
 import { useFilters } from '@/context/FiltersContext';
-import AlgebraEquation from '../commonComps/AlgebraEquation';
+import OnlineCounter from '../commonComps/OnlineCounter';
 import { useTextChatOnlineStats } from '@/hooks/useOnlineStats';
 
 const PairingStatusDisplay = ({ userGender, onlineCount = 0 }) => {
@@ -18,8 +18,8 @@ const PairingStatusDisplay = ({ userGender, onlineCount = 0 }) => {
 
     const { preferredGender, preferredCollege } = useFilters();
     
-    // Use Redux-managed equation (consistent across Filter and Main UI)
-    const { equation } = useTextChatOnlineStats(onlineCount);
+    // Use Redux-managed online stats
+    const { count } = useTextChatOnlineStats(onlineCount);
 
     if (hasPaired || !isFindingPair) return null;
 
@@ -82,11 +82,7 @@ const PairingStatusDisplay = ({ userGender, onlineCount = 0 }) => {
         }
     };
 
-    const userTheme = userGender === 'female' ? 'pink' : userGender === 'male' ? 'cyan' : 'purple';
-    const oppositeTheme = userGender === 'female' ? 'cyan' : userGender === 'male' ? 'pink' : 'purple';
 
-    // Fallback equation if Redux hasn't initialized yet
-    const eq = equation || { coefficient: 11, constant: 1, result: 12, hint: 'n people online' };
 
     return (
         <AnimatePresence>
@@ -97,14 +93,11 @@ const PairingStatusDisplay = ({ userGender, onlineCount = 0 }) => {
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
             >
-                <div className={styles.equationCard}>
-                    <AlgebraEquation
-                        coefficient={eq.coefficient}
-                        constant={eq.constant}
-                        result={eq.result}
-                        hint={eq.hint}
-                        theme={userTheme}
-                        hintTheme={oppositeTheme}
+                <div className={styles.onlineCard}>
+                    <OnlineCounter
+                        count={count || 0}
+                        userGender={userGender}
+                        label="people online"
                         size="large"
                     />
                 </div>

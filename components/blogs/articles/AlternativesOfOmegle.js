@@ -35,7 +35,7 @@ const AlternativesOfOmegle = () => {
                     <Typography variant="h5" style={{ marginTop: '3rem' }}>1. Spyll — Built for College-Only Anonymity</Typography>
                 </Link>
                 <Link href={'https://spyll.in'} style={{ textDecoration: 'none' }}>
-                    <SpyllWordmark style={{ display: 'block', fontSize: '3rem', letterSpacing: '-2px', color: '#000000', margin: '1rem 0' }} />
+                    <SpyllWordmark style={{ display: 'block', fontSize: '3rem', color: '#000000', margin: '1rem 0' }} />
                 </Link>
                 <Typography variant="body1" paragraph>
                     Spyll is a campus-first anonymous network that verifies every signup with a college email before you see a single chat queue. Once inside, you can hop into Random Chat, drop a confession, or join curated events without revealing who you are. The platform recently added device-level audio controls (speaker vs. earpiece) and haptic pairing prompts so you never miss a match, even on mobile.

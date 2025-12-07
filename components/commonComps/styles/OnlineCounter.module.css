@@ -1,0 +1,226 @@
+.counterContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.counterWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pulseRing {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.countDisplay {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.count {
+    font-family: 'Inter', 'SF Pro Display', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.label {
+    font-family: 'Inter', 'SF Pro Display', sans-serif;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+/* Size variants */
+.small .countDisplay {
+    padding: 0.35rem 0.75rem;
+}
+
+.small .count {
+    font-size: 1rem;
+}
+
+.small .label {
+    font-size: 0.7rem;
+}
+
+.small .pulseRing {
+    width: 6px;
+    height: 6px;
+    left: -14px;
+}
+
+.medium .countDisplay {
+    padding: 0.5rem 1rem;
+}
+
+.medium .count {
+    font-size: 1.25rem;
+}
+
+.medium .label {
+    font-size: 0.8rem;
+}
+
+.medium .pulseRing {
+    left: -16px;
+}
+
+.large .countDisplay {
+    padding: 0.6rem 1.25rem;
+}
+
+.large .count {
+    font-size: 1.5rem;
+}
+
+.large .label {
+    font-size: 0.9rem;
+}
+
+.large .pulseRing {
+    width: 10px;
+    height: 10px;
+    left: -20px;
+}
+
+/* Theme: Pink (for male users - shows opposite gender) */
+.pink .pulseRing {
+    background: #FFA0BC;
+    box-shadow: 0 0 0 0 rgba(255, 160, 188, 0.7);
+}
+
+.pink .countDisplay {
+    background: linear-gradient(135deg, rgba(255, 160, 188, 0.12) 0%, rgba(227, 54, 141, 0.08) 100%);
+    border: 1px solid rgba(255, 160, 188, 0.25);
+}
+
+.pink .count {
+    color: #e3368d;
+}
+
+.pink .label {
+    color: #d64a8b;
+}
+
+/* Theme: Cyan (for female users - shows opposite gender) */
+.cyan .pulseRing {
+    background: #79EAF7;
+    box-shadow: 0 0 0 0 rgba(121, 234, 247, 0.7);
+}
+
+.cyan .countDisplay {
+    background: linear-gradient(135deg, rgba(121, 234, 247, 0.12) 0%, rgba(0, 148, 212, 0.08) 100%);
+    border: 1px solid rgba(121, 234, 247, 0.25);
+}
+
+.cyan .count {
+    color: #0094d4;
+}
+
+.cyan .label {
+    color: #0aa5e0;
+}
+
+/* Theme: Purple (for non-binary/unknown) */
+.purple .pulseRing {
+    background: #B794F6;
+    box-shadow: 0 0 0 0 rgba(183, 148, 246, 0.7);
+}
+
+.purple .countDisplay {
+    background: linear-gradient(135deg, rgba(183, 148, 246, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
+    border: 1px solid rgba(183, 148, 246, 0.25);
+}
+
+.purple .count {
+    color: #8b5cf6;
+}
+
+.purple .label {
+    color: #9f7aea;
+}
+
+/* Pulse animation */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 currentColor;
+        opacity: 1;
+    }
+    70% {
+        box-shadow: 0 0 0 8px transparent;
+        opacity: 0.6;
+    }
+    100% {
+        box-shadow: 0 0 0 0 transparent;
+        opacity: 1;
+    }
+}
+
+.pink .pulseRing {
+    animation: pulsePink 2s ease-in-out infinite;
+}
+
+.cyan .pulseRing {
+    animation: pulseCyan 2s ease-in-out infinite;
+}
+
+.purple .pulseRing {
+    animation: pulsePurple 2s ease-in-out infinite;
+}
+
+@keyframes pulsePink {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 160, 188, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 160, 188, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 160, 188, 0);
+    }
+}
+
+@keyframes pulseCyan {
+    0% {
+        box-shadow: 0 0 0 0 rgba(121, 234, 247, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(121, 234, 247, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(121, 234, 247, 0);
+    }
+}
+
+@keyframes pulsePurple {
+    0% {
+        box-shadow: 0 0 0 0 rgba(183, 148, 246, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(183, 148, 246, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(183, 148, 246, 0);
+    }
+}
+
+@media (max-width: 768px) {
+    .large .count {
+        font-size: 1.35rem;
+    }
+    
+    .large .label {
+        font-size: 0.85rem;
+    }
+}

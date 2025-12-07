@@ -10,7 +10,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CustomHead from '@/components/seo/CustomHead';
 import Link from 'next/link';
-import { getSession, signIn } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 import PhoneMockup from '@/components/commonComps/PhoneMockup';
 import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 
@@ -167,8 +167,6 @@ const Signup = ({ userDetails }) => {
         throw new Error(data.error || 'Failed to send OTP.');
       }
 
-      const isTestId = testIds.includes(email);
-
       // Save signup data and OTP token to Redux
       dispatch(
         setSignupData({
@@ -176,50 +174,15 @@ const Signup = ({ userDetails }) => {
           password,
           gender,
           college,
-          isTestId,
+          isTestId: testIds.includes(email),
         })
       );
 
       dispatch(setOtpToken(data.token));
       dispatch(setOtpSentAt(new Date().toISOString()));
 
-      if (isTestId) {
-        // Auto-verify for test IDs
-        const verifyResponse = await fetch('/api/security/verify-otp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            enteredOTP: '123456',
-            token: data.token,
-            password,
-            gender,
-            college,
-            isTestId: true,
-          }),
-        });
-
-        if (!verifyResponse.ok) {
-          const verifyData = await verifyResponse.json();
-          throw new Error(verifyData.error || 'Failed to auto-verify test ID.');
-        }
-
-        // Sign in
-        const signInResponse = await signIn('credentials', {
-          redirect: false,
-          email,
-          password,
-        });
-
-        if (signInResponse.error) {
-          throw new Error(signInResponse.error);
-        }
-
-        dispatch(clearSignupData());
-        router.push('/');
-      } else {
-        // Redirect to verify OTP page
-        router.push('/verify/verifyotp');
-      }
+      // Redirect to verify OTP page
+      router.push('/verify/verifyotp');
     } catch (error) {
       console.error('Error during signup:', error);
       setError(error.message || 'Failed to sign up. Please try again.');

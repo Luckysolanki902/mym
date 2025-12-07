@@ -72,7 +72,7 @@ const CallEndedPrompt = ({ userGender, onFindNew }) => {
           whileHover={{ scale: 1.03, boxShadow: `0 8px 24px ${theme.secondary}40` }}
           whileTap={{ scale: 0.97 }}
         >
-          Find New Partner
+          Find New Pair
         </motion.button>
       </div>
     </motion.div>

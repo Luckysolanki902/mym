@@ -41,9 +41,10 @@
 .tabsContainer {
     display: flex;
     gap: 0.5rem;
-    margin: 1.5rem auto 1rem;
-    width: 50vw;
-    padding-left: calc(2rem + var(--sidebarwidth));
+    margin: 1.5rem auto;
+    width: 100vw;
+    justify-content: center;
+    padding-left: calc(var(--sidebarwidth));
 }
 
 .tab {

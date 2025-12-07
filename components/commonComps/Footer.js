@@ -2,7 +2,6 @@ import React from 'react'
 import styles from './styles/footer.module.css'
 import Image from 'next/image'
 import Link from 'next/link'
-import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 const Footer = () => {
     const currentYear = new Date().getFullYear()
 

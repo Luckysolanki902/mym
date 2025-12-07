@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './styles/AudioCallPairingStatus.module.css';
 import { useAudioCall, CALL_STATE } from '@/context/AudioCallContext';
 import { useFilters } from '@/context/FiltersContext';
-import AlgebraEquation from '../commonComps/AlgebraEquation';
+import OnlineCounter from '../commonComps/OnlineCounter';
 import { useAudioCallOnlineStats } from '@/hooks/useOnlineStats';
 
 const AudioCallPairingStatus = ({ userGender, onlineCount = 0 }) => {
@@ -13,23 +13,16 @@ const AudioCallPairingStatus = ({ userGender, onlineCount = 0 }) => {
         queueSize,
         filterLevel,
         callState,
-        partner,
-        lastPartnerGender
+        partner
     } = useAudioCall();
 
     const { preferredGender, preferredCollege } = useFilters();
     
-    // Use Redux-managed equation (consistent across Filter and Main UI)
-    const { equation } = useAudioCallOnlineStats(onlineCount);
+    // Use Redux-managed online stats
+    const { count } = useAudioCallOnlineStats(onlineCount);
 
     const isConnected = callState === CALL_STATE.CONNECTED;
     const isDialing = callState === CALL_STATE.DIALING;
-
-    const userTheme = userGender === 'female' ? 'pink' : userGender === 'male' ? 'cyan' : 'purple';
-    const oppositeTheme = userGender === 'female' ? 'cyan' : userGender === 'male' ? 'pink' : 'purple';
-    
-    // Fallback equation if Redux hasn't initialized yet
-    const eq = equation || { coefficient: 11, constant: 1, result: 12, hint: 'n callers online' };
 
     if (isConnected || (!isFindingPair && !isDialing)) return null;
 
@@ -67,10 +60,7 @@ const AudioCallPairingStatus = ({ userGender, onlineCount = 0 }) => {
 
     const getSearchDescription = () => {
         if (isDialing) {
-            // Use partner gender to show appropriate text, falling back to lastPartnerGender if partner is cleared during transition
-            const gender = partner?.gender || lastPartnerGender;
-            const partnerGenderText = gender === 'male' ? 'a boy' : gender === 'female' ? 'a girl' : 'someone';
-            return `Found ${partnerGenderText}... Connecting`;
+            return `Connecting with ${partner?.nickname || 'your match'}...`;
         }
 
         const genderText = preferredGender === 'any' ? 'anyone' : (preferredGender === 'male' ? 'boys' : 'girls');
@@ -96,14 +86,11 @@ const AudioCallPairingStatus = ({ userGender, onlineCount = 0 }) => {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
             >
-                <div className={`${styles.equationCard} ${isDialing ? styles.dialingCard : ''}`}>
-                    <AlgebraEquation
-                        coefficient={eq.coefficient}
-                        constant={eq.constant}
-                        result={eq.result}
-                        hint={eq.hint}
-                        theme={userTheme}
-                        hintTheme={oppositeTheme}
+                <div className={`${styles.onlineCard} ${isDialing ? styles.dialingCard : ''}`}>
+                    <OnlineCounter
+                        count={count || 0}
+                        userGender={userGender}
+                        label="callers online"
                         size="large"
                     />
                 </div>

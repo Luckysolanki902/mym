@@ -38,7 +38,6 @@ export default function ComingSoon() {
         <SpyllWordmark
           style={{
             fontSize: '4rem',
-            letterSpacing: '-3px',
             color: '#000000',
             marginBottom: '-3rem',
           }}

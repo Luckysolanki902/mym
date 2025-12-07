@@ -31,12 +31,12 @@ const EventsContainer = () => {
                             borderColor: `${theme.primary}40`, padding: '0.5rem 1rem', borderRadius: '15px', display: 'flex', alignItems: 'center'
                         }}
                     >
-                        <div className={styles.goodbyeIcon}>👋</div>
                         <div className={styles.goodbyeText}>
                             <span style={{ color: theme.secondary }}>
                                 {strangerGender === 'male' ? 'He' : 'She'}
-                            </span> said goodbye
+                            </span> left 
                         </div>
+                        <div className={styles.goodbyeIcon}>✌️</div>
                     </div>
                 </motion.div>
             )}

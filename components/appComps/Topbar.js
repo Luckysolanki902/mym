@@ -40,7 +40,6 @@ const Topbar = () => {
         className={styles.brandmark}
         style={{
           fontSize: '2rem',
-          letterSpacing: '-1.5px',
           color: '#000000',
           cursor: 'pointer',
           display: 'flex',

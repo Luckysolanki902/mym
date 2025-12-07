@@ -5,7 +5,7 @@ import { Chip, createTheme, ThemeProvider } from '@mui/material';
 import { useFilters } from '@/context/FiltersContext';
 import { useSpring, animated } from 'react-spring';
 import { motion, AnimatePresence } from 'framer-motion';
-import AlgebraEquation from '../commonComps/AlgebraEquation';
+import OnlineCounter from '../commonComps/OnlineCounter';
 import { useOnlineStats } from '@/hooks/useOnlineStats';
 
 const darkTheme = createTheme({
@@ -26,8 +26,8 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOp
     config: { tension: 220, friction: 20 }
   });
   
-  // Use Redux-managed equation (consistent across Filter and Main UI)
-  const { equation } = useOnlineStats(pageType, propOnlineCount);
+  // Use Redux-managed online stats
+  const { count } = useOnlineStats(pageType, propOnlineCount);
 
   // Filter contexts
   const { preferredGender, setPreferredGender, preferredCollege, setPreferredCollege } = useFilters();
@@ -157,21 +157,15 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOp
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, preferredGender, preferredCollege]);
 
-  const renderEquationSummary = () => {
-    // Use equation from Redux (same as Main UI)
-    const eq = equation || { coefficient: 11, constant: 1, result: 12, hint: pageType === 'audiocall' ? 'n callers online' : 'n students online' };
-    const userTheme = userDetails?.gender === 'female' ? 'pink' : userDetails?.gender === 'male' ? 'cyan' : 'purple';
-    const accentTheme = userDetails?.gender === 'female' ? 'cyan' : userDetails?.gender === 'male' ? 'pink' : 'purple';
+  const renderOnlineCounter = () => {
+    const label = pageType === 'audiocall' ? 'callers online' : 'online';
 
     return (
-        <div className={styles.equationBadge}>
-          <AlgebraEquation
-            coefficient={eq.coefficient}
-            constant={eq.constant}
-            result={eq.result}
-            hint={eq.hint}
-            theme={userTheme}
-            hintTheme={accentTheme}
+        <div className={styles.onlineBadge}>
+          <OnlineCounter
+            count={count || 0}
+            userGender={userDetails?.gender}
+            label={label}
             size="small"
           />
         </div>
@@ -194,7 +188,7 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOp
         {(openFilterMenu) && (
           <animated.div style={filterContentAnimation} className={styles.filterContentWrapper} data-tour="filter-menu">
             <div className={styles.filterMenu}>
-              {renderEquationSummary()}
+              {renderOnlineCounter()}
               <div className={styles.filterSection}>
                 <div className={styles.filterLabel}>College</div>
                 <div className={styles.chipsContainer}>

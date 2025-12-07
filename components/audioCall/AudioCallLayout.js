@@ -7,8 +7,6 @@ import AudioCallPairingStatus from './AudioCallPairingStatus';
 import MicPermissionPrompt from './MicPermissionPrompt';
 import CallTimer from './CallTimer';
 import DisconnectMessage from './DisconnectMessage';
-import CallEndedPrompt from './CallEndedPrompt';
-import IdlePrompt from './IdlePrompt';
 import FilterOptions from '../chatComps/FilterOptions';
 import useAudioCallController from '@/hooks/useAudioCallController';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,32 +20,16 @@ const AudioCallLayout = ({ userDetails }) => {
   const tourStartedRef = React.useRef(false);
   const audioCallContext = useAudioCall();
   const controller = useAudioCallController({ userDetails, context: audioCallContext });
-  const { callState, micStatus, isFindingPair, partnerDisconnected, userInitiatedEnd, partner, lastPartnerGender, callStartTime, remoteAudioRef, socket } = audioCallContext;
+  const { callState, micStatus, isFindingPair, partnerDisconnected, partner, callStartTime, remoteAudioRef, socket } = audioCallContext;
 
   // Redux for onboarding tour
   const dispatch = useDispatch();
   const isAudioCallTourCompleted = useSelector(selectIsTourCompleted('audioCall'));
 
   const showMicPrompt = micStatus !== MIC_STATE.GRANTED;
-  
-  // Priority-based UI states (mutually exclusive, ordered by priority)
-  // 1. Active call timer - highest priority during connected call
+  const showDisconnectMessage = partnerDisconnected && !isFindingPair;
   const showTimer = callState === CALL_STATE.CONNECTED && callStartTime;
-  
-  // 2. Finding/Connecting status - when actively searching or connecting
-  const showPairingStatus = !showTimer && (isFindingPair || callState === CALL_STATE.DIALING || callState === CALL_STATE.CONNECTING);
-  
-  // 3. Partner disconnected message - ONLY when partner left (not user initiated)
-  // partnerDisconnected is set by server's callEnded event to the NON-initiating user
-  const showDisconnectMessage = !showTimer && !showPairingStatus && partnerDisconnected && !userInitiatedEnd;
-  
-  // 4. Call ended prompt - when USER initiated hangup OR when call ended without clear reason
-  // This catches the case where call ends via PeerJS without explicit partnerDisconnected flag
-  const showCallEndedPrompt = !showTimer && !showPairingStatus && !showDisconnectMessage && 
-    (userInitiatedEnd || (callState === CALL_STATE.ENDED && !partnerDisconnected && !isFindingPair));
-  
-  // 5. Idle state - ready to start a call (mic granted, nothing else active)
-  const showIdleState = !showMicPrompt && !showTimer && !showPairingStatus && !showDisconnectMessage && !showCallEndedPrompt && callState === CALL_STATE.IDLE;
+  const showPairingStatus = (isFindingPair || callState === CALL_STATE.DIALING || callState === CALL_STATE.CONNECTING) && !partnerDisconnected;
 
   // Fetch online count periodically
   React.useEffect(() => {
@@ -141,35 +123,28 @@ const AudioCallLayout = ({ userDetails }) => {
           ) : showDisconnectMessage ? (
             <DisconnectMessage
               key="disconnect-message"
-              partnerGender={lastPartnerGender || partner?.gender}
+              partnerGender={partner?.gender}
               userGender={userDetails?.gender}
               onFindNew={controller.findNew}
             />
-          ) : showCallEndedPrompt ? (
-            <CallEndedPrompt
-              key="call-ended-prompt"
-              userGender={userDetails?.gender}
-              onFindNew={controller.findNew}
-            />
-          ) : showIdleState ? (
-            <IdlePrompt
-              key="idle-prompt"
-              userGender={userDetails?.gender}
-              onStartCall={controller.findNew}
-            />
-          ) : showPairingStatus ? (
-            <AudioCallPairingStatus
-              key="pairing-status"
-              userGender={userDetails?.gender}
-              onlineCount={onlineCount}
-            />
-          ) : showTimer ? (
-            <CallTimer
-              key="call-timer"
-              startTime={callStartTime}
-              userGender={userDetails?.gender}
-            />
-          ) : null}
+          ) : (
+            <>
+              {showPairingStatus && (
+                <AudioCallPairingStatus
+                  key="pairing-status"
+                  userGender={userDetails?.gender}
+                  onlineCount={onlineCount}
+                />
+              )}
+              {showTimer && (
+                <CallTimer
+                  key="call-timer"
+                  startTime={callStartTime}
+                  userGender={userDetails?.gender}
+                />
+              )}
+            </>
+          )}
         </AnimatePresence>
       </div>
 

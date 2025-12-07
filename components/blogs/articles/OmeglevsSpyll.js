@@ -48,7 +48,7 @@ const OmegleVsspyll = () => {
                     <Typography variant="h5" style={{ marginTop: '3rem' }}>Why students switch to Spyll</Typography>
                 </Link>
                 <Link href={'https://spyll.in'} style={{ textDecoration: 'none' }}>
-                    <SpyllWordmark style={{ display: 'block', fontSize: '3rem', letterSpacing: '-2px', color: '#000000', margin: '1rem 0' }} />
+                    <SpyllWordmark style={{ display: 'block', fontSize: '3rem', color: '#000000', margin: '1rem 0' }} />
                 </Link>
                 <Typography variant="body1" paragraph>
                     Spyll keeps the fun of anonymous discovery but layers in college email verification, OTP signups, and a moderation backlog measured in minutes rather than days. Every new user selects their campus, so you know your match actually shares the same lecture halls, fests, and inside jokes.
