@@ -170,19 +170,19 @@ class DevelopmentLogger {
     });
 
     if (data) {
-      console.groupCollapsed(
-        `%c${style.emoji} ${category}%c ${timestamp} - ${message}`,
-        style.badge,
-        style.text
-      );
-      console.log(data);
-      console.groupEnd();
+      // console.groupCollapsed(
+      //   `%c${style.emoji} ${category}%c ${timestamp} - ${message}`,
+      //   style.badge,
+      //   style.text
+      // );
+      // console.log(data);
+      // console.groupEnd();
     } else {
-      console.log(
-        `%c${style.emoji} ${category}%c ${timestamp} - ${message}`,
-        style.badge,
-        style.text
-      );
+      // console.log(
+      //   `%c${style.emoji} ${category}%c ${timestamp} - ${message}`,
+      //   style.badge,
+      //   style.text
+      // );
     }
   }
 
@@ -202,19 +202,19 @@ class DevelopmentLogger {
       fractionalSecondDigits: 3
     });
 
-    console.groupCollapsed(
-      `%c${style.emoji} QUEUE STATUS%c ${timestamp} - Position: ${data.position}, Wait: ${(data.waitTimeMs / 1000).toFixed(1)}s`,
-      style.badge,
-      style.text
-    );
-    console.table({
-      'Queue Position': data.position,
-      'Wait Time': `${(data.waitTimeMs / 1000).toFixed(1)}s`,
-      'Filter Level': data.filterLevel,
-      'Description': data.description,
-      'Total in Queue': data.queueLength
-    });
-    console.groupEnd();
+    // console.groupCollapsed(
+    //   `%c${style.emoji} QUEUE STATUS%c ${timestamp} - Position: ${data.position}, Wait: ${(data.waitTimeMs / 1000).toFixed(1)}s`,
+    //   style.badge,
+    //   style.text
+    // );
+    // console.table({
+    //   'Queue Position': data.position,
+    //   'Wait Time': `${(data.waitTimeMs / 1000).toFixed(1)}s`,
+    //   'Filter Level': data.filterLevel,
+    //   'Description': data.description,
+    //   'Total in Queue': data.queueLength
+    // });
+    // console.groupEnd();
   }
 
   /**
@@ -233,11 +233,11 @@ class DevelopmentLogger {
       fractionalSecondDigits: 3
     });
 
-    console.log(
-      `%c${style.emoji} FILTER LEVEL ${data.newLevel}%c ${timestamp} - ${data.description}`,
-      style.badge,
-      style.text
-    );
+    // console.log(
+    //   `%c${style.emoji} FILTER LEVEL ${data.newLevel}%c ${timestamp} - ${data.description}`,
+    //   style.badge,
+    //   style.text
+    // );
   }
 
   /**
@@ -256,18 +256,18 @@ class DevelopmentLogger {
       fractionalSecondDigits: 3
     });
 
-    console.groupCollapsed(
-      `%c${style.emoji} PAIRING SUCCESS%c ${timestamp} - Matched with ${data.receiver}`,
-      style.badge,
-      style.text
-    );
-    console.table({
-      'Room': data.room,
-      'Partner': data.receiver,
-      'Partner Gender': data.strangerGender,
-      'Verified': data.isStrangerVerified ? 'Yes' : 'No'
-    });
-    console.groupEnd();
+    // console.groupCollapsed(
+    //   `%c${style.emoji} PAIRING SUCCESS%c ${timestamp} - Matched with ${data.receiver}`,
+    //   style.badge,
+    //   style.text
+    // );
+    // console.table({
+    //   'Room': data.room,
+    //   'Partner': data.receiver,
+    //   'Partner Gender': data.strangerGender,
+    //   'Verified': data.isStrangerVerified ? 'Yes' : 'No'
+    // });
+    // console.groupEnd();
   }
 }
 

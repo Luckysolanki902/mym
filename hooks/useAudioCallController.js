@@ -38,7 +38,7 @@ const audioDebugLog = (...args) => {
   // Allow disabling logs by setting NEXT_PUBLIC_AUDIO_DEBUG="off"
   if (typeof window !== 'undefined' && window?.localStorage?.getItem('audioDebug') === 'off') return;
   if (process.env.NEXT_PUBLIC_AUDIO_DEBUG && process.env.NEXT_PUBLIC_AUDIO_DEBUG.toLowerCase() === 'off') return;
-  console.log('[AudioCall]', ...args);
+  // console.log('[AudioCall]', ...args);
 };
 
 const canRequestUserMedia = () => {

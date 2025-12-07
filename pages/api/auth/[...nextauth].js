@@ -19,7 +19,7 @@ export const authOptions = {
             return userCredentials.user
           }
           return null
-        }).catch(error => console.log(error))
+        }).catch(error => console.error(error))
 
 
       },

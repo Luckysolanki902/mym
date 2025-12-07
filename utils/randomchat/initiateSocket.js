@@ -73,7 +73,7 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
       });
 
       newSocket.on('connect', () => {
-        console.log('[Socket] Connected to server');
+        // console.log('[Socket] Connected to server');
         // Only send identify on connect
         handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef);
       });
@@ -105,7 +105,7 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
       // Queue joined acknowledgment (clears safety timeout)
       newSocket.on('queueJoined', (data) => {
         devLogger.success('Queue joined confirmation', data);
-        console.log('[initiateSocket] Successfully joined queue:', data);
+        // console.log('[initiateSocket] Successfully joined queue:', data);
         clearTimeout(findingTimeoutRef?.current);
         setPairingState('WAITING');
         setIsFindingPair(true); // Ensure finding state is set
@@ -115,7 +115,7 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
         devLogger.warning('No users available', data);
         // Level 4 - keep waiting, don't stop finding
         if (data.keepWaiting) {
-          console.log('[initiateSocket] No users available - keep waiting');
+          // console.log('[initiateSocket] No users available - keep waiting');
           setPairingState('WAITING');
           // Don't set setIsFindingPair(false) - keep searching
         } else {
@@ -138,7 +138,7 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
       // Filter update responses
       newSocket.on('filtersUpdated', (data) => {
         devLogger.success('Filters updated', data);
-        console.log('[initiateSocket] Received filtersUpdated:', data);
+        // console.log('[initiateSocket] Received filtersUpdated:', data);
       });
 
       newSocket.on('filtersUpdateFailed', (data) => {
@@ -147,7 +147,7 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
       });
 
       newSocket.on('disconnect', () => {
-        console.log('[Socket] Disconnected from server');
+        // console.log('[Socket] Disconnected from server');
         setSocket(null);
         setPairingState('IDLE');
       });
