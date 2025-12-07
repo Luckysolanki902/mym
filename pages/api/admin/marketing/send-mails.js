@@ -155,10 +155,12 @@ const handler = async (req, res) => {
 
         // Configure nodemailer transporter
         const transporter = nodemailer.createTransport({
-            service: 'gmail', // You can use other services like 'SendGrid', 'Mailgun', etc.
+            host: process.env.MAIL_HOST,
+            port: Number(process.env.MAIL_PORT),
+            secure: false, // true for 465, false for other ports
             auth: {
-                user: process.env.EMAIL_USER, // Your email address
-                pass: process.env.EMAIL_PASSWORD, // Your email password or app-specific password
+                user: process.env.MAIL_USER,
+                pass: process.env.MAIL_PASS,
             },
         });
 
@@ -167,7 +169,7 @@ const handler = async (req, res) => {
             try {
                 // Send the email
                 await transporter.sendMail({
-                    from: process.env.EMAIL_USER,
+                    from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_EMAIL}>`,
                     to: user.email,
                     subject: "HBTU’s Anonymous Chat Platform Is Waiting for You!",
                     html: emailHTML,

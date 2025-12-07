@@ -70,8 +70,10 @@ const ConfessionBox = ({ gender, applyGenderBasedGrandients, confession, userDet
       //  onClick={handleBoxClick}
        >
         <div 
+        
         // onClick={handleBoxClick}
          className={styles.textarea} style={{ whiteSpace: 'pre-line' }} ref={confessionBoxRef}>
+          {confession._id}___
           {/* {inView ? (
             <>
               <span>{showFullContent ? confession.confessionContent : content}</span>

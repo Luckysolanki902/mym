@@ -4,6 +4,7 @@ import nodemailer from 'nodemailer';
 import LRU from 'lru-cache';
 import connectToMongo from '@/middleware/middleware';
 import TestEmail from '@/models/TestEmail';
+import { getOtpTemplate } from '@/utils/emailTemplates/otpVerification';
 
 const JWT_SECRET = process.env.JWT_SECRET; // Ensure this is set in your environment variables
 const OTP_EXPIRATION = '10m'; // OTP valid for 10 minutes
@@ -64,70 +65,24 @@ async function handler(req, res) {
 
       // Configure nodemailer transporter
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: process.env.MAIL_HOST,
+        port: Number(process.env.MAIL_PORT),
+        secure: false, // true for 465, false for other ports
         auth: {
-          user: process.env.EMAIL_USER, // Your email address
-          pass: process.env.EMAIL_PASSWORD, // Your email password or app-specific password
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
         },
       });
 
-      // Define HTML email content
-      const htmlContent = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Verify Your Email</title>
-          </head>
-          <body style="margin:0; padding:0; background-color:#f4f4f4;">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-              <tr>
-                <td align="center" style="padding: 20px 0;">
-                  <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color:#ffffff; border-radius:8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                    <tr>
-                      <td align="center" style="padding: 40px 20px 20px 20px; font-family: Arial, sans-serif;">
-                        <h2 style="color:#333333; margin:0 0 20px 0;">Welcome to Spyll!</h2>
-                        <p style="color:#555555; font-size:16px; line-height:1.5;">
-                          Thank you for signing up. Please use the verification code below to complete your registration.
-                        </p>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="center" style="padding: 20px;">
-                        <div style="background-color:#ffffff; padding: 20px; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                          <p style="color:#000000; font-size:24px; font-weight:bold; margin:0;">${generatedOTP}</p>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="center" style="padding: 20px; font-family: Arial, sans-serif;">
-                        <p style="color:#999999; font-size:14px; line-height:1.5;">
-                          This OTP is valid for 10 minutes.
-                        </p>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="center" style="padding: 20px 20px 40px 20px; font-family: Arial, sans-serif;">
-                        <p style="color:#555555; font-size:14px; line-height:1.5;">
-                          Thank you,<br/>The Spyll Team
-                        </p>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </body>
-        </html>
-      `;
+      const { subject, text } = getOtpTemplate({ otp: generatedOTP });
 
       // Define email options
       const mailOptions = {
-        from: process.env.EMAIL_USER,
+        from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_EMAIL}>`,
         to: email,
-        subject: 'Spyll - Verify Your Email',
-        html: htmlContent,
+        replyTo: process.env.MAIL_FROM_EMAIL,
+        subject: subject,
+        text: text,
       };
 
       // Send OTP email

@@ -12,17 +12,20 @@ const handler = async (req, res) => {
 
     // Set up Nodemailer transporter
     const transporter = nodemailer.createTransport({
-      service: 'gmail', // Adjust service if using a different email provider
+      host: process.env.MAIL_HOST,
+      port: Number(process.env.MAIL_PORT),
+      secure: false, // true for 465, false for other ports
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
       },
     });
 
     // Prepare email content
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_EMAIL}>`,
       to: 'luckysolanki902@gmail.com',
+      replyTo: email || process.env.MAIL_FROM_EMAIL,
       subject: `New Feedback Submitted: ${category}`,
       text: `Details of the feedback:
 
