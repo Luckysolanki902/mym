@@ -31,7 +31,24 @@ const AudioCallLayout = ({ userDetails }) => {
   const showTimer = callState === CALL_STATE.CONNECTED && callStartTime;
   const showPairingStatus = (isFindingPair || callState === CALL_STATE.DIALING || callState === CALL_STATE.CONNECTING) && !partnerDisconnected;
 
-  // Fetch online count periodically
+  // Listen for socket-based online count updates
+  React.useEffect(() => {
+    if (!socket) return;
+    
+    const handleOnlineCount = (data) => {
+      // Handle both old format (number) and new format (object)
+      const count = typeof data === 'object' ? data.audioCall : data;
+      setOnlineCount(count || 0);
+    };
+    
+    socket.on('roundedUsersCount', handleOnlineCount);
+    
+    return () => {
+      socket.off('roundedUsersCount', handleOnlineCount);
+    };
+  }, [socket]);
+
+  // Fallback: Fetch online count periodically if socket count is 0
   React.useEffect(() => {
     const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000';
     const fetchOnlineCount = async () => {
@@ -39,7 +56,11 @@ const AudioCallLayout = ({ userDetails }) => {
         const response = await fetch(`${serverUrl.endsWith('/') ? serverUrl + 'api/user-stats' : serverUrl + '/api/user-stats'}`);
         if (response.ok) {
           const data = await response.json();
-          setOnlineCount(data.audioCallStats?.totalUsers || 0);
+          const count = data.audioCallStats?.totalUsers || 0;
+          // Only update if we have a count from API (socket didn't provide one)
+          if (count > 0) {
+            setOnlineCount(prev => prev === 0 ? count : prev);
+          }
         }
       } catch (error) {
         console.error('Error fetching online count:', error);
@@ -47,7 +68,7 @@ const AudioCallLayout = ({ userDetails }) => {
     };
     
     fetchOnlineCount();
-    const interval = setInterval(fetchOnlineCount, 3000);
+    const interval = setInterval(fetchOnlineCount, 5000); // Reduced frequency since socket handles most updates
     return () => clearInterval(interval);
   }, []);
 

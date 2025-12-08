@@ -43,8 +43,10 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
       setSocket(newSocket);
 
       // Register event listeners ONCE (not inside connect handler to avoid duplicates)
-      newSocket.on('roundedUsersCount', (count) => {
-        setUsersOnline(count);
+      newSocket.on('roundedUsersCount', (data) => {
+        // Handle both old format (number) and new format (object)
+        const count = typeof data === 'object' ? data.textChat : data;
+        setUsersOnline(count || 0);
       });
 
       newSocket.on('identify', () => {
