@@ -62,17 +62,20 @@ button:focus {
 @font-face {
   font-family: 'ITC Kristen';
   src: url('/fonts/ITCKRIST.ttf');
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'Tan Pearl';
   src: url('/fonts/tan-pearl.otf');
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'Liquids';
   src: url('/fonts/Liquids.ttf') format('truetype'),
        url('/fonts/Liquids.otf') format('opentype');
+  font-display: swap;
 }
 
 button {

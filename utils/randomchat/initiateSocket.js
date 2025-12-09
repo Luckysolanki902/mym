@@ -46,6 +46,7 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
       newSocket.on('roundedUsersCount', (data) => {
         // Handle both old format (number) and new format (object)
         const count = typeof data === 'object' ? data.textChat : data;
+        console.log('[Socket] Received roundedUsersCount:', data, '-> textChat count:', count);
         setUsersOnline(count || 0);
       });
 

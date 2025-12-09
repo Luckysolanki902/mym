@@ -5,9 +5,16 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          {/* <link rel="icon" href="/images/mym_logos/mymlogoinvert.png" /> */}
-          {/* Link to Google Fonts for Inter font */}
+          {/* Preconnect to Google Fonts for faster loading */}
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          {/* Link to Google Fonts for Inter font - using display=swap for non-blocking */}
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Dancing+Script&display=swap"/>
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+          {/* Move analytics scripts to end of body for non-blocking load */}
           {/* Google Analytics */}
           <script async src="https://www.googletagmanager.com/gtag/js?id=G-MVLJQ1YYLG"></script>
           <script
@@ -20,7 +27,7 @@ export default class MyDocument extends Document {
               `,
             }}
           />
-          {/* Microsoft Clarity */}
+          {/* Microsoft Clarity - deferred */}
           <script
             dangerouslySetInnerHTML={{
               __html: `
@@ -32,11 +39,6 @@ export default class MyDocument extends Document {
               `,
             }}
           />
-          {/* Other head elements can be added here */}
-        </Head>
-        <body>
-          <Main />
-          <NextScript />
         </body>
       </Html>
     );

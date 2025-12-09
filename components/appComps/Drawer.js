@@ -9,7 +9,7 @@ import sidebarStyles from './styles/sidebar.module.css';
 import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
-import { getSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -22,6 +22,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 export default function SwipeableTemporaryDrawer() {
   const router = useRouter();
+  const { data: session } = useSession();
 
   // State variables
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -66,7 +67,6 @@ export default function SwipeableTemporaryDrawer() {
   // Fetch User Details
   const fetchUserDetails = async () => {
     try {
-      const session = await getSession();
       if (session?.user?.email) {
         const response = await fetch(
           `/api/getdetails/getuserdetails?userEmail=${encodeURIComponent(
@@ -116,10 +116,10 @@ export default function SwipeableTemporaryDrawer() {
     handleClose();
   };
 
-  // Fetch user details on mount
+  // Fetch user details when session changes
   useEffect(() => {
     fetchUserDetails();
-  }, []);
+  }, [session]);
 
   // Fetch unseen count when userDetails change
   useEffect(() => {

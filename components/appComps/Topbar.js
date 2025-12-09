@@ -2,25 +2,15 @@ import React, { useEffect, useState } from 'react';
 import SwipeableTemporaryDrawer from '@/components/appComps/Drawer';
 import styles from './styles/topbar.module.css';
 import { useRouter } from 'next/router';
-import { getSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 
 const Topbar = () => {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
   const router = useRouter();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const session = await getSession();
-      if (session) {
-        setUser(session.user);
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [router]);
+  // Use the hook instead of async getSession - this doesn't block render
+  const { data: session, status } = useSession();
+  const loading = status === 'loading';
+  const user = session?.user || null;
 
   const handleSignIn = () => {
     router.push('/auth/signin');

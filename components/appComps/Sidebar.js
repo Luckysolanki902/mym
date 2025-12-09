@@ -4,7 +4,7 @@ import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import Image from 'next/image';
 import styles from './styles/sidebar.module.css';
-import { getSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -18,6 +18,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const Sidebar = () => {
   const router = useRouter();
+  const { data: session } = useSession();
   const [activeIndex, setActiveIndex] = useState(null);
   const [unseenCount, setUnseenCount] = useState(0);
   const [userDetails, setUserDetails] = useState(null);
@@ -26,7 +27,6 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const session = await getSession();
         if (session?.user?.email) {
           const response = await fetch(`/api/getdetails/getuserdetails?userEmail=${session.user.email}`);
           if (response.ok) {
@@ -40,7 +40,7 @@ const Sidebar = () => {
     };
 
     fetchUserDetails();
-  }, []);
+  }, [session]);
 
   useEffect(() => {
     const fetchUnseenCount = async () => {

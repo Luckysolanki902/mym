@@ -1,19 +1,22 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import SessionProvider from './SessionProvider';
-import Topbar from '@/components/appComps/Topbar';
-import Sidebar from '@/components/appComps/Sidebar';
 import CustomHead from '@/components/seo/CustomHead';
-import TypeAdminPassword from '@/components/fullPageComps/TypeAdminPassword';
-import SoothingLoader from '@/components/loadings/SoothingLoader';
 
 import { store, persistor } from '@/store/store';
 import '@/styles/globals.css';
-import GoogleAnalytics from '@/components/seo/GoogleAnalytics';
+
+// Dynamic imports for non-critical components (loaded after initial render)
+const Topbar = dynamic(() => import('@/components/appComps/Topbar'), { ssr: true });
+const Sidebar = dynamic(() => import('@/components/appComps/Sidebar'), { ssr: false });
+const GoogleAnalytics = dynamic(() => import('@/components/seo/GoogleAnalytics'), { ssr: false });
+const SoothingLoader = dynamic(() => import('@/components/loadings/SoothingLoader'), { ssr: false });
+const TypeAdminPassword = dynamic(() => import('@/components/fullPageComps/TypeAdminPassword'), { ssr: false });
 
 const mymtheme = createTheme({
   palette: {
@@ -41,41 +44,41 @@ export default function App({ Component, pageProps }) {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const isAdminPage = router.pathname.startsWith('/admin');
 
-  // Overall loading state (used while we do initial checks)
-  const [appLoading, setAppLoading] = useState(true);
+  // Only show loading for admin pages (non-admin pages render immediately)
+  const [adminLoading, setAdminLoading] = useState(isAdminPage);
 
   // Loading gif state during route transitions
   const [showLoadingGif, setShowLoadingGif] = useState(false);
 
   useEffect(() => {
-    // Admin page token verification
-    const initApp = async () => {
-      if (isAdminPage) {
-        try {
-          const token = localStorage.getItem('adminAuthToken');
-          if (token) {
-            const response = await fetch('/api/admin/security/authenticate', {
-              method: 'GET',
-              headers: {
-                Authorization: token,
-              },
-            });
-            const data = await response.json();
-            if (data.success) {
-              setIsAdminLoggedIn(true);
-            } else {
-              localStorage.removeItem('adminAuthToken');
-            }
+    // Admin page token verification - only runs for admin pages
+    if (!isAdminPage) return;
+    
+    const verifyAdmin = async () => {
+      try {
+        const token = localStorage.getItem('adminAuthToken');
+        if (token) {
+          const response = await fetch('/api/admin/security/authenticate', {
+            method: 'GET',
+            headers: {
+              Authorization: token,
+            },
+          });
+          const data = await response.json();
+          if (data.success) {
+            setIsAdminLoggedIn(true);
+          } else {
+            localStorage.removeItem('adminAuthToken');
           }
-        } catch (error) {
-          console.error('Error verifying token:', error);
-          localStorage.removeItem('adminAuthToken');
         }
+      } catch (error) {
+        console.error('Error verifying token:', error);
+        localStorage.removeItem('adminAuthToken');
       }
-      setAppLoading(false);
+      setAdminLoading(false);
     };
 
-    initApp();
+    verifyAdmin();
   }, [isAdminPage]);
 
   // Listen to route changes for showing a loading GIF
@@ -102,13 +105,23 @@ export default function App({ Component, pageProps }) {
     };
   }, [router.events]);
 
-  // If still performing initial checks, show a simple loading screen
-  if (appLoading) {
+  // If on admin page and still verifying:
+  if (isAdminPage && adminLoading) {
     return (
-      <ThemeProvider theme={mymtheme}>
+      <ThemeProvider theme={mymthemeDark}>
         <CssBaseline />
         <CustomHead {...(pageSeo || {})} />
-        <SoothingLoader />
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          minHeight: '100vh',
+          background: '#121212',
+          color: '#fff',
+          fontFamily: 'Inter, sans-serif'
+        }}>
+          Loading...
+        </div>
       </ThemeProvider>
     );
   }

@@ -17,14 +17,15 @@ const truncateText = (text, maxLength) => {
   return `${truncated.substr(0, Math.min(truncated.length, truncated.lastIndexOf(' ')))}...`;
 };
 
-const TrendingConfessionsSection = ({ confessions = [], totalConfessions = 50 }) => {
+const TrendingConfessionsSection = ({ confessions = [], totalConfessions = 50, isLoading = false }) => {
   const router = useRouter();
 
   // Use real confessions if available, otherwise show placeholder
   const displayConfessions = confessions.length > 0 ? confessions : [];
 
-  if (displayConfessions.length === 0) {
-    return null; // Don't render section if no confessions
+  // Don't render section if loading or no confessions (after load complete)
+  if (isLoading || displayConfessions.length === 0) {
+    return null;
   }
 
   return (

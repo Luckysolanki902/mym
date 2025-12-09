@@ -1,18 +1,61 @@
-import { getSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import {
   Hero,
   CollegeStrip,
   ModeSwitcher,
-  TrendingConfessionsSection,
-  HowItWorks,
-  WhyVerify,
-  Safety,
-  Testimonials,
-  NewFooter
 } from '@/components/homepage-redesign';
 import { DEFAULT_OG_IMAGE, SITE_URL } from '@/utils/seo';
 
-export default function Home({ session, trendingConfessions, totalConfessions }) {
+// Dynamically import below-the-fold sections for faster initial load
+const TrendingConfessionsSection = dynamic(
+  () => import('@/components/homepage-redesign/sections/TrendingConfessions'),
+  { ssr: true }
+);
+const HowItWorks = dynamic(
+  () => import('@/components/homepage-redesign/sections/HowItWorks'),
+  { ssr: true }
+);
+const WhyVerify = dynamic(
+  () => import('@/components/homepage-redesign/sections/WhyVerify'),
+  { ssr: true }
+);
+const Safety = dynamic(
+  () => import('@/components/homepage-redesign/sections/Safety'),
+  { ssr: true }
+);
+const Testimonials = dynamic(
+  () => import('@/components/homepage-redesign/sections/Testimonials'),
+  { ssr: true }
+);
+const NewFooter = dynamic(
+  () => import('@/components/homepage-redesign/sections/NewFooter'),
+  { ssr: true }
+);
+
+export default function Home() {
+  const [trendingConfessions, setTrendingConfessions] = useState([]);
+  const [totalConfessions, setTotalConfessions] = useState(50);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch trending confessions client-side (non-blocking)
+  useEffect(() => {
+    const fetchTrending = async () => {
+      try {
+        const res = await fetch('/api/confession/gettrendingconfessions');
+        const data = await res.json();
+        setTrendingConfessions(data.trendingConfessions || []);
+        setTotalConfessions(data.totalConfessions || 50);
+      } catch (error) {
+        console.error('Error fetching trending:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTrending();
+  }, []);
+
   return (
     <main style={{ 
       background: 'linear-gradient(180deg, #fafafa 0%, #ffffff 100%)',
@@ -33,7 +76,8 @@ export default function Home({ session, trendingConfessions, totalConfessions })
       {/* Trending Confessions Carousel */}
       <TrendingConfessionsSection 
         confessions={trendingConfessions} 
-        totalConfessions={totalConfessions} 
+        totalConfessions={totalConfessions}
+        isLoading={isLoading}
       />
       
       {/* How It Works */}
@@ -127,29 +171,3 @@ Home.seo = {
     },
   ],
 };
-
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
-  const pageurl = process.env.NEXT_PUBLIC_PAGEURL;
-  
-  try {
-    const res = await fetch(pageurl + '/api/confession/gettrendingconfessions');
-    const data = await res.json();
-    
-    return {
-      props: {
-        session: session || null,
-        trendingConfessions: data.trendingConfessions || [],
-        totalConfessions: data.totalConfessions || 50,
-      },
-    };
-  } catch (error) {
-    return {
-      props: {
-        session: session || null,
-        trendingConfessions: [],
-        totalConfessions: 50,
-      },
-    };
-  }
-}
