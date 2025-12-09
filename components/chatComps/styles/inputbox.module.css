@@ -2,19 +2,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-left: 0rem;
-    padding-right: 1.5rem;
     width: calc(100vw - var(--sidebarwidth));
     /* transition: all 0.3s ease-out; */
 
     position: fixed;
     right: 0;
     bottom: 0;
-    right: 0;
     z-index: 99;
     margin-top: 6px;
     margin-bottom: 6px;
     overflow-y: hidden;
+    box-sizing: border-box;
 }
 
 
@@ -25,11 +23,6 @@
 
 .inputContainerMainDiv button:hover {
     scale: 0.98;
-}
-
-.inputContainerMainDiv {
-    padding-left: 0.6rem;
-    padding-right: 0.6rem;
 }
 
 
