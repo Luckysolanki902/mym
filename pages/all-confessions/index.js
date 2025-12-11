@@ -237,7 +237,7 @@ const Index = ({ userDetails }) => {
               boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
               border: '1px solid rgba(255,255,255,0.5)'
             }}>
-              That’s the last confession for now... new stories will unfold soon!
+             { loading ? '' :`That’s the last confession for now... new stories will unfold soon!`}
             </p>
           </div>
         )}

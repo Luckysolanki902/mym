@@ -259,7 +259,7 @@ const TextChat = ({ userDetails }) => {
   };
 
   // Start onboarding tour for first-time visitors (always show in debug mode)
-  const isDebugMode = process.env.NEXT_PUBLIC_NODE_ENV === 'debug';
+  const isDebugMode = false;
   useEffect(() => {
     if (userDetails && socket?.connected && (isDebugMode || !isTextChatTourCompleted)) {
       // Small delay to let the UI render

@@ -15,7 +15,7 @@ const ConfessionPage = ({ confession, userDetails }) => {
   const dispatch = useDispatch();
   const isTourCompleted = useSelector(selectIsTourCompleted('confessionDetail'));
   const [showTour, setShowTour] = useState(false);
-  const isDebugMode = process.env.NEXT_PUBLIC_NODE_ENV === 'debug';
+  const isDebugMode = false
 
   // Show tour for first-time visitors (always show in debug mode)
   useEffect(() => {

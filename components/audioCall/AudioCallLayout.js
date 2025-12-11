@@ -73,7 +73,7 @@ const AudioCallLayout = ({ userDetails }) => {
   }, []);
 
   // Start onboarding tour for first-time visitors (after mic is granted, always show in debug mode)
-  const isDebugMode = process.env.NEXT_PUBLIC_NODE_ENV === 'debug';
+  const isDebugMode = false;
   React.useEffect(() => {
     // Prevent re-triggering if already started
     if (tourStartedRef.current) return;
