@@ -1,35 +1,47 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import styles from './ConfessionSkeleton.module.css';
 
-const ConfessionSkeleton = () => {
+const ConfessionSkeleton = ({ count = 3 }) => {
   return (
     <div className={styles.skeletonWrapper}>
-      {[0, 1, 2].map((index) => (
-        <motion.div
+      {Array.from({ length: count }).map((_, index) => (
+        <div
           key={index}
           className={styles.skeletonCard}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ 
-            opacity: 1,
-            y: 0,
-            background: [
-              'linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(225, 245, 254, 0.3) 100%)',
-              'linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 235, 238, 0.3) 100%)',
-              'linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(225, 245, 254, 0.3) 100%)',
-            ]
-          }}
-          transition={{ 
-            opacity: { duration: 0.4, delay: index * 0.1 },
-            y: { duration: 0.4, delay: index * 0.1, ease: [0.4, 0, 0.2, 1] },
-            background: {
-              duration: 4,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: index * 0.5
-            }
-          }}
-        />
+          style={{ animationDelay: `${index * 0.15}s` }}
+        >
+          {/* Content lines */}
+          <div className={styles.contentArea}>
+            <div className={`${styles.line} ${styles.lineShort}`} style={{ animationDelay: `${index * 0.15 + 0.1}s` }} />
+            <div className={`${styles.line} ${styles.lineFull}`} style={{ animationDelay: `${index * 0.15 + 0.2}s` }} />
+            <div className={`${styles.line} ${styles.lineFull}`} style={{ animationDelay: `${index * 0.15 + 0.3}s` }} />
+            <div className={`${styles.line} ${styles.lineMedium}`} style={{ animationDelay: `${index * 0.15 + 0.4}s` }} />
+          </div>
+          
+          {/* Footer area */}
+          <div className={styles.footerArea}>
+            <div className={styles.footerLeft}>
+              <div className={`${styles.circle} ${styles.small}`} />
+              <div className={`${styles.line} ${styles.lineXs}`} />
+            </div>
+            <div className={styles.footerRight}>
+              <div className={`${styles.line} ${styles.lineXs}`} />
+            </div>
+          </div>
+          
+          {/* Actions area */}
+          <div className={styles.actionsArea}>
+            <div className={styles.actionGroup}>
+              <div className={`${styles.circle} ${styles.tiny}`} />
+              <div className={`${styles.line} ${styles.lineTiny}`} />
+            </div>
+            <div className={styles.actionGroup}>
+              <div className={`${styles.circle} ${styles.tiny}`} />
+              <div className={`${styles.line} ${styles.lineTiny}`} />
+            </div>
+            <div className={`${styles.circle} ${styles.tiny}`} />
+          </div>
+        </div>
       ))}
     </div>
   );
