@@ -170,7 +170,7 @@ const AudioCallLayout = ({ userDetails }) => {
       </div>
 
       {/* Fixed Footer Controls */}
-      <ControlsDock controller={controller} />
+      <ControlsDock controller={controller} userGender={userDetails?.gender} />
 
       {/* Onboarding Tour */}
       <OnboardingTour

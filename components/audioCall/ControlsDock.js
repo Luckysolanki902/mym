@@ -9,7 +9,7 @@ import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import { useAudioCall, CALL_STATE, MIC_STATE } from '@/context/AudioCallContext';
 import CallNotes from './CallNotes';
 
-const ControlsDock = ({ controller = {} }) => {
+const ControlsDock = ({ controller = {}, userGender = 'neutral' }) => {
   const { callState, isMuted, speakerEnabled, isFindingPair, micStatus, partnerDisconnected, userInitiatedEnd, roomId } = useAudioCall();
   const { toggleMute, toggleSpeaker, findNew, hangup } = controller;
   const [isNotesOpen, setIsNotesOpen] = useState(false);
@@ -114,6 +114,7 @@ const ControlsDock = ({ controller = {} }) => {
         isOpen={isNotesOpen} 
         onClose={() => setIsNotesOpen(false)}
         callSessionId={roomId}
+        userGender={userGender}
       />
     </>
   );

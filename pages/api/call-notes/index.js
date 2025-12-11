@@ -169,14 +169,14 @@ export default async function handler(req, res) {
       res.status(500).json({ success: false, error: 'Failed to delete note' });
     }
   } else if (req.method === 'PUT') {
-    // Update a note
+    // Edit a note
     try {
-      const { noteId, ownerId, content } = req.body;
+      const { noteId, content, ownerId } = req.body;
 
-      if (!noteId || !ownerId || !content) {
+      if (!noteId || !content || !ownerId) {
         return res.status(400).json({ 
           success: false, 
-          error: 'Missing required fields: noteId, ownerId, content' 
+          error: 'Missing required fields: noteId, content, ownerId' 
         });
       }
 
@@ -185,7 +185,7 @@ export default async function handler(req, res) {
 
       const note = await CallNote.findOneAndUpdate(
         { _id: noteId, ownerId, isDeleted: false },
-        { encryptedContent, iv, updatedAt: new Date() },
+        { encryptedContent, iv },
         { new: true }
       );
 
@@ -202,12 +202,11 @@ export default async function handler(req, res) {
           ownerType: note.ownerType,
           callSessionId: note.callSessionId,
           createdAt: note.createdAt,
-          updatedAt: note.updatedAt,
         }
       });
     } catch (error) {
-      console.error('Error updating note:', error);
-      res.status(500).json({ success: false, error: 'Failed to update note' });
+      console.error('Error editing note:', error);
+      res.status(500).json({ success: false, error: 'Failed to edit note' });
     }
   } else {
     res.setHeader('Allow', ['GET', 'POST', 'DELETE', 'PUT']);

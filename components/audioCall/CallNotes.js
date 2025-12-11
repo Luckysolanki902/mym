@@ -1,9 +1,123 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSelector } from 'react-redux';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import InstagramOutlinedIcon from '@mui/icons-material/Instagram';
+import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import styles from './styles/CallNotes.module.css';
 
-const CallNotes = ({ isOpen, onClose, callSessionId }) => {
+// Lock icon component
+const LockIcon = ({ size = 24 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+  </svg>
+);
+
+// Instagram icon component (outlined)
+const InstagramIcon = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
+
+// Phone icon component (outlined)
+const PhoneIcon = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </svg>
+);
+
+// Parse content for Instagram handles and phone numbers
+const parseNoteContent = (content) => {
+  const parts = [];
+  let lastIndex = 0;
+  
+  // Combined regex - Instagram and 10-digit phone numbers
+  const combinedRegex = /(@[a-zA-Z0-9._]{1,30})|(\+?91[-.\s]?\d{10}|\d{10})/g;
+  
+  let match;
+  while ((match = combinedRegex.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: 'text', value: content.slice(lastIndex, match.index) });
+    }
+    
+    if (match[1]) {
+      const handle = match[1].slice(1);
+      parts.push({ type: 'instagram', value: handle, raw: match[1] });
+    } else if (match[2]) {
+      const phone = match[2].replace(/[-.\s+]/g, '').replace(/^91/, '');
+      if (phone.length === 10) {
+        parts.push({ type: 'phone', value: phone, raw: match[2] });
+      } else {
+        parts.push({ type: 'text', value: match[2] });
+      }
+    }
+    
+    lastIndex = match.index + match[0].length;
+  }
+  
+  if (lastIndex < content.length) {
+    parts.push({ type: 'text', value: content.slice(lastIndex) });
+  }
+  
+  return parts.length > 0 ? parts : [{ type: 'text', value: content }];
+};
+
+// Render parsed content with clickable links
+const NoteContent = ({ content }) => {
+  const parts = parseNoteContent(content);
+  
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.type === 'instagram') {
+          return (
+            <a
+              key={i}
+              href={'https://instagram.com/' + part.value}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.instaLink}
+              onClick={e => e.stopPropagation()}
+            >
+              <InstagramIcon size={12} />
+              <span>@{part.value}</span>
+            </a>
+          );
+        }
+        if (part.type === 'phone') {
+          return (
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+              <a
+                href={'https://wa.me/91' + part.value}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.whatsappLink}
+                onClick={e => e.stopPropagation()}
+              >
+                <WhatsAppIcon style={{ fontSize: 14 }} />
+                <span>{part.raw}</span>
+              </a>
+              <a
+                href={'tel:+91' + part.value}
+                className={styles.phoneLink}
+                onClick={e => e.stopPropagation()}
+              >
+                <PhoneIcon size={12} />
+              </a>
+            </span>
+          );
+        }
+        return <span key={i}>{part.value}</span>;
+      })}
+    </>
+  );
+};
+
+const CallNotes = ({ isOpen, onClose, callSessionId, userGender = 'neutral' }) => {
   const { data: session } = useSession();
   const unverifiedUserDetails = useSelector((state) => state.unverifiedUserDetails);
   
@@ -16,14 +130,51 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [editingNote, setEditingNote] = useState(null);
   const [editValue, setEditValue] = useState('');
+  const [copiedId, setCopiedId] = useState(null);
+  const [inputWarning, setInputWarning] = useState(null);
   
-  const messagesEndRef = useRef(null);
-  const messagesContainerRef = useRef(null);
+  const notesEndRef = useRef(null);
+  const notesContainerRef = useRef(null);
   const inputRef = useRef(null);
-  const initialFetchDone = useRef(false);
+  const editInputRef = useRef(null);
+  const initialLoadDone = useRef(false);
   const prevScrollHeight = useRef(0);
 
-  // Get owner info based on authentication status
+  // Gender theme helper
+  const gender = userGender || 'neutral';
+  const genderClass = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Neutral';
+
+  // Determine active shortcut based on input
+  const activeShortcut = useMemo(() => {
+    const trimmed = inputValue.trim();
+    if (trimmed.startsWith('@')) return 'insta';
+    if (/^\+?91|^\d/.test(trimmed) && /\d{4,}/.test(trimmed.replace(/[-\s.+()]/g, ''))) return 'phone';
+    return null;
+  }, [inputValue]);
+
+  // Validate phone number - only accept exactly 10 digits
+  const validateInput = useCallback((value) => {
+    const digitsOnly = value.replace(/[-.\s()+]/g, '');
+    const looksLikePhone = /^\+?\d/.test(value.trim()) && digitsOnly.length >= 4;
+    
+    if (looksLikePhone) {
+      const cleanDigits = digitsOnly.replace(/^91/, '');
+      
+      if (cleanDigits.length < 10) {
+        return { message: 'Phone number too short (' + cleanDigits.length + '/10 digits)', blocking: true };
+      } else if (cleanDigits.length > 10) {
+        return { message: 'Invalid phone number (' + cleanDigits.length + ' digits, need exactly 10)', blocking: true };
+      }
+    }
+    return null;
+  }, []);
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    setInputWarning(validateInput(value));
+  };
+
   const getOwnerInfo = useCallback(() => {
     if (session?.user?.email) {
       return {
@@ -40,12 +191,16 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
     return null;
   }, [session, unverifiedUserDetails]);
 
-  // Fetch notes
   const fetchNotes = useCallback(async (cursor = null, prepend = false) => {
     const ownerInfo = getOwnerInfo();
     if (!ownerInfo || isLoading) return;
 
     setIsLoading(true);
+    
+    if (prepend && notesContainerRef.current) {
+      prevScrollHeight.current = notesContainerRef.current.scrollHeight;
+    }
+
     try {
       const params = new URLSearchParams({
         limit: '20',
@@ -56,16 +211,13 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
         ...(cursor && { before: cursor }),
       });
 
-      const res = await fetch(`/api/call-notes?${params}`);
+      const res = await fetch('/api/call-notes?' + params);
       const data = await res.json();
 
       if (data.success) {
-        // API returns newest first, reverse for chat display (oldest at top, newest at bottom)
-        const newNotes = [...data.notes].reverse();
+        const newNotes = data.notes.reverse();
         
         if (prepend) {
-          // Store scroll height before prepending older notes
-          prevScrollHeight.current = messagesContainerRef.current?.scrollHeight || 0;
           setNotes(prev => [...newNotes, ...prev]);
         } else {
           setNotes(newNotes);
@@ -80,37 +232,53 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
     }
   }, [getOwnerInfo, isLoading]);
 
-  // Initial fetch when panel opens
   useEffect(() => {
-    if (isOpen && !initialFetchDone.current) {
-      initialFetchDone.current = true;
+    if (isOpen && !initialLoadDone.current) {
       fetchNotes();
+      initialLoadDone.current = true;
       setTimeout(() => inputRef.current?.focus(), 300);
     }
     if (!isOpen) {
-      initialFetchDone.current = false;
+      initialLoadDone.current = false;
     }
   }, [isOpen, fetchNotes]);
 
-  // Scroll to bottom on initial load
+  // Handle browser back button - close dialog instead of navigating
   useEffect(() => {
-    if (!isLoading && notes.length > 0 && !prevScrollHeight.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    if (!isOpen) return;
+    
+    // Push a state when dialog opens
+    window.history.pushState({ notesOpen: true }, '');
+    
+    const handlePopState = (e) => {
+      // Close dialog when back is pressed
+      onClose();
+    };
+    
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!isLoading && notes.length > 0 && initialLoadDone.current && prevScrollHeight.current === 0) {
+      notesEndRef.current?.scrollIntoView({ behavior: 'auto' });
     }
   }, [notes.length, isLoading]);
 
-  // Maintain scroll position when loading older notes
   useEffect(() => {
-    if (prevScrollHeight.current && messagesContainerRef.current) {
-      const newScrollHeight = messagesContainerRef.current.scrollHeight;
-      messagesContainerRef.current.scrollTop = newScrollHeight - prevScrollHeight.current;
+    if (prevScrollHeight.current > 0 && notesContainerRef.current) {
+      const newScrollHeight = notesContainerRef.current.scrollHeight;
+      const scrollDiff = newScrollHeight - prevScrollHeight.current;
+      notesContainerRef.current.scrollTop = scrollDiff;
       prevScrollHeight.current = 0;
     }
   }, [notes]);
 
-  // Load more on scroll to top
   const handleScroll = useCallback(() => {
-    const container = messagesContainerRef.current;
+    const container = notesContainerRef.current;
     if (!container || isLoading || !hasMore) return;
 
     if (container.scrollTop < 50) {
@@ -118,19 +286,87 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
     }
   }, [isLoading, hasMore, nextCursor, fetchNotes]);
 
-  // Send note
+  const handleCopy = async (note) => {
+    try {
+      await navigator.clipboard.writeText(note.content);
+      setCopiedId(note._id);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  };
+
+  const startEdit = (note) => {
+    setEditingNote(note._id);
+    setEditValue(note.content);
+    setActiveMenu(null);
+    setTimeout(() => editInputRef.current?.focus(), 50);
+  };
+
+  const saveEdit = async (noteId) => {
+    const content = editValue.trim();
+    if (!content) return;
+
+    const ownerInfo = getOwnerInfo();
+    if (!ownerInfo) return;
+
+    setNotes(prev => prev.map(n => n._id === noteId ? { ...n, content } : n));
+    setEditingNote(null);
+
+    try {
+      await fetch('/api/call-notes', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ noteId, content, ownerId: ownerInfo.ownerId }),
+      });
+    } catch (error) {
+      console.error('Error editing note:', error);
+      fetchNotes();
+    }
+  };
+
+  const handleEditKeyDown = (e, noteId) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      saveEdit(noteId);
+    } else if (e.key === 'Escape') {
+      setEditingNote(null);
+    }
+  };
+
+  useEffect(() => {
+    if (!activeMenu) return;
+    
+    const handleClickOutside = (e) => {
+      // Close menu on any click that's not on the dropdown itself
+      setActiveMenu(null);
+    };
+    
+    // Add listener on next tick to avoid immediate close
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside, true);
+    }, 0);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('click', handleClickOutside, true);
+    };
+  }, [activeMenu]);
+
   const handleSend = async () => {
     const content = inputValue.trim();
     if (!content || isSending) return;
+    
+    if (inputWarning?.blocking) return;
 
     const ownerInfo = getOwnerInfo();
     if (!ownerInfo) return;
 
     setIsSending(true);
     setInputValue('');
+    setInputWarning(null);
 
-    // Optimistic update
-    const tempId = `temp-${Date.now()}`;
+    const tempId = 'temp-' + Date.now();
     const tempNote = {
       _id: tempId,
       content,
@@ -138,21 +374,16 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
       isTemp: true,
     };
     setNotes(prev => [...prev, tempNote]);
-
-    // Scroll to bottom
+    
     setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      notesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 50);
 
     try {
       const res = await fetch('/api/call-notes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content,
-          ...ownerInfo,
-          callSessionId,
-        }),
+        body: JSON.stringify({ content, ...ownerInfo, callSessionId }),
       });
 
       const data = await res.json();
@@ -172,7 +403,6 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
     }
   };
 
-  // Handle key press
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -180,17 +410,6 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
     }
   };
 
-  // Copy note
-  const handleCopy = async (content) => {
-    try {
-      await navigator.clipboard.writeText(content);
-      setActiveMenu(null);
-    } catch (error) {
-      console.error('Error copying:', error);
-    }
-  };
-
-  // Delete note
   const handleDelete = async (noteId) => {
     const ownerInfo = getOwnerInfo();
     if (!ownerInfo) return;
@@ -202,10 +421,7 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
       await fetch('/api/call-notes', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          noteId,
-          ownerId: ownerInfo.ownerId,
-        }),
+        body: JSON.stringify({ noteId, ownerId: ownerInfo.ownerId }),
       });
     } catch (error) {
       console.error('Error deleting note:', error);
@@ -213,248 +429,219 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
     }
   };
 
-  // Start editing
-  const handleStartEdit = (note) => {
-    setEditingNote(note._id);
-    setEditValue(note.content);
-    setActiveMenu(null);
-  };
-
-  // Save edit
-  const handleSaveEdit = async (noteId) => {
-    const content = editValue.trim();
-    if (!content) return;
-
-    const ownerInfo = getOwnerInfo();
-    if (!ownerInfo) return;
-
-    setNotes(prev => prev.map(n => 
-      n._id === noteId ? { ...n, content, updatedAt: new Date().toISOString() } : n
-    ));
-    setEditingNote(null);
-    setEditValue('');
-
-    try {
-      const res = await fetch('/api/call-notes', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          noteId,
-          ownerId: ownerInfo.ownerId,
-          content,
-        }),
-      });
-
-      const data = await res.json();
-      if (!data.success) fetchNotes();
-    } catch (error) {
-      console.error('Error updating note:', error);
-      fetchNotes();
-    }
-  };
-
-  // Cancel edit
-  const handleCancelEdit = () => {
-    setEditingNote(null);
-    setEditValue('');
-  };
-
-  // Format timestamp
   const formatTime = (dateStr) => {
     const date = new Date(dateStr);
     const now = new Date();
     const diff = now - date;
     
     if (diff < 60000) return 'Just now';
-    if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+    if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
     if (diff < 86400000) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
   };
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = () => setActiveMenu(null);
-    if (activeMenu) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
-  }, [activeMenu]);
+  const addInstaPrefix = () => {
+    const newValue = inputValue.startsWith('@') ? inputValue : '@' + inputValue;
+    setInputValue(newValue);
+    setInputWarning(validateInput(newValue));
+    inputRef.current?.focus();
+  };
+
+  const addWhatsappPrefix = () => {
+    const newValue = inputValue.startsWith('+91') ? inputValue : '+91 ' + inputValue.replace(/^\+/, '');
+    setInputValue(newValue);
+    setInputWarning(validateInput(newValue));
+    inputRef.current?.focus();
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.container} onClick={e => e.stopPropagation()}>
-        {/* Header */}
+      <div 
+        className={styles.container + ' ' + styles['container' + genderClass]} 
+        onClick={e => e.stopPropagation()}
+      >
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <span className={styles.headerIcon}>📝</span>
+            <span className={styles.headerIcon + ' ' + styles['headerIcon' + genderClass]}>
+              <LockIcon size={18} />
+            </span>
             <span className={styles.headerTitle}>Notes</span>
           </div>
           <button className={styles.closeButton} onClick={onClose}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        {/* Messages Area */}
         <div 
-          className={styles.messagesContainer}
-          ref={messagesContainerRef}
+          className={styles.notesContainer}
+          ref={notesContainerRef}
           onScroll={handleScroll}
         >
-          {/* Load more indicator */}
-          {isLoading && notes.length > 0 && (
-            <div className={styles.loadingMore}>
-              <div className={styles.loadingDots}>
-                <span /><span /><span />
-              </div>
+          {hasMore && notes.length > 0 && (
+            <div className={styles.loadMoreArea}>
+              {isLoading ? (
+                <div className={styles.loadingDots}><span /><span /><span /></div>
+              ) : (
+                <span className={styles.loadMoreText}>Scroll up for older notes</span>
+              )}
             </div>
           )}
 
-          {/* Has more indicator */}
-          {hasMore && !isLoading && notes.length > 0 && (
-            <div className={styles.loadMoreHint}>Scroll up to load more</div>
-          )}
-
-          {/* Empty state */}
           {!isLoading && notes.length === 0 && (
             <div className={styles.emptyState}>
-              <div className={styles.emptyIcon}>📝</div>
-              <p className={styles.emptyTitle}>No notes yet</p>
+              <div className={styles.emptyIconWrapper + ' ' + styles['emptyIconWrapper' + genderClass]}>
+                <LockIcon size={28} />
+              </div>
+              <h3 className={styles.emptyTitle}>Your Notes</h3>
               <p className={styles.emptySubtitle}>
-                Jot down phone numbers, names, or anything important during your call
+                Save Instagram handles, phone numbers, or anything else. <strong>End-to-end encrypted</strong>.
               </p>
-            </div>
-          )}
-
-          {/* Initial loading */}
-          {isLoading && notes.length === 0 && (
-            <div className={styles.emptyState}>
-              <div className={styles.loadingDots}>
-                <span /><span /><span />
+              <div className={styles.emptyHints}>
+                <div className={styles.hintItem}>
+                  <span className={styles.hintIcon}><InstagramIcon size={16} /></span>
+                  <span>Type <code>@username</code> for Instagram</span>
+                </div>
+                <div className={styles.hintItem}>
+                  <span className={styles.hintIcon}><WhatsAppIcon style={{ fontSize: 16 }} /></span>
+                  <span>Phone numbers link to WhatsApp</span>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Notes */}
           {notes.map((note) => (
             <div 
               key={note._id} 
-              className={`${styles.message} ${note.isTemp ? styles.sending : ''}`}
+              className={styles.noteCard + (note.isTemp ? ' ' + styles.noteCardSending : '')}
             >
-              <div className={styles.messageContent}>
-                {editingNote === note._id ? (
-                  <div className={styles.editContainer}>
-                    <input
-                      type="text"
-                      value={editValue}
-                      onChange={(e) => setEditValue(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleSaveEdit(note._id);
-                        if (e.key === 'Escape') handleCancelEdit();
-                      }}
-                      className={styles.editInput}
-                      autoFocus
-                    />
-                    <div className={styles.editActions}>
-                      <button onClick={() => handleSaveEdit(note._id)} className={styles.editSave}>Save</button>
-                      <button onClick={handleCancelEdit} className={styles.editCancel}>Cancel</button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <p className={styles.messageText}>{note.content}</p>
-                    <div className={styles.messageFooter}>
-                      <span className={styles.messageTime}>
-                        {formatTime(note.createdAt)}
-                        {note.updatedAt && ' (edited)'}
-                      </span>
-                      {!note.isTemp && (
-                        <div className={styles.messageActions}>
-                          {/* Copy button */}
-                          <button 
-                            className={styles.actionButton}
-                            onClick={() => handleCopy(note.content)}
-                            aria-label="Copy note"
-                          >
+              {editingNote === note._id ? (
+                <input
+                  ref={editInputRef}
+                  type="text"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onKeyDown={(e) => handleEditKeyDown(e, note._id)}
+                  onBlur={() => saveEdit(note._id)}
+                  className={styles.editInput}
+                />
+              ) : (
+                <p className={styles.noteContent}>
+                  <NoteContent content={note.content} />
+                </p>
+              )}
+              <div className={styles.noteFooter}>
+                <span className={styles.noteTime}>{formatTime(note.createdAt)}</span>
+                
+                {!note.isTemp && editingNote !== note._id && (
+                  <div className={styles.noteActions}>
+                    <button 
+                      className={styles.actionBtn + (copiedId === note._id ? ' ' + styles.copied : '')}
+                      onClick={() => handleCopy(note)}
+                      title="Copy"
+                    >
+                      {copiedId === note._id ? (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="9" y="9" width="13" height="13" rx="2" />
+                          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                        </svg>
+                      )}
+                    </button>
+
+                    <div className={styles.menuWrapper}>
+                      <button 
+                        className={styles.actionBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveMenu(activeMenu === note._id ? null : note._id);
+                        }}
+                        title="More"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                          <circle cx="12" cy="5" r="2" />
+                          <circle cx="12" cy="12" r="2" />
+                          <circle cx="12" cy="19" r="2" />
+                        </svg>
+                      </button>
+
+                      {activeMenu === note._id && (
+                        <div className={styles.dropdown} onClick={e => e.stopPropagation()}>
+                          <button className={styles.dropdownItem} onClick={() => startEdit(note)}>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
                             </svg>
+                            Edit
                           </button>
-                          {/* Three dot menu */}
-                          <div className={styles.menuWrapper}>
-                            <button 
-                              className={styles.actionButton}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveMenu(activeMenu === note._id ? null : note._id);
-                              }}
-                              aria-label="More options"
-                            >
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                <circle cx="12" cy="5" r="2" />
-                                <circle cx="12" cy="12" r="2" />
-                                <circle cx="12" cy="19" r="2" />
-                              </svg>
-                            </button>
-                            {activeMenu === note._id && (
-                              <div className={styles.menu} onClick={e => e.stopPropagation()}>
-                                <button 
-                                  className={styles.menuItem}
-                                  onClick={() => handleStartEdit(note)}
-                                >
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                  </svg>
-                                  Edit
-                                </button>
-                                <button 
-                                  className={`${styles.menuItem} ${styles.menuItemDanger}`}
-                                  onClick={() => handleDelete(note._id)}
-                                >
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-                                  </svg>
-                                  Delete
-                                </button>
-                              </div>
-                            )}
-                          </div>
+                          <button className={styles.dropdownItem + ' ' + styles.deleteItem} onClick={() => handleDelete(note._id)}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                            </svg>
+                            Delete
+                          </button>
                         </div>
                       )}
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
           ))}
 
-          <div ref={messagesEndRef} />
+          <div ref={notesEndRef} />
         </div>
 
-        {/* Input Area */}
         <div className={styles.inputArea}>
-          <div className={styles.inputWrapper}>
+          <div className={styles.quickActions}>
+            <button 
+              className={styles.quickBtn + ' ' + styles.instaBtn + (activeShortcut === 'insta' ? ' ' + styles.active : activeShortcut === 'phone' ? ' ' + styles.dimmed : '')} 
+              onClick={addInstaPrefix}
+              title="Add Instagram"
+            >
+              <InstagramOutlinedIcon style={{ fontSize: 18 }} />
+            </button>
+            <button 
+              className={styles.quickBtn + ' ' + styles.phoneBtn + (activeShortcut === 'phone' ? ' ' + styles.active : activeShortcut === 'insta' ? ' ' + styles.dimmed : '')} 
+              onClick={addWhatsappPrefix}
+              title="Add Phone"
+            >
+              <PhoneOutlinedIcon style={{ fontSize: 18 }} />
+            </button>
+          </div>
+          {inputWarning && (
+            <div className={styles.inputWarning}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              {inputWarning.message}
+            </div>
+          )}
+          <div className={styles.inputWrapper + (inputWarning ? ' ' + styles.inputWrapperWarning : '')}>
             <input
               ref={inputRef}
               type="text"
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               placeholder="Type a note..."
               className={styles.input}
               disabled={isSending}
             />
             <button 
-              className={`${styles.sendButton} ${inputValue.trim() ? styles.active : ''}`}
+              className={styles.sendButton + ' ' + styles['sendButton' + genderClass] + (inputValue.trim() && !inputWarning?.blocking ? ' ' + styles.active : '')}
               onClick={handleSend}
-              disabled={!inputValue.trim() || isSending}
+              disabled={!inputValue.trim() || isSending || inputWarning?.blocking}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
               </svg>
             </button>
