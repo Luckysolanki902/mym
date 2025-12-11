@@ -168,8 +168,49 @@ export default async function handler(req, res) {
       console.error('Error deleting note:', error);
       res.status(500).json({ success: false, error: 'Failed to delete note' });
     }
+  } else if (req.method === 'PUT') {
+    // Update a note
+    try {
+      const { noteId, ownerId, content } = req.body;
+
+      if (!noteId || !ownerId || !content) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Missing required fields: noteId, ownerId, content' 
+        });
+      }
+
+      // Encrypt the new content
+      const { encryptedContent, iv } = encryptContent(content);
+
+      const note = await CallNote.findOneAndUpdate(
+        { _id: noteId, ownerId, isDeleted: false },
+        { encryptedContent, iv, updatedAt: new Date() },
+        { new: true }
+      );
+
+      if (!note) {
+        return res.status(404).json({ success: false, error: 'Note not found' });
+      }
+
+      res.status(200).json({ 
+        success: true, 
+        note: {
+          _id: note._id,
+          content,
+          ownerId: note.ownerId,
+          ownerType: note.ownerType,
+          callSessionId: note.callSessionId,
+          createdAt: note.createdAt,
+          updatedAt: note.updatedAt,
+        }
+      });
+    } catch (error) {
+      console.error('Error updating note:', error);
+      res.status(500).json({ success: false, error: 'Failed to update note' });
+    }
   } else {
-    res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
+    res.setHeader('Allow', ['GET', 'POST', 'DELETE', 'PUT']);
     res.status(405).json({ success: false, error: `Method ${req.method} not allowed` });
   }
 }

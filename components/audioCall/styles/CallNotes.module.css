@@ -239,6 +239,165 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+.messageActions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.message:hover .messageActions {
+  opacity: 1;
+}
+
+.actionButton {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.actionButton:active {
+  transform: scale(0.9);
+}
+
+.menuWrapper {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 4px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  min-width: 120px;
+  z-index: 10;
+  animation: menuIn 0.15s ease-out;
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #374151;
+  transition: background 0.15s ease;
+  text-align: left;
+}
+
+.menuItem:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.menuItem svg {
+  flex-shrink: 0;
+}
+
+.menuItemDanger {
+  color: #ef4444;
+}
+
+.menuItemDanger:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Edit mode */
+.editContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.editInput {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.editInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.editActions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.editSave,
+.editCancel {
+  padding: 0.35rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editSave {
+  background: rgba(255, 255, 255, 0.9);
+  color: #1a1a1a;
+}
+
+.editSave:hover {
+  background: white;
+}
+
+.editCancel {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.editCancel:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Load more hint */
+.loadMoreHint {
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.4);
+  padding: 0.5rem;
+}
+
 .deleteButton {
   opacity: 0;
   width: 20px;

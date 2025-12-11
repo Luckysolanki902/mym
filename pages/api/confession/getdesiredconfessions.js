@@ -12,17 +12,22 @@ const handler = async (req, res) => {
   const college = req.query.college || '';
   const gender = req.query.gender || '';
   const sortBy = req.query.sortBy || 'new';
+  const myCollegeOnly = req.query.myCollegeOnly === 'true';
+  const userCollege = req.query.userCollege || '';
   const page = parseInt(req.query.page) || 1; // Parse the page parameter
   const perPage = 10; // Number of confessions per page
   const skip = (page - 1) * perPage;
 
   const query = {};
 
-  if (college && college !== 'all') {
+  // My College filter takes priority if enabled
+  if (myCollegeOnly && userCollege) {
+    query.college = userCollege;
+  } else if (college && college !== 'all') {
     if (college === 'yourCollege') {
-      query.college = req.query.userCollege;
+      query.college = userCollege;
     } else if (college === 'otherColleges') {
-      query.college = { $ne: req.query.userCollege };
+      query.college = { $ne: userCollege };
     } else {
       query.college = college;
     }

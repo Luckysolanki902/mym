@@ -13,11 +13,15 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
   const [isSending, setIsSending] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [nextCursor, setNextCursor] = useState(null);
+  const [activeMenu, setActiveMenu] = useState(null);
+  const [editingNote, setEditingNote] = useState(null);
+  const [editValue, setEditValue] = useState('');
   
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const inputRef = useRef(null);
-  const loadMoreRef = useRef(null);
+  const initialFetchDone = useRef(false);
+  const prevScrollHeight = useRef(0);
 
   // Get owner info based on authentication status
   const getOwnerInfo = useCallback(() => {
@@ -37,9 +41,9 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
   }, [session, unverifiedUserDetails]);
 
   // Fetch notes
-  const fetchNotes = useCallback(async (cursor = null, append = false) => {
+  const fetchNotes = useCallback(async (cursor = null, prepend = false) => {
     const ownerInfo = getOwnerInfo();
-    if (!ownerInfo) return;
+    if (!ownerInfo || isLoading) return;
 
     setIsLoading(true);
     try {
@@ -56,10 +60,12 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
       const data = await res.json();
 
       if (data.success) {
-        // Notes come in reverse chronological order, we need to reverse for chat display
-        const newNotes = data.notes.reverse();
+        // API returns newest first, reverse for chat display (oldest at top, newest at bottom)
+        const newNotes = [...data.notes].reverse();
         
-        if (append) {
+        if (prepend) {
+          // Store scroll height before prepending older notes
+          prevScrollHeight.current = messagesContainerRef.current?.scrollHeight || 0;
           setNotes(prev => [...newNotes, ...prev]);
         } else {
           setNotes(newNotes);
@@ -72,30 +78,42 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [getOwnerInfo]);
+  }, [getOwnerInfo, isLoading]);
 
   // Initial fetch when panel opens
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !initialFetchDone.current) {
+      initialFetchDone.current = true;
       fetchNotes();
-      // Focus input after a short delay
       setTimeout(() => inputRef.current?.focus(), 300);
+    }
+    if (!isOpen) {
+      initialFetchDone.current = false;
     }
   }, [isOpen, fetchNotes]);
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom on initial load
   useEffect(() => {
-    if (!isLoading && notes.length > 0) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!isLoading && notes.length > 0 && !prevScrollHeight.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
     }
   }, [notes.length, isLoading]);
+
+  // Maintain scroll position when loading older notes
+  useEffect(() => {
+    if (prevScrollHeight.current && messagesContainerRef.current) {
+      const newScrollHeight = messagesContainerRef.current.scrollHeight;
+      messagesContainerRef.current.scrollTop = newScrollHeight - prevScrollHeight.current;
+      prevScrollHeight.current = 0;
+    }
+  }, [notes]);
 
   // Load more on scroll to top
   const handleScroll = useCallback(() => {
     const container = messagesContainerRef.current;
     if (!container || isLoading || !hasMore) return;
 
-    if (container.scrollTop < 100) {
+    if (container.scrollTop < 50) {
       fetchNotes(nextCursor, true);
     }
   }, [isLoading, hasMore, nextCursor, fetchNotes]);
@@ -121,6 +139,11 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
     };
     setNotes(prev => [...prev, tempNote]);
 
+    // Scroll to bottom
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
+
     try {
       const res = await fetch('/api/call-notes', {
         method: 'POST',
@@ -135,14 +158,10 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
       const data = await res.json();
 
       if (data.success) {
-        // Replace temp note with real note
-        setNotes(prev => 
-          prev.map(n => n._id === tempId ? data.note : n)
-        );
+        setNotes(prev => prev.map(n => n._id === tempId ? data.note : n));
       } else {
-        // Remove temp note on failure
         setNotes(prev => prev.filter(n => n._id !== tempId));
-        setInputValue(content); // Restore input
+        setInputValue(content);
       }
     } catch (error) {
       console.error('Error sending note:', error);
@@ -161,12 +180,22 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
     }
   };
 
+  // Copy note
+  const handleCopy = async (content) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setActiveMenu(null);
+    } catch (error) {
+      console.error('Error copying:', error);
+    }
+  };
+
   // Delete note
   const handleDelete = async (noteId) => {
     const ownerInfo = getOwnerInfo();
     if (!ownerInfo) return;
 
-    // Optimistic update
+    setActiveMenu(null);
     setNotes(prev => prev.filter(n => n._id !== noteId));
 
     try {
@@ -180,9 +209,54 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
       });
     } catch (error) {
       console.error('Error deleting note:', error);
-      // Refetch on error
       fetchNotes();
     }
+  };
+
+  // Start editing
+  const handleStartEdit = (note) => {
+    setEditingNote(note._id);
+    setEditValue(note.content);
+    setActiveMenu(null);
+  };
+
+  // Save edit
+  const handleSaveEdit = async (noteId) => {
+    const content = editValue.trim();
+    if (!content) return;
+
+    const ownerInfo = getOwnerInfo();
+    if (!ownerInfo) return;
+
+    setNotes(prev => prev.map(n => 
+      n._id === noteId ? { ...n, content, updatedAt: new Date().toISOString() } : n
+    ));
+    setEditingNote(null);
+    setEditValue('');
+
+    try {
+      const res = await fetch('/api/call-notes', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          noteId,
+          ownerId: ownerInfo.ownerId,
+          content,
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.success) fetchNotes();
+    } catch (error) {
+      console.error('Error updating note:', error);
+      fetchNotes();
+    }
+  };
+
+  // Cancel edit
+  const handleCancelEdit = () => {
+    setEditingNote(null);
+    setEditValue('');
   };
 
   // Format timestamp
@@ -196,6 +270,15 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
     if (diff < 86400000) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
   };
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setActiveMenu(null);
+    if (activeMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [activeMenu]);
 
   if (!isOpen) return null;
 
@@ -230,6 +313,11 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
             </div>
           )}
 
+          {/* Has more indicator */}
+          {hasMore && !isLoading && notes.length > 0 && (
+            <div className={styles.loadMoreHint}>Scroll up to load more</div>
+          )}
+
           {/* Empty state */}
           {!isLoading && notes.length === 0 && (
             <div className={styles.emptyState}>
@@ -241,28 +329,106 @@ const CallNotes = ({ isOpen, onClose, callSessionId }) => {
             </div>
           )}
 
+          {/* Initial loading */}
+          {isLoading && notes.length === 0 && (
+            <div className={styles.emptyState}>
+              <div className={styles.loadingDots}>
+                <span /><span /><span />
+              </div>
+            </div>
+          )}
+
           {/* Notes */}
-          {notes.map((note, index) => (
+          {notes.map((note) => (
             <div 
               key={note._id} 
               className={`${styles.message} ${note.isTemp ? styles.sending : ''}`}
             >
               <div className={styles.messageContent}>
-                <p className={styles.messageText}>{note.content}</p>
-                <div className={styles.messageFooter}>
-                  <span className={styles.messageTime}>{formatTime(note.createdAt)}</span>
-                  {!note.isTemp && (
-                    <button 
-                      className={styles.deleteButton}
-                      onClick={() => handleDelete(note._id)}
-                      aria-label="Delete note"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
+                {editingNote === note._id ? (
+                  <div className={styles.editContainer}>
+                    <input
+                      type="text"
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveEdit(note._id);
+                        if (e.key === 'Escape') handleCancelEdit();
+                      }}
+                      className={styles.editInput}
+                      autoFocus
+                    />
+                    <div className={styles.editActions}>
+                      <button onClick={() => handleSaveEdit(note._id)} className={styles.editSave}>Save</button>
+                      <button onClick={handleCancelEdit} className={styles.editCancel}>Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className={styles.messageText}>{note.content}</p>
+                    <div className={styles.messageFooter}>
+                      <span className={styles.messageTime}>
+                        {formatTime(note.createdAt)}
+                        {note.updatedAt && ' (edited)'}
+                      </span>
+                      {!note.isTemp && (
+                        <div className={styles.messageActions}>
+                          {/* Copy button */}
+                          <button 
+                            className={styles.actionButton}
+                            onClick={() => handleCopy(note.content)}
+                            aria-label="Copy note"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                            </svg>
+                          </button>
+                          {/* Three dot menu */}
+                          <div className={styles.menuWrapper}>
+                            <button 
+                              className={styles.actionButton}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveMenu(activeMenu === note._id ? null : note._id);
+                              }}
+                              aria-label="More options"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="12" cy="5" r="2" />
+                                <circle cx="12" cy="12" r="2" />
+                                <circle cx="12" cy="19" r="2" />
+                              </svg>
+                            </button>
+                            {activeMenu === note._id && (
+                              <div className={styles.menu} onClick={e => e.stopPropagation()}>
+                                <button 
+                                  className={styles.menuItem}
+                                  onClick={() => handleStartEdit(note)}
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                  </svg>
+                                  Edit
+                                </button>
+                                <button 
+                                  className={`${styles.menuItem} ${styles.menuItemDanger}`}
+                                  onClick={() => handleDelete(note._id)}
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                                  </svg>
+                                  Delete
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           ))}

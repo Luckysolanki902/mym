@@ -18,7 +18,8 @@ const Index = ({ userDetails }) => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [filters] = useState({ college: 'all', gender: 'any' });
-  const [sortBy, setSortBy] = useState('new'); // 'trending', 'new', or 'myCollege'
+  const [sortBy, setSortBy] = useState('new'); // 'trending' or 'new'
+  const [myCollegeOnly, setMyCollegeOnly] = useState(false); // Independent toggle
   const sentinelRef = useRef(null);
   const router = useRouter();
   const MAX_CONFESSIONS_USER_CAN_SCROLL_WITHOUT_LOGIN = 20;
@@ -29,21 +30,22 @@ const Index = ({ userDetails }) => {
   const [activeGender, setActiveGender] = useState('neutral'); // State for background gradient
   const nextPageRef = useRef(1);
   const confessionCountRef = useRef(0);
+  const tourShownRef = useRef(false); // Track if tour was shown this session
 
   // Tour state
   const dispatch = useDispatch();
   const isTourCompleted = useSelector(selectIsTourCompleted('allConfessions'));
-  const isDebugMode = process.env.NEXT_PUBLIC_NODE_ENV === 'debug';
 
-  // Show tour for first-time visitors after confessions load (always show in debug mode)
+  // Show tour for first-time visitors after confessions load (only once per session)
   useEffect(() => {
-    if ((isDebugMode || !isTourCompleted) && confessions.length > 0 && !loading) {
+    if (!tourShownRef.current && !isTourCompleted && confessions.length > 0 && !loading) {
+      tourShownRef.current = true; // Mark as shown for this session
       const timer = setTimeout(() => {
         dispatch(startTour('allConfessions'));
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [isTourCompleted, confessions.length, loading, isDebugMode, dispatch]);
+  }, [isTourCompleted, confessions.length, loading, dispatch]);
 
   useEffect(() => {
     if (userDetails && !userDetails?.isVerified) {
@@ -75,13 +77,13 @@ const Index = ({ userDetails }) => {
 
       setLoading(true);
       try {
-        const collegeFilter = sortBy === 'myCollege' ? userDetails?.college || 'all' : filters.college;
         const params = new URLSearchParams({
-          college: collegeFilter || 'all',
+          college: filters.college || 'all',
           gender: filters.gender,
           page: String(pageToFetch),
           userCollege: userDetails?.college || '',
           sortBy,
+          myCollegeOnly: myCollegeOnly ? 'true' : 'false',
         });
 
         const response = await fetch(`/api/confession/getdesiredconfessions?${params.toString()}`);
@@ -111,13 +113,13 @@ const Index = ({ userDetails }) => {
         setLoading(false);
       }
     },
-    [limitReached, sortBy, filters.college, filters.gender, userDetails?.college, userDetails, MAX_CONFESSIONS_USER_CAN_SCROLL_WITHOUT_LOGIN]
+    [limitReached, sortBy, myCollegeOnly, filters.college, filters.gender, userDetails?.college, userDetails, MAX_CONFESSIONS_USER_CAN_SCROLL_WITHOUT_LOGIN]
   );
 
   useEffect(() => {
     fetchConfessions({ targetPage: 1, reset: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, sortBy]);
+  }, [filters, sortBy, myCollegeOnly]);
 
   useEffect(() => {
     const handleIntersection = entries => {
@@ -179,25 +181,30 @@ const Index = ({ userDetails }) => {
           <h1 className={styles.mainHeading}>Confessions</h1>
         </div>
         <div className={styles.tabsContainer} data-tour="sort-tabs">
-          <div 
-            className={`${styles.tab} ${sortBy === 'trending' ? styles.activeTab : ''}`}
-            onClick={() => setSortBy('trending')}
-          >
-            Trending
-          </div>
-          <div 
-            className={`${styles.tab} ${sortBy === 'new' ? styles.activeTab : ''}`}
-            onClick={() => setSortBy('new')}
-          >
-            New
+          <div className={styles.sortGroup}>
+            <div 
+              className={`${styles.tab} ${sortBy === 'trending' ? styles.activeTab : ''}`}
+              onClick={() => setSortBy('trending')}
+            >
+              Trending
+            </div>
+            <div 
+              className={`${styles.tab} ${sortBy === 'new' ? styles.activeTab : ''}`}
+              onClick={() => setSortBy('new')}
+            >
+              New
+            </div>
           </div>
           {userDetails && (
-            <div 
-              className={`${styles.tab} ${sortBy === 'myCollege' ? styles.activeTab : ''}`}
-              onClick={() => setSortBy('myCollege')}
-            >
-              My College
-            </div>
+            <>
+              <div className={styles.divider} />
+              <div 
+                className={`${styles.collegeToggle} ${myCollegeOnly ? styles.collegeToggleActive : ''}`}
+                onClick={() => setMyCollegeOnly(!myCollegeOnly)}
+              >
+                My College
+              </div>
+            </>
           )}
         </div>
         <div className={styles.chipParent}></div>
