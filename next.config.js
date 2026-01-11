@@ -6,6 +6,12 @@ const nextConfig = {
   // Optimize production builds
   swcMinify: true,
   
+  // Enable static export for Capacitor mobile builds
+  output: process.env.CAPACITOR_BUILD === 'true' ? 'export' : undefined,
+  
+  // Trailing slash for static export compatibility
+  trailingSlash: process.env.CAPACITOR_BUILD === 'true',
+  
   // Reduce bundle size by enabling modular imports
   modularizeImports: {
     '@mui/icons-material': {
@@ -31,6 +37,8 @@ const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
+    // Disable image optimization for static export
+    unoptimized: process.env.CAPACITOR_BUILD === 'true',
   },
   
   // Headers for caching static assets

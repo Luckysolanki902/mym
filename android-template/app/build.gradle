@@ -1,0 +1,83 @@
+// Android build.gradle configuration for Spyll
+// This file will be used to configure the Android build
+
+apply plugin: 'com.android.application'
+
+android {
+    namespace "in.spyll.app"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    
+    defaultConfig {
+        applicationId "in.spyll.app"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Sign with release keystore if available
+            if (project.hasProperty('ANDROID_KEYSTORE_PASSWORD')) {
+                signingConfig signingConfigs.release
+            }
+        }
+        debug {
+            debuggable true
+        }
+    }
+
+    // Release signing config
+    signingConfigs {
+        release {
+            if (project.hasProperty('ANDROID_KEYSTORE_PASSWORD')) {
+                storeFile file('release.keystore')
+                storePassword project.property('ANDROID_KEYSTORE_PASSWORD')
+                keyAlias project.property('ANDROID_KEY_ALIAS')
+                keyPassword project.property('ANDROID_KEY_PASSWORD')
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+repositories {
+    flatDir {
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+
+    // Firebase Cloud Messaging for push notifications
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics'
+
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+// Apply Google services plugin for Firebase
+try {
+    apply plugin: 'com.google.gms.google-services'
+} catch (Exception e) {
+    logger.warn("Google services plugin not found, Firebase may not work properly")
+}

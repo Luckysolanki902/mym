@@ -36,6 +36,17 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Capacitor / Mobile
+/android/
+/ios/
+*.apk
+*.ipa
+*.aab
+google-services.json
+GoogleService-Info.plist
+*.keystore
+*.jks
+
 generatesc.js
 /confidentials
 /pages/admin/confessions

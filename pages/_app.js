@@ -17,6 +17,7 @@ const Sidebar = dynamic(() => import('@/components/appComps/Sidebar'), { ssr: fa
 const GoogleAnalytics = dynamic(() => import('@/components/seo/GoogleAnalytics'), { ssr: false });
 const SoothingLoader = dynamic(() => import('@/components/loadings/SoothingLoader'), { ssr: false });
 const TypeAdminPassword = dynamic(() => import('@/components/fullPageComps/TypeAdminPassword'), { ssr: false });
+const PushNotificationInit = dynamic(() => import('@/components/utils/PushNotificationInit'), { ssr: false });
 
 const mymtheme = createTheme({
   palette: {
@@ -149,6 +150,7 @@ export default function App({ Component, pageProps }) {
           <ThemeProvider theme={mymtheme}>
             <CssBaseline />
             <GoogleAnalytics />
+            <PushNotificationInit />
             <CustomHead {...(pageSeo || {})} />
             <Topbar />
             <Sidebar />

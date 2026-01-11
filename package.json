@@ -6,9 +6,28 @@
     "dev": "next dev --port 3003",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next build && next export",
+    "cap:init": "cap init Spyll in.spyll.app --web-dir out",
+    "cap:add:android": "cap add android",
+    "cap:add:ios": "cap add ios",
+    "cap:sync": "cap sync",
+    "cap:open:android": "cap open android",
+    "cap:open:ios": "cap open ios",
+    "build:android": "yarn build && yarn export && cap sync android",
+    "build:ios": "yarn build && yarn export && cap sync ios",
+    "build:mobile": "yarn build && yarn export && cap sync"
   },
   "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/app": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@capacitor/keyboard": "^6.0.0",
+    "@capacitor/local-notifications": "^6.0.0",
+    "@capacitor/push-notifications": "^6.0.0",
+    "@capacitor/splash-screen": "^6.0.0",
+    "@capacitor/status-bar": "^6.0.0",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.7",
@@ -43,6 +62,7 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
     "eslint": "8.57.0",
     "eslint-config-next": "14.0.4",
     "eslint-plugin-react": "^7.37.5",
