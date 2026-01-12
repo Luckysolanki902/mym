@@ -5,7 +5,7 @@ import { createTheme, ThemeProvider, TextField, Button, CircularProgress } from 
 import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 import styles from './signup.module.css'
 
-const mymtheme = createTheme({
+const spylltheme = createTheme({
     palette: {
         mode: 'light',
         primary: {

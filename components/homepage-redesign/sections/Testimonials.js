@@ -45,7 +45,7 @@ const Testimonials = () => {
           <span className={styles.badge}>Real Stories</span>
           <h2 className={styles.title}>What students are saying</h2>
           <p className={styles.subtitle}>
-            Real experiences from verified students across India. No actors, no scripts — just genuine connections.
+            Real experiences from verified students across India. No actors, no scripts - just genuine connections.
           </p>
         </motion.div>
 

@@ -24,8 +24,7 @@ const DEFAULT_KEYWORDS = [
     'secret sharing',
     'anonymous messaging',
     'college secrets',
-    'mym',
-    'meetyourmate',
+    'spyll',
 ];
 
 const DEFAULT_STRUCTURED_DATA = [

@@ -63,12 +63,13 @@ const TextChatPage = ({ userDetails }) => {
 
   /**
    * Handles the user's confirmation to exit the chat.
-   * Allows navigation by setting allowNavigation to true and triggering router.back().
+   * Navigates to home page when user confirms exit.
    */
   const handleConfirmExit = () => {
     setExitDialogOpen(false);
     setAllowNavigation(true);
-    router.back();
+    // Use push to home instead of back to avoid beforePopState issues
+    router.push('/');
   };
 
   /**

@@ -37,17 +37,12 @@ const Topbar = () => {
         }}
       />
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        {user && <SwipeableTemporaryDrawer />}
-        {!loading && !user && (
-          <div className={styles.sessionButtons}>
-            {!isSignUpPage && !isSignInPage && (
-              <>
-                <button className={styles.login} onClick={handleSignIn}>Login</button>
-              </>
-            )}
-            {<SwipeableTemporaryDrawer />}
-          </div>
+        {/* Show login button only when not logged in and not on auth pages */}
+        {!loading && !user && !isSignUpPage && !isSignInPage && (
+          <button className={styles.login} onClick={handleSignIn}>Login</button>
         )}
+        {/* Always show drawer (it handles logged in/out states internally) */}
+        <SwipeableTemporaryDrawer />
       </div>
     </div>
   );

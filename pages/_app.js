@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import { Provider } from 'react-redux';
@@ -7,6 +7,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import SessionProvider from './SessionProvider';
 import CustomHead from '@/components/seo/CustomHead';
+import useMobileOptimizations from '@/hooks/useMobileOptimizations';
 
 import { store, persistor } from '@/store/store';
 import '@/styles/globals.css';
@@ -19,7 +20,7 @@ const SoothingLoader = dynamic(() => import('@/components/loadings/SoothingLoade
 const TypeAdminPassword = dynamic(() => import('@/components/fullPageComps/TypeAdminPassword'), { ssr: false });
 const PushNotificationInit = dynamic(() => import('@/components/utils/PushNotificationInit'), { ssr: false });
 
-const mymtheme = createTheme({
+const spylltheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
@@ -28,7 +29,7 @@ const mymtheme = createTheme({
   },
 });
 
-const mymthemeDark = createTheme({
+const spyllthemeDark = createTheme({
   palette: {
     mode: 'dark',
     primary: {
@@ -40,6 +41,9 @@ const mymthemeDark = createTheme({
 export default function App({ Component, pageProps }) {
   const router = useRouter();
   const pageSeo = Component?.seo || pageProps?.seo || null;
+
+  // Apply mobile performance optimizations
+  useMobileOptimizations();
 
   // Admin state
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -106,10 +110,49 @@ export default function App({ Component, pageProps }) {
     };
   }, [router.events]);
 
+  // Handle hardware back button for Android/iOS (Capacitor)
+  useEffect(() => {
+    let backButtonListener = null;
+    
+    const setupBackButton = async () => {
+      try {
+        // Only import Capacitor in browser environment
+        if (typeof window !== 'undefined') {
+          const { App } = await import('@capacitor/app');
+          const { Capacitor } = await import('@capacitor/core');
+          
+          // Only add listener on native platforms
+          if (Capacitor.isNativePlatform()) {
+            backButtonListener = await App.addListener('backButton', ({ canGoBack }) => {
+              // Check if we can go back in browser history
+              if (window.history.length > 1) {
+                router.back();
+              } else {
+                // If at root, minimize app (don't exit)
+                App.minimizeApp();
+              }
+            });
+          }
+        }
+      } catch (error) {
+        // Capacitor not available (running in browser)
+        console.log('Running in browser mode, back button handled by browser');
+      }
+    };
+
+    setupBackButton();
+
+    return () => {
+      if (backButtonListener) {
+        backButtonListener.remove();
+      }
+    };
+  }, [router]);
+
   // If on admin page and still verifying:
   if (isAdminPage && adminLoading) {
     return (
-      <ThemeProvider theme={mymthemeDark}>
+      <ThemeProvider theme={spyllthemeDark}>
         <CssBaseline />
         <CustomHead {...(pageSeo || {})} />
         <div style={{ 
@@ -130,7 +173,7 @@ export default function App({ Component, pageProps }) {
   // If on admin page:
   if (isAdminPage) {
     return (
-      <ThemeProvider theme={mymthemeDark}>
+      <ThemeProvider theme={spyllthemeDark}>
         <CssBaseline />
         <CustomHead {...(pageSeo || {})} />
         {isAdminLoggedIn ? (
@@ -147,7 +190,7 @@ export default function App({ Component, pageProps }) {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <SessionProvider>
-          <ThemeProvider theme={mymtheme}>
+          <ThemeProvider theme={spylltheme}>
             <CssBaseline />
             <GoogleAnalytics />
             <PushNotificationInit />

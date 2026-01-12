@@ -18,7 +18,7 @@ const ModeSwitcher = () => {
         >
           <h2 className={styles.title}>Choose your vibe</h2>
           <p className={styles.subtitle}>
-            Filter by college and who you want to meet. Your choice, your connections.
+            Filter by college and choose who you want to chat or call with. Your choice, your connections.
           </p>
         </motion.div>
 
@@ -125,7 +125,7 @@ const ModeSwitcher = () => {
               </svg>
             </div>
             <h3>Gender Filter</h3>
-            <p>Choose who you want to meet — boys, girls, or anyone. Your preferences, your choice.</p>
+            <p>Choose who you want to meet - boys, girls, or anyone. Your preferences, your choice.</p>
           </motion.div>
         </div>
       </div>

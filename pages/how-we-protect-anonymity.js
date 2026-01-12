@@ -19,8 +19,8 @@ const ProtectAnonymityPage = () => {
     return (
         <div>
             <Head>
-                <title>How We Protect Anonymity | Meet Your Mate</title>
-                <meta name="description" content="Learn how Meet Your Mate protects anonymity using encryption." />
+                <title>How We Protect Anonymity | Spyll</title>
+                <meta name="description" content="Learn how Spyll protects anonymity using encryption." />
             </Head>
 
             <Container maxWidth="md" sx={{ paddingTop: 8 }}>
@@ -28,7 +28,7 @@ const ProtectAnonymityPage = () => {
                 <Typography variant="h2" gutterBottom>How We Protect Anonymity</Typography>
                 <Typography variant="h4" gutterBottom>Chats</Typography>
                 <Typography variant="body1" paragraph>
-                    At Meet Your Mate, safeguarding your anonymity is paramount. Our commitment to your privacy extends beyond simple encryption – it's a four-tiered fortress of security. Enter your text below and witness a glimpse of this protective shield in action. While what you see here is a basic demonstration, rest assured that on Meet Your Mate, your messages undergo a rigorous four-way encryption process, ensuring unparalleled security.
+                    At Spyll, safeguarding your anonymity is paramount. Our commitment to your privacy extends beyond simple encryption – it's a four-tiered fortress of security. Enter your text below and witness a glimpse of this protective shield in action. While what you see here is a basic demonstration, rest assured that on Spyll, your messages undergo a rigorous four-way encryption process, ensuring unparalleled security.
                 </Typography>
 
                 <TextField
@@ -57,7 +57,7 @@ const ProtectAnonymityPage = () => {
 
                 <Typography variant="h4" gutterBottom style={{marginTop:'4rem'}}>Confessions</Typography>
                 <Typography variant="body1" paragraph>
-                    Confessions on Meet Your Mate are a safe space for you to share your thoughts, experiences, and secrets anonymously. We understand the importance of privacy, which is why we've implemented measures to ensure your anonymity.
+                    Confessions on Spyll are a safe space for you to share your thoughts, experiences, and secrets anonymously. We understand the importance of privacy, which is why we've implemented measures to ensure your anonymity.
                 </Typography>
                 <Typography variant="body1" paragraph>
                     When you submit a confession, we don't store any personal information such as email addresses. Instead, only your gender along with the confession content itself is saved. This means that even in the unlikely event of a data breach, your identity remains completely anonymous.

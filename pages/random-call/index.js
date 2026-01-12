@@ -44,7 +44,8 @@ const AudioCallPage = ({ userDetails }) => {
   const handleConfirmExit = () => {
     setExitDialogOpen(false);
     setAllowNavigation(true);
-    router.back();
+    // Use push to home instead of back to avoid beforePopState issues
+    router.push('/');
   };
 
   const handleCancelExit = () => {

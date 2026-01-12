@@ -14,7 +14,7 @@ import PhoneMockup from '@/components/commonComps/PhoneMockup';
 
 
 
-const mymtheme = createTheme({
+const spylltheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
@@ -79,7 +79,7 @@ export default function Signin({userDetails}) {
   return (
     <>
       <CustomHead title={'Login to Spyll - Your Campus Confidential'} />
-      <ThemeProvider theme={mymtheme}>
+      <ThemeProvider theme={spylltheme}>
 
         <div className={styles.mainContainer}>
           <div className={styles.mockupSection}>

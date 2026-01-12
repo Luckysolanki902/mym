@@ -1280,7 +1280,7 @@ const useAudioCallController = ({ userDetails, context }) => {
     if (typeof window === 'undefined') return;
     const isSecure = window.isSecureContext ?? window.location?.protocol === 'https:';
     if (!isSecure) {
-      setError('Microphone requires a secure (https) connection. Please reopen Meet Your Mate over https.');
+      setError('Microphone requires a secure (https) connection. Please reopen Spyll over https.');
       setCallState(CALL_STATE.IDLE);
       return;
     }

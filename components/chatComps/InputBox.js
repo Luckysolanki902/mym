@@ -93,21 +93,24 @@ const InputBox = ({
                             name="messageBox"
                             spellCheck="false"
                             autoCorrect="off"
-                            placeholder={socket?.connected ? ((isFindingPair && !hasPaired) ? "Finding a pair..." : (hasPaired ? "Type your message..." : "Find a pair to start chatting")) : "Connecting..."}
+                            autoCapitalize="sentences"
+                            inputMode="text"
+                            enterKeyHint="send"
+                            placeholder={socket?.connected ? ((isFindingPair && !hasPaired) ? "Type while we find someone..." : (hasPaired ? "Type your message..." : "Find a pair to start chatting")) : "Connecting..."}
                             autoFocus
                             id="messageBox"
                             value={textValue}
                             onFocus={() => setInpFocus(true)}
                             autoComplete="off"
                             rows={1}
-                            disabled={!hasPaired}
+                            disabled={!socket?.connected}
                             style={{ 
                                 width: '100%', 
                                 resize: 'none', 
                                 overflow: 'hidden',
                                 whiteSpace: 'nowrap',
-                                opacity: hasPaired ? 1 : 0.6,
-                                cursor: hasPaired ? 'text' : 'not-allowed',
+                                opacity: socket?.connected ? 1 : 0.6,
+                                cursor: socket?.connected ? 'text' : 'not-allowed',
                                 transition: 'opacity 0.3s ease'
                             }}
                             onChange={(e) => setTextValue(e.target.value)}

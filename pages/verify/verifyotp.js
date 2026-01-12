@@ -13,7 +13,7 @@ import { signIn } from 'next-auth/react'; // Import signIn from NextAuth
 
 const COOLDOWN_SECONDS = 30;
 
-const mymtheme = createTheme({
+const spylltheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
@@ -173,7 +173,7 @@ const VerifyOTP = () => {
     <>
       <CustomHead title={'Verify OTP - Spyll'} />
 
-      <ThemeProvider theme={mymtheme}>
+      <ThemeProvider theme={spylltheme}>
         <div className={styles.mainContainer}>
           <div className={styles.mainBox}>
             <SpyllWordmark className={styles.spyllLogo} />

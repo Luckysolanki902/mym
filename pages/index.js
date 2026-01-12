@@ -111,7 +111,6 @@ Home.seo = {
     'campus voice chat',
     'anonymous college forum',
     'spyll app',
-    'mym platform',
   ],
   canonicalUrl: homepageUrl,
   seoImage: DEFAULT_OG_IMAGE,

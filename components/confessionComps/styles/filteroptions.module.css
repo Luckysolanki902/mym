@@ -157,7 +157,7 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 1rem;
-    background-color: var(--mymblack);
+    background-color: var(--spyllblack);
     overflow: hidden;
     color: white;
     border-radius: 1rem;

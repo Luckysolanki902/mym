@@ -66,13 +66,13 @@
 
 .input {
     width: 100%;
-    color: var(--mymblack);
+    color: var(--spyllblack);
     /* margin: 0.5rem 0; */
 }
 
 .selectInput {
     width: 100%;
-    color: var(--mymblack);
+    color: var(--spyllblack);
     margin: 0.4rem;
 }
 

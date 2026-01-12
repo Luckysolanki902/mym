@@ -86,7 +86,7 @@
                 inset 0 1px 0 rgba(255, 255, 255, 1);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    color: var(--mymblack);
+    color: var(--spyllblack);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -121,7 +121,7 @@
 
 .contactLink {
     position: relative;
-    color: var(--mymblack);
+    color: var(--spyllblack);
     text-decoration: none;
     font-weight: 500;
     font-size: 0.85rem;

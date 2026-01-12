@@ -56,7 +56,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Connect with verified students across India. Chat anonymously, voice call, or browse confessions — no names, no pressure.
+            Connect with verified students across India. Chat anonymously, voice call, or browse confessions - no names, no pressure.
           </motion.p>
 
           {/* CTA Buttons */}

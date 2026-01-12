@@ -14,7 +14,7 @@ import { getSession } from 'next-auth/react';
 import PhoneMockup from '@/components/commonComps/PhoneMockup';
 import SpyllWordmark from '@/components/commonComps/SpyllWordmark';
 
-const mymtheme = createTheme({
+const spylltheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
@@ -195,7 +195,7 @@ const Signup = ({ userDetails }) => {
     <>
       <CustomHead title={'Signup to Spyll - Your Campus Confidential'} />
 
-      <ThemeProvider theme={mymtheme}>
+      <ThemeProvider theme={spylltheme}>
         <div className={styles.mainContainer}>
           <div className={styles.mockupSection}>
             <PhoneMockup
