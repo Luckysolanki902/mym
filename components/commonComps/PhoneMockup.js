@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './styles/PhoneMockup.module.css';
 
@@ -12,6 +12,12 @@ const WAVE_ANIMATIONS = [
   { height: 70, duration: 0.9 },
   { height: 50, duration: 0.65 },
 ];
+
+// Check if running on native app (for performance)
+const isNativeApp = () => {
+  if (typeof window === 'undefined') return false;
+  return window.Capacitor?.isNativePlatform?.() || false;
+};
 
 /**
  * PhoneMockup - Reusable 3D tilted phone component
@@ -36,6 +42,15 @@ const PhoneMockup = ({
 }) => {
   const [activeMode, setActiveMode] = useState(mode === 'auto' ? 'chat' : mode);
   const [callTimer, setCallTimer] = useState(0);
+  const [isNative, setIsNative] = useState(false);
+
+  // Check if native app on mount
+  useEffect(() => {
+    setIsNative(isNativeApp());
+  }, []);
+
+  // Disable animations on native for performance
+  const shouldAnimate = !isNative;
 
   // Sync with external mode prop when controlled (only on initial mount or when mode prop changes)
   useEffect(() => {
@@ -44,9 +59,9 @@ const PhoneMockup = ({
     }
   }, [mode]);
 
-  // Auto-rotate between modes
+  // Auto-rotate between modes (disabled on native for performance)
   useEffect(() => {
-    if (!autoRotate) return;
+    if (!autoRotate || isNative) return;
     
     const interval = setInterval(() => {
       if (mode === 'auto') {
@@ -62,7 +77,7 @@ const PhoneMockup = ({
     }, rotateInterval);
     
     return () => clearInterval(interval);
-  }, [autoRotate, rotateInterval, mode, activeMode, onModeChange]);
+  }, [autoRotate, rotateInterval, mode, activeMode, onModeChange, isNative]);
 
   // Call timer simulation - increments when in call mode
   useEffect(() => {
@@ -137,26 +152,40 @@ const PhoneMockup = ({
         {/* Glow Effect */}
         <div className={`${styles.deviceGlow} ${activeMode === 'call' ? styles.glowCyan : styles.glowPink}`} />
         
-        {/* Floating Cards */}
-        <motion.div 
-          className={styles.floatingCard1}
-          initial={{ y: 0 }}
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 3, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }}
-        >
-          <span className={styles.floatingEmoji}>🔒</span>
-          <span className={styles.floatingText}>100% Anonymous</span>
-        </motion.div>
+        {/* Floating Cards - animations disabled on native for performance */}
+        {shouldAnimate ? (
+          <motion.div 
+            className={styles.floatingCard1}
+            initial={{ y: 0 }}
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }}
+          >
+            <span className={styles.floatingEmoji}>🔒</span>
+            <span className={styles.floatingText}>100% Anonymous</span>
+          </motion.div>
+        ) : (
+          <div className={styles.floatingCard1}>
+            <span className={styles.floatingEmoji}>🔒</span>
+            <span className={styles.floatingText}>100% Anonymous</span>
+          </div>
+        )}
         
-        <motion.div 
-          className={styles.floatingCard2}
-          initial={{ y: 0 }}
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 3.5, repeat: Infinity, repeatType: "loop", ease: "easeInOut", delay: 0.5 }}
-        >
-          <span className={styles.floatingEmoji}>✨</span>
-          <span className={styles.floatingText}>College Verified</span>
-        </motion.div>
+        {shouldAnimate ? (
+          <motion.div 
+            className={styles.floatingCard2}
+            initial={{ y: 0 }}
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 3.5, repeat: Infinity, repeatType: "loop", ease: "easeInOut", delay: 0.5 }}
+          >
+            <span className={styles.floatingEmoji}>✨</span>
+            <span className={styles.floatingText}>College Verified</span>
+          </motion.div>
+        ) : (
+          <div className={styles.floatingCard2}>
+            <span className={styles.floatingEmoji}>✨</span>
+            <span className={styles.floatingText}>College Verified</span>
+          </div>
+        )}
 
         {/* Device Frame */}
         <div className={styles.deviceFrame}>

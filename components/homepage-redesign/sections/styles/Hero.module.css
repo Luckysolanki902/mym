@@ -484,3 +484,71 @@
     gap: 0.5rem;
   }
 }
+
+/* ===== Mobile Performance Optimizations ===== */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .gradientOrb1,
+  .gradientOrb2,
+  .liveDot,
+  .spotlightText,
+  .spotlightWord::after {
+    animation: none !important;
+  }
+}
+
+/* Native app optimizations - disable heavy animations */
+:global(.is-native-app) .gradientOrb1,
+:global(.is-native-app) .gradientOrb2 {
+  animation: none !important;
+  opacity: 0.5;
+}
+
+:global(.is-native-app) .spotlightText {
+  animation: none !important;
+  -webkit-mask-position: 50% 50%;
+  mask-position: 50% 50%;
+}
+
+:global(.is-native-app) .spotlightWord::after {
+  animation: none !important;
+  background-position: 50% 50%;
+}
+
+:global(.is-native-app) .liveDot {
+  animation: none !important;
+  opacity: 1;
+}
+
+/* GPU Acceleration hints */
+.heroSection {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.heroContent {
+  will-change: auto; /* Let browser manage */
+}
+
+/* Optimize scroll performance */
+:global(.is-native-app) .heroSection {
+  overflow: visible;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Reduce filter blur on mobile for performance */
+@media (max-width: 768px) {
+  .gradientOrb1,
+  .gradientOrb2 {
+    filter: blur(40px);
+    opacity: 0.4;
+  }
+  
+  .liveBadge {
+    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.95);
+  }
+}

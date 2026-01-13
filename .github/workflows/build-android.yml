@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      release_message:
+        description: 'Release message (leave empty for no release)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -17,6 +22,28 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if this is a release commit
+        id: check-release
+        run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          MANUAL_MSG="${{ github.event.inputs.release_message }}"
+          
+          # Check for release: prefix in commit message
+          if [[ "$COMMIT_MSG" == release:* ]] || [[ "$COMMIT_MSG" == Release:* ]]; then
+            echo "is_release=true" >> $GITHUB_OUTPUT
+            # Extract the release message (everything after "release:")
+            RELEASE_MSG=$(echo "$COMMIT_MSG" | sed 's/^[Rr]elease:[[:space:]]*//')
+            echo "release_message=$RELEASE_MSG" >> $GITHUB_OUTPUT
+          elif [ -n "$MANUAL_MSG" ]; then
+            echo "is_release=true" >> $GITHUB_OUTPUT
+            echo "release_message=$MANUAL_MSG" >> $GITHUB_OUTPUT
+          else
+            echo "is_release=false" >> $GITHUB_OUTPUT
+            echo "release_message=" >> $GITHUB_OUTPUT
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -40,7 +67,7 @@ jobs:
               * { margin: 0; padding: 0; box-sizing: border-box; }
               body { 
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                background: #ffffff;
+                background: #121212;
                 min-height: 100vh;
                 display: flex;
                 align-items: center;
@@ -55,9 +82,8 @@ jobs:
             </style>
           </head>
           <body>
-            <div class="loader">Loading Spyll...</div>
+            <div class="loader">SPYLL</div>
             <script>
-              // Redirect to main app
               window.location.href = 'https://spyll.in';
             </script>
           </body>
@@ -101,85 +127,54 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      - name: Check if signing is configured
-        id: check-signing
-        run: |
-          if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
-            echo "has_keystore=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_keystore=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Build Debug APK
         run: |
           cd android
           ./gradlew assembleDebug --no-daemon
 
-      - name: Build Release APK
-        run: |
-          cd android
-          ./gradlew assembleRelease --no-daemon
-        env:
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-
-      - name: Sign Release APK
-        if: steps.check-signing.outputs.has_keystore == 'true'
-        env:
-          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/release.keystore
-          cd android
-          ./gradlew assembleRelease \
-            -Pandroid.injected.signing.store.file=app/release.keystore \
-            -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
-            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
-            -Pandroid.injected.signing.key.password=$KEY_PASSWORD
-
-      - name: Rename APKs
+      - name: Rename APK to spyll.apk
         run: |
           cp android/app/build/outputs/apk/debug/app-debug.apk ./spyll.apk
-          if [ -f "android/app/build/outputs/apk/release/app-release-unsigned.apk" ]; then
-            cp android/app/build/outputs/apk/release/app-release-unsigned.apk ./spyll-release.apk
-          fi
 
-      - name: Upload Debug APK
+      - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: spyll-apk
           path: spyll.apk
           retention-days: 30
 
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        if: steps.check-signing.outputs.has_keystore == 'true'
-        with:
-          name: spyll-release-apk
-          path: spyll-release.apk
-          retention-days: 30
+      - name: Get next version tag
+        if: steps.check-release.outputs.is_release == 'true' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        id: get-version
+        run: |
+          # Get the latest tag
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0")
+          # Extract number and increment
+          VERSION_NUM=$(echo "$LATEST_TAG" | sed 's/v//')
+          if ! [[ "$VERSION_NUM" =~ ^[0-9]+$ ]]; then
+            VERSION_NUM=0
+          fi
+          NEXT_VERSION=$((VERSION_NUM + 1))
+          echo "version=v$NEXT_VERSION" >> $GITHUB_OUTPUT
 
       - name: Create Release
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        if: steps.check-release.outputs.is_release == 'true' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ github.run_number }}
-          name: Spyll v${{ github.run_number }}
+          tag_name: ${{ steps.get-version.outputs.version }}
+          name: Spyll ${{ steps.get-version.outputs.version }}
           body: |
             ## Spyll - India's Largest Anonymous Network
             
-            ### Downloads
-            - **Android APK**: Download `spyll.apk` below
-            - **Website**: [spyll.in](https://spyll.in)
+            ### Download
+            📱 **[Download spyll.apk](https://github.com/${{ github.repository }}/releases/download/${{ steps.get-version.outputs.version }}/spyll.apk)**
             
             ### What's New
-            - Latest build from commit ${{ github.sha }}
-          files: |
-            spyll.apk
-            spyll-release.apk
+            ${{ steps.check-release.outputs.release_message }}
+            
+            ---
+            🌐 Website: [spyll.in](https://spyll.in)
+          files: spyll.apk
           draft: false
           prerelease: false
         env:

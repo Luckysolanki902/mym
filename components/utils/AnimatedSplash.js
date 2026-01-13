@@ -1,7 +1,7 @@
 // Animated Splash Screen Component
 // Shows a beautiful "spill" animation for SPYLL branding
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 import styles from './AnimatedSplash.module.css';
@@ -9,25 +9,25 @@ import styles from './AnimatedSplash.module.css';
 const AnimatedSplash = ({ onComplete }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [animationPhase, setAnimationPhase] = useState('initial'); // initial, spilling, complete
+  const hasHiddenNativeSplash = useRef(false);
 
   useEffect(() => {
-    // Hide native splash screen first
-    const hideNativeSplash = async () => {
-      if (Capacitor.isNativePlatform()) {
+    // Small delay to ensure component is mounted and rendered
+    // before hiding native splash
+    const mountDelay = setTimeout(async () => {
+      if (Capacitor.isNativePlatform() && !hasHiddenNativeSplash.current) {
+        hasHiddenNativeSplash.current = true;
         try {
-          await SplashScreen.hide();
+          await SplashScreen.hide({ fadeOutDuration: 200 });
+          console.log('[Splash] Native splash hidden');
         } catch (e) {
-          console.log('Splash screen already hidden');
+          console.log('[Splash] Error hiding native splash:', e);
         }
       }
-    };
-
-    hideNativeSplash();
-
-    // Start animation sequence
-    const timer1 = setTimeout(() => {
+      
+      // Start spill animation after native splash is hidden
       setAnimationPhase('spilling');
-    }, 100);
+    }, 50); // Small delay to ensure DOM is ready
 
     const timer2 = setTimeout(() => {
       setAnimationPhase('complete');
@@ -39,7 +39,7 @@ const AnimatedSplash = ({ onComplete }) => {
     }, 1800);
 
     return () => {
-      clearTimeout(timer1);
+      clearTimeout(mountDelay);
       clearTimeout(timer2);
       clearTimeout(timer3);
     };

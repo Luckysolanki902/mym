@@ -5,7 +5,12 @@ import { Capacitor } from '@capacitor/core';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { LocalNotifications } from '@capacitor/local-notifications';
 
-const API_BASE_URL = 'https://spyll.in';
+// Use the same base URL as the app is loaded from, or fallback to production
+const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+  ? `${window.location.protocol}//${window.location.host}`
+  : 'https://spyll.in';
+
+console.log('[Push] API Base URL:', API_BASE_URL);
 
 class PushNotificationService {
   constructor() {

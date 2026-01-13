@@ -19,7 +19,35 @@ const GoogleAnalytics = dynamic(() => import('@/components/seo/GoogleAnalytics')
 const SoothingLoader = dynamic(() => import('@/components/loadings/SoothingLoader'), { ssr: false });
 const TypeAdminPassword = dynamic(() => import('@/components/fullPageComps/TypeAdminPassword'), { ssr: false });
 const PushNotificationInit = dynamic(() => import('@/components/utils/PushNotificationInit'), { ssr: false });
-const AnimatedSplash = dynamic(() => import('@/components/utils/AnimatedSplash'), { ssr: false });
+
+// Import AnimatedSplash with loading state - show static splash while loading
+const AnimatedSplash = dynamic(
+  () => import('@/components/utils/AnimatedSplash'),
+  { 
+    ssr: false,
+    loading: () => (
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#121212',
+      }}>
+        <span style={{
+          fontFamily: "'Poppins', sans-serif",
+          fontSize: '2.5rem',
+          fontWeight: 700,
+          color: '#FF6BA0',
+          letterSpacing: '-0.02em',
+        }}>
+          SPYLL
+        </span>
+      </div>
+    )
+  }
+);
 
 const spylltheme = createTheme({
   palette: {
