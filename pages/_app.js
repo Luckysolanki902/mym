@@ -88,6 +88,27 @@ export default function App({ Component, pageProps }) {
     initLogger();
   }, []);
 
+  // Initialize Firebase Analytics for native apps (tracks app vs web users in GA4)
+  useEffect(() => {
+    const initFirebaseAnalytics = async () => {
+      try {
+        const { Capacitor } = await import('@capacitor/core');
+        if (Capacitor.isNativePlatform()) {
+          const { FirebaseAnalytics } = await import('@capacitor-firebase/analytics');
+          // Enable analytics collection
+          await FirebaseAnalytics.setEnabled({ enabled: true });
+          // Log app_open event
+          await FirebaseAnalytics.logEvent({ name: 'app_open', params: {} });
+          console.log('Firebase Analytics initialized for native app');
+        }
+      } catch (e) {
+        console.log('Firebase Analytics init skipped:', e.message);
+        // Silently fail
+      }
+    };
+    initLogger();
+  }, []);
+
   // Animated splash state - start true to prevent flash, hide only on web
   const [showSplash, setShowSplash] = useState(true);
   const [splashChecked, setSplashChecked] = useState(false);
