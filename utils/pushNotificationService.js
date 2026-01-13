@@ -12,12 +12,86 @@ const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname !
 
 console.log('[Push] API Base URL:', API_BASE_URL);
 
+// Rate limiting constants
+const CHAT_QUEUE_NOTIFICATIONS_PER_HOUR = 2;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour in milliseconds
+
 class PushNotificationService {
   constructor() {
     this.isInitialized = false;
     this.deviceToken = null;
     this.notificationListeners = [];
     this.userId = null;
+    // Track chat queue notification timestamps for rate limiting
+    this.chatQueueNotificationTimestamps = this.loadNotificationTimestamps();
+  }
+
+  /**
+   * Load notification timestamps from localStorage
+   */
+  loadNotificationTimestamps() {
+    if (typeof window === 'undefined') return [];
+    try {
+      const stored = localStorage.getItem('spyll_chat_queue_notification_times');
+      if (stored) {
+        const timestamps = JSON.parse(stored);
+        // Filter out timestamps older than 1 hour
+        const now = Date.now();
+        return timestamps.filter(ts => (now - ts) < RATE_LIMIT_WINDOW_MS);
+      }
+    } catch (e) {
+      console.log('[Push] Error loading notification timestamps:', e);
+    }
+    return [];
+  }
+
+  /**
+   * Save notification timestamps to localStorage
+   */
+  saveNotificationTimestamps() {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem('spyll_chat_queue_notification_times', JSON.stringify(this.chatQueueNotificationTimestamps));
+    } catch (e) {
+      console.log('[Push] Error saving notification timestamps:', e);
+    }
+  }
+
+  /**
+   * Check if a chat queue notification should be shown (rate limiting)
+   * Returns true if allowed, false if rate limited
+   */
+  shouldShowChatQueueNotification() {
+    const now = Date.now();
+    // Remove timestamps older than 1 hour
+    this.chatQueueNotificationTimestamps = this.chatQueueNotificationTimestamps.filter(
+      ts => (now - ts) < RATE_LIMIT_WINDOW_MS
+    );
+    
+    // Check if under the limit
+    if (this.chatQueueNotificationTimestamps.length < CHAT_QUEUE_NOTIFICATIONS_PER_HOUR) {
+      // Add current timestamp and save
+      this.chatQueueNotificationTimestamps.push(now);
+      this.saveNotificationTimestamps();
+      console.log(`[Push] Chat queue notification allowed (${this.chatQueueNotificationTimestamps.length}/${CHAT_QUEUE_NOTIFICATIONS_PER_HOUR} this hour)`);
+      return true;
+    }
+    
+    console.log(`[Push] Chat queue notification rate limited (${this.chatQueueNotificationTimestamps.length}/${CHAT_QUEUE_NOTIFICATIONS_PER_HOUR} this hour)`);
+    return false;
+  }
+
+  /**
+   * Check if notification is a chat queue notification
+   */
+  isChatQueueNotification(notification) {
+    const data = notification.data || {};
+    const type = data.type || '';
+    // Check for chat/call waiting notifications
+    return type === 'users_waiting_chat' || 
+           type === 'users_waiting_call' ||
+           type.includes('waiting') ||
+           (notification.title && notification.title.includes('waiting'));
   }
 
   /**
@@ -146,6 +220,14 @@ class PushNotificationService {
     // On push notification received (foreground)
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
       console.log('[Push] Notification received:', notification);
+      
+      // Check if this is a chat queue notification and apply rate limiting
+      if (this.isChatQueueNotification(notification)) {
+        if (!this.shouldShowChatQueueNotification()) {
+          console.log('[Push] Skipping chat queue notification due to rate limit');
+          return; // Don't show this notification
+        }
+      }
       
       // Show local notification when app is in foreground
       this.showLocalNotification(notification);
