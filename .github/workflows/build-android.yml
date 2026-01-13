@@ -120,6 +120,119 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Patch build.gradle for robust signing
+        run: |
+          # Replace the signing config in build.gradle with robust version
+          cat > android/app/build.gradle << 'GRADLE_EOF'
+          apply plugin: 'com.android.application'
+
+          // Load keystore properties if available (for CI/CD builds)
+          def keystorePropertiesFile = rootProject.file("keystore.properties")
+          def keystoreProperties = new Properties()
+          def useReleaseKeystore = false
+
+          if (keystorePropertiesFile.exists()) {
+              try {
+                  keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+                  // Verify all required properties exist
+                  if (keystoreProperties['storeFile'] && keystoreProperties['storePassword'] && 
+                      keystoreProperties['keyAlias'] && keystoreProperties['keyPassword']) {
+                      def keystoreFile = file(keystoreProperties['storeFile'])
+                      if (keystoreFile.exists()) {
+                          useReleaseKeystore = true
+                          println "✅ Release keystore configured: ${keystoreProperties['storeFile']}"
+                      } else {
+                          println "⚠️ Keystore file not found: ${keystoreProperties['storeFile']}"
+                      }
+                  } else {
+                      println "⚠️ Keystore properties incomplete"
+                  }
+              } catch (Exception e) {
+                  println "⚠️ Error loading keystore.properties: ${e.message}"
+              }
+          } else {
+              println "ℹ️ No keystore.properties found, using debug signing"
+          }
+
+          android {
+              namespace "in.spyll.app"
+              compileSdk rootProject.ext.compileSdkVersion
+              defaultConfig {
+                  applicationId "in.spyll.app"
+                  minSdkVersion rootProject.ext.minSdkVersion
+                  targetSdkVersion rootProject.ext.targetSdkVersion
+                  versionCode 1
+                  versionName "1.0"
+                  testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+                  aaptOptions {
+                       ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+                  }
+              }
+              signingConfigs {
+                  debug {
+                      storeFile file('debug.keystore')
+                      storePassword 'android'
+                      keyAlias 'androiddebugkey'
+                      keyPassword 'android'
+                  }
+                  release {
+                      if (useReleaseKeystore) {
+                          storeFile file(keystoreProperties['storeFile'])
+                          storePassword keystoreProperties['storePassword']
+                          keyAlias keystoreProperties['keyAlias']
+                          keyPassword keystoreProperties['keyPassword']
+                      }
+                  }
+              }
+              buildTypes {
+                  debug {
+                      signingConfig signingConfigs.debug
+                      debuggable true
+                  }
+                  release {
+                      signingConfig useReleaseKeystore ? signingConfigs.release : signingConfigs.debug
+                      minifyEnabled false
+                      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                  }
+              }
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+
+          repositories {
+              flatDir{
+                  dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+              }
+          }
+
+          dependencies {
+              implementation fileTree(include: ['*.jar'], dir: 'libs')
+              implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+              implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+              implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+              implementation project(':capacitor-android')
+              testImplementation "junit:junit:$junitVersion"
+              androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+              androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+              implementation project(':capacitor-cordova-android-plugins')
+          }
+
+          apply from: 'capacitor.build.gradle'
+
+          try {
+              def servicesJSON = file('google-services.json')
+              if (servicesJSON.text) {
+                  apply plugin: 'com.google.gms.google-services'
+              }
+          } catch(Exception e) {
+              logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+          }
+          GRADLE_EOF
+          
+          echo "✅ build.gradle patched with robust signing config"
+
       - name: Copy app icons (after sync to avoid overwrite)
         run: |
           # Copy icons to Android mipmap folders AFTER cap sync
