@@ -73,6 +73,15 @@ jobs:
       - name: Install Capacitor CLI
         run: npm install -g @capacitor/cli
 
+      - name: Add Android platform
+        run: npx cap add android || true
+
+      - name: Copy google-services.json
+        run: |
+          if [ -f "google-services.json" ]; then
+            cp google-services.json android/app/google-services.json
+          fi
+
       - name: Sync Capacitor
         run: npx cap sync android
 
@@ -128,18 +137,26 @@ jobs:
             -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
             -Pandroid.injected.signing.key.password=$KEY_PASSWORD
 
+      - name: Rename APKs
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk ./spyll.apk
+          if [ -f "android/app/build/outputs/apk/release/app-release-unsigned.apk" ]; then
+            cp android/app/build/outputs/apk/release/app-release-unsigned.apk ./spyll-release.apk
+          fi
+
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: spyll-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: spyll-apk
+          path: spyll.apk
           retention-days: 30
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
+        if: steps.check-signing.outputs.has_keystore == 'true'
         with:
           name: spyll-release-apk
-          path: android/app/build/outputs/apk/release/app-release*.apk
+          path: spyll-release.apk
           retention-days: 30
 
       - name: Create Release
@@ -152,14 +169,14 @@ jobs:
             ## Spyll - India's Largest Anonymous Network
             
             ### Downloads
-            - **Android APK**: Download `app-debug.apk` below
+            - **Android APK**: Download `spyll.apk` below
             - **Website**: [spyll.in](https://spyll.in)
             
             ### What's New
             - Latest build from commit ${{ github.sha }}
           files: |
-            android/app/build/outputs/apk/debug/app-debug.apk
-            android/app/build/outputs/apk/release/app-release*.apk
+            spyll.apk
+            spyll-release.apk
           draft: false
           prerelease: false
         env:
