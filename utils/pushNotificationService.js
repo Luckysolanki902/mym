@@ -12,11 +12,49 @@ class PushNotificationService {
     this.isInitialized = false;
     this.deviceToken = null;
     this.notificationListeners = [];
+    this.userId = null;
+  }
+
+  /**
+   * Create notification channels for Android
+   */
+  async createNotificationChannels() {
+    if (Capacitor.getPlatform() !== 'android') return;
+
+    try {
+      // Create main notification channel
+      await PushNotifications.createChannel({
+        id: 'spyll-notifications',
+        name: 'Spyll Notifications',
+        description: 'Notifications from Spyll app',
+        importance: 4, // HIGH
+        visibility: 1, // PUBLIC
+        sound: 'notification',
+        vibration: true,
+        lights: true,
+        lightColor: '#FF5973',
+      });
+
+      // Create channel for user waiting notifications
+      await PushNotifications.createChannel({
+        id: 'spyll-users-waiting',
+        name: 'Users Waiting',
+        description: 'Notifications when users are waiting to chat or call',
+        importance: 4,
+        visibility: 1,
+        sound: 'notification',
+        vibration: true,
+      });
+
+      console.log('[Push] Notification channels created');
+    } catch (error) {
+      console.error('[Push] Error creating notification channels:', error);
+    }
   }
 
   /**
    * Initialize push notifications
-   * Call this after user login/verification
+   * Call this after user login/verification or with unverified user ID
    */
   async initialize(userId) {
     if (!Capacitor.isNativePlatform()) {
@@ -24,23 +62,29 @@ class PushNotificationService {
       return { success: false, reason: 'not-native' };
     }
 
-    if (this.isInitialized) {
-      console.log('[Push] Already initialized');
+    if (this.isInitialized && this.userId === userId) {
+      console.log('[Push] Already initialized for this user');
       return { success: true, token: this.deviceToken };
     }
 
+    this.userId = userId;
+
     try {
+      // Create notification channels first (Android 8+)
+      await this.createNotificationChannels();
+
       // Request permission
       const permStatus = await PushNotifications.checkPermissions();
+      console.log('[Push] Current permission status:', permStatus.receive);
       
       if (permStatus.receive === 'prompt') {
         const result = await PushNotifications.requestPermissions();
         if (result.receive !== 'granted') {
-          console.log('[Push] Permission denied');
+          console.log('[Push] Permission denied by user');
           return { success: false, reason: 'permission-denied' };
         }
       } else if (permStatus.receive !== 'granted') {
-        console.log('[Push] Permission not granted');
+        console.log('[Push] Permission not granted, status:', permStatus.receive);
         return { success: false, reason: 'permission-not-granted' };
       }
 
@@ -51,6 +95,7 @@ class PushNotificationService {
       this.setupListeners(userId);
       this.isInitialized = true;
 
+      console.log('[Push] Initialization complete');
       return { success: true };
     } catch (error) {
       console.error('[Push] Initialization error:', error);

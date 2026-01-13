@@ -46,7 +46,7 @@ export default function ForgotPassword() {
     };
 
     return (
-        <ThemeProvider theme={mymtheme}>
+        <ThemeProvider theme={spylltheme}>
             <div className={styles.mainContainer}>
                 <div className={styles.mainBox}>
                     <SpyllWordmark className={styles.spyllLogo} />

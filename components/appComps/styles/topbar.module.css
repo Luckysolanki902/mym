@@ -10,7 +10,7 @@
         rgba(252, 252, 254, 0.7) 100%);
     backdrop-filter: blur(40px) saturate(180%);
     -webkit-backdrop-filter: blur(40px) saturate(180%);
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     padding-left: 1rem;
     padding-right: 1rem;
@@ -20,6 +20,12 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow: 0 4px 24px -8px rgba(31, 38, 135, 0.06);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rightControls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .drawermain {
@@ -276,6 +282,16 @@
 }
 
 .login {
+    outline: none;
+    padding: 0.65rem 1.3rem;
+    font-weight: 600;
+    border-radius: 1.1rem;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+    margin-right: 0.5rem;
     background: linear-gradient(135deg,
         rgba(255, 255, 255, 0.65) 0%,
         rgba(250, 250, 252, 0.6) 100%);
@@ -295,6 +311,11 @@
     box-shadow: 
         0 6px 20px -4px rgba(31, 38, 135, 0.12),
         inset 0 1px 0 rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+}
+
+.login:active {
+    transform: translateY(0) scale(0.98);
 }
 
 .signup {
@@ -320,12 +341,12 @@
 }
 
 @media (max-width: 800px) {
-    .mainDiv {
-        justify-content: space-between;
-    }
-    
     .menuIcon {
         font-size: 36px;
+    }
+    
+    .login {
+        display: none;
     }
 }
 

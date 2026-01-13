@@ -122,13 +122,13 @@ def create_app_icon(size, text="S", bg_color=WHITE, text_color=PINK_PRIMARY):
 
 
 def create_app_icon_full(size, text="SPYLL"):
-    """Create an app icon with full SPYLL text - white bg, pink text, centered."""
+    """Create an app icon with full SPYLL text - white bg, pink text, centered with proper padding."""
     img = Image.new('RGBA', (size, size), TRANSPARENT)
     draw = ImageDraw.Draw(img)
     
-    # White background with rounded corners
+    # White background with rounded corners - more padding for safe zone
     bg = WHITE + (255,)
-    padding = int(size * 0.08)
+    padding = int(size * 0.05)  # Reduced outer padding
     corner_radius = int(size * 0.22)
     
     draw.rounded_rectangle(
@@ -137,9 +137,9 @@ def create_app_icon_full(size, text="SPYLL"):
         fill=bg
     )
     
-    # Load font - sized to fit nicely
+    # Load font - smaller to fit within safe zone (adaptive icons crop ~18% on each side)
     try:
-        font_size = int(size * 0.32)
+        font_size = int(size * 0.22)  # Reduced from 0.32 for better fit
         font = ImageFont.truetype(FONT_PATH, font_size)
     except Exception as e:
         print(f"Warning: Could not load Liquids font ({e}), using default")
@@ -152,6 +152,37 @@ def create_app_icon_full(size, text="SPYLL"):
     text_height = bbox[3] - bbox[1]
     
     # Calculate center position, accounting for bbox offset (fixes vertical alignment)
+    x = (size - text_width) // 2 - bbox[0]
+    y = (size - text_height) // 2 - bbox[1]
+    
+    draw.text((x, y), text, font=font, fill=PINK_PRIMARY + (255,))
+    
+    return img
+
+
+def create_adaptive_icon_foreground(size, text="SPYLL"):
+    """Create adaptive icon foreground - needs extra padding since Android crops 18% on each side."""
+    img = Image.new('RGBA', (size, size), TRANSPARENT)
+    draw = ImageDraw.Draw(img)
+    
+    # For adaptive icons, content should be in the center 66% (safe zone)
+    # Android crops about 18% from each edge
+    safe_zone = int(size * 0.66)
+    offset = (size - safe_zone) // 2
+    
+    # Load font - sized for safe zone
+    try:
+        font_size = int(safe_zone * 0.28)
+        font = ImageFont.truetype(FONT_PATH, font_size)
+    except Exception as e:
+        print(f"Warning: Could not load Liquids font ({e}), using default")
+        font = ImageFont.load_default()
+    
+    # Draw text centered in the full image (will be in safe zone)
+    bbox = draw.textbbox((0, 0), text, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    
     x = (size - text_width) // 2 - bbox[0]
     y = (size - text_height) // 2 - bbox[1]
     
@@ -212,8 +243,8 @@ def generate_android_icons():
         icon.save(round_icon_path, "PNG")
         print(f"  ✓ {density}/ic_launcher_round.png ({size}x{size})")
         
-        # Generate foreground for adaptive icons
-        foreground = create_app_icon_full(size, "SPYLL")
+        # Generate foreground for adaptive icons (with extra safe zone padding)
+        foreground = create_adaptive_icon_foreground(size, "SPYLL")
         foreground_path = os.path.join(icon_dir, "ic_launcher_foreground.png")
         foreground.save(foreground_path, "PNG")
         print(f"  ✓ {density}/ic_launcher_foreground.png ({size}x{size})")

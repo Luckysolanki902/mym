@@ -36,7 +36,9 @@ const Topbar = () => {
           alignItems: 'center',
         }}
       />
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      
+      {/* Right side controls - login button and drawer */}
+      <div className={styles.rightControls}>
         {/* Show login button only when not logged in and not on auth pages */}
         {!loading && !user && !isSignUpPage && !isSignInPage && (
           <button className={styles.login} onClick={handleSignIn}>Login</button>

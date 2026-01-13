@@ -1,0 +1,126 @@
+/* Animated Splash Screen - "Spill" Effect */
+
+.splashContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  overflow: hidden;
+}
+
+.fadeOut {
+  animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.logoContainer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+}
+
+.letter {
+  font-family: 'Liquids', sans-serif;
+  font-size: clamp(3rem, 12vw, 5rem);
+  color: #FF5973;
+  opacity: 0;
+  transform: translateY(-40px) rotate(-5deg);
+  display: inline-block;
+}
+
+/* Spill animation - letters drop in like liquid */
+.letter.spill {
+  animation: spillIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.letterS { animation-delay: 0ms; }
+.letterP { animation-delay: 80ms; }
+.letterY { animation-delay: 160ms; }
+.letterL { animation-delay: 240ms; }
+.letterL2 { animation-delay: 320ms; }
+
+.letter.spill.letterS { animation-delay: 0ms; }
+.letter.spill.letterP { animation-delay: 80ms; }
+.letter.spill.letterY { animation-delay: 160ms; }
+.letter.spill.letterL { animation-delay: 240ms; }
+.letter.spill.letterL2 { animation-delay: 320ms; }
+
+@keyframes spillIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px) rotate(-8deg) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(5px) rotate(2deg) scale(1.05);
+  }
+  70% {
+    transform: translateY(-3px) rotate(-1deg) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+/* Droplet effect - small pink drop that falls */
+.droplet {
+  position: absolute;
+  bottom: 40%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: #FF5973;
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+  opacity: 0;
+  transform: translateX(-50%) translateY(0);
+}
+
+.dropletAnimate {
+  animation: dropletFall 0.8s ease-in forwards;
+  animation-delay: 500ms;
+}
+
+@keyframes dropletFall {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(0) scale(0);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(60px) scale(0.5);
+  }
+}
+
+/* Add subtle bounce to the whole logo at the end */
+.logoContainer::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(255, 89, 115, 0.3), transparent);
+  border-radius: 50%;
+}

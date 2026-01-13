@@ -124,7 +124,8 @@ const CustomHead = ({
             <meta name="keywords" content={keywordContent} />
             <meta name="robots" content={robots} />
             <link rel="canonical" href={resolvedCanonical} />
-            <link rel="icon" href={`${SITE_URL}/images/spyll_logos/spyll_main.png`} />
+            <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+            <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
             <meta property="og:type" content={ogType} />
             <meta property="og:title" content={title} />

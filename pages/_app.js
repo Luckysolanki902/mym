@@ -19,6 +19,7 @@ const GoogleAnalytics = dynamic(() => import('@/components/seo/GoogleAnalytics')
 const SoothingLoader = dynamic(() => import('@/components/loadings/SoothingLoader'), { ssr: false });
 const TypeAdminPassword = dynamic(() => import('@/components/fullPageComps/TypeAdminPassword'), { ssr: false });
 const PushNotificationInit = dynamic(() => import('@/components/utils/PushNotificationInit'), { ssr: false });
+const AnimatedSplash = dynamic(() => import('@/components/utils/AnimatedSplash'), { ssr: false });
 
 const spylltheme = createTheme({
   palette: {
@@ -44,6 +45,24 @@ export default function App({ Component, pageProps }) {
 
   // Apply mobile performance optimizations
   useMobileOptimizations();
+
+  // Animated splash state (only for native app)
+  const [showSplash, setShowSplash] = useState(false);
+
+  // Check if we're on a native platform and show splash
+  useEffect(() => {
+    const checkNativePlatform = async () => {
+      try {
+        const { Capacitor } = await import('@capacitor/core');
+        if (Capacitor.isNativePlatform()) {
+          setShowSplash(true);
+        }
+      } catch (e) {
+        // Not on native platform
+      }
+    };
+    checkNativePlatform();
+  }, []);
 
   // Admin state
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -194,6 +213,7 @@ export default function App({ Component, pageProps }) {
             <CssBaseline />
             <GoogleAnalytics />
             <PushNotificationInit />
+            {showSplash && <AnimatedSplash onComplete={() => setShowSplash(false)} />}
             <CustomHead {...(pageSeo || {})} />
             <Topbar />
             <Sidebar />
