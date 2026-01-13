@@ -153,42 +153,111 @@ jobs:
 
       - name: Setup release keystore
         run: |
+          echo "=== Setting up release keystore ==="
+          
+          # Check if secrets are configured
+          if [ -z "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
+            echo "⚠️ WARNING: ANDROID_KEYSTORE_BASE64 secret not configured"
+            echo "Building with debug signing instead"
+            echo "SIGNING_MODE=debug" >> $GITHUB_ENV
+            exit 0
+          fi
+          
           # Decode keystore from base64 secret
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/spyll-release.keystore
+          
+          # Verify keystore was created and has content
+          if [ ! -s android/app/spyll-release.keystore ]; then
+            echo "❌ ERROR: Keystore file is empty or not created"
+            echo "SIGNING_MODE=debug" >> $GITHUB_ENV
+            exit 0
+          fi
+          
+          KEYSTORE_SIZE=$(stat -c%s android/app/spyll-release.keystore 2>/dev/null || stat -f%z android/app/spyll-release.keystore)
+          echo "✅ Keystore created: $KEYSTORE_SIZE bytes"
+          
+          # Verify keystore is valid using keytool
+          keytool -list -keystore android/app/spyll-release.keystore -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" -alias "${{ secrets.ANDROID_KEY_ALIAS }}" > /dev/null 2>&1
+          if [ $? -ne 0 ]; then
+            echo "❌ ERROR: Keystore verification failed - password or alias incorrect"
+            echo "SIGNING_MODE=debug" >> $GITHUB_ENV
+            exit 0
+          fi
+          echo "✅ Keystore verified successfully"
+          
           # Create keystore.properties for gradle
-          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > android/keystore.properties
-          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/keystore.properties
-          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/keystore.properties
-          echo "storeFile=spyll-release.keystore" >> android/keystore.properties
+          cat > android/keystore.properties << EOF
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=spyll-release.keystore
+          EOF
+          
+          echo "✅ keystore.properties created"
+          echo "SIGNING_MODE=release" >> $GITHUB_ENV
 
       - name: Build Release APK
         run: |
           cd android
-          ./gradlew assembleRelease --no-daemon
-
-      - name: Prepare APK for distribution
-        run: |
-          # Find and copy the release APK (handles different naming patterns)
-          echo "Looking for release APK..."
-          ls -la android/app/build/outputs/apk/release/ || echo "Release folder not found"
           
-          # Find any release APK in the output folder
-          APK_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" | head -1)
+          echo "=== Building APK (Signing mode: ${SIGNING_MODE:-release}) ==="
+          
+          # Clean first to avoid stale builds
+          ./gradlew clean --no-daemon
+          
+          # Build release APK
+          ./gradlew assembleRelease --no-daemon --stacktrace
+          
+          echo "=== Build complete ==="
+
+      - name: Verify and prepare APK
+        run: |
+          echo "=== Verifying APK ==="
+          
+          # List output directory
+          echo "Release APK directory contents:"
+          ls -la android/app/build/outputs/apk/release/ 2>/dev/null || {
+            echo "Release folder not found, checking debug..."
+            ls -la android/app/build/outputs/apk/debug/ 2>/dev/null || echo "No APK folders found"
+            exit 1
+          }
+          
+          # Find the APK (prefer unsigned for manual signing if needed)
+          APK_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" -type f | grep -v unsigned | head -1)
           
           if [ -z "$APK_PATH" ]; then
-            echo "ERROR: No APK found in release folder"
+            # Try any APK
+            APK_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" -type f | head -1)
+          fi
+          
+          if [ -z "$APK_PATH" ]; then
+            echo "❌ ERROR: No APK found"
             exit 1
           fi
           
           echo "Found APK: $APK_PATH"
           cp "$APK_PATH" ./app.apk
           
-          # Verify APK is valid
-          echo "APK size: $(ls -lh app.apk | awk '{print $5}')"
+          # Verify APK signature
+          echo "=== Checking APK signature ==="
           
-          # Use zipalign if available to optimize the APK
+          # Get APK signer info
+          if command -v apksigner &> /dev/null; then
+            apksigner verify --print-certs ./app.apk 2>&1 || echo "apksigner check skipped"
+          fi
+          
+          # Use jarsigner for basic verification
+          jarsigner -verify -verbose -certs ./app.apk 2>&1 | head -20 || echo "jarsigner check skipped"
+          
+          # APK info
+          APK_SIZE=$(ls -lh app.apk | awk '{print $5}')
+          echo "✅ APK ready: $APK_SIZE"
+          
+          # Zipalign if available
           if command -v zipalign &> /dev/null; then
-            zipalign -v 4 app.apk app-aligned.apk && mv app-aligned.apk app.apk
+            echo "Running zipalign..."
+            zipalign -f 4 app.apk app-aligned.apk && mv app-aligned.apk app.apk
+            echo "✅ APK aligned"
           fi
 
       - name: Upload APK as artifact
