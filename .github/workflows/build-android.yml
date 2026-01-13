@@ -21,7 +21,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Create minimal web directory for Capacitor
         run: |
@@ -147,7 +147,16 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ github.run_number }}
-          name: Release v${{ github.run_number }}
+          name: Spyll v${{ github.run_number }}
+          body: |
+            ## Spyll - India's Largest Anonymous Network
+            
+            ### Downloads
+            - **Android APK**: Download `app-debug.apk` below
+            - **Website**: [spyll.in](https://spyll.in)
+            
+            ### What's New
+            - Latest build from commit ${{ github.sha }}
           files: |
             android/app/build/outputs/apk/debug/app-debug.apk
             android/app/build/outputs/apk/release/app-release*.apk
