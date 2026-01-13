@@ -127,20 +127,37 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
+      - name: Generate debug keystore
+        run: |
+          # Generate a debug keystore for signing
+          keytool -genkey -v -keystore android/app/debug.keystore \
+            -storepass android -alias androiddebugkey -keypass android \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+
       - name: Build Debug APK
         run: |
           cd android
           ./gradlew assembleDebug --no-daemon
 
-      - name: Rename APK to spyll.apk
+      - name: Prepare APK for distribution
         run: |
-          cp android/app/build/outputs/apk/debug/app-debug.apk ./spyll.apk
+          # Copy the APK
+          cp android/app/build/outputs/apk/debug/app-debug.apk ./app.apk
+          
+          # Verify APK is valid
+          echo "APK size: $(ls -lh app.apk | awk '{print $5}')"
+          
+          # Use zipalign if available to optimize the APK
+          if command -v zipalign &> /dev/null; then
+            zipalign -v 4 app.apk app-aligned.apk && mv app-aligned.apk app.apk
+          fi
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: spyll-apk
-          path: spyll.apk
+          path: app.apk
           retention-days: 30
 
       - name: Get next version tag
@@ -167,14 +184,14 @@ jobs:
             ## Spyll - India's Largest Anonymous Network
             
             ### Download
-            📱 **[Download spyll.apk](https://github.com/${{ github.repository }}/releases/download/${{ steps.get-version.outputs.version }}/spyll.apk)**
+            📱 **[Download APK](https://github.com/${{ github.repository }}/releases/download/${{ steps.get-version.outputs.version }}/app.apk)**
             
             ### What's New
             ${{ steps.check-release.outputs.release_message }}
             
             ---
             🌐 Website: [spyll.in](https://spyll.in)
-          files: spyll.apk
+          files: app.apk
           draft: false
           prerelease: false
         env:
