@@ -1,5 +1,37 @@
+# Spyll - India's Anonymous College Network
+# https://spyll.in
+
 User-agent: *
+Allow: /
+
+# Disallow private areas
 Disallow: /admin/
 Disallow: /inbox/
+Disallow: /api/
+Disallow: /settings/
+Disallow: /_next/
 
+# Disallow temporary/debug pages
+Disallow: /debug-logs
+Disallow: /*?*
+
+# Allow important assets
+Allow: /images/
+Allow: /app-icons/
+Allow: /*.js$
+Allow: /*.css$
+
+# Sitemap location
 Sitemap: https://spyll.in/sitemap.xml
+
+# Crawl delay for polite crawling
+Crawl-delay: 1
+
+# Specific bot instructions
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1

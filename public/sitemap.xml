@@ -3,81 +3,111 @@
     xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    
+    <!-- Homepage - Highest Priority -->
     <url>
         <loc>https://spyll.in/</loc>
+        <lastmod>2026-01-14</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://spyll.in/images/spyll_logos/spyll_main.png</image:loc>
+            <image:title>Spyll - India's Anonymous College Network</image:title>
+        </image:image>
     </url>
 
+    <!-- Core Features -->
     <url>
         <loc>https://spyll.in/random-chat</loc>
+        <lastmod>2026-01-14</lastmod>
         <changefreq>daily</changefreq>
-        <priority>0.9</priority>
+        <priority>0.95</priority>
     </url>
 
     <url>
         <loc>https://spyll.in/random-call</loc>
+        <lastmod>2026-01-14</lastmod>
         <changefreq>daily</changefreq>
-        <priority>0.9</priority>
+        <priority>0.95</priority>
     </url>
 
     <url>
         <loc>https://spyll.in/all-confessions</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.85</priority>
-    </url>
-
-    <url>
-        <loc>https://spyll.in/confession</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.8</priority>
+        <lastmod>2026-01-14</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.9</priority>
     </url>
 
     <url>
         <loc>https://spyll.in/create-confession</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.8</priority>
+        <lastmod>2026-01-14</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+
+    <!-- Legal & Information Pages -->
+    <url>
+        <loc>https://spyll.in/privacy-policy</loc>
+        <lastmod>2026-01-14</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
     </url>
 
     <url>
-        <loc>https://spyll.in/give-your-suggestion</loc>
-        <changefreq>weekly</changefreq>
+        <loc>https://spyll.in/terms-of-service</loc>
+        <lastmod>2026-01-14</lastmod>
+        <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
 
     <url>
         <loc>https://spyll.in/about-us</loc>
+        <lastmod>2026-01-14</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
+        <priority>0.7</priority>
     </url>
 
     <url>
         <loc>https://spyll.in/how-we-protect-anonymity</loc>
+        <lastmod>2026-01-14</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
+        <priority>0.7</priority>
     </url>
 
     <url>
-        <loc>https://spyll.in/auth/signin</loc>
+        <loc>https://spyll.in/give-your-suggestion</loc>
+        <lastmod>2026-01-14</lastmod>
         <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Blog/SEO Content -->
+    <url>
+        <loc>https://spyll.in/blog/alternatives-to-omegle</loc>
+        <lastmod>2026-01-14</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.75</priority>
+    </url>
+
+    <url>
+        <loc>https://spyll.in/blog/omegle-vs-spyll</loc>
+        <lastmod>2026-01-14</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.75</priority>
+    </url>
+
+    <!-- Auth Pages (lower priority) -->
+    <url>
+        <loc>https://spyll.in/auth/signin</loc>
+        <lastmod>2026-01-14</lastmod>
+        <changefreq>monthly</changefreq>
         <priority>0.4</priority>
     </url>
 
     <url>
         <loc>https://spyll.in/auth/signup</loc>
-        <changefreq>weekly</changefreq>
+        <lastmod>2026-01-14</lastmod>
+        <changefreq>monthly</changefreq>
         <priority>0.4</priority>
-    </url>
-
-    <url>
-        <loc>https://spyll.in/blog/alternatives-to-omegle</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-
-    <url>
-        <loc>https://spyll.in/blog/omegle-vs-spyll</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
     </url>
 </urlset>

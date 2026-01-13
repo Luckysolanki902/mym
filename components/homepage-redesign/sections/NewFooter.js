@@ -24,8 +24,8 @@ const NewFooter = () => {
   const footerLinks = [
     { name: 'About Us', href: '/about-us' },
     { name: 'Safety Center', href: '/how-we-protect-anonymity' },
-    { name: 'Privacy Policy', href: '/about-us' },
-    { name: 'Terms of Service', href: '/about-us' },
+    { name: 'Privacy Policy', href: '/privacy-policy' },
+    { name: 'Terms of Service', href: '/terms-of-service' },
   ];
 
   return (
