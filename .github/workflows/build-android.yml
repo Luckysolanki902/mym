@@ -19,21 +19,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Setup Python for asset generation
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Pillow for asset generation
-        run: pip install Pillow
-
-      - name: Generate app icons and splash screens
-        run: python scripts/generate_app_assets.py
+        run: npm install
 
       - name: Create minimal web directory for Capacitor
         run: |
