@@ -16,7 +16,7 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 0, // We control hiding manually
       launchAutoHide: false, // Don't auto-hide, we'll do it after animated splash is ready
-      backgroundColor: '#121212',
+      backgroundColor: '#FFFFFF', // White to match animated splash
       showSpinner: false,
       androidScaleType: 'CENTER_CROP',
       splashFullScreen: true,

@@ -8,38 +8,42 @@ import styles from './AnimatedSplash.module.css';
 
 const AnimatedSplash = ({ onComplete }) => {
   const [isVisible, setIsVisible] = useState(true);
-  const [animationPhase, setAnimationPhase] = useState('initial'); // initial, spilling, complete
+  const [animationPhase, setAnimationPhase] = useState('spilling'); // Start spilling immediately
+  const [isFadingOut, setIsFadingOut] = useState(false);
   const hasHiddenNativeSplash = useRef(false);
 
   useEffect(() => {
-    // Small delay to ensure component is mounted and rendered
-    // before hiding native splash
-    const mountDelay = setTimeout(async () => {
+    // Hide native splash immediately when component mounts
+    const hideNativeSplash = async () => {
       if (Capacitor.isNativePlatform() && !hasHiddenNativeSplash.current) {
         hasHiddenNativeSplash.current = true;
         try {
-          await SplashScreen.hide({ fadeOutDuration: 200 });
+          // Hide with no fade - our animated splash is already showing
+          await SplashScreen.hide({ fadeOutDuration: 0 });
           console.log('[Splash] Native splash hidden');
         } catch (e) {
           console.log('[Splash] Error hiding native splash:', e);
         }
       }
-      
-      // Start spill animation after native splash is hidden
-      setAnimationPhase('spilling');
-    }, 50); // Small delay to ensure DOM is ready
+    };
+    hideNativeSplash();
+
+    // Animation timing
+    const timer1 = setTimeout(() => {
+      setAnimationPhase('complete');
+    }, 1000); // Letters finish animating
 
     const timer2 = setTimeout(() => {
-      setAnimationPhase('complete');
-    }, 1200);
+      setIsFadingOut(true);
+    }, 1400); // Start fade out
 
     const timer3 = setTimeout(() => {
       setIsVisible(false);
       if (onComplete) onComplete();
-    }, 1800);
+    }, 1900); // Complete fade and call onComplete
 
     return () => {
-      clearTimeout(mountDelay);
+      clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
     };
@@ -48,18 +52,18 @@ const AnimatedSplash = ({ onComplete }) => {
   if (!isVisible) return null;
 
   return (
-    <div className={`${styles.splashContainer} ${animationPhase === 'complete' ? styles.fadeOut : ''}`}>
+    <div className={`${styles.splashContainer} ${isFadingOut ? styles.fadeOut : ''}`}>
       <div className={styles.logoContainer}>
         {/* Each letter animates with a "spill" effect */}
-        <span className={`${styles.letter} ${styles.letterS} ${animationPhase !== 'initial' ? styles.spill : ''}`}>S</span>
-        <span className={`${styles.letter} ${styles.letterP} ${animationPhase !== 'initial' ? styles.spill : ''}`}>P</span>
-        <span className={`${styles.letter} ${styles.letterY} ${animationPhase !== 'initial' ? styles.spill : ''}`}>Y</span>
-        <span className={`${styles.letter} ${styles.letterL} ${animationPhase !== 'initial' ? styles.spill : ''}`}>L</span>
-        <span className={`${styles.letter} ${styles.letterL2} ${animationPhase !== 'initial' ? styles.spill : ''}`}>L</span>
+        <span className={`${styles.letter} ${styles.letterS} ${styles.spill}`}>S</span>
+        <span className={`${styles.letter} ${styles.letterP} ${styles.spill}`}>P</span>
+        <span className={`${styles.letter} ${styles.letterY} ${styles.spill}`}>Y</span>
+        <span className={`${styles.letter} ${styles.letterL} ${styles.spill}`}>L</span>
+        <span className={`${styles.letter} ${styles.letterL2} ${styles.spill}`}>L</span>
       </div>
       
       {/* Spill droplet effect */}
-      <div className={`${styles.droplet} ${animationPhase !== 'initial' ? styles.dropletAnimate : ''}`} />
+      <div className={`${styles.droplet} ${styles.dropletAnimate}`} />
     </div>
   );
 };

@@ -29,18 +29,19 @@ const AnimatedSplash = dynamic(
       <div style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 9999,
+        zIndex: 99999,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#121212',
+        background: 'white',
       }}>
         <span style={{
           fontFamily: "'Poppins', sans-serif",
-          fontSize: '2.5rem',
+          fontSize: 'clamp(3rem, 12vw, 5rem)',
           fontWeight: 700,
-          color: '#FF6BA0',
+          color: '#FF5973',
           letterSpacing: '-0.02em',
+          opacity: 0,
         }}>
           SPYLL
         </span>
@@ -87,22 +88,26 @@ export default function App({ Component, pageProps }) {
     initLogger();
   }, []);
 
-  // Animated splash state (only for native app)
-  const [showSplash, setShowSplash] = useState(false);
+  // Animated splash state - start true to prevent flash, hide only on web
+  const [showSplash, setShowSplash] = useState(true);
+  const [splashChecked, setSplashChecked] = useState(false);
 
-  // Check if we're on a native platform and show splash
+  // Check platform and hide splash on web immediately
   useEffect(() => {
-    const checkNativePlatform = async () => {
+    const checkPlatform = async () => {
       try {
         const { Capacitor } = await import('@capacitor/core');
-        if (Capacitor.isNativePlatform()) {
-          setShowSplash(true);
+        if (!Capacitor.isNativePlatform()) {
+          // On web, hide splash immediately
+          setShowSplash(false);
         }
       } catch (e) {
-        // Not on native platform
+        // Not on native, hide splash
+        setShowSplash(false);
       }
+      setSplashChecked(true);
     };
-    checkNativePlatform();
+    checkPlatform();
   }, []);
 
   // Admin state
