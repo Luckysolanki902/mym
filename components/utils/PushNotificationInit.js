@@ -28,8 +28,12 @@ const PushNotificationInit = () => {
       // Prevent double initialization
       if (hasInitialized.current) return;
 
-      // Delay initialization to let the app fully load first
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Mark as initializing to prevent multiple attempts
+      hasInitialized.current = true;
+
+      // Delay initialization significantly to let the app fully load and stabilize
+      // This prevents crashes during app startup
+      await new Promise(resolve => setTimeout(resolve, 5000));
 
       try {
         // Check if we're on a native platform
@@ -58,7 +62,6 @@ const PushNotificationInit = () => {
         
         if (result.success) {
           console.log('[PushInit] ✅ Push notifications initialized successfully');
-          hasInitialized.current = true;
         } else {
           console.log('[PushInit] ❌ Failed to initialize:', result.reason || result.error);
         }

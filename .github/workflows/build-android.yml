@@ -117,9 +117,12 @@ jobs:
             cp google-services.json android/app/google-services.json
           fi
 
-      - name: Copy app icons
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Copy app icons (after sync to avoid overwrite)
         run: |
-          # Copy icons to Android mipmap folders
+          # Copy icons to Android mipmap folders AFTER cap sync
           cp public/app-icons/icon-72x72.png android/app/src/main/res/mipmap-hdpi/ic_launcher.png
           cp public/app-icons/icon-72x72.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
           cp public/app-icons/icon-96x96.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
@@ -134,9 +137,6 @@ jobs:
           # Remove adaptive icon XML to use PNG directly
           rm -rf android/app/src/main/res/mipmap-anydpi-v26
           echo "App icons copied!"
-
-      - name: Sync Capacitor
-        run: npx cap sync android
 
       - name: Cache Gradle
         uses: actions/cache@v4
