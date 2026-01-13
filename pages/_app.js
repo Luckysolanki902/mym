@@ -74,6 +74,19 @@ export default function App({ Component, pageProps }) {
   // Apply mobile performance optimizations
   useMobileOptimizations();
 
+  // Initialize mobile logger for debugging (saves logs to device)
+  useEffect(() => {
+    const initLogger = async () => {
+      try {
+        const { mobileLogger } = await import('@/utils/mobileLogger');
+        await mobileLogger.init();
+      } catch (e) {
+        // Silently fail
+      }
+    };
+    initLogger();
+  }, []);
+
   // Animated splash state (only for native app)
   const [showSplash, setShowSplash] = useState(false);
 
