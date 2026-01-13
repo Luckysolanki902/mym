@@ -28,7 +28,7 @@
 | Platform | Link |
 |----------|------|
 | Web | [spyll.in](https://spyll.in) |
-| Android | [Download Latest APK](https://github.com/Luckysolanki902/spyll-web/releases/latest/download/app-debug.apk) |
+| Android | [Download Latest APK](https://github.com/Luckysolanki902/spyll-web/releases/latest) |
 | iOS | Coming Soon |
 
 ---
