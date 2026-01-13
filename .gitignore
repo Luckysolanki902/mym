@@ -60,3 +60,7 @@ generatesc.js
 /testing
 spyll-release.keystore
 spyll-release.keystore.base64
+
+# Local release APKs
+releases/
+app.apk

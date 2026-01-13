@@ -10,6 +10,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$SCRIPT_DIR"
 KEYSTORE_FILE="$PROJECT_DIR/spyll-release.keystore"
 APK_OUTPUT="$PROJECT_DIR/app.apk"
+RELEASES_DIR="$PROJECT_DIR/releases"
+LOCAL_APK="$RELEASES_DIR/spyll-latest.apk"
 REPO="Luckysolanki902/spyll-web"
 
 # Colors for output
@@ -38,6 +40,9 @@ check_requirements() {
     if [ ! -f "$KEYSTORE_FILE" ]; then
         error "Keystore not found: $KEYSTORE_FILE"
     fi
+    
+    # Create releases directory if it doesn't exist
+    mkdir -p "$RELEASES_DIR"
     
     log "✅ All requirements met"
 }
@@ -181,8 +186,12 @@ build_apk() {
     # Copy to project root
     cp "$APK_PATH" "$APK_OUTPUT"
     
+    # Also save to releases folder (overwrite)
+    cp "$APK_PATH" "$LOCAL_APK"
+    
     APK_SIZE=$(ls -lh "$APK_OUTPUT" | awk '{print $5}')
     log "✅ APK built: $APK_SIZE"
+    log "✅ Local copy saved: $LOCAL_APK"
 }
 
 # Get next version
