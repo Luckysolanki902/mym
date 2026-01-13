@@ -24,6 +24,8 @@ class PushNotificationService {
     this.userId = null;
     // Track chat queue notification timestamps for rate limiting
     this.chatQueueNotificationTimestamps = this.loadNotificationTimestamps();
+    // Track last shown queue count for smart upgrade notifications
+    this.lastQueueCount = this.loadLastQueueCount();
   }
 
   /**
@@ -58,27 +60,87 @@ class PushNotificationService {
   }
 
   /**
-   * Check if a chat queue notification should be shown (rate limiting)
-   * Returns true if allowed, false if rate limited
+   * Load last queue count from localStorage
    */
-  shouldShowChatQueueNotification() {
+  loadLastQueueCount() {
+    if (typeof window === 'undefined') return 0;
+    try {
+      const stored = localStorage.getItem('spyll_last_queue_count');
+      return stored ? parseInt(stored, 10) : 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  /**
+   * Save last queue count to localStorage
+   */
+  saveLastQueueCount(count) {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem('spyll_last_queue_count', String(count));
+      this.lastQueueCount = count;
+    } catch (e) {
+      console.log('[Push] Error saving queue count:', e);
+    }
+  }
+
+  /**
+   * Extract queue count from notification
+   */
+  extractQueueCount(notification) {
+    // Try to get from data first
+    const data = notification.data || {};
+    if (data.count) return parseInt(data.count, 10);
+    if (data.queueCount) return parseInt(data.queueCount, 10);
+    
+    // Try to extract from body text (e.g., "5 users waiting")
+    const body = notification.body || '';
+    const match = body.match(/(\d+)\s*(users?|people)/i);
+    if (match) return parseInt(match[1], 10);
+    
+    return 0;
+  }
+
+  /**
+   * Check if a chat queue notification should be shown
+   * Smart logic: always allow if count increased (upgrade), rate limit otherwise
+   * @param {object} notification - The notification object
+   * @returns {object} { allowed: boolean, silent: boolean } - silent means replace without sound
+   */
+  shouldShowChatQueueNotification(notification) {
     const now = Date.now();
+    const newCount = this.extractQueueCount(notification);
+    
     // Remove timestamps older than 1 hour
     this.chatQueueNotificationTimestamps = this.chatQueueNotificationTimestamps.filter(
       ts => (now - ts) < RATE_LIMIT_WINDOW_MS
     );
     
-    // Check if under the limit
+    // If this is an upgrade (more users now), always show but silently replace
+    if (newCount > this.lastQueueCount && newCount > 0) {
+      console.log(`[Push] Queue count upgrade: ${this.lastQueueCount} → ${newCount}, allowing silent update`);
+      this.saveLastQueueCount(newCount);
+      // Don't count as a rate-limited notification, just update silently
+      return { allowed: true, silent: true };
+    }
+    
+    // Reset count tracking if queue is empty or decreased significantly
+    if (newCount === 0 || newCount < this.lastQueueCount) {
+      this.saveLastQueueCount(newCount);
+    }
+    
+    // Check if under the limit for non-upgrade notifications
     if (this.chatQueueNotificationTimestamps.length < CHAT_QUEUE_NOTIFICATIONS_PER_HOUR) {
-      // Add current timestamp and save
       this.chatQueueNotificationTimestamps.push(now);
       this.saveNotificationTimestamps();
+      this.saveLastQueueCount(newCount);
       console.log(`[Push] Chat queue notification allowed (${this.chatQueueNotificationTimestamps.length}/${CHAT_QUEUE_NOTIFICATIONS_PER_HOUR} this hour)`);
-      return true;
+      return { allowed: true, silent: false };
     }
     
     console.log(`[Push] Chat queue notification rate limited (${this.chatQueueNotificationTimestamps.length}/${CHAT_QUEUE_NOTIFICATIONS_PER_HOUR} this hour)`);
-    return false;
+    return { allowed: false, silent: false };
   }
 
   /**
@@ -221,16 +283,20 @@ class PushNotificationService {
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
       console.log('[Push] Notification received:', notification);
       
-      // Check if this is a chat queue notification and apply rate limiting
+      let silent = false;
+      
+      // Check if this is a chat queue notification and apply smart rate limiting
       if (this.isChatQueueNotification(notification)) {
-        if (!this.shouldShowChatQueueNotification()) {
+        const result = this.shouldShowChatQueueNotification(notification);
+        if (!result.allowed) {
           console.log('[Push] Skipping chat queue notification due to rate limit');
           return; // Don't show this notification
         }
+        silent = result.silent; // Silent updates for queue count upgrades
       }
       
       // Show local notification when app is in foreground
-      this.showLocalNotification(notification);
+      this.showLocalNotification(notification, silent);
       
       // Notify listeners
       this.notificationListeners.forEach(listener => listener(notification));
@@ -285,22 +351,29 @@ class PushNotificationService {
 
   /**
    * Show local notification (for foreground notifications)
+   * @param {object} notification - The notification to show
+   * @param {boolean} silent - If true, show without sound (for silent updates)
    */
-  async showLocalNotification(notification) {
+  async showLocalNotification(notification, silent = false) {
     try {
+      const notificationConfig = {
+        title: notification.title || 'Spyll',
+        body: notification.body || '',
+        id: Date.now(),
+        schedule: { at: new Date(Date.now() + 100) },
+        channelId: 'spyll-notifications',
+        extra: notification.data,
+        smallIcon: 'ic_notification',
+        largeIcon: 'ic_launcher',
+      };
+      
+      // Add sound only if not silent
+      if (!silent) {
+        notificationConfig.sound = 'default'; // Use system default sound
+      }
+      
       await LocalNotifications.schedule({
-        notifications: [
-          {
-            title: notification.title || 'Spyll',
-            body: notification.body || '',
-            id: Date.now(),
-            schedule: { at: new Date(Date.now() + 100) },
-            sound: 'notification.wav',
-            attachments: null,
-            actionTypeId: '',
-            extra: notification.data,
-          },
-        ],
+        notifications: [notificationConfig],
       });
     } catch (error) {
       console.error('[Push] Error showing local notification:', error);

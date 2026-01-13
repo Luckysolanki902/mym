@@ -168,8 +168,20 @@ jobs:
 
       - name: Prepare APK for distribution
         run: |
-          # Copy the release APK
-          cp android/app/build/outputs/apk/release/app-release.apk ./app.apk
+          # Find and copy the release APK (handles different naming patterns)
+          echo "Looking for release APK..."
+          ls -la android/app/build/outputs/apk/release/ || echo "Release folder not found"
+          
+          # Find any release APK in the output folder
+          APK_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" | head -1)
+          
+          if [ -z "$APK_PATH" ]; then
+            echo "ERROR: No APK found in release folder"
+            exit 1
+          fi
+          
+          echo "Found APK: $APK_PATH"
+          cp "$APK_PATH" ./app.apk
           
           # Verify APK is valid
           echo "APK size: $(ls -lh app.apk | awk '{print $5}')"
