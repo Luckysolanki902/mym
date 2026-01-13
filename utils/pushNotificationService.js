@@ -78,28 +78,45 @@ class PushNotificationService {
       // Create notification channels first (Android 8+)
       await this.createNotificationChannels();
 
-      // Request permission
-      const permStatus = await PushNotifications.checkPermissions();
-      console.log('[Push] Current permission status:', permStatus.receive);
+      // Check if push notifications are available
+      let permStatus;
+      try {
+        permStatus = await PushNotifications.checkPermissions();
+        console.log('[Push] Current permission status:', permStatus.receive);
+      } catch (permError) {
+        console.log('[Push] Error checking permissions:', permError.message);
+        return { success: false, reason: 'permission-check-failed', error: permError.message };
+      }
       
       if (permStatus.receive === 'prompt') {
-        const result = await PushNotifications.requestPermissions();
-        if (result.receive !== 'granted') {
-          console.log('[Push] Permission denied by user');
-          return { success: false, reason: 'permission-denied' };
+        try {
+          const result = await PushNotifications.requestPermissions();
+          if (result.receive !== 'granted') {
+            console.log('[Push] Permission denied by user');
+            return { success: false, reason: 'permission-denied' };
+          }
+        } catch (reqError) {
+          console.log('[Push] Error requesting permissions:', reqError.message);
+          return { success: false, reason: 'permission-request-failed', error: reqError.message };
         }
       } else if (permStatus.receive !== 'granted') {
         console.log('[Push] Permission not granted, status:', permStatus.receive);
         return { success: false, reason: 'permission-not-granted' };
       }
 
-      // Register for push notifications
-      await PushNotifications.register();
-
-      // Set up listeners
+      // Set up listeners BEFORE registration
       this.setupListeners(userId);
-      this.isInitialized = true;
 
+      // Register for push notifications with error handling
+      try {
+        await PushNotifications.register();
+        console.log('[Push] Registration started');
+      } catch (regError) {
+        console.log('[Push] Registration error:', regError.message);
+        return { success: false, reason: 'registration-failed', error: regError.message };
+      }
+
+      this.isInitialized = true;
       console.log('[Push] Initialization complete');
       return { success: true };
     } catch (error) {

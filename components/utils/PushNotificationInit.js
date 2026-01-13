@@ -28,6 +28,9 @@ const PushNotificationInit = () => {
       // Prevent double initialization
       if (hasInitialized.current) return;
 
+      // Delay initialization to let the app fully load first
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       try {
         // Check if we're on a native platform
         const { Capacitor } = await import('@capacitor/core');
@@ -60,8 +63,8 @@ const PushNotificationInit = () => {
           console.log('[PushInit] ❌ Failed to initialize:', result.reason || result.error);
         }
       } catch (error) {
-        // Log the error for debugging
-        console.log('[PushInit] Error:', error.message);
+        // Log the error for debugging but don't crash
+        console.log('[PushInit] Error:', error?.message || error);
       }
     };
 

@@ -28,21 +28,27 @@ jobs:
       - name: Check if this is a release commit
         id: check-release
         run: |
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          # Get the first line of the commit message
+          COMMIT_MSG=$(echo "${{ github.event.head_commit.message }}" | head -n 1)
           MANUAL_MSG="${{ github.event.inputs.release_message }}"
           
-          # Check for release: prefix in commit message
-          if [[ "$COMMIT_MSG" == release:* ]] || [[ "$COMMIT_MSG" == Release:* ]]; then
+          echo "Commit message: $COMMIT_MSG"
+          
+          # Check for release: prefix in commit message (case insensitive)
+          if echo "$COMMIT_MSG" | grep -qi "^release:"; then
             echo "is_release=true" >> $GITHUB_OUTPUT
             # Extract the release message (everything after "release:")
             RELEASE_MSG=$(echo "$COMMIT_MSG" | sed 's/^[Rr]elease:[[:space:]]*//')
             echo "release_message=$RELEASE_MSG" >> $GITHUB_OUTPUT
+            echo "This is a RELEASE commit!"
           elif [ -n "$MANUAL_MSG" ]; then
             echo "is_release=true" >> $GITHUB_OUTPUT
             echo "release_message=$MANUAL_MSG" >> $GITHUB_OUTPUT
+            echo "Manual release triggered!"
           else
             echo "is_release=false" >> $GITHUB_OUTPUT
             echo "release_message=" >> $GITHUB_OUTPUT
+            echo "Not a release commit"
           fi
 
       - name: Setup Node.js
