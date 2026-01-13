@@ -151,23 +151,25 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      - name: Generate debug keystore
+      - name: Setup release keystore
         run: |
-          # Generate a debug keystore for signing
-          keytool -genkey -v -keystore android/app/debug.keystore \
-            -storepass android -alias androiddebugkey -keypass android \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname "CN=Android Debug,O=Android,C=US"
+          # Decode keystore from base64 secret
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/spyll-release.keystore
+          # Create keystore.properties for gradle
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > android/keystore.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/keystore.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/keystore.properties
+          echo "storeFile=spyll-release.keystore" >> android/keystore.properties
 
-      - name: Build Debug APK
+      - name: Build Release APK
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleRelease --no-daemon
 
       - name: Prepare APK for distribution
         run: |
-          # Copy the APK
-          cp android/app/build/outputs/apk/debug/app-debug.apk ./app.apk
+          # Copy the release APK
+          cp android/app/build/outputs/apk/release/app-release.apk ./app.apk
           
           # Verify APK is valid
           echo "APK size: $(ls -lh app.apk | awk '{print $5}')"

@@ -58,3 +58,5 @@ generatesc.js
 /pages/api/testing
 /models/testing
 /testing
+spyll-release.keystore
+spyll-release.keystore.base64
