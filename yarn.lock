@@ -112,10 +112,10 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.28.5"
 
-"@capacitor-firebase/analytics@^8.0.1":
-  version "8.0.1"
-  resolved "https://registry.npmjs.org/@capacitor-firebase/analytics/-/analytics-8.0.1.tgz"
-  integrity sha512-/s8T6BhGwML6z4zGxRIfy2TE89ybric+v2yXCd1xscS4jV4ejv9l+TGZioEi0MvFDZyWdQoSCvgnFI0OKM+PRg==
+"@capacitor-firebase/analytics@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/@capacitor-firebase/analytics/-/analytics-6.0.0.tgz"
+  integrity sha512-flSI3xA/DTwrFFCFjOBBHpxfbnnPdcmh+TkqYESjXHD4B1diW6oqRobGWPkKlOC65+0n3+vAWAoTL+4n66M7AQ==
 
 "@capacitor/android@^6.0.0":
   version "6.2.1"
