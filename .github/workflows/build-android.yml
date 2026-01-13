@@ -200,6 +200,7 @@ jobs:
 
       - name: Create Release
         if: steps.check-release.outputs.is_release == 'true' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        id: create-release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.get-version.outputs.version }}
@@ -218,5 +219,24 @@ jobs:
           files: app.apk
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete source code archives from release
+        if: steps.check-release.outputs.is_release == 'true' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+          # Get release ID
+          RELEASE_ID=$(gh release view "$VERSION" --json id -q .id 2>/dev/null || echo "")
+          if [ -n "$RELEASE_ID" ]; then
+            # Delete source archives
+            gh release delete-asset "$VERSION" "${{ github.event.repository.name }}-${VERSION#v}.zip" -y 2>/dev/null || true
+            gh release delete-asset "$VERSION" "${{ github.event.repository.name }}-${VERSION#v}.tar.gz" -y 2>/dev/null || true
+            gh release delete-asset "$VERSION" "Source code (zip)" -y 2>/dev/null || true
+            gh release delete-asset "$VERSION" "Source code (tar.gz)" -y 2>/dev/null || true
+            echo "Source archives deleted from release"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
