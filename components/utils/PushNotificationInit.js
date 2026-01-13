@@ -1,16 +1,32 @@
 // Push Notification Initializer Component
 // Silently initializes push notifications when the app loads
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 
+// Generate or get device ID for anonymous users
+const getDeviceId = () => {
+  if (typeof window === 'undefined') return null;
+  
+  let deviceId = localStorage.getItem('spyll_device_id');
+  if (!deviceId) {
+    deviceId = 'device_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+    localStorage.setItem('spyll_device_id', deviceId);
+  }
+  return deviceId;
+};
+
 const PushNotificationInit = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
     const initPush = async () => {
-      // Only initialize if we have a user session
-      if (!session?.user?.id) return;
+      // Wait for session to load
+      if (status === 'loading') return;
+      
+      // Prevent double initialization
+      if (hasInitialized.current) return;
 
       try {
         // Check if we're on a native platform
@@ -21,27 +37,36 @@ const PushNotificationInit = () => {
           return;
         }
 
+        // Use session user ID if logged in, otherwise use device ID
+        const userId = session?.user?.id || getDeviceId();
+        
+        if (!userId) {
+          console.log('[PushInit] No user ID or device ID available');
+          return;
+        }
+
+        console.log('[PushInit] Initializing push notifications for:', userId);
+        
         // Dynamically import push notification service
         const { pushNotificationService } = await import('@/utils/pushNotificationService');
         
         // Initialize push notifications
-        const result = await pushNotificationService.initialize(session.user.id);
+        const result = await pushNotificationService.initialize(userId);
         
         if (result.success) {
-          console.log('[PushInit] Push notifications initialized');
+          console.log('[PushInit] ✅ Push notifications initialized successfully');
+          hasInitialized.current = true;
         } else {
-          console.log('[PushInit] Failed to initialize:', result.reason || result.error);
+          console.log('[PushInit] ❌ Failed to initialize:', result.reason || result.error);
         }
       } catch (error) {
-        // Silently fail - Capacitor not available (web browser)
-        if (!error.message?.includes('Cannot find module')) {
-          console.log('[PushInit] Error:', error.message);
-        }
+        // Log the error for debugging
+        console.log('[PushInit] Error:', error.message);
       }
     };
 
     initPush();
-  }, [session?.user?.id]);
+  }, [session?.user?.id, status]);
 
   // This component renders nothing
   return null;

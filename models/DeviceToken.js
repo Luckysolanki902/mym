@@ -5,8 +5,7 @@ import mongoose from 'mongoose';
 
 const DeviceTokenSchema = new mongoose.Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String, // Can be ObjectId string or device ID for anonymous users
     required: true,
     index: true,
   },
