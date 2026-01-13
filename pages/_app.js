@@ -19,6 +19,7 @@ const GoogleAnalytics = dynamic(() => import('@/components/seo/GoogleAnalytics')
 const SoothingLoader = dynamic(() => import('@/components/loadings/SoothingLoader'), { ssr: false });
 const TypeAdminPassword = dynamic(() => import('@/components/fullPageComps/TypeAdminPassword'), { ssr: false });
 const PushNotificationInit = dynamic(() => import('@/components/utils/PushNotificationInit'), { ssr: false });
+const ErrorBoundary = dynamic(() => import('@/components/utils/ErrorBoundary'), { ssr: false });
 
 // Import AnimatedSplash with loading state - show static splash while loading
 const AnimatedSplash = dynamic(
@@ -273,31 +274,33 @@ export default function App({ Component, pageProps }) {
 
   // Otherwise, render the actual site
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <SessionProvider>
-          <ThemeProvider theme={spylltheme}>
-            <CssBaseline />
-            <GoogleAnalytics />
-            <PushNotificationInit />
-            {showSplash && <AnimatedSplash onComplete={() => setShowSplash(false)} />}
-            <CustomHead {...(pageSeo || {})} />
-            <Topbar />
-            <Sidebar />
-            {showLoadingGif && <SoothingLoader />}
-            <div
-              style={{
-                paddingTop: 'var(--topbarheight)',
-                paddingLeft: '0',
-                minHeight: '100vh',
-                width: '100%',
-              }}
-            >
-              <Component {...pageProps} />
-            </div>
-          </ThemeProvider>
-        </SessionProvider>
-      </PersistGate>
-    </Provider>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <SessionProvider>
+            <ThemeProvider theme={spylltheme}>
+              <CssBaseline />
+              <GoogleAnalytics />
+              <PushNotificationInit />
+              {showSplash && <AnimatedSplash onComplete={() => setShowSplash(false)} />}
+              <CustomHead {...(pageSeo || {})} />
+              <Topbar />
+              <Sidebar />
+              {showLoadingGif && <SoothingLoader />}
+              <div
+                style={{
+                  paddingTop: 'var(--topbarheight)',
+                  paddingLeft: '0',
+                  minHeight: '100vh',
+                  width: '100%',
+                }}
+              >
+                <Component {...pageProps} />
+              </div>
+            </ThemeProvider>
+          </SessionProvider>
+        </PersistGate>
+      </Provider>
+    </ErrorBoundary>
   );
 }

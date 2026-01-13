@@ -4,11 +4,15 @@ import React, { useEffect, useState } from 'react';
 import { getSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Capacitor } from '@capacitor/core';
 import styles from './settings.module.css';
 
 const SettingsPage = ({ userDetails }) => {
+  const router = useRouter();
   const [session, setSession] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isNative, setIsNative] = useState(false);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -17,6 +21,9 @@ const SettingsPage = ({ userDetails }) => {
       setIsLoading(false);
     };
     fetchSession();
+    
+    // Check if running on native platform
+    setIsNative(Capacitor.isNativePlatform());
   }, []);
 
   const handleLogout = () => {
@@ -95,6 +102,42 @@ const SettingsPage = ({ userDetails }) => {
             <p className={styles.infoText}>
               You can&apos;t change these details.
             </p>
+
+            {/* Debug Logs Link - Only show on native apps */}
+            {isNative && (
+              <button
+                className={styles.debugButton}
+                onClick={() => router.push('/debug-logs')}
+                style={{
+                  width: '100%',
+                  padding: '1rem',
+                  marginBottom: '1rem',
+                  backgroundColor: '#f5f5f5',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '12px',
+                  color: '#666',
+                  fontSize: '0.95rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  transition: 'all 0.2s',
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = '#eeeeee';
+                  e.target.style.borderColor = '#bdbdbd';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = '#f5f5f5';
+                  e.target.style.borderColor = '#e0e0e0';
+                }}
+              >
+                <span style={{ fontSize: '1.2rem' }}>🐛</span>
+                <span>Debug Logs & Crash Reports</span>
+              </button>
+            )}
 
             <button
               className={styles.logoutButton}
