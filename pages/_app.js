@@ -302,7 +302,7 @@ export default function App({ Component, pageProps }) {
               <PullToRefresh onRefresh={handleRefresh}>
                 <div
                   style={{
-                    paddingTop: 'calc(var(--native-safe-top, 0px) + var(--topbarheight))',
+                    paddingTop: 'calc(var(--topbarheight) + env(safe-area-inset-top, 0px))',
                     paddingLeft: '0',
                     minHeight: '100vh',
                     width: '100%',

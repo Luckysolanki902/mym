@@ -23,11 +23,12 @@ const config: CapacitorConfig = {
       splashImmersive: true,
     },
     StatusBar: {
+      overlaysWebView: true, // Let WebView handle safe areas via CSS
       style: 'DARK',
-      backgroundColor: '#121212',
+      backgroundColor: '#FFFFFF',
     },
     Keyboard: {
-      resize: 'ionic',
+      resize: 'native', // Native resize prevents black gap
       resizeOnFullScreen: true,
     },
     LocalNotifications: {

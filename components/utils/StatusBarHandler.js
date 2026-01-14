@@ -20,19 +20,27 @@ export default function StatusBarHandler() {
         }
 
         const { StatusBar } = await import('@capacitor/status-bar');
+        const { Keyboard } = await import('@capacitor/keyboard');
         
         // Configure status bar for Android
         if (Capacitor.getPlatform() === 'android') {
-          // Set status bar to overlay the app content
-          await StatusBar.setOverlaysWebView({ overlay: false });
+          // IMPORTANT: Let WebView extend under status bar, CSS handles safe areas
+          await StatusBar.setOverlaysWebView({ overlay: true });
           
-          // Set status bar background color to white/light
-          await StatusBar.setBackgroundColor({ color: '#ffffff' });
+          // Set status bar text to dark (for light content behind)
+          await StatusBar.setStyle({ style: 'DARK' });
+
+          // Use native resize mode - prevents black gap above keyboard
+          await Keyboard.setResizeMode({ mode: 'native' });
           
-          // Set status bar text to dark (for light background)
-          await StatusBar.setStyle({ style: 'LIGHT' });
-          
-          console.log('✅ Android StatusBar configured');
+          console.log('✅ Android StatusBar configured (overlay mode)');
+        }
+        
+        // Configure for iOS
+        if (Capacitor.getPlatform() === 'ios') {
+          await StatusBar.setOverlaysWebView({ overlay: true });
+          await StatusBar.setStyle({ style: 'DARK' });
+          console.log('✅ iOS StatusBar configured');
         }
       } catch (error) {
         console.log('StatusBar setup skipped:', error.message);

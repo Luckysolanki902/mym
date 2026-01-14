@@ -28,7 +28,8 @@
   }
 }
 
-body, html {
+html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
   font-family: Jost, sans-serif;
@@ -36,17 +37,18 @@ body, html {
   overflow-y: scroll; /* Ensures vertical scrolling */
   scrollbar-width: none; /* Hides scrollbar in Firefox */
   -ms-overflow-style: none; /* Hides scrollbar in IE 10+ */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  background: #ffffff;
+}
+
+body {
+  /* Safe area bottom for keyboards/nav bars */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 *::-webkit-scrollbar {
   display: none; /* Hides scrollbar in WebKit-based browsers */
-}
-
-
-
-html, body {
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* ======= Mobile/Native App Performance Optimizations ======= */
@@ -78,14 +80,15 @@ html, body {
   contain: layout style paint;
 }
 
-/* Safe area insets for notched devices - only apply to sides, not bottom (handled by input box) */
+/* Safe area insets for notched devices */
 .is-native-app,
 .native-app {
   --native-safe-top: env(safe-area-inset-top, 0px);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  padding-top: calc(var(--native-safe-top) + var(--topbarheight));
-  /* padding-bottom removed - handled by fixed elements like input box */
+  --native-safe-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  /* Top padding handled by topbar, bottom by input box */
+  background-color: #ffffff !important;
 }
 
 /* Disable double-tap zoom */

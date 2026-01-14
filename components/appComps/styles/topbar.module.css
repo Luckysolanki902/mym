@@ -5,6 +5,7 @@
     position: fixed;
     top: 0;
     left: 0;
+    padding-top: env(safe-area-inset-top, 0px);
     background: linear-gradient(180deg,
         rgba(255, 255, 255, 0.75) 0%,
         rgba(252, 252, 254, 0.7) 100%);
@@ -16,7 +17,7 @@
     padding-right: 1rem;
     z-index: 999; 
     flex-shrink: 0;
-    height: var(--topbarheight);
+    height: calc(var(--topbarheight) + env(safe-area-inset-top, 0px));
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow: 0 4px 24px -8px rgba(31, 38, 135, 0.06);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
