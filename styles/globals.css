@@ -79,9 +79,9 @@ html, body {
 
 /* Safe area insets for notched devices - only apply to sides, not bottom (handled by input box) */
 .is-native-app {
-  padding-top: env(safe-area-inset-top);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+  /* padding-top removed - StatusBar handles this */
   /* padding-bottom removed - handled by fixed elements like input box */
 }
 

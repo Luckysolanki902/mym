@@ -21,6 +21,7 @@ const TypeAdminPassword = dynamic(() => import('@/components/fullPageComps/TypeA
 const PushNotificationInit = dynamic(() => import('@/components/utils/PushNotificationInit'), { ssr: false });
 const ErrorBoundary = dynamic(() => import('@/components/utils/ErrorBoundary'), { ssr: false });
 const PullToRefresh = dynamic(() => import('@/components/commonComps/PullToRefresh'), { ssr: false });
+const StatusBarHandler = dynamic(() => import('@/components/utils/StatusBarHandler'), { ssr: false });
 
 // Import AnimatedSplash with loading state - show static splash while loading
 const AnimatedSplash = dynamic(
@@ -292,6 +293,7 @@ export default function App({ Component, pageProps }) {
               <CssBaseline />
               <GoogleAnalytics />
               <PushNotificationInit />
+              <StatusBarHandler />
               {showSplash && <AnimatedSplash onComplete={() => setShowSplash(false)} />}
               <CustomHead {...(pageSeo || {})} />
               <Topbar />
