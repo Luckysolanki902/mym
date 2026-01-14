@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/app-icons/icon-192x192.png" alt="Spyll Logo" width="120" />
+  <img src="spyll.in/app-icons/icon-192x192.png" alt="Spyll Logo" width="120" />
 </p>
 
 <h1 align="center">Spyll</h1>
