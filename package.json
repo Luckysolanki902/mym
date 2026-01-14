@@ -71,6 +71,7 @@
     "eslint-config-next": "14.0.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "react-pull-to-refresh": "^2.0.1",
     "typescript": "5.4.5"
   },
   "resolutions": {

@@ -54,9 +54,9 @@
   justify-content: flex-end;
   flex: 1;
   overflow-y: scroll;
-  margin-bottom: 3.8rem;
+  margin-bottom: 1.2rem;
   padding-top: 5rem;
-  padding-bottom: 0.2rem;
+  padding-bottom: 1.5rem;
   position: relative;
   min-height: calc(100vh - 10rem);
 }
@@ -399,7 +399,7 @@
 
 .filterPos {
   position: fixed;
-  top: calc(var(--topbarheight) + 0.5rem);
+  top: calc(var(--topbarheight) + 0.2rem);
   right: 0rem;
   display: flex;
   justify-content: center;

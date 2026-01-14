@@ -9,8 +9,10 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$SCRIPT_DIR"
 KEYSTORE_FILE="$PROJECT_DIR/spyll-release.keystore"
+AAB_OUTPUT="$PROJECT_DIR/app.aab"
 APK_OUTPUT="$PROJECT_DIR/app.apk"
 RELEASES_DIR="$PROJECT_DIR/releases"
+LOCAL_AAB="$RELEASES_DIR/spyll-latest.aab"
 LOCAL_APK="$RELEASES_DIR/spyll-latest.apk"
 REPO="Luckysolanki902/spyll-web"
 
@@ -159,18 +161,36 @@ EOF
     log "✅ Signing configured"
 }
 
-# Build APK
-build_apk() {
-    log "Building release APK..."
+# Build AAB and APK
+build_app() {
+    log "Building release AAB and APK..."
     
     cd "$PROJECT_DIR/android"
     
     # Make gradlew executable
     chmod +x gradlew
     
-    # Clean and build
+    # Clean and build AAB (for Play Store)
     ./gradlew clean
+    ./gradlew bundleRelease --no-daemon
+    
+    # Also build APK (for direct distribution)
     ./gradlew assembleRelease --no-daemon
+    
+    # Find the AAB
+    AAB_PATH=$(find app/build/outputs/bundle/release -name "*.aab" -type f | head -1)
+    
+    if [ -z "$AAB_PATH" ]; then
+        error "No AAB found!"
+    fi
+    
+    # Copy AAB to project root
+    cp "$AAB_PATH" "$AAB_OUTPUT"
+    cp "$AAB_PATH" "$LOCAL_AAB"
+    
+    AAB_SIZE=$(ls -lh "$AAB_OUTPUT" | awk '{print $5}')
+    log "✅ AAB built: $AAB_SIZE (for Play Store)"
+    log "✅ Local AAB saved: $LOCAL_AAB"
     
     # Find the APK
     APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" -type f | grep -v unsigned | head -1)
@@ -179,19 +199,14 @@ build_apk() {
         APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" -type f | head -1)
     fi
     
-    if [ -z "$APK_PATH" ]; then
-        error "No APK found!"
+    if [ -n "$APK_PATH" ]; then
+        cp "$APK_PATH" "$APK_OUTPUT"
+        cp "$APK_PATH" "$LOCAL_APK"
+        
+        APK_SIZE=$(ls -lh "$APK_OUTPUT" | awk '{print $5}')
+        log "✅ APK built: $APK_SIZE (for direct install)"
+        log "✅ Local APK saved: $LOCAL_APK"
     fi
-    
-    # Copy to project root
-    cp "$APK_PATH" "$APK_OUTPUT"
-    
-    # Also save to releases folder (overwrite)
-    cp "$APK_PATH" "$LOCAL_APK"
-    
-    APK_SIZE=$(ls -lh "$APK_OUTPUT" | awk '{print $5}')
-    log "✅ APK built: $APK_SIZE"
-    log "✅ Local copy saved: $LOCAL_APK"
 }
 
 # Get next version
@@ -230,7 +245,8 @@ upload_release() {
     NOTES="## Spyll - India's Largest Anonymous Network
 
 ### Download
-📱 **[Download APK](https://github.com/$REPO/releases/download/$VERSION/app.apk)**
+📱 **[Download APK](https://github.com/$REPO/releases/download/$VERSION/app.apk)** (Direct Install)
+📦 **[Download AAB](https://github.com/$REPO/releases/download/$VERSION/app.aab)** (Play Store Bundle)
 
 ### What's New
 $RELEASE_MSG
@@ -238,14 +254,17 @@ $RELEASE_MSG
 ---
 🌐 Website: [spyll.in](https://spyll.in)"
     
-    # Create release
+    # Create release with both AAB and APK
     gh release create "$VERSION" \
         --repo "$REPO" \
         --title "Spyll $VERSION" \
         --notes "$NOTES" \
+        "$AAB_OUTPUT" \
         "$APK_OUTPUT"
     
     log "✅ Release created: https://github.com/$REPO/releases/tag/$VERSION"
+    log "📦 AAB uploaded for Play Store"
+    log "📱 APK uploaded for direct distribution"
 }
 
 # Main
@@ -263,8 +282,11 @@ main() {
     copy_icons
     copy_firebase_config
     setup_signing
-    build_apk
+    build_app
     
+    echo ""
+    log "📦 AAB for Play Store: $AAB_OUTPUT"
+    log "📱 APK for direct install: $APK_OUTPUT"
     echo ""
     read -p "Upload to GitHub releases? (y/n) " -n 1 -r
     echo ""
@@ -272,8 +294,10 @@ main() {
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         upload_release "$RELEASE_MSG"
     else
-        log "APK ready at: $APK_OUTPUT"
-        log "To upload manually: gh release create vX --repo $REPO app.apk"
+        log "Files ready at:"
+        log "  - AAB: $AAB_OUTPUT"
+        log "  - APK: $APK_OUTPUT"
+        log "To upload manually: gh release create vX --repo $REPO app.aab app.apk"
     fi
     
     echo ""

@@ -91,8 +91,8 @@ const InputBox = ({
                         <textarea
                             className={`${styles.textBox} ${styles.input}`}
                             name="messageBox"
-                            spellCheck="false"
-                            autoCorrect="off"
+                            spellCheck="true"
+                            autoCorrect="on"
                             autoCapitalize="sentences"
                             inputMode="text"
                             enterKeyHint="send"
@@ -101,14 +101,13 @@ const InputBox = ({
                             id="messageBox"
                             value={textValue}
                             onFocus={() => setInpFocus(true)}
-                            autoComplete="off"
+                            autoComplete="on"
                             rows={1}
                             disabled={!socket?.connected}
                             style={{ 
                                 width: '100%', 
                                 resize: 'none', 
                                 overflow: 'hidden',
-                                whiteSpace: 'nowrap',
                                 opacity: socket?.connected ? 1 : 0.6,
                                 cursor: socket?.connected ? 'text' : 'not-allowed',
                                 transition: 'opacity 0.3s ease'

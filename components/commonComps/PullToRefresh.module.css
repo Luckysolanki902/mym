@@ -1,0 +1,57 @@
+.pullToRefreshContainer {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.pullIndicator {
+  position: fixed;
+  top: calc(var(--topbarheight, 60px) + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.spinnerIcon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 50%;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  color: #FF5973;
+  transition: transform 0.1s ease;
+}
+
+.spinnerIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.spinnerIcon.refreshing {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Smoother pull animation */
+@media (max-width: 768px) {
+  .pullIndicator {
+    top: calc(var(--topbarheight, 56px) + 10px);
+  }
+}
