@@ -16,15 +16,11 @@ const decryptMessage = (encryptedMessage, secretKey) => {
 };
 
 export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef) => {
-    const { setIsFindingPair, setPairingState } = stateFunctions;
     const { userDetails, preferredCollege, preferredGender } = userDetailsAndPreferences;
     
     try {
         if (userDetails && preferredCollege !== undefined && preferredGender !== undefined) {
-            setIsFindingPair(true);
-            if (setPairingState) setPairingState('FINDING');
-            
-            // Identify user and send preferences to the server
+            // Just identify - queue joining happens via handleFindNew
             socket.emit('identify', {
                 userMID: userDetails.mid,
                 userGender: userDetails.gender,
@@ -32,33 +28,20 @@ export const handleIdentify = (socket, userDetailsAndPreferences, stateFunctions
                 preferredGender: preferredGender,
                 preferredCollege: preferredCollege,
                 isVerified: userDetails?.isVerified || false,
-                pageType: 'textchat'
+                pageType: 'textchat',
+                joinQueue: false  // Don't auto-join, let auto-start effect handle it
             });
             
-            devLogger.socket('User identifying', {
+            devLogger.socket('User identified (not auto-joining queue)', {
                 userMID: userDetails.mid,
                 gender: userDetails.gender,
                 college: userDetails.college,
                 preferences: { gender: preferredGender, college: preferredCollege }
             });
-
-            // Reduced safety timeout to 10 seconds for faster recovery
-            const safetyTimeout = setTimeout(() => {
-                devLogger.warning('Safety timeout: No queue acknowledgment received, resetting state');
-                setIsFindingPair(false);
-                if (setPairingState) setPairingState('IDLE');
-            }, 10000); // 10 second timeout
-
-            // Store timeout reference for cleanup
-            if (findingTimeoutRef) {
-                findingTimeoutRef.current = safetyTimeout;
-            }
         }
     } catch (error) {
         devLogger.error('Error in handleIdentify', { error: error.message });
         console.error('Error in handleIdentify:', error.message);
-        setIsFindingPair(false);
-        if (setPairingState) setPairingState('IDLE');
     }
 };
 

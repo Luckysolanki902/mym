@@ -53,30 +53,32 @@ const InputBox = ({
                     placement="top" 
                     arrow
                 >
-                    <button
-                        disabled={!socket?.connected || (isFindingPair && !hasPaired)}
-                        className={styles.newButton}
-                        onClick={handleFindNewButton}
-                        data-tour="find-new-button"
-                        style={{
-                            opacity: (!socket?.connected || (isFindingPair && !hasPaired)) ? 0.5 : 1,
-                            cursor: (!socket?.connected || (isFindingPair && !hasPaired)) ? 'not-allowed' : 'pointer',
-                            transition: 'opacity 0.3s ease'
-                        }}
-                    >
-                        <Image
-                            src={'/images/sidebaricons/randomchat.png'}
-                            width={108}
-                            height={72}
-                            alt="icon"
-                            className={styles.randomIcon}
-                            style={(isFindingPair && !hasPaired) ? { 
-                                transform: 'scale(0.96)',
-                                filter: 'grayscale(0.3)',
-                                transition: 'all 0.3s ease'
-                            } : { transition: 'all 0.3s ease' }}
-                        />
-                    </button>
+                    <span style={{ display: 'inline-flex' }}>
+                        <button
+                            disabled={!socket?.connected || (isFindingPair && !hasPaired)}
+                            className={styles.newButton}
+                            onClick={handleFindNewButton}
+                            data-tour="find-new-button"
+                            style={{
+                                opacity: (!socket?.connected || (isFindingPair && !hasPaired)) ? 0.5 : 1,
+                                cursor: (!socket?.connected || (isFindingPair && !hasPaired)) ? 'not-allowed' : 'pointer',
+                                transition: 'opacity 0.3s ease'
+                            }}
+                        >
+                            <Image
+                                src={'/images/sidebaricons/randomchat.png'}
+                                width={108}
+                                height={72}
+                                alt="icon"
+                                className={styles.randomIcon}
+                                style={(isFindingPair && !hasPaired) ? { 
+                                    transform: 'scale(0.96)',
+                                    filter: 'grayscale(0.3)',
+                                    transition: 'all 0.3s ease'
+                                } : { transition: 'all 0.3s ease' }}
+                            />
+                        </button>
+                    </span>
                 </Tooltip>
                 <div className={styles.textBox}>
                     <form 
@@ -100,7 +102,15 @@ const InputBox = ({
                             autoCorrect="on"
                             autoCapitalize="sentences"
                             enterKeyHint="send"
-                            placeholder={socket?.connected ? ((isFindingPair && !hasPaired) ? "Finding..." : (hasPaired ? "Type your message..." : "Find a pair...")) : "Connecting..."}
+                            placeholder={
+                                hasPaired 
+                                    ? "Type your message..." 
+                                    : isFindingPair 
+                                        ? "Finding..." 
+                                        : !socket?.connected 
+                                            ? "Connecting..." 
+                                            : "Ready to start?"
+                            }
                             autoFocus
                             id="messageBox"
                             ref={textAreaRef}
@@ -114,7 +124,6 @@ const InputBox = ({
                             }}
                             autoComplete="on"
                             rows={1}
-                            disabled={!socket?.connected}
                             style={{ 
                                 width: '100%', 
                                 resize: 'none', 
@@ -122,8 +131,8 @@ const InputBox = ({
                                 backgroundColor: 'transparent',
                                 fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                                 fontSize: '16px',
-                                opacity: socket?.connected ? 1 : 0.6,
-                                cursor: socket?.connected ? 'text' : 'not-allowed'
+                                opacity: (hasPaired || socket?.connected) ? 1 : 0.6,
+                                cursor: (hasPaired || socket?.connected) ? 'text' : 'not-allowed'
                             }}
                             onChange={(e) => setTextValue(e.target.value)}
                             onKeyDown={handleKeyDown}

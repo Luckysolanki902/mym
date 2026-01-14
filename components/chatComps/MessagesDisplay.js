@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useSpring, animated } from 'react-spring';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import Image from 'next/image';
@@ -27,17 +27,54 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
     }, [strangerDisconnectedMessageDiv, strangerIsTyping, setStrangerIsTyping]);
 
     const prevMessageCountRef = useRef(messages.length);
+    const messagesEndRef = useRef(null);
+    const containerRef = useRef(null);
 
-    // Scroll to the padding div on component mount or when a new message arrives
+    // Robust scroll to bottom function using multiple strategies
+    const scrollToEnd = useCallback(() => {
+        // Strategy 1: Use container scrollTop with instant scroll for reliability
+        if (containerRef.current) {
+            const container = containerRef.current;
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: 'auto' // Changed from 'smooth' to 'auto' for instant, reliable scroll
+            });
+        }
+        
+        // Strategy 2: Also try scrollIntoView as backup
+        requestAnimationFrame(() => {
+            if (messagesEndRef.current) {
+                messagesEndRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
+            }
+        });
+    }, []);
+
+    // Scroll on new messages
     useEffect(() => {
-        if (paddingDivRef.current) {
-            // Use a small timeout to allow layout animation to start
-            setTimeout(() => {
-                paddingDivRef.current.scrollIntoView({ behavior: 'smooth' });
-            }, 50);
+        if (messages.length > prevMessageCountRef.current || messages.length === 1) {
+            // New message arrived - scroll with multiple attempts at different intervals
+            scrollToEnd();
+            const t1 = setTimeout(scrollToEnd, 50);
+            const t2 = setTimeout(scrollToEnd, 150);
+            const t3 = setTimeout(scrollToEnd, 300);
+            const t4 = setTimeout(scrollToEnd, 500); // Extra timeout for reliability
+            return () => {
+                clearTimeout(t1);
+                clearTimeout(t2);
+                clearTimeout(t3);
+                clearTimeout(t4);
+            };
         }
         prevMessageCountRef.current = messages.length;
-    }, [messages, strangerIsTyping, paddingDivRef]); // Also scroll when typing status changes
+    }, [messages.length, scrollToEnd]);
+
+    // Scroll when typing indicator appears/disappears
+    useEffect(() => {
+        if (strangerIsTyping) {
+            const t = setTimeout(scrollToEnd, 50);
+            return () => clearTimeout(t);
+        }
+    }, [strangerIsTyping, scrollToEnd]);
 
     // Animation for padding div
     const paddingDivAnimation = useSpring({
@@ -47,7 +84,7 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
     });
 
     return (
-        <div className={`${styles.messCon}`}>
+        <div ref={containerRef} className={`${styles.messCon}`}>
             <EventsContainerMemoized />
 
             {/* Show connected state ONLY when paired with no messages yet AND stranger hasn't disconnected */}
@@ -109,8 +146,8 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
                 </motion.div>
             )}
 
-            {/* Show pairing status ONLY when not paired AND actively finding AND no previous chat exists */}
-            {!hasPaired && isFindingPair && !strangerDisconnectedMessageDiv && messages?.length < 1 && (
+            {/* Show pairing status when actively finding (regardless of previous messages) */}
+            {!hasPaired && isFindingPair && !strangerDisconnectedMessageDiv && (
                 <div style={{ 
                     width: '100%', 
                     height: '100%', 
@@ -142,7 +179,7 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
                                 }}
                                 style={{ transformOrigin: 'bottom left', width: '100%', display: 'flow-root' }}
                             >
-                                <Message msg={msg} userDetails={userDetails} receiver={receiver} strangerGender={strangerGender} hasPaired={hasPaired} />
+                                <Message msg={msg} userDetails={userDetails} receiver={receiver} strangerGender={strangerGender} />
                             </motion.div>
                         );
                     })}
@@ -174,6 +211,9 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
 
             {/* Animated padding div */}
             <animated.div ref={paddingDivRef} className={styles.paddingDiv} style={paddingDivAnimation} />
+            
+            {/* Scroll anchor */}
+            <div ref={messagesEndRef} style={{ height: '1px', width: '100%' }} />
 
             <div className={styles.filterPos}>
                 <FilterOptions 

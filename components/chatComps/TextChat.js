@@ -29,6 +29,8 @@ const TextChat = ({ userDetails }) => {
   const inputRef = useRef(null);
   const findingTimeoutRef = useRef(null);
   const filterOpenRef = useRef(null);
+  const socketInitRef = useRef(false); // Prevent double initialization in StrictMode
+  const socketRef = useRef(null); // For cleanup without dependency issues
 
   // Redux for onboarding tour
   const dispatch = useDispatch();
@@ -108,58 +110,82 @@ const TextChat = ({ userDetails }) => {
 //   }, []);
 
   useEffect(() => {
-    const initiate = async () => {
-      // Ensure all required userDetails fields are present
-      if (!userDetails || !userDetails.gender || !userDetails.college || !userDetails.mid) return;
+    // Ensure all required userDetails fields are present
+    if (!userDetails || !userDetails.gender || !userDetails.college || !userDetails.mid) return;
 
-      if (isChatAvailable && !socket) {
-        initiateSocket(
-          socket,
-          { userDetails, preferredCollege, preferredGender },
-          hasPaired,
-          {
-            room,
-            setSocket,
-            setUsersOnline,
-            setStrangerIsTyping,
-            setStrangerDisconnectedMessageDiv,
-            setIsFindingPair,
-            setRoom,
-            setReceiver,
-            setStrangerGender,
-            setHasPaired,
-            setMessages,
-            setIsStrangerVerified,
-            setQueuePosition,
-            setWaitTime,
-            setFilterLevel,
-            setFilterDescription,
-            setEstimatedWaitTime,
-            setQueueSize,
-            setPairingState,
-            setMatchQuality
-          },
-          { messagesContainerRef, findingTimeoutRef }
-        );
-      }
-      // REMOVED: Automatic handleFindNew call - user must manually click Find New button
+    // Prevent double initialization in React StrictMode
+    if (socketInitRef.current || socket) return;
+    socketInitRef.current = true;
 
-      // Cleanup on unmount
-      return () => {
-        clearTimeout(typingTimeoutRef.current);
-        // Disconnect socket on unmount to prevent duplicates
-        if (socket) {
-          socket.disconnect();
-        }
-      };
+    if (isChatAvailable) {
+      initiateSocket(
+        null, // Always pass null, we check socketInitRef instead
+        { userDetails, preferredCollege, preferredGender },
+        hasPaired,
+        {
+          room,
+          setSocket,
+          setUsersOnline,
+          setStrangerIsTyping,
+          setStrangerDisconnectedMessageDiv,
+          setIsFindingPair,
+          setRoom,
+          setReceiver,
+          setStrangerGender,
+          setHasPaired,
+          setMessages,
+          setIsStrangerVerified,
+          setQueuePosition,
+          setWaitTime,
+          setFilterLevel,
+          setFilterDescription,
+          setEstimatedWaitTime,
+          setQueueSize,
+          setPairingState,
+          setMatchQuality
+        },
+        { messagesContainerRef, findingTimeoutRef }
+      );
+    }
+
+    // Cleanup on unmount
+    return () => {
+      clearTimeout(typingTimeoutRef.current);
+      socketInitRef.current = false;
     };
-
-    initiate();
-    // Remove dependencies that cause re-initialization
   }, [
     isChatAvailable,
     userDetails?.mid,  // Only track user ID, not entire object
   ]);
+
+  // Auto-start finding when socket connects (after initialization)
+  useEffect(() => {
+    // Wait for socket to be ready and not already paired/finding
+    if (socket?.connected && !hasPaired && !isFindingPair && !strangerDisconnectedMessageDiv) {
+      // Small delay to ensure UI is ready
+      const autoStartTimer = setTimeout(() => {
+        console.log('[TextChat] Auto-starting pair finding after socket connection');
+        handleFindNewButton();
+      }, 500);
+      
+      return () => clearTimeout(autoStartTimer);
+    }
+  }, [socket?.connected, hasPaired, isFindingPair, strangerDisconnectedMessageDiv]);
+
+  // Store socket in ref for cleanup to avoid dependency issues
+  useEffect(() => {
+    socketRef.current = socket;
+  }, [socket]);
+
+  // Cleanup socket ONLY on component unmount (empty deps)
+  useEffect(() => {
+    return () => {
+      if (socketRef.current) {
+        console.log('[TextChat] Unmounting - disconnecting socket');
+        socketRef.current.disconnect();
+      }
+    };
+  }, []); // Empty deps = only runs on unmount
 
   const handleSendButton = () => {
     handleSend(

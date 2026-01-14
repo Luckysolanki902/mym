@@ -642,8 +642,8 @@
 
 @media (width<800px) {
   .messCon {
-    margin-bottom: 3.2rem;
-      padding-bottom: 0rem;
+    margin-bottom: 0;
+    padding-bottom: 3.5rem;
   }
 
   .inputContainerMainDiv {

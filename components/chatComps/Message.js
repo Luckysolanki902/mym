@@ -2,7 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import styles from '../componentStyles/textchat.module.css';
 
-const Message = React.forwardRef(({ msg, userDetails, isTypingMsg = false, strangerGender, ...props }, ref) => {
+const Message = React.forwardRef(({ msg, userDetails, isTypingMsg = false, strangerGender, receiver, ...restProps }, ref) => {
+  // Filter out any props that shouldn't go to DOM
+  const { hasPaired, ...domSafeProps } = restProps;
 
   // Determine classes based on sender and receiver genders
   const determineClasses = () => {
@@ -29,7 +31,7 @@ const Message = React.forwardRef(({ msg, userDetails, isTypingMsg = false, stran
       <motion.div 
         ref={ref}
         className={`${styles.message} ${styles.left}`}
-        {...props}
+        {...domSafeProps}
       >
         <div
           style={{
@@ -74,7 +76,7 @@ const Message = React.forwardRef(({ msg, userDetails, isTypingMsg = false, stran
       className={`${styles.message} ${
         msg.sender === userDetails?.mid ? styles.right : styles.left
       }`}
-      {...props}
+      {...domSafeProps}
     >
       <div
         className={`${styles.text} ${

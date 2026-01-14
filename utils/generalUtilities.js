@@ -1,11 +1,24 @@
 export const scrollToBottom = (containerRef) => {
-    if (containerRef.current) {
-        const container = containerRef.current;
-        const lastEnd = container.lastElementChild;
-        if (lastEnd) {
-            lastEnd.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', inlineSize: 1 });
+    if (!containerRef?.current) return;
+    
+    const container = containerRef.current;
+    
+    // Use requestAnimationFrame for smooth, reliable scrolling
+    requestAnimationFrame(() => {
+        // Method 1: Try scrollIntoView on last child
+        const lastChild = container.lastElementChild;
+        if (lastChild) {
+            try {
+                lastChild.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            } catch (e) {
+                // Fallback: direct scroll
+                container.scrollTop = container.scrollHeight;
+            }
+        } else {
+            // Method 2: Direct scroll if no children
+            container.scrollTop = container.scrollHeight;
         }
-    }
+    });
 };
 
 // A utility function for adding soothing vibration effects in a Next.js app

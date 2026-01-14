@@ -50,9 +50,8 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
         setUsersOnline(count || 0);
       });
 
-      newSocket.on('identify', () => {
-        handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef);
-      });
+      // NOTE: Server sends 'identify' event but we handle identification in 'connect' event
+      // to avoid duplicate identify calls
 
       newSocket.on('pairingSuccess', (data) => {
         handlePairingSuccess(data, hasPaired, stateFunctions, findingTimeoutRef);
@@ -76,9 +75,14 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
       });
 
       newSocket.on('connect', () => {
-        // console.log('[Socket] Connected to server');
-        // Only send identify on connect
-        handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef);
+        console.log('[Socket] Connected to server, socketId:', newSocket.id);
+        // Small random delay to prevent race conditions with multiple tabs
+        const delay = Math.random() * 100; // 0-100ms random delay
+        setTimeout(() => {
+          if (newSocket.connected) {
+            handleIdentify(newSocket, userDetailsAndPreferences, stateFunctions, findingTimeoutRef);
+          }
+        }, delay);
       });
 
       // Enhanced Pairing Manager events

@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable React Strict Mode for better dev experience
-  reactStrictMode: true,
+  // Disable React Strict Mode to prevent double socket connections
+  reactStrictMode: false,
   
   // Optimize production builds
   swcMinify: true,
