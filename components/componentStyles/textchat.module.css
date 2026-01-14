@@ -399,7 +399,7 @@
 
 .filterPos {
   position: fixed;
-  top: calc(var(--topbarheight) + 1rem);
+  top: calc(var(--topbarheight) + env(safe-area-inset-top, 0px) + 0.5rem);
   right: 0.5rem;
   display: flex;
   justify-content: center;
