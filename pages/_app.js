@@ -20,7 +20,6 @@ const SoothingLoader = dynamic(() => import('@/components/loadings/SoothingLoade
 const TypeAdminPassword = dynamic(() => import('@/components/fullPageComps/TypeAdminPassword'), { ssr: false });
 const PushNotificationInit = dynamic(() => import('@/components/utils/PushNotificationInit'), { ssr: false });
 const ErrorBoundary = dynamic(() => import('@/components/utils/ErrorBoundary'), { ssr: false });
-const PullToRefresh = dynamic(() => import('@/components/commonComps/PullToRefresh'), { ssr: false });
 const StatusBarHandler = dynamic(() => import('@/components/utils/StatusBarHandler'), { ssr: false });
 
 // Import AnimatedSplash with loading state - show static splash while loading
@@ -144,14 +143,6 @@ export default function App({ Component, pageProps }) {
 
   // Loading gif state during route transitions
   const [showLoadingGif, setShowLoadingGif] = useState(false);
-
-  // Pull to refresh handler - reloads current page
-  const handleRefresh = useCallback(async () => {
-    // Wait a bit for visual feedback
-    await new Promise(resolve => setTimeout(resolve, 800));
-    // Reload the page to refresh data
-    router.replace(router.asPath);
-  }, [router]);
 
   useEffect(() => {
     // Admin page token verification - only runs for admin pages
@@ -299,18 +290,16 @@ export default function App({ Component, pageProps }) {
               <Topbar />
               <Sidebar />
               {showLoadingGif && <SoothingLoader />}
-              <PullToRefresh onRefresh={handleRefresh}>
-                <div
-                  style={{
-                    paddingTop: 'calc(var(--topbarheight) + env(safe-area-inset-top, 0px))',
-                    paddingLeft: '0',
-                    minHeight: '100vh',
-                    width: '100%',
-                  }}
-                >
-                  <Component {...pageProps} />
-                </div>
-              </PullToRefresh>
+              <div
+                style={{
+                  paddingTop: 'var(--topbarheight)',
+                  paddingLeft: '0',
+                  minHeight: '100vh',
+                  width: '100%',
+                }}
+              >
+                <Component {...pageProps} />
+              </div>
             </ThemeProvider>
           </SessionProvider>
         </PersistGate>

@@ -55,10 +55,10 @@
   flex: 1;
   overflow-y: scroll;
   margin-bottom: 0;
-  padding-top: 5rem;
-  padding-bottom: calc(var(--inputboxheight, 3rem) + 3rem + env(safe-area-inset-bottom));
+  padding-top: 1rem;
+  padding-bottom: calc(var(--inputboxheight, 3rem) + 1.5rem);
   position: relative;
-  min-height: calc(100vh - 8rem);
+  min-height: calc(100vh - var(--topbarheight) - 5rem);
 }
 
 .morePadding {
@@ -399,12 +399,11 @@
 
 .filterPos {
   position: fixed;
-  top: calc(var(--native-safe-top, 0px) + var(--topbarheight) + 0.6rem);
-  right: 0rem;
+  top: calc(var(--topbarheight) + 1rem);
+  right: 0.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  /* border: 1px solid red; */
 }
 
 /* inputbox and buttons main divs_____________________________ */

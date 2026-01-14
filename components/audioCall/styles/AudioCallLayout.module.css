@@ -51,7 +51,7 @@
 /* Filter position - top right like text chat */
 .filterPosition {
   position: fixed;
-  top: calc(var(--topbarheight, 60px) + 0.2rem);
+  top: calc(var(--topbarheight, 60px) + 0.8rem);
   right: 0;
   z-index: 99;
 }
@@ -76,7 +76,7 @@
   }
 
   .filterPosition {
-    top: calc(var(--topbarheight, 56px) + 0.2rem);
+    top: calc(var(--topbarheight, 56px) + 0.8rem);
   }
 }
 

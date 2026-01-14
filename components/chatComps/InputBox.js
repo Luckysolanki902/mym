@@ -95,18 +95,23 @@ const InputBox = ({
                     >
                         <textarea
                             className={`${styles.textBox} ${styles.input}`}
-                            name="messageBox"
-                            spellCheck="true"
+                            name="message"
+                            spellCheck={true}
                             autoCorrect="on"
                             autoCapitalize="sentences"
-                            inputMode="text"
                             enterKeyHint="send"
                             placeholder={socket?.connected ? ((isFindingPair && !hasPaired) ? "Finding..." : (hasPaired ? "Type your message..." : "Find a pair...")) : "Connecting..."}
                             autoFocus
                             id="messageBox"
                             ref={textAreaRef}
                             value={textValue}
-                            onFocus={() => setInpFocus(true)}
+                            onFocus={() => {
+                                setInpFocus(true);
+                                // Scroll input into view when focused
+                                setTimeout(() => {
+                                    textAreaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }, 300);
+                            }}
                             autoComplete="on"
                             rows={1}
                             disabled={!socket?.connected}
@@ -114,10 +119,11 @@ const InputBox = ({
                                 width: '100%', 
                                 resize: 'none', 
                                 overflow: 'hidden',
-                                backgroundColor: '#fff',
+                                backgroundColor: 'transparent',
+                                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                fontSize: '16px',
                                 opacity: socket?.connected ? 1 : 0.6,
-                                cursor: socket?.connected ? 'text' : 'not-allowed',
-                                transition: 'opacity 0.3s ease'
+                                cursor: socket?.connected ? 'text' : 'not-allowed'
                             }}
                             onChange={(e) => setTextValue(e.target.value)}
                             onKeyDown={handleKeyDown}
