@@ -646,6 +646,12 @@
     padding-bottom: 3.5rem;
   }
 
+  /* Extra padding for native Android app */
+  :global(.is-native-app) .messCon,
+  :global(.native-app) .messCon {
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 1rem) + 1rem);
+  }
+
   .inputContainerMainDiv {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
