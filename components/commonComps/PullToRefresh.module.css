@@ -6,7 +6,7 @@
 
 .pullIndicator {
   position: fixed;
-  top: calc(var(--topbarheight, 60px) + 10px);
+  top: calc(var(--native-safe-top, 0px) + 12px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 999;
@@ -52,6 +52,6 @@
 /* Smoother pull animation */
 @media (max-width: 768px) {
   .pullIndicator {
-    top: calc(var(--topbarheight, 56px) + 10px);
+    top: calc(var(--native-safe-top, 0px) + 12px);
   }
 }

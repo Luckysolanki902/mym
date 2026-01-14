@@ -24,6 +24,7 @@ const InputBox = ({
     const { isFindingPair, socket, hasPaired, paddingDivRef } = useTextChat();
     const isSmallScreen = useMediaQuery('(max-width:800px)');
     const messagesContainerRef = useRef(null);
+    const textAreaRef = useRef(null);
 
     // Get gender theme colors
     const genderTheme = {
@@ -79,11 +80,15 @@ const InputBox = ({
                 </Tooltip>
                 <div className={styles.textBox}>
                     <form 
-                        autoComplete="off"
+                        autoComplete="on"
                         onSubmit={(e) => {
                             e.preventDefault();
                             if (hasPaired) {
                                 handleSendButton();
+                                // Keep keyboard open after sending
+                                requestAnimationFrame(() => {
+                                    textAreaRef.current?.focus();
+                                });
                             }
                         }}
                         noValidate
@@ -91,23 +96,25 @@ const InputBox = ({
                         <textarea
                             className={`${styles.textBox} ${styles.input}`}
                             name="messageBox"
-                            spellCheck="false"
-                            autoCorrect="off"
+                            spellCheck="true"
+                            autoCorrect="on"
                             autoCapitalize="sentences"
                             inputMode="text"
                             enterKeyHint="send"
                             placeholder={socket?.connected ? ((isFindingPair && !hasPaired) ? "Finding..." : (hasPaired ? "Type your message..." : "Find a pair...")) : "Connecting..."}
                             autoFocus
                             id="messageBox"
+                            ref={textAreaRef}
                             value={textValue}
                             onFocus={() => setInpFocus(true)}
-                            autoComplete="off"
+                            autoComplete="on"
                             rows={1}
                             disabled={!socket?.connected}
                             style={{ 
                                 width: '100%', 
                                 resize: 'none', 
                                 overflow: 'hidden',
+                                backgroundColor: '#fff',
                                 opacity: socket?.connected ? 1 : 0.6,
                                 cursor: socket?.connected ? 'text' : 'not-allowed',
                                 transition: 'opacity 0.3s ease'
@@ -128,17 +135,15 @@ const InputBox = ({
                 </div>
                 <div 
                     className={styles.sendIconPhone}
-                    onTouchEnd={(e) => {
-                        if(hasPaired){
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleSendButton();
-                        }
-                    }}
+                    onMouseDown={(e) => e.preventDefault()} // Prevent focus loss on click
                     onClick={(e) => {
                         if(hasPaired){
                             e.preventDefault();
                             handleSendButton();
+                            // Keep keyboard open after tapping send icon
+                            requestAnimationFrame(() => {
+                                textAreaRef.current?.focus();
+                            });
                         }
                     }}
                     style={{

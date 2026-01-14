@@ -16,8 +16,8 @@ const PullToRefresh = ({ children, onRefresh, disabled = false }) => {
   const currentY = useRef(0);
   const isMobile = Capacitor.isNativePlatform();
 
-  const maxPullDistance = 120;
-  const refreshThreshold = 80;
+  const maxPullDistance = 90;
+  const refreshThreshold = 60;
 
   useEffect(() => {
     // Only enable on mobile platforms
@@ -30,9 +30,9 @@ const PullToRefresh = ({ children, onRefresh, disabled = false }) => {
     let isScrolledToTop = false;
 
     const handleTouchStart = (e) => {
-      // Check if user is at the top of the page
+      // Check if user is near the top of the page (allow small drift)
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      isScrolledToTop = scrollTop === 0;
+      isScrolledToTop = scrollTop <= 10;
 
       if (isScrolledToTop && !refreshing) {
         touchStartY = e.touches[0].clientY;
@@ -54,7 +54,7 @@ const PullToRefresh = ({ children, onRefresh, disabled = false }) => {
         }
 
         // Apply resistance: the further you pull, the slower it moves
-        const resistance = 0.5;
+        const resistance = 0.45;
         const adjustedDistance = Math.min(distance * resistance, maxPullDistance);
         
         setPullDistance(adjustedDistance);
@@ -117,7 +117,7 @@ const PullToRefresh = ({ children, onRefresh, disabled = false }) => {
       <div 
         className={styles.pullIndicator}
         style={{
-          transform: `translateY(${Math.min(pullDistance - 60, 0)}px)`,
+          transform: `translateY(${Math.min(pullDistance - 40, 0)}px)`,
           opacity: opacity,
         }}
       >

@@ -41,7 +41,7 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
 
     // Animation for padding div
     const paddingDivAnimation = useSpring({
-        height: shouldRenderPaddingDiv ? '4rem' : '0rem',
+        height: shouldRenderPaddingDiv ? '5.5rem' : '3rem',
         opacity: 0,
         config: { tension: 220, friction: 20 }
     });
