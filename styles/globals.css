@@ -136,7 +136,7 @@ button:focus {
   font-family: 'Liquids';
   src: url('/fonts/Liquids.ttf') format('truetype'),
        url('/fonts/Liquids.otf') format('opentype');
-  font-display: swap;
+  font-display: block; /* Block rendering until font loads - critical for splash */
 }
 
 button {

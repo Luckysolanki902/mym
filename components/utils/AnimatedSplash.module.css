@@ -1,5 +1,13 @@
 /* Animated Splash Screen - "Spill" Effect */
 
+/* Ensure Liquids font is available - block display prevents FOUT */
+@font-face {
+  font-family: 'Liquids';
+  src: url('/fonts/Liquids.ttf') format('truetype'),
+       url('/fonts/Liquids.otf') format('opentype');
+  font-display: block;
+}
+
 .splashContainer {
   position: fixed;
   top: 0;

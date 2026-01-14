@@ -5,6 +5,14 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
+          {/* CRITICAL: Preload Liquids font for instant splash screen rendering */}
+          <link
+            rel="preload"
+            href="/fonts/Liquids.ttf"
+            as="font"
+            type="font/ttf"
+            crossOrigin="anonymous"
+          />
           {/* Preconnect to Google Fonts for faster loading */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

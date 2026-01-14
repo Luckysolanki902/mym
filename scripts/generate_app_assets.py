@@ -382,8 +382,8 @@ def main():
     print("✅ All assets generated successfully!")
     print("=" * 60)
     print("\nNext steps:")
-    print("1. Run 'npx cap sync android' to sync assets")
-    print("2. Rebuild the APK with './gradlew assembleDebug'")
+    print("1. Commit and push to main")
+    print("2. Run ./mym/scripts/build_all_apps.py to rebuild apps with new assets")
 
 
 if __name__ == "__main__":
