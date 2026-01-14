@@ -86,13 +86,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     
-    <!-- Audio permissions for calls -->
-    <!-- <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" /> -->
-    
-    <!-- Camera permission for future video calls -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    
     <!-- For foreground service (keeping calls alive) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
