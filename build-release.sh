@@ -161,6 +161,38 @@ EOF
     log "✅ Signing configured"
 }
 
+# Auto-increment version code
+increment_version() {
+    log "Incrementing version code..."
+    
+    cd "$PROJECT_DIR"
+    
+    BUILD_GRADLE="android/app/build.gradle"
+    
+    # Get current version code
+    CURRENT_VERSION=$(grep -E "versionCode [0-9]+" "$BUILD_GRADLE" | awk '{print $2}')
+    
+    if [ -z "$CURRENT_VERSION" ]; then
+        error "Could not find versionCode in $BUILD_GRADLE"
+    fi
+    
+    # Increment version code
+    NEW_VERSION=$((CURRENT_VERSION + 1))
+    
+    # Calculate new version name (e.g., 1.0 -> 1.1 -> 1.2, etc.)
+    MINOR_VERSION=$((NEW_VERSION - 1))
+    NEW_VERSION_NAME="1.$MINOR_VERSION"
+    
+    log "Current version: $CURRENT_VERSION (versionName: $(grep -E 'versionName "[^"]+"' "$BUILD_GRADLE" | sed 's/.*versionName "\([^"]*\)".*/\1/'))"
+    log "New version: $NEW_VERSION (versionName: $NEW_VERSION_NAME)"
+    
+    # Update build.gradle with new versions
+    sed -i '' "s/versionCode $CURRENT_VERSION/versionCode $NEW_VERSION/" "$BUILD_GRADLE"
+    sed -i '' "s/versionName \"[^\"]*\"/versionName \"$NEW_VERSION_NAME\"/" "$BUILD_GRADLE"
+    
+    log "✅ Version updated to $NEW_VERSION ($NEW_VERSION_NAME)"
+}
+
 # Build AAB and APK
 build_app() {
     log "Building release AAB and APK..."
@@ -281,6 +313,7 @@ main() {
     sync_capacitor
     copy_icons
     copy_firebase_config
+    increment_version
     setup_signing
     build_app
     
