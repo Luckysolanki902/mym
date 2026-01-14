@@ -56,9 +56,9 @@
   overflow-y: scroll;
   margin-bottom: 0;
   padding-top: 5rem;
-  padding-bottom: 0.5rem;
+  padding-bottom: 1rem;
   position: relative;
-  min-height: calc(100vh - 10rem);
+  min-height: calc(100vh - 8rem);
 }
 
 .morePadding {
@@ -644,6 +644,7 @@
 @media (width<800px) {
   .messCon {
     margin-bottom: 3.2rem;
+      padding-bottom: 0rem;
   }
 
   .inputContainerMainDiv {
