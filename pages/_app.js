@@ -22,6 +22,7 @@ const PushNotificationInit = dynamic(() => import('@/components/utils/PushNotifi
 const ErrorBoundary = dynamic(() => import('@/components/utils/ErrorBoundary'), { ssr: false });
 const PullToRefresh = dynamic(() => import('@/components/commonComps/PullToRefresh'), { ssr: false });
 const StatusBarHandler = dynamic(() => import('@/components/utils/StatusBarHandler'), { ssr: false });
+const KeyboardHandler = dynamic(() => import('@/components/utils/KeyboardHandler'), { ssr: false });
 
 // Import AnimatedSplash with loading state - show static splash while loading
 const AnimatedSplash = dynamic(
@@ -294,6 +295,7 @@ export default function App({ Component, pageProps }) {
               <GoogleAnalytics />
               <PushNotificationInit />
               <StatusBarHandler />
+              <KeyboardHandler />
               {showSplash && <AnimatedSplash onComplete={() => setShowSplash(false)} />}
               <CustomHead {...(pageSeo || {})} />
               <Topbar />
@@ -301,6 +303,7 @@ export default function App({ Component, pageProps }) {
               {showLoadingGif && <SoothingLoader />}
               <PullToRefresh onRefresh={handleRefresh}>
                 <div
+                  className="app-body-container"
                   style={{
                     paddingTop: 'var(--topbarheight)',
                     paddingLeft: '0',

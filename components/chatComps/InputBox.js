@@ -91,17 +91,17 @@ const InputBox = ({
                         <textarea
                             className={`${styles.textBox} ${styles.input}`}
                             name="messageBox"
-                            spellCheck="true"
-                            autoCorrect="on"
+                            spellCheck="false"
+                            autoCorrect="off"
                             autoCapitalize="sentences"
                             inputMode="text"
                             enterKeyHint="send"
-                            placeholder={socket?.connected ? ((isFindingPair && !hasPaired) ? "Finding..." : (hasPaired ? "Type your message..." : "Find a pair to start chatting")) : "Connecting..."}
+                            placeholder={socket?.connected ? ((isFindingPair && !hasPaired) ? "Finding..." : (hasPaired ? "Type your message..." : "Find a pair...")) : "Connecting..."}
                             autoFocus
                             id="messageBox"
                             value={textValue}
                             onFocus={() => setInpFocus(true)}
-                            autoComplete="on"
+                            autoComplete="off"
                             rows={1}
                             disabled={!socket?.connected}
                             style={{ 
@@ -128,6 +128,13 @@ const InputBox = ({
                 </div>
                 <div 
                     className={styles.sendIconPhone}
+                    onTouchEnd={(e) => {
+                        if(hasPaired){
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleSendButton();
+                        }
+                    }}
                     onClick={(e) => {
                         if(hasPaired){
                             e.preventDefault();

@@ -85,6 +85,11 @@ html, body {
   /* padding-bottom removed - handled by fixed elements like input box */
 }
 
+/* Add top padding for native apps to prevent status bar overlap */
+.is-native-app .app-body-container {
+  padding-top: calc(var(--topbarheight) + env(safe-area-inset-top)) !important;
+}
+
 /* Disable double-tap zoom */
 .is-mobile,
 .is-native-app {
