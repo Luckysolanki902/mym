@@ -107,7 +107,8 @@ export default function App({ Component, pageProps }) {
         // Silently fail
       }
     };
-    initLogger();
+    initFirebaseAnalytics
+    ();
   }, []);
 
   // Animated splash state - start true to prevent flash, hide only on web
