@@ -185,7 +185,8 @@ export const useThrottledState = (initialValue, delay = 16) => {
  * Main hook that applies all mobile optimizations
  */
 const useMobileOptimizations = () => {
-  usePreventOverscroll();
+  // usePreventOverscroll disabled - was blocking normal scroll behavior
+  // usePreventOverscroll();
   
   useEffect(() => {
     if (typeof window === 'undefined') return;
