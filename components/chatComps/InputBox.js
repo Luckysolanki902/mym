@@ -96,7 +96,7 @@ const InputBox = ({
                             autoCapitalize="sentences"
                             inputMode="text"
                             enterKeyHint="send"
-                            placeholder={socket?.connected ? ((isFindingPair && !hasPaired) ? "Type while we find someone..." : (hasPaired ? "Type your message..." : "Find a pair to start chatting")) : "Connecting..."}
+                            placeholder={socket?.connected ? ((isFindingPair && !hasPaired) ? "Finding..." : (hasPaired ? "Type your message..." : "Find a pair to start chatting")) : "Connecting..."}
                             autoFocus
                             id="messageBox"
                             value={textValue}
