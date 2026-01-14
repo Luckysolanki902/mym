@@ -54,9 +54,9 @@
   justify-content: flex-end;
   flex: 1;
   overflow-y: scroll;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0;
   padding-top: 5rem;
-  padding-bottom: 1.5rem;
+  padding-bottom: 5rem;
   position: relative;
   min-height: calc(100vh - 10rem);
 }
@@ -414,11 +414,18 @@
   align-items: center;
   justify-content: center;
   padding: 0 1.25rem 0.75rem 1.25rem;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   width: calc(100vw - var(--sidebarwidth));
   position: fixed;
   right: 0;
   bottom: 0;
   z-index: 99;
+}
+
+@media (max-width: 800px) {
+  .inputContainerMainDiv {
+    width: 100vw;
+  }
 }
 
 .inputContainer {

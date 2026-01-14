@@ -3,8 +3,8 @@ import NotificationLog from '../models/NotificationLog';
 
 // Configure transporter
 const transporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: Number(process.env.MAIL_PORT),
+  host: "smtp.hostinger.com",
+  port: 587,
   secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.MAIL_USER,
