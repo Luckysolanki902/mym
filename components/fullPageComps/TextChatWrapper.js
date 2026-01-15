@@ -42,7 +42,7 @@ const TextChatWrapper = ({ userDetails }) => {
             flexDirection="column"
             justifyContent="center"
             alignItems="center"
-            height="100vh"
+            height="calc(100vh - var(--topbarheight))"
           >
             <Typography variant="body1" fontFamily={'Jost'} gutterBottom>
               Preparing your chat experience...
