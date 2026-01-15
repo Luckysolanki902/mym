@@ -16,7 +16,9 @@
     "cap:open:ios": "cap open ios",
     "build:android": "yarn build && yarn export && cap sync android",
     "build:ios": "yarn build && yarn export && cap sync ios",
-    "build:mobile": "yarn build && yarn export && cap sync"
+    "build:mobile": "yarn build && yarn export && cap sync",
+    "bump:android": "node scripts/bump-android-version.js",
+    "prepare": "cd .. && husky mym/.husky || true"
   },
   "dependencies": {
     "@capacitor-firebase/analytics": "^6.0.0",

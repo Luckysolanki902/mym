@@ -16,6 +16,7 @@ const EventsContainerMemoized = React.memo(EventsContainer);
 
 const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCount = 0, filterOpenRef }) => {
     const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping, isFindingPair, paddingDivRef, setStrangerIsTyping, socket } = useTextChat();
+    const [isFilterVisible, setIsFilterVisible] = useState(true);
 
     const shouldRenderPaddingDiv = strangerDisconnectedMessageDiv;
     
@@ -26,6 +27,13 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
         }
     }, [strangerDisconnectedMessageDiv, strangerIsTyping, setStrangerIsTyping]);
 
+    // Reset filter visibility when stranger disconnects or new search starts
+    useEffect(() => {
+        if (strangerDisconnectedMessageDiv || isFindingPair || !hasPaired) {
+            setIsFilterVisible(true);
+        }
+    }, [strangerDisconnectedMessageDiv, isFindingPair, hasPaired]);
+
     const prevMessageCountRef = useRef(messages.length);
     const messagesEndRef = useRef(null);
     const containerRef = useRef(null);
@@ -35,37 +43,21 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
         // Strategy 1: Use container scrollTop with instant scroll for reliability
         if (containerRef.current) {
             const container = containerRef.current;
+            // Scroll to the absolute bottom of the scrollable content
             container.scrollTo({
                 top: container.scrollHeight,
-                behavior: 'auto' // Changed from 'smooth' to 'auto' for instant, reliable scroll
+                behavior: 'smooth' 
             });
         }
-        
-        // Strategy 2: Also try scrollIntoView as backup
-        requestAnimationFrame(() => {
-            if (messagesEndRef.current) {
-                messagesEndRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
-            }
-        });
-    }, []);
+    }, [messages.length]); // Dependencies can be optimized
 
     // Scroll on new messages
     useEffect(() => {
-        if (messages.length > prevMessageCountRef.current || messages.length === 1) {
-            // New message arrived - scroll with multiple attempts at different intervals
-            scrollToEnd();
-            const t1 = setTimeout(scrollToEnd, 50);
-            const t2 = setTimeout(scrollToEnd, 150);
-            const t3 = setTimeout(scrollToEnd, 300);
-            const t4 = setTimeout(scrollToEnd, 500); // Extra timeout for reliability
-            return () => {
-                clearTimeout(t1);
-                clearTimeout(t2);
-                clearTimeout(t3);
-                clearTimeout(t4);
-            };
-        }
-        prevMessageCountRef.current = messages.length;
+        // New message arrived - scroll with multiple attempts at different intervals
+        scrollToEnd();
+        // Fallback for image loading or layout shifts
+        const t1 = setTimeout(scrollToEnd, 100);
+        return () => clearTimeout(t1);
     }, [messages.length, scrollToEnd]);
 
     // Scroll when typing indicator appears/disappears
@@ -83,8 +75,19 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
         config: { tension: 220, friction: 20 }
     });
 
+    const [initialScrollDone, setInitialScrollDone] = useState(false);
+
+    // Initial scroll effect
+    useEffect(() => {
+        if (!initialScrollDone && messages.length > 0 && containerRef.current) {
+            containerRef.current.scrollTop = containerRef.current.scrollHeight;
+            setInitialScrollDone(true);
+        }
+    }, [messages, initialScrollDone]);
+    
     return (
         <div ref={containerRef} className={`${styles.messCon}`}>
+            <div style={{ flexGrow: 1, minHeight: '1px' }} />
             <EventsContainerMemoized />
 
             {/* Show connected state ONLY when paired with no messages yet AND stranger hasn't disconnected */}
@@ -216,15 +219,18 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
             <div ref={messagesEndRef} style={{ height: '1px', width: '100%' }} />
 
             <div className={styles.filterPos}>
-                <FilterOptions 
-                    userDetails={userDetails}
-                    socket={socket}
-                    isFindingPair={isFindingPair}
-                    hasPaired={hasPaired}
-                    filterOpenRef={filterOpenRef}
-                    onlineCount={onlineCount}
-                    pageType="textchat"
-                />
+                {isFilterVisible && (
+                    <FilterOptions 
+                        userDetails={userDetails}
+                        socket={socket}
+                        isFindingPair={isFindingPair}
+                        hasPaired={hasPaired}
+                        filterOpenRef={filterOpenRef}
+                        onlineCount={onlineCount}
+                        pageType="textchat"
+                        onHideIcon={() => setIsFilterVisible(false)}
+                    />
+                )}
             </div>
         </div>
     );

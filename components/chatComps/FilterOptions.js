@@ -17,7 +17,7 @@ const darkTheme = createTheme({
   },
 });
 
-const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOpenRef, onlineCount: propOnlineCount, pageType = 'textchat' }) => {
+const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOpenRef, onlineCount: propOnlineCount, pageType = 'textchat', onHideIcon }) => {
   const [openFilterMenu, setOpenFilterMenu] = useState(false);
   const mainFilterContainerRef = useRef(null);
   const filterContentAnimation = useSpring({
@@ -221,6 +221,46 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOp
                   >Anyone</div>
                 </div>
               </div>
+
+               {/* Hide Icon Option */}
+               {onHideIcon && hasPaired && (
+                <div 
+                  className={styles.filterSection} 
+                  style={{ 
+                    marginTop: '0.5rem', 
+                    borderTop: '1px solid rgba(0,0,0,0.05)', 
+                    paddingTop: '0.8rem',
+                    marginBottom: '0' 
+                  }}
+                >
+                  <div 
+                    onClick={() => {
+                        setOpenFilterMenu(false);
+                        onHideIcon();
+                    }}
+                    style={{ 
+                        fontSize: '0.9rem', 
+                        color: '#666', 
+                        cursor: 'pointer', 
+                        textAlign: 'center',
+                        fontWeight: 500,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        transition: 'color 0.2s',
+                        padding: '0.4rem',
+                        borderRadius: '8px',
+                        // button like look
+                        background: 'linear-gradient(rgba(0,0,0,0.02), rgba(0,0,0,0.05))',
+                    }}
+                    onMouseEnter={(e) => e.target.style.color = '#333'}
+                    onMouseLeave={(e) => e.target.style.color = '#666'}
+                  >
+                    <span>Hide filter icon for this chat</span>
+                  </div>
+                </div>
+              )}
             </div>
 
           </animated.div>
