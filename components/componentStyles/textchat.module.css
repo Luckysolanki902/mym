@@ -652,6 +652,18 @@
     padding-bottom: 6rem;
   }
 
+  /* Typing indicator higher on native app */
+  :global(.is-native-app) .isTyping,
+  :global(.native-app) .isTyping {
+    bottom: 6rem;
+  }
+
+  /* Event container (goodbye message) higher on native app */
+  :global(.is-native-app) .eventContainer,
+  :global(.native-app) .eventContainer {
+    bottom: 6rem;
+  }
+
   .inputContainerMainDiv {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
