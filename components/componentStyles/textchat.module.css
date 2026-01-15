@@ -51,14 +51,18 @@
 .messCon {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   flex: 1;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-bottom: 0;
   padding-top: 1rem;
   padding-bottom: calc(var(--inputboxheight, 3rem) + 1.5rem);
   position: relative;
-  min-height: calc(100vh - var(--topbarheight) - 0rem);
+}
+
+/* Spacer to push messages to bottom when few messages */
+.messCon::before {
+  content: '';
+  flex: 1 1 auto;
 }
 
 .morePadding {
