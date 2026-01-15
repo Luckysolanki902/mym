@@ -3,7 +3,6 @@ import styles from './styles/filteroptions.module.css';
 import DerivativeIcon from '../commonComps/DerivativeIcon';
 import { Chip, createTheme, ThemeProvider } from '@mui/material';
 import { useFilters } from '@/context/FiltersContext';
-import { useSpring, animated } from 'react-spring';
 import { motion, AnimatePresence } from 'framer-motion';
 import OnlineCounter from '../commonComps/OnlineCounter';
 import { useOnlineStats } from '@/hooks/useOnlineStats';
@@ -20,11 +19,7 @@ const darkTheme = createTheme({
 const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOpenRef, onlineCount: propOnlineCount, pageType = 'textchat', onHideIcon }) => {
   const [openFilterMenu, setOpenFilterMenu] = useState(false);
   const mainFilterContainerRef = useRef(null);
-  const filterContentAnimation = useSpring({
-    transform: openFilterMenu ? 'translateX(0%) scale(1)' : 'translateX(100%) scale(0.6)',
-    opacity: openFilterMenu ? 1 : 0,
-    config: { tension: 220, friction: 20 }
-  });
+  // Framer motion is used for animation now
   
   // Use Redux-managed online stats
   const { count } = useOnlineStats(pageType, propOnlineCount);
@@ -185,8 +180,16 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOp
             <DerivativeIcon size={22} color="#1a1a1a" isOpen={openFilterMenu} />
           </div>
         )}
+        <AnimatePresence>
         {(openFilterMenu) && (
-          <animated.div style={filterContentAnimation} className={styles.filterContentWrapper} data-tour="filter-menu">
+          <motion.div 
+            className={styles.filterContentWrapper} 
+            data-tour="filter-menu"
+            initial={{ opacity: 0, x: 20, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 20, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 450, damping: 30 }}
+          >
             <div className={styles.filterMenu}>
               {renderOnlineCounter()}
               <div className={styles.filterSection}>
@@ -263,8 +266,9 @@ const FilterOptions = ({ userDetails, socket, isFindingPair, hasPaired, filterOp
               )}
             </div>
 
-          </animated.div>
+          </motion.div>
         )}
+        </AnimatePresence>
 
       </div>
     </ThemeProvider>

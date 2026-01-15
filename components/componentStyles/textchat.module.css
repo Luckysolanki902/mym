@@ -653,27 +653,12 @@
 @media (width<800px) {
   .messCon {
     margin-bottom: 0rem;
-    padding-bottom: 0rem;
+    /* padding-bottom: 0rem; Removed to inherit 1rem from main rule */
   }
 
-  /* Extra padding for native Android app */
-  :global(.is-native-app) .messCon,
-  :global(.native-app) .messCon {
-    padding-bottom: 6rem;
-  }
-
-  /* Typing indicator higher on native app */
-  :global(.is-native-app) .isTyping,
-  :global(.native-app) .isTyping {
-    bottom: 6rem;
-  }
-
-  /* Event container (goodbye message) higher on native app */
-  :global(.is-native-app) .eventContainer,
-  :global(.native-app) .eventContainer {
-    bottom: 6rem;
-  }
-
+  /* Native app padding overrides removed to match web styling */
+  /* This prevents excessive whitespace on Android */
+  
   .inputContainerMainDiv {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
