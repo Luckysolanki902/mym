@@ -5,7 +5,9 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100vh; /* Changed from 100% to 100vh to ensure full viewport height */
+  height: 100vh;
+  min-height: -webkit-fill-available; /* Fallback for iOS safari */
+  height: 100dvh; /* Use dynamic viewport height for mobile browsers */
   overflow: hidden; /* Hide overflow on main container, let messCon scroll */
   position: relative;
 }
@@ -241,6 +243,7 @@
   align-items: center;
   gap: 1rem;
   padding: 2rem 1.5rem;
+  padding-bottom: 3rem;
 }
 
 .msgIllustration img {

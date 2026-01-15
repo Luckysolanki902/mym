@@ -14,7 +14,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const EventsContainerMemoized = React.memo(EventsContainer);
 
-const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCount = 0, filterOpenRef }) => {
+const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCount = 0, filterOpenRef, inpFocus }) => {
     const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping, isFindingPair, paddingDivRef, setStrangerIsTyping, socket } = useTextChat();
     const [isFilterVisible, setIsFilterVisible] = useState(true);
 
@@ -60,29 +60,31 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
         return () => clearTimeout(t1);
     }, [messages.length, scrollToEnd]);
 
-    // Handle scroll on window resize (keyboard open/close)
+    // Handle scroll on input focus (keyboard open/close)
+    useEffect(() => {
+        // Force scroll when focus state changes (keyboard likely appearing)
+        scrollToEnd();
+        // Multiple timeouts to catch the layout animation/resize
+        const t1 = setTimeout(scrollToEnd, 100);
+        const t2 = setTimeout(scrollToEnd, 300);
+        const t3 = setTimeout(scrollToEnd, 500); // Late check
+        
+        return () => {
+            clearTimeout(t1);
+            clearTimeout(t2);
+            clearTimeout(t3);
+        };
+    }, [inpFocus, scrollToEnd]);
+
+    // Handle scroll on window resize (keyboard open/close backup)
     useEffect(() => {
         const handleResize = () => {
-            // Delay to allow viewport to update
             scrollToEnd();
-            setTimeout(scrollToEnd, 100);
-            setTimeout(scrollToEnd, 300);
-        };
-
-        // Also handle focusin/focusout to catch keyboard events that might not resize immediately
-        const handleFocusChange = () => {
-             setTimeout(scrollToEnd, 100);
-             setTimeout(scrollToEnd, 300);
         };
 
         window.addEventListener('resize', handleResize);
-        window.addEventListener('focusin', handleFocusChange); // Catch input focus
-        window.addEventListener('focusout', handleFocusChange); // Catch input blur
-
         return () => {
             window.removeEventListener('resize', handleResize);
-            window.removeEventListener('focusin', handleFocusChange);
-            window.removeEventListener('focusout', handleFocusChange);
         };
     }, [scrollToEnd]);
 

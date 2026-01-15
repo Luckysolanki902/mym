@@ -316,6 +316,7 @@ const TextChat = ({ userDetails }) => {
             isStrangerVerified={isStrangerVerified} 
             onlineCount={usersOnline}
             filterOpenRef={filterOpenRef}
+            inpFocus={inpFocus}
           />
           <InputBox
             handleFindNewButton={handleFindNewButton}
