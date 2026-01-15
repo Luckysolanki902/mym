@@ -109,7 +109,7 @@ const InputBox = ({
                                         ? "Finding..." 
                                         : !socket?.connected 
                                             ? "Connecting..." 
-                                            : "Ready to start?"
+                                            : "Ready to find?"
                             }
                             autoFocus
                             id="messageBox"
