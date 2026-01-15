@@ -60,6 +60,32 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
         return () => clearTimeout(t1);
     }, [messages.length, scrollToEnd]);
 
+    // Handle scroll on window resize (keyboard open/close)
+    useEffect(() => {
+        const handleResize = () => {
+            // Delay to allow viewport to update
+            scrollToEnd();
+            setTimeout(scrollToEnd, 100);
+            setTimeout(scrollToEnd, 300);
+        };
+
+        // Also handle focusin/focusout to catch keyboard events that might not resize immediately
+        const handleFocusChange = () => {
+             setTimeout(scrollToEnd, 100);
+             setTimeout(scrollToEnd, 300);
+        };
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('focusin', handleFocusChange); // Catch input focus
+        window.addEventListener('focusout', handleFocusChange); // Catch input blur
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('focusin', handleFocusChange);
+            window.removeEventListener('focusout', handleFocusChange);
+        };
+    }, [scrollToEnd]);
+
     // Scroll when typing indicator appears/disappears
     useEffect(() => {
         if (strangerIsTyping) {
