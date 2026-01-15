@@ -58,7 +58,7 @@
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   margin-bottom: 0;
   padding-top: 1rem;
-  padding-bottom: calc(var(--inputboxheight, 3rem) + 1.5rem);
+  padding-bottom: 1rem; /* Reduced padding since input is now flex child */
   position: relative;
   /* Removed min-height relative to vh, let flex handle height */
 }
@@ -417,16 +417,18 @@
   justify-content: center;
   padding: 0 1.25rem 0.75rem 1.25rem;
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-  width: calc(100vw - var(--sidebarwidth));
-  position: fixed;
-  right: 0;
-  bottom: 0;
+  width: 100%; /* Changed from calculated width to full width */
+  position: relative; /* Changed from fixed to relative/flex flow */
+  /* right/bottom removed */
   z-index: 99;
+  flex-shrink: 0; /* Prevent input from shrinking */
+  background: transparent; /* Or whatever background is needed */
 }
 
 @media (max-width: 800px) {
   .inputContainerMainDiv {
-    width: 100vw;
+    width: 100%;
+    /* Ensure it behaves correctly on responsive interactions */
   }
 }
 
@@ -462,13 +464,11 @@
     justify-content: center;
     padding-left: 0rem;
     padding-right: 1.5rem;
-    width: calc(100vw - var(--sidebarwidth));
+    width: 100%; /* Changed from calc(100vw - var(--sidebarwidth)) */
     /* transition: all 0.3s ease-out; */
 
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    right: 0;
+    position: relative; /* Changed from fixed */
+    /* right/bottom removed */
     z-index: 99;
     margin-top: 6px;
     margin-bottom: 6px;
@@ -645,8 +645,8 @@
 
 @media (width<800px) {
   .messCon {
-    margin-bottom: 0.7rem;
-    padding-bottom: 3.5rem;
+    margin-bottom: 0rem;
+    padding-bottom: 0rem;
   }
 
   /* Extra padding for native Android app */
