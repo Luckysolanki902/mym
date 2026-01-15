@@ -427,10 +427,17 @@
 
 @media (max-width: 800px) {
   .inputContainerMainDiv {
-    width: 100%;
-    /* Ensure it behaves correctly on responsive interactions */
+    padding: 0.25rem 0.5rem;
+    padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+    /* minimal padding for mobile to gain space */
+  }
+  
+  .messCon {
+    padding-bottom: 1rem;
+   /* Keep some breathing room for last message */
   }
 }
+
 
 .inputContainer {
   display: flex;
