@@ -416,7 +416,7 @@
   align-items: center;
   justify-content: center;
   padding: 0 1.25rem 0.75rem 1.25rem;
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  padding-bottom: 0.5rem;
   width: 100%; /* Changed from calculated width to full width */
   position: relative; /* Changed from fixed to relative/flex flow */
   /* right/bottom removed */
@@ -428,7 +428,7 @@
 @media (max-width: 800px) {
   .inputContainerMainDiv {
     padding: 0.25rem 0.5rem;
-    padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+    padding-bottom: 0.25rem;
     /* minimal padding for mobile to gain space */
   }
   
