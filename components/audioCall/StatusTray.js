@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import styles from './styles/StatusTray.module.css';
-import ClientLogExporter from '@/components/debug/ClientLogExporter';
 import { useAudioCall, CALL_STATE, MIC_STATE } from '@/context/AudioCallContext';
 
 const StatusTray = ({ userDetails, pairingState }) => {
@@ -51,9 +50,6 @@ const StatusTray = ({ userDetails, pairingState }) => {
         <p className={styles.queueLabel}>Audio queue</p>
         <p className={styles.queuePrimary}>{primaryCopy}</p>
         {error ? <p className={styles.errorText}>{error}</p> : null}
-      </div>
-      <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
-        <ClientLogExporter />
       </div>
       <div className={styles.queueMetrics}>
         {metrics.map((metric) => (

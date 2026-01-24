@@ -103,42 +103,6 @@ const SettingsPage = ({ userDetails }) => {
               You can&apos;t change these details.
             </p>
 
-            {/* Debug Logs Link - Only show on native apps */}
-            {isNative && (
-              <button
-                className={styles.debugButton}
-                onClick={() => router.push('/debug-logs')}
-                style={{
-                  width: '100%',
-                  padding: '1rem',
-                  marginBottom: '1rem',
-                  backgroundColor: '#f5f5f5',
-                  border: '1px solid #e0e0e0',
-                  borderRadius: '12px',
-                  color: '#666',
-                  fontSize: '0.95rem',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.2s',
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.backgroundColor = '#eeeeee';
-                  e.target.style.borderColor = '#bdbdbd';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.backgroundColor = '#f5f5f5';
-                  e.target.style.borderColor = '#e0e0e0';
-                }}
-              >
-                <span style={{ fontSize: '1.2rem' }}>🐛</span>
-                <span>Debug Logs & Crash Reports</span>
-              </button>
-            )}
-
             <button
               className={styles.logoutButton}
               onClick={handleLogout}

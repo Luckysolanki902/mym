@@ -21,7 +21,7 @@ const CreateConfessionForm = ({ userDetails }) => {
         mid: mid,
         college,
         gender,
-        confessionContent: confessionValue,
+        confessionContent: confessionValue.trim(), // Trim whitespace
       };
 
       // Bypass moderation

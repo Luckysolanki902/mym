@@ -60,9 +60,9 @@ const DEFAULT_STRUCTURED_DATA = [
         url: SITE_URL,
         logo: {
             '@type': 'ImageObject',
-            url: `${SITE_URL}/images/spyll_logos/spyll_main.png`,
-            width: 512,
-            height: 512,
+            url: `${SITE_URL}/app-icons/og-image.png`,
+            width: 1200,
+            height: 630,
         },
         sameAs: [
             'https://instagram.com/_spyll_',
@@ -91,7 +91,7 @@ const DEFAULT_STRUCTURED_DATA = [
             name: 'Spyll',
             logo: {
                 '@type': 'ImageObject',
-                url: `${SITE_URL}/images/spyll_logos/spyll_main.png`,
+                url: `${SITE_URL}/app-icons/og-image.png`,
             },
         },
         potentialAction: {

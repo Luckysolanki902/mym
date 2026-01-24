@@ -4,7 +4,7 @@ const stripTrailingSlash = (value) => value.replace(/\/*$/, '');
 const withLeadingSlash = (value) => (value.startsWith('/') ? value : `/${value}`);
 
 export const SITE_URL = stripTrailingSlash(RAW_SITE_URL.length ? RAW_SITE_URL : 'https://spyll.in');
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/spyll_logos/spyll_main.png`;
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/app-icons/og-image.png`;
 
 export const toAbsoluteUrl = (path = '/') => {
   if (!path) return SITE_URL;
