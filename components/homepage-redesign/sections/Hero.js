@@ -29,7 +29,7 @@ const Hero = () => {
             transition={{ duration: 0.5 }}
           >
             <span className={styles.liveDot} />
-            <span>Now live in 6+ colleges</span>
+            <span>Now live in 1300+ colleges</span>
           </motion.div>
 
           {/* Main Headline with FlipWords */}

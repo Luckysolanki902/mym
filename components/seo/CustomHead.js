@@ -4,7 +4,7 @@ import { DEFAULT_OG_IMAGE, SITE_URL, toAbsoluteUrl } from '@/utils/seo';
 
 const DEFAULT_TITLE = 'Spyll - India\'s Anonymous College Network | Chat, Voice Call & Confessions';
 const DEFAULT_DESCRIPTION =
-    "Join India's largest anonymous college network. Chat anonymously with verified students from IITs, NITs, BITS & 500+ colleges. Voice calls, confessions & connections - 100% anonymous, end-to-end encrypted. No names, no pressure.";
+    "Join India's largest anonymous college network. Chat anonymously with verified students from IITs, NITs, BITS & 1300+ colleges. Voice calls, confessions & connections - 100% anonymous, end-to-end encrypted. No names, no pressure.";
 const DEFAULT_KEYWORDS = [
     // Brand keywords
     'spyll',
@@ -77,7 +77,7 @@ const DEFAULT_STRUCTURED_DATA = [
                 availableLanguage: ['en', 'hi'],
             },
         ],
-        description: 'India\'s largest anonymous college network connecting verified students from IITs, NITs, BITS and 500+ colleges.',
+        description: 'India\'s largest anonymous college network connecting verified students from IITs, NITs, BITS and 1300+ colleges.',
     },
     {
         '@context': 'https://schema.org',
