@@ -102,6 +102,7 @@ const SearchableCollegeSelect = ({
   style = {}
 }) => {
   const [sortedColleges, setSortedColleges] = useState([]);
+  const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     // Sort colleges alphabetically
@@ -113,16 +114,38 @@ const SearchableCollegeSelect = ({
     setSortedColleges(sorted);
   }, [colleges]);
 
+  // Set initial input value from prop
+  useEffect(() => {
+    if (value && typeof value === 'string') {
+      setInputValue(value);
+    }
+  }, [value]);
+
   const selectedCollege = sortedColleges.find(col => col.college === value) || null;
 
   return (
     <StyledAutocomplete
       value={selectedCollege}
-      onChange={(event, newValue) => {
-        onChange(newValue ? newValue.college : '');
+      inputValue={inputValue}
+      onInputChange={(event, newInputValue) => {
+        setInputValue(newInputValue);
       }}
+      onChange={(event, newValue) => {
+        // Handle both object selection and custom text input
+        if (typeof newValue === 'string') {
+          onChange(newValue);
+        } else if (newValue && newValue.college) {
+          onChange(newValue.college);
+        } else {
+          onChange('');
+        }
+      }}
+      freeSolo
       options={sortedColleges}
-      getOptionLabel={(option) => option.college || ''}
+      getOptionLabel={(option) => {
+        if (typeof option === 'string') return option;
+        return option.college || '';
+      }}
       isOptionEqualToValue={(option, value) => option.college === value?.college}
       gender={gender}
       renderInput={(params) => (
@@ -149,7 +172,7 @@ const SearchableCollegeSelect = ({
         />
       )}
       PaperComponent={(props) => <StyledPaper {...props} gender={gender} />}
-      noOptionsText="No colleges found"
+      noOptionsText="Type your college name if not found in list"
       style={{ marginBottom: '1.5rem', ...style }}
       ListboxProps={{
         style: {

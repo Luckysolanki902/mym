@@ -164,7 +164,6 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
   // Form State - pre-fill from persisted Redux state
   const [gender, setGender] = useState(unverifiedUserDetails?.gender || '');
   const [college, setCollege] = useState(unverifiedUserDetails?.college || '');
-  const [collegeName, setCollegeName] = useState('');
   const [colleges, setColleges] = useState([]);
   const [showButtonLoading, setShowButtonLoading] = useState(false);
 
@@ -259,22 +258,16 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
       return;
     }
 
-    let finalCollegeName = college;
-    
-    // If college is empty or 'other', user must provide a custom college name
-    if (!college || college === 'other') {
-      if (!collegeName.trim()) {
-        alert('Please provide your college name.');
-        return;
-      }
-      finalCollegeName = collegeName.trim();
+    if (!college || !college.trim()) {
+      alert('Please select or enter your college name.');
+      return;
     }
 
     setShowButtonLoading(true);
     
     dispatch(setUnverifiedUserDetails({
       gender,
-      college: finalCollegeName
+      college: college.trim()
     }));
 
     setTimeout(() => {
@@ -409,42 +402,14 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
               </Typography>
               
               <SearchableCollegeSelect
-                value={college === 'other' || !college ? '' : college}
+                value={college}
                 onChange={(newValue) => {
-                  if (newValue) {
-                    setCollege(newValue);
-                    setCollegeName('');
-                  } else {
-                    setCollege('other');
-                  }
+                  setCollege(newValue || '');
                 }}
                 colleges={colleges}
                 gender={gender}
-                placeholder="Search and select your college..."
+                placeholder="Search or type your college name..."
               />
-
-              {(college === 'other' || !college) && (
-                <TextField
-                  fullWidth
-                  placeholder="Enter your college name"
-                  value={collegeName}
-                  onChange={(e) => setCollegeName(e.target.value)}
-                  sx={{ 
-                    mt: 2,
-                    mb: 4,
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '1rem',
-                      fontFamily: 'Quicksand, sans-serif',
-                      background: 'rgba(255,255,255,0.5)',
-                      '& fieldset': { borderColor: '#dfe6e9' },
-                      '&:hover fieldset': { borderColor: '#b2bec3' },
-                      '&.Mui-focused fieldset': { 
-                        borderColor: gender === 'male' ? 'rgba(79, 195, 247, 0.6)' : 'rgba(236, 64, 122, 0.6)'
-                      },
-                    }
-                  }}
-                />
-              )}
 
               <Box sx={{ textAlign: 'center' }}>
                 <StyledButton
