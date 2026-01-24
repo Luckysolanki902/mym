@@ -66,7 +66,7 @@ const Signup = ({ userDetails }) => {
   useEffect(() => {
     const fetchColleges = async () => {
       try {
-        const response = await fetch('/api/admin/getdetails/getcolleges');
+        const response = await fetch('/api/getdetails/getcolleges');
         const data = await response.json();
 
         if (response.ok) {

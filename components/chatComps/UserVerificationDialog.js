@@ -197,7 +197,7 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
   useEffect(() => {
     const fetchColleges = async () => {
       try {
-        const response = await fetch('/api/admin/getdetails/getcolleges');
+        const response = await fetch('/api/getdetails/getcolleges');
         if (response.ok) {
           const data = await response.json();
           setColleges(data);
@@ -254,15 +254,17 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
   };
 
   const handleStart = () => {
-    if (!gender || !college) {
-      alert('Please select both gender and college.');
+    if (!gender) {
+      alert('Please select your gender.');
       return;
     }
 
     let finalCollegeName = college;
-    if (college === 'other') {
+    
+    // If college is empty or 'other', user must provide a custom college name
+    if (!college || college === 'other') {
       if (!collegeName.trim()) {
-        alert('Please provide a college name.');
+        alert('Please provide your college name.');
         return;
       }
       finalCollegeName = collegeName.trim();
@@ -407,11 +409,13 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
               </Typography>
               
               <SearchableCollegeSelect
-                value={college === 'other' ? '' : college}
+                value={college === 'other' || !college ? '' : college}
                 onChange={(newValue) => {
-                  setCollege(newValue || 'other');
                   if (newValue) {
+                    setCollege(newValue);
                     setCollegeName('');
+                  } else {
+                    setCollege('other');
                   }
                 }}
                 colleges={colleges}
@@ -419,13 +423,14 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
                 placeholder="Search and select your college..."
               />
 
-              {(college === 'other' || !college || college === '') && (
+              {(college === 'other' || !college) && (
                 <TextField
                   fullWidth
                   placeholder="Enter your college name"
                   value={collegeName}
                   onChange={(e) => setCollegeName(e.target.value)}
                   sx={{ 
+                    mt: 2,
                     mb: 4,
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '1rem',
