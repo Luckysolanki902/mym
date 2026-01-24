@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setUnverifiedUserDetails } from '@/store/slices/unverifiedUserDetailsSlice';
 import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
+import SearchableCollegeSelect from '@/components/commonComps/SearchableCollegeSelect';
 
 // --- Styled Components for Glassmorphism ---
 const GlassDialogContent = styled(DialogContent)({
@@ -404,37 +405,21 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
               <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, color: '#636e72', fontFamily: 'Quicksand, sans-serif' }}>
                 College
               </Typography>
-              <select
-                value={college}
-                onChange={(e) => {
-                  setCollege(e.target.value);
-                  if (e.target.value !== 'other') {
+              
+              <SearchableCollegeSelect
+                value={college === 'other' ? '' : college}
+                onChange={(newValue) => {
+                  setCollege(newValue || 'other');
+                  if (newValue) {
                     setCollegeName('');
                   }
                 }}
-                style={{
-                  width: '100%',
-                  padding: '1rem',
-                  borderRadius: '1rem',
-                  border: '1px solid #dfe6e9',
-                  background: 'rgba(255,255,255,0.5)',
-                  fontFamily: 'Quicksand, sans-serif',
-                  fontSize: '1rem',
-                  marginBottom: '1.5rem',
-                  cursor: 'pointer',
-                  outline: 'none'
-                }}
-              >
-                <option value="">Select your college</option>
-                {colleges.map((col) => (
-                  <option key={col._id} value={col.college}>
-                    {col.college}
-                  </option>
-                ))}
-                <option value="other">Other</option>
-              </select>
+                colleges={colleges}
+                gender={gender}
+                placeholder="Search and select your college..."
+              />
 
-              {college === 'other' && (
+              {(college === 'other' || !college || college === '') && (
                 <TextField
                   fullWidth
                   placeholder="Enter your college name"

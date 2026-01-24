@@ -182,7 +182,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
                 </div>
 
                 {!isAdmin && <div className={styles.reply} onClick={handleClick} data-tour="dm-reply-button">
-                    <div onClick={() => setAnonymousReplyDialogOpen(!isAnonymousReplyDialogOpen)} className={styles.replybutton}><span>|</span>Reply anonymously...</div>
+                    <div onClick={() => setAnonymousReplyDialogOpen(!isAnonymousReplyDialogOpen)} className={styles.replybutton}><span>|</span>Reply anonymously</div>
                 </div>}
                 {/* Delete Button for Admins */}
                 {isAdmin && (
