@@ -7,6 +7,7 @@ import {
   handleReceivedMessage
 } from "@/utils/randomchat/socketFunctions";
 import { devLogger } from './developmentLogger';
+import { triggerSoftHaptic, triggerMediumHaptic, triggerNotificationHaptic } from '@/utils/haptics';
 
 const serverUrl = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000';
 
@@ -55,11 +56,15 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
 
       newSocket.on('pairingSuccess', (data) => {
         handlePairingSuccess(data, hasPaired, stateFunctions, findingTimeoutRef);
+        // Trigger medium haptic feedback on successful pairing
+        triggerMediumHaptic();
       });
 
       // CRITICAL: Message listener registered ONCE to prevent duplicate messages
       newSocket.on('message', (data) => {
         handleReceivedMessage(data, stateFunctions, messagesContainerRef);
+        // Trigger soft haptic feedback on message receipt
+        triggerSoftHaptic();
       });
 
       newSocket.on('userTyping', () => {
@@ -72,6 +77,8 @@ export const initiateSocket = (socket, userDetailsAndPreferences, hasPaired, sta
 
       newSocket.on('pairDisconnected', () => {
         handlePairDisconnected(stateFunctions, messagesContainerRef);
+        // Trigger notification haptic feedback when partner disconnects
+        triggerNotificationHaptic();
       });
 
       newSocket.on('connect', () => {

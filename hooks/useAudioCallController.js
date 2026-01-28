@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { io } from 'socket.io-client';
 import { useFilters } from '@/context/FiltersContext';
 import { CALL_STATE, MIC_STATE } from '@/context/AudioCallContext';
+import { triggerMediumHaptic, triggerNotificationHaptic } from '@/utils/haptics';
 
 const BASE_CHAT_SERVER_URL = process.env.NEXT_PUBLIC_CHAT_SERVER_URL || 'http://localhost:1000';
 const WAIT_TIMEOUT_MS = 15000;
@@ -191,13 +192,13 @@ const useAudioCallController = ({ userDetails, context }) => {
   const waveformFrameRef = useRef(null);
   const findingTimeoutRef = useRef(null);
   const peerServerRef = useRef(null);
-  const identifyRef = useRef(() => {});
+  const identifyRef = useRef(() => { });
   const micStatusRef = useRef(micStatus);
   const socketHandlersRef = useRef({});
   const isCleaningUpRef = useRef(false);
   const findNewDebounceRef = useRef(false);
   const peerConnectionTimeoutRef = useRef(null);
-  const hangupRef = useRef(() => {});
+  const hangupRef = useRef(() => { });
   const audioRouteTargetsRef = useRef({ speaker: 'default', earpiece: 'communications' });
   const outputSelectionLockRef = useRef(false);
 
@@ -312,7 +313,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       return;
     }
     isCleaningUpRef.current = true;
-    
+
     audioDebugLog('cleanupPeer called', {
       hasPeer: !!peerRef.current,
       localPeerId: localPeerIdRef.current,
@@ -329,11 +330,11 @@ const useAudioCallController = ({ userDetails, context }) => {
     setPartner(null);
     setRoomId(null);
     audioDebugLog('cleanupPeer complete');
-    
+
     // Reset cleanup guard and verify cleanup
     setTimeout(() => {
       isCleaningUpRef.current = false;
-      
+
       const state = {
         peer: !!peerRef.current,
         call: !!callRef.current,
@@ -637,7 +638,7 @@ const useAudioCallController = ({ userDetails, context }) => {
   const attachCallHandlers = useCallback(
     (call) => {
       callRef.current = call;
-      
+
       // Add timeout to detect stalled connections
       if (peerConnectionTimeoutRef.current) {
         clearTimeout(peerConnectionTimeoutRef.current);
@@ -677,7 +678,7 @@ const useAudioCallController = ({ userDetails, context }) => {
           }, 500);
         }
       }, 10000); // 10s timeout
-      
+
       call.on('stream', (remoteStream) => {
         clearTimeout(peerConnectionTimeoutRef.current);
         audioDebugLog('PeerJS call stream received', {
@@ -718,7 +719,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       localPeerId: localPeerIdRef.current,
       remotePeerId: remotePeerIdRef.current,
     });
-    
+
     if (!peerRef.current || !mediaStreamRef.current || !remotePeerIdRef.current) {
       audioDebugLog('maybeInitiateCall aborted: missing requirements', {
         hasPeer: !!peerRef.current,
@@ -784,10 +785,10 @@ const useAudioCallController = ({ userDetails, context }) => {
         typeof serverDescriptor?.secure === 'boolean'
           ? serverDescriptor.secure
           : serverDescriptor?.protocol
-          ? serverDescriptor.protocol === 'https:'
-          : resolvedServer
-          ? resolvedServer.protocol === 'https:'
-          : win?.location?.protocol === 'https:';
+            ? serverDescriptor.protocol === 'https:'
+            : resolvedServer
+              ? resolvedServer.protocol === 'https:'
+              : win?.location?.protocol === 'https:';
       const pathCandidate = serverDescriptor?.path || resolvedServer?.pathname || '/peerjs';
       const normalizedPath = pathCandidate.startsWith('/') ? pathCandidate : `/${pathCandidate}`;
       const peerOptions = { host, path: normalizedPath, secure: serverSecure };
@@ -882,7 +883,7 @@ const useAudioCallController = ({ userDetails, context }) => {
         reason,
         force,
       });
-      
+
       // Comprehensive pre-flight checks
       if (!socketRef.current?.connected) {
         audioDebugLog('identifyWithServer aborted: socket not connected');
@@ -978,6 +979,8 @@ const useAudioCallController = ({ userDetails, context }) => {
       setTelemetry((prev) => ({ ...prev, waitTime: payload.waitTime || 0 }));
       peerServerRef.current = payload.peer?.server || null;
       createPeerInstance(payload.peer?.token, payload.peer?.rtcConfig, peerServerRef.current, payload.room);
+      // Trigger medium haptic feedback on successful pairing
+      triggerMediumHaptic();
     },
     [createPeerInstance, setCallState, setError, setIsFindingPair, setPartner, setPartnerDisconnected, setPairingState, setRoomId, setTelemetry]
   );
@@ -1056,7 +1059,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       audioDebugLog('socket connect_error', { message: error?.message });
     });
 
-  newSocket.on('queueStatus', (data) => socketHandlersRef.current.handleQueueStatus?.(data));
+    newSocket.on('queueStatus', (data) => socketHandlersRef.current.handleQueueStatus?.(data));
     newSocket.on('filterLevelChanged', (data) => {
       if (typeof data?.newLevel === 'number') {
         setFilterLevel(data.newLevel);
@@ -1095,6 +1098,8 @@ const useAudioCallController = ({ userDetails, context }) => {
       setCallState(CALL_STATE.ENDED);
       setPairingState('DISCONNECTED');
       setIsFindingPair(false);
+      // Trigger notification haptic feedback when partner disconnects
+      triggerNotificationHaptic();
       audioDebugLog('pairDisconnected cleanup complete');
     });
     newSocket.on('remoteReady', (payload) => socketHandlersRef.current.handleRemoteReady?.(payload));
@@ -1232,19 +1237,19 @@ const useAudioCallController = ({ userDetails, context }) => {
   useEffect(() => {
     if (!mediaStreamRef.current) return;
     if (callState !== CALL_STATE.CONNECTED) return;
-    
+
     const track = mediaStreamRef.current.getAudioTracks()[0];
     if (!track) return;
-    
+
     const handleTrackEnded = () => {
       audioDebugLog('Audio track ended unexpectedly during call');
       setError('Microphone access lost. Hanging up...');
       setMicStatus(MIC_STATE.DENIED);
       hangupRef.current('mic_lost');
     };
-    
+
     track.addEventListener('ended', handleTrackEnded);
-    
+
     return () => {
       track.removeEventListener('ended', handleTrackEnded);
     };
@@ -1314,8 +1319,8 @@ const useAudioCallController = ({ userDetails, context }) => {
       });
       handleWaveform(stream);
       setCallState(CALL_STATE.WAITING);
-  emitSocket('micPermissionResult', { userMID: userDetails?.mid, status: MIC_STATE.GRANTED });
-  identifyWithServer({ force: true, micStatusOverride: MIC_STATE.GRANTED, reason: 'mic-granted' });
+      emitSocket('micPermissionResult', { userMID: userDetails?.mid, status: MIC_STATE.GRANTED });
+      identifyWithServer({ force: true, micStatusOverride: MIC_STATE.GRANTED, reason: 'mic-granted' });
     } catch (error) {
       const errorName = error?.name || error?.code || 'unknown';
       console.error('[AudioCall] Microphone permission error', error);
@@ -1376,7 +1381,7 @@ const useAudioCallController = ({ userDetails, context }) => {
     },
     [cleanupPeer, emitSocket, resetQueueState, stopTones, userDetails, setCallState, setIsFindingPair, setPartnerDisconnected]
   );
-  
+
   // Update hangupRef for early useEffect hooks
   useEffect(() => {
     hangupRef.current = hangup;
@@ -1384,12 +1389,12 @@ const useAudioCallController = ({ userDetails, context }) => {
 
   const findNew = useCallback(() => {
     if (!userDetails) return;
-    
+
     if (findNewDebounceRef.current) {
       audioDebugLog('Find new already in progress, ignoring');
       return;
     }
-    
+
     findNewDebounceRef.current = true;
     hangup('skip');
     emitFindNew('findNewPair');
@@ -1403,7 +1408,7 @@ const useAudioCallController = ({ userDetails, context }) => {
       setIsFindingPair(false);
       setPairingState('IDLE');
     }, WAIT_TIMEOUT_MS);
-    
+
     // Reset debounce after a short delay
     setTimeout(() => {
       findNewDebounceRef.current = false;

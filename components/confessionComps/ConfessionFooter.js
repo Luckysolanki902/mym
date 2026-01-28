@@ -10,6 +10,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ReplyIcon from '@mui/icons-material/Reply';
 import { CircularProgress } from '@mui/material';
+import { triggerSoftHaptic } from '@/utils/haptics';
 
 const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommentsDialog, handleClick, handleOpenAuthPrompt, isAdmin, ondeleteClick, handleShareClick }) => {
     const [liked, setLiked] = useState(false);
@@ -57,6 +58,8 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             setLiked(!liked);
             if (!liked) {
                 setlikeanimation('likeAnim');
+                // Trigger soft haptic feedback on like
+                triggerSoftHaptic();
             } else {
                 setlikeanimation('unlikeAnim');
             }
@@ -111,7 +114,7 @@ const ConfessionFooter = ({ confession, userDetails, commentsCount, toggleCommen
             const { encryptedMid, iv } = confession;
             const replyData = {
                 confessionId: confession._id,
-                encryptedConfessorMid:encryptedMid,
+                encryptedConfessorMid: encryptedMid,
                 confessorGender: confession.gender,
                 confessionContent: truncateText(confession.confessionContent, 500) || 'confession content',
                 iv,

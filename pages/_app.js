@@ -25,7 +25,7 @@ const StatusBarHandler = dynamic(() => import('@/components/utils/StatusBarHandl
 // Import AnimatedSplash with loading state - show static splash while loading
 const AnimatedSplash = dynamic(
   () => import('@/components/utils/AnimatedSplash'),
-  { 
+  {
     ssr: false,
     loading: () => (
       <div style={{
@@ -109,7 +109,7 @@ export default function App({ Component, pageProps }) {
       }
     };
     initFirebaseAnalytics
-    ();
+      ();
   }, []);
 
   // Animated splash state - start true to prevent flash, hide only on web
@@ -147,7 +147,7 @@ export default function App({ Component, pageProps }) {
   useEffect(() => {
     // Admin page token verification - only runs for admin pages
     if (!isAdminPage) return;
-    
+
     const verifyAdmin = async () => {
       try {
         const token = localStorage.getItem('adminAuthToken');
@@ -202,22 +202,33 @@ export default function App({ Component, pageProps }) {
   // Handle hardware back button for Android/iOS (Capacitor)
   useEffect(() => {
     let backButtonListener = null;
-    
+
     const setupBackButton = async () => {
       try {
         // Only import Capacitor in browser environment
         if (typeof window !== 'undefined') {
           const { App } = await import('@capacitor/app');
           const { Capacitor } = await import('@capacitor/core');
-          
+
           // Only add listener on native platforms
           if (Capacitor.isNativePlatform()) {
             backButtonListener = await App.addListener('backButton', ({ canGoBack }) => {
-              // Check if we can go back in browser history
-              if (window.history.length > 1) {
+              const currentPath = router.pathname;
+
+              // Special handling for chat and call pages - these have their own exit confirmation
+              const isOnChatOrCallPage = currentPath === '/random-chat' || currentPath === '/random-call';
+
+              // Always allow back navigation on chat/call pages (they have beforePopState handlers)
+              if (isOnChatOrCallPage) {
+                router.back();
+                return;
+              }
+
+              // For other pages, check if we can go back in history
+              if (window.history.length > 1 && canGoBack) {
                 router.back();
               } else {
-                // If at root, minimize app (don't exit)
+                // If at root or no history, minimize app instead of exiting
                 App.minimizeApp();
               }
             });
@@ -244,10 +255,10 @@ export default function App({ Component, pageProps }) {
       <ThemeProvider theme={spyllthemeDark}>
         <CssBaseline />
         <CustomHead {...(pageSeo || {})} />
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           minHeight: '100vh',
           background: '#121212',
           color: '#fff',
