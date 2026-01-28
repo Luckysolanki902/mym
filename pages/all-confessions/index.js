@@ -4,7 +4,7 @@ import Confession from '@/components/fullPageComps/Confession';
 import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import styles from './allconfessions.module.css';
-import AuthPrompt from '@/components/commonComps/AuthPrompt';
+import SignInPromptCard from '@/components/confessionComps/SignInPromptCard';
 import ScrollToTop2 from '@/components/commonComps/ScrollToTop2';
 import ConfessionSkeleton from '@/components/loadings/ConfessionSkeleton';
 import { DEFAULT_OG_IMAGE, SITE_URL } from '@/utils/seo';
@@ -23,8 +23,6 @@ const Index = ({ userDetails }) => {
   const sentinelRef = useRef(null);
   const router = useRouter();
   const MAX_CONFESSIONS_USER_CAN_SCROLL_WITHOUT_LOGIN = 20;
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
-  const [authPromptShown, setAuthPromptShown] = useState(false); // Prevent multiple prompts
   const [limitReached, setLimitReached] = useState(false); // New state to track limit
   const scrollContainerRef = useRef(null); // Create a ref for the scrollable div
   const [activeGender, setActiveGender] = useState('neutral'); // State for background gradient
@@ -56,7 +54,6 @@ const Index = ({ userDetails }) => {
   useEffect(() => {
     if (userDetails) {
       setLimitReached(false);
-      setAuthPromptShown(false);
     }
   }, [userDetails]);
 
@@ -69,7 +66,6 @@ const Index = ({ userDetails }) => {
       if (reset) {
         setConfessions([]);
         setHasMore(true);
-        setAuthPromptShown(false);
         setLimitReached(false);
         confessionCountRef.current = 0;
         nextPageRef.current = 1;
@@ -125,11 +121,8 @@ const Index = ({ userDetails }) => {
     const handleIntersection = entries => {
       const entry = entries[0];
       if (entry.isIntersecting && hasMore && !loading && nextPageRef.current !== 1) {
+        // Stop fetching if limit reached for non-logged-in users
         if (!userDetails && limitReached) {
-          if (!authPromptShown) {
-            setShowAuthPrompt(true);
-            setAuthPromptShown(true);
-          }
           return;
         }
 
@@ -151,7 +144,7 @@ const Index = ({ userDetails }) => {
       }
       observer.disconnect();
     };
-  }, [hasMore, loading, authPromptShown, limitReached, userDetails, fetchConfessions]);
+  }, [hasMore, loading, limitReached, userDetails, fetchConfessions]);
 
   const getBackgroundGradient = () => {
     switch (activeGender) {
@@ -218,6 +211,10 @@ const Index = ({ userDetails }) => {
           />
         ))}
         {loading && <ConfessionSkeleton />}
+        
+        {/* Show Sign In Prompt Card when limit reached for guest users */}
+        {!userDetails && limitReached && <SignInPromptCard />}
+        
         <div ref={sentinelRef} style={{ height: '10px', background: 'transparent' }}></div>
         {!hasMore && (
           <div
@@ -250,7 +247,6 @@ const Index = ({ userDetails }) => {
         )}
       </div>
       <ScrollToTop2 scrollContainerRef={scrollContainerRef} />
-      <AuthPrompt open={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
       
       {/* Onboarding Tour */}
       <OnboardingTour

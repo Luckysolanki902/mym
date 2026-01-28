@@ -260,8 +260,8 @@
 
 .connectedBadge {
   display: inline-flex;
-  align-items: baseline;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.6rem;
   padding: 0.4rem 0;
   margin-bottom: 0.25rem;
 }
@@ -280,6 +280,31 @@
   letter-spacing: -0.3px;
 }
 
+.verifiedCheckmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.35rem;
+  line-height: 1;
+  width: 20px;
+  height: 20px;
+}
+
+.verifiedCheckmark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  margin-left: -1rem;
+}
+.collegeInfo {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.4);
+  font-weight: 400;
+  margin-top: 0.25rem;
+  letter-spacing: 0.2px;
+}
 .verifiedBadge {
   display: inline-flex;
   align-items: center;
@@ -301,6 +326,15 @@
   line-height: 1.5;
   font-weight: 400;
   margin-top: 0.5rem;
+}
+
+.highlightedText {
+  font-weight: 700;
+  color: rgba(69, 69, 69, 0.775);
+  font-family: 'Roboto';
+  letter-spacing: -0.2px;
+  font-size: 2rem;
+  margin: auto 0.3rem;
 }
 
 .verificationBadge {

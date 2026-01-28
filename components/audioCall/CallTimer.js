@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import styles from './styles/CallTimer.module.css';
 import { useAudioCall } from '@/context/AudioCallContext';
 
@@ -39,8 +40,7 @@ const CallTimer = ({ startTime, userGender }) => {
   };
   
   const theme = genderTheme[partnerGender] || genderTheme.male;
-  const displayGender = partnerGender === 'female' ? 'a girl' : 'a boy';
-  const genderEmoji = partnerGender === 'female' ? '👩' : '👨';
+  const displayGender = partnerGender === 'female' ? 'A Girl' : 'A Boy';
 
   return (
     <motion.div
@@ -50,48 +50,25 @@ const CallTimer = ({ startTime, userGender }) => {
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.4 }}
     >
-      {/* Profile Avatar with Pulse */}
-      <div className={styles.avatarSection}>
-        <motion.div
-          className={styles.pulseRing1}
-          style={{ borderColor: theme.glow }}
-          animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-        <motion.div
-          className={styles.pulseRing2}
-          style={{ borderColor: theme.glow }}
-          animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-        />
-        <div className={styles.avatarRing} style={{ background: theme.bg }}>
-          <div className={styles.avatar}>{genderEmoji}</div>
-        </div>
-      </div>
-
       {/* Connected Info */}
       <div className={styles.connectedInfo}>
         <span className={styles.connectedLabel}>Connected with</span>
-        <span className={styles.connectedGender} style={{ color: theme.primary }}>{displayGender}</span>
-        {partner && (
-          <span 
-            className={styles.verifiedBadge}
-            style={{ 
-              backgroundColor: partner.isVerified ? 'rgba(76, 175, 80, 0.15)' : 'rgba(255, 193, 7, 0.15)',
-              color: partner.isVerified ? '#2E7D32' : '#F57C00'
-            }}
-          >
-            {partner.isVerified ? (
-              <>
-                <span style={{ marginRight: '0.25rem' }}>✓</span>
-                <span>verified</span>
-              </>
-            ) : (
-              <>
-                <span style={{ marginRight: '0.25rem' }}>●</span>
-                <span>guest</span>
-              </>
-            )}
+        <div className={styles.connectedRow}>
+          <span className={styles.connectedGender} style={{ color: theme.primary }}>{displayGender}</span>
+          {partner?.isVerified && (
+            <span className={styles.verifiedCheckmark}>
+              <Image 
+                src="/app-icons/icons/verified.png" 
+                width={22} 
+                height={22} 
+                alt="verified"
+              />
+            </span>
+          )}
+        </div>
+        {partner?.matchQuality && (
+          <span className={styles.collegeInfo}>
+            {partner.matchQuality.preferencesMet ? 'from your college' : 'Not from your college'}
           </span>
         )}
       </div>

@@ -9,12 +9,12 @@ const WhyVerify = () => {
   // ACTUAL benefits from codebase - verified users get:
   // 1. Access to inbox (pages/inbox/index.js checks isVerified)
   // 2. Post confessions (pages/create-confession requires session)
-  // 3. Show college badge in chats (shows your college to partners)
+  // 3. Access chat and call features
   // 4. Partner sees verified badge in text/audio chat
   const benefits = [
     { icon: 'inbox', text: 'Access your inbox & private replies' },
     { icon: 'post', text: 'Post anonymous confessions' },
-    { icon: 'college', text: 'Get rid of unverified badge on your profile' },
+    { icon: 'college', text: 'Access to Chat & Call features' },
     { icon: 'badge', text: 'Partners see you\'re verified & trusted' },
   ];
 

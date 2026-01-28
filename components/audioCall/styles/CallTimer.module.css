@@ -55,10 +55,24 @@
   gap: 0.25rem;
 }
 
+/* Connected Info */
+.connectedInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .connectedLabel {
   font-size: 0.875rem;
   color: rgba(0, 0, 0, 0.5);
   font-weight: 500;
+}
+
+.connectedRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .connectedGender {
@@ -67,18 +81,29 @@
   letter-spacing: -0.5px;
 }
 
-.verifiedBadge {
+.verifiedCheckmark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.15rem 0.4rem;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-left: 0.5rem;
-  transition: all 0.2s ease;
+  margin-left: 0.4rem;
+  line-height: 1;
+  width: 22px;
+  height: 22px;
 }
 
+.verifiedCheckmark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.collegeInfo {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.4);
+  font-weight: 400;
+  margin-top: 0.15rem;
+  letter-spacing: 0.2px;
+}
 .timerCard {
   display: flex;
   align-items: center;

@@ -13,13 +13,9 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import LoginIcon from '@mui/icons-material/Login';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { getSession } from 'next-auth/react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setUnverifiedUserDetails } from '@/store/slices/unverifiedUserDetailsSlice';
 import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
-import SearchableCollegeSelect from '@/components/commonComps/SearchableCollegeSelect';
 
 // --- Styled Components for Glassmorphism ---
 const GlassDialogContent = styled(DialogContent)({
@@ -149,23 +145,13 @@ const StyledChip = styled(Chip)(({ selected, gender }) => ({
 }));
 
 const UserVerificationDialog = ({ mode = 'textchat' }) => {
-  const dispatch = useDispatch();
   const router = useRouter();
-
-  const unverifiedUserDetails = useSelector((state) => state.unverifiedUserDetails);
   const [open, setOpen] = useState(false);
-  const [view, setView] = useState('choice'); // 'choice' | 'form'
 
   // User State
   const [userType, setUserType] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Form State - pre-fill from persisted Redux state
-  const [gender, setGender] = useState(unverifiedUserDetails?.gender || '');
-  const [college, setCollege] = useState(unverifiedUserDetails?.college || '');
-  const [colleges, setColleges] = useState([]);
-  const [showButtonLoading, setShowButtonLoading] = useState(false);
 
   // 1. Fetch Session
   useEffect(() => {
@@ -177,60 +163,29 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
     fetchSession();
   }, []);
 
-  // 2. Determine User Type
+  // 2. Determine User Type - Now only signed in users can access
   useEffect(() => {
     if (loading) return;
     const decideUserType = () => {
       if (session?.user?.email) {
         setUserType('signedIn');
-      } else if (unverifiedUserDetails?.mid) {
-        setUserType('unverifiedHasDetails');
       } else {
-        setUserType('unverifiedNoDetails');
+        setUserType('notSignedIn');
       }
     };
     decideUserType();
-  }, [session, unverifiedUserDetails.mid, loading]);
+  }, [session, loading]);
 
-  // Fetch Colleges
-  useEffect(() => {
-    const fetchColleges = async () => {
-      try {
-        const response = await fetch('/api/getdetails/getcolleges');
-        if (response.ok) {
-          const data = await response.json();
-          setColleges(data);
-        }
-      } catch (error) {
-        console.error('Error fetching colleges:', error);
-      }
-    };
-    fetchColleges();
-  }, []);
-
-  // Sync form state with persisted Redux state
-  useEffect(() => {
-    if (unverifiedUserDetails?.gender) {
-      setGender(unverifiedUserDetails.gender);
-    }
-    if (unverifiedUserDetails?.college) {
-      setCollege(unverifiedUserDetails.college);
-    }
-  }, [unverifiedUserDetails?.gender, unverifiedUserDetails?.college]);
-
-  // 3. Open Logic - simply check if user has mid in persisted Redux state
+  // 3. Open Logic - Show dialog if user is not signed in
   useEffect(() => {
     if (!userType) return;
 
     const checkAndOpen = () => {
       if (userType === 'signedIn') {
-        // Signed in users are already verified
+        // Signed in users can proceed
         return;
-      } else if (userType === 'unverifiedHasDetails') {
-        // User already has details in persisted Redux - no need to show dialog
-        return;
-      } else if (userType === 'unverifiedNoDetails') {
-        // First time guest - show dialog
+      } else {
+        // Not signed in - show dialog
         setOpen(true);
       }
     };
@@ -239,41 +194,8 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
     return () => clearTimeout(timer);
   }, [userType]);
 
-  // Close redirects to home
-  const handleClose = () => {
-    router.push('/');
-  };
-
   const handleSignIn = () => {
     router.push('/auth/signin');
-  };
-
-  const handleContinueGuest = () => {
-    setView('form');
-  };
-
-  const handleStart = () => {
-    if (!gender) {
-      alert('Please select your gender.');
-      return;
-    }
-
-    if (!college || !college.trim()) {
-      alert('Please select or enter your college name.');
-      return;
-    }
-
-    setShowButtonLoading(true);
-    
-    dispatch(setUnverifiedUserDetails({
-      gender,
-      college: college.trim()
-    }));
-
-    setTimeout(() => {
-      setShowButtonLoading(false);
-      setOpen(false);
-    }, 800);
   };
 
   if (loading) return null;
@@ -294,7 +216,7 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
         },
       }}
     >
-      <GlassDialogContent className={gender === 'male' ? 'male-selected' : gender === 'female' ? 'female-selected' : ''}>
+      <GlassDialogContent>
         <a
           href="/"
           style={{
@@ -323,111 +245,121 @@ const UserVerificationDialog = ({ mode = 'textchat' }) => {
           <CloseIcon />
         </a>
 
-        {view === 'choice' ? (
-          <Fade in={view === 'choice'}>
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="h4" sx={{ fontFamily: 'Quicksand, sans-serif', fontWeight: 700, mb: 2, color: '#2d3436' }}>
-                Verification
-              </Typography>
-              <Typography variant="body1" sx={{ fontFamily: 'Quicksand, sans-serif', color: '#636e72', mb: 4, lineHeight: 1.6 }}>
-                Join our community of verified students for the best experience. 
-                Verified users are more trusted and get better matches.
-              </Typography>
-
-              <Stack spacing={2} direction="column" alignItems="center">
-                <StyledButton
-                  variant="contained"
-                  fullWidth
-                  onClick={handleSignIn}
-                  startIcon={<LoginIcon />}
-                  sx={{ 
-                    maxWidth: '300px'
-                  }}
-                >
-                  Sign In (Recommended)
-                </StyledButton>
-                
-                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: '300px', py: 1 }}>
-                  <div style={{ flex: 1, height: '1px', background: '#dfe6e9' }}></div>
-                  <Typography variant="caption" sx={{ px: 2, color: '#b2bec3' }}>OR</Typography>
-                  <div style={{ flex: 1, height: '1px', background: '#dfe6e9' }}></div>
-                </Box>
-
-                <StyledButton
-                  variant="outlined"
-                  fullWidth
-                  onClick={handleContinueGuest}
-                  startIcon={<PersonOutlineIcon />}
-                  sx={{ 
-                    borderColor: '#b2bec3',
-                    color: '#636e72',
-                    maxWidth: '300px',
-                    '&:hover': { borderColor: '#636e72', background: 'rgba(0,0,0,0.02)' }
-                  }}
-                >
-                  Continue as Guest
-                </StyledButton>
-              </Stack>
-            </Box>
-          </Fade>
-        ) : (
-          <Fade in={view === 'form'}>
-            <Box sx={{ mt: 1, textAlign: 'left' }}>
-              <Typography variant="h5" sx={{ fontFamily: 'Quicksand, sans-serif', fontWeight: 700, mb: 3, textAlign: 'center', color: '#2d3436' }}>
-                Guest Details
-              </Typography>
-
-              <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: '#636e72', fontFamily: 'Quicksand, sans-serif' }}>
-                Gender
-              </Typography>
-              <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
-                <StyledChip 
-                  label="Male" 
-                  onClick={() => setGender('male')}
-                  selected={gender === 'male'}
-                  gender="male"
-                  clickable
-                />
-                <StyledChip 
-                  label="Female" 
-                  onClick={() => setGender('female')}
-                  selected={gender === 'female'}
-                  gender="female"
-                  clickable
-                />
-              </Stack>
-
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, color: '#636e72', fontFamily: 'Quicksand, sans-serif' }}>
-                College
-              </Typography>
-              
-              <SearchableCollegeSelect
-                value={college}
-                onChange={(newValue) => {
-                  setCollege(newValue || '');
-                }}
-                colleges={colleges}
-                gender={gender}
-                placeholder="Search or type your college name..."
-              />
-
-              <Box sx={{ textAlign: 'center' }}>
-                <StyledButton
-                  variant="contained"
-                  onClick={handleStart}
-                  disabled={showButtonLoading}
-                  gender={gender}
-                  sx={{ 
-                    minWidth: '200px',
-                    opacity: showButtonLoading ? 0.7 : 1
-                  }}
-                >
-                  {showButtonLoading ? 'Starting...' : (mode === 'audiocall' ? 'Start Calling' : 'Start Chatting')}
-                </StyledButton>
+        <Fade in={true}>
+          <Box sx={{ mt: 2 }}>
+            {/* Icon */}
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              mb: 2.5 
+            }}>
+              <Box sx={{
+                width: 64,
+                height: 64,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, rgba(79, 195, 247, 0.15) 0%, rgba(236, 64, 122, 0.15) 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid rgba(255,255,255,0.6)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+              }}>
+                <LoginIcon sx={{ fontSize: 28, color: '#2d3436' }} />
               </Box>
             </Box>
-          </Fade>
-        )}
+
+            <Typography variant="h5" sx={{ 
+              fontFamily: 'Quicksand, sans-serif', 
+              fontWeight: 700, 
+              mb: 1.5, 
+              color: '#2d3436',
+              fontSize: { xs: '1.4rem', sm: '1.6rem' }
+            }}>
+              Sign in with your college email
+            </Typography>
+            
+            <Typography variant="body2" sx={{ 
+              fontFamily: 'Quicksand, sans-serif', 
+              color: '#636e72', 
+              mb: 3, 
+              lineHeight: 1.7,
+              fontSize: { xs: '0.9rem', sm: '1rem' },
+              px: { xs: 0, sm: 2 }
+            }}>
+              Connect with verified college students. Sign in with your college email for the best experience.
+            </Typography>
+
+            {/* Benefits */}
+            {/* <Box sx={{ 
+              mb: 3,
+              p: 2,
+              borderRadius: '1rem',
+              background: 'rgba(255,255,255,0.5)',
+              border: '1px solid rgba(255,255,255,0.6)'
+            }}>
+              <Stack spacing={1.5}>
+                {[
+                  { icon: '✓', text: 'Verified badge on your profile' },
+                  { icon: '✓', text: 'Access to Chat & Call features' },
+                  { icon: '✓', text: 'Better matches with trusted users' },
+                ].map((item, idx) => (
+                  <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box sx={{ 
+                      width: 20, 
+                      height: 20, 
+                      borderRadius: '50%', 
+                      background: 'linear-gradient(135deg, #4FC3F7 0%, #29B6F6 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#fff',
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                      flexShrink: 0
+                    }}>
+                      {item.icon}
+                    </Box>
+                    <Typography sx={{ 
+                      fontFamily: 'Quicksand, sans-serif', 
+                      fontSize: '0.9rem', 
+                      color: '#2d3436',
+                      fontWeight: 500
+                    }}>
+                      {item.text}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            </Box> */}
+
+            <StyledButton
+              variant="contained"
+              fullWidth
+              onClick={handleSignIn}
+              startIcon={<LoginIcon />}
+              sx={{ 
+                maxWidth: '100%',
+                py: 1.5,
+                fontSize: '1rem',
+                background: 'linear-gradient(135deg, #2d3436 0%, #000 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #000 0%, #2d3436 100%)',
+                }
+              }}
+            >
+              Sign In
+            </StyledButton>
+            
+            <Typography variant="caption" sx={{ 
+              display: 'block',
+              mt: 2, 
+              color: 'rgba(99, 110, 114, 0.9)',
+              fontFamily: 'Quicksand, sans-serif'
+            }}>
+              Takes less than 10 seconds
+            </Typography>
+          </Box>
+        </Fade>
       </GlassDialogContent>
     </Dialog>
   );

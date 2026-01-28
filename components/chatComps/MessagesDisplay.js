@@ -9,12 +9,11 @@ import FilterOptions from './FilterOptions';
 import PairingStatusDisplay from './PairingStatusDisplay';
 import { useTextChat } from '@/context/TextChatContext';
 import WarningIcon from '@mui/icons-material/Warning';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 
 const EventsContainerMemoized = React.memo(EventsContainer);
 
-const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCount = 0, filterOpenRef, inpFocus }) => {
+const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCount = 0, filterOpenRef, inpFocus, matchQuality }) => {
     const { messages, receiver, strangerGender, hasPaired, strangerDisconnectedMessageDiv, strangerIsTyping, isFindingPair, paddingDivRef, setStrangerIsTyping, socket } = useTextChat();
     const [isFilterVisible, setIsFilterVisible] = useState(true);
 
@@ -139,40 +138,39 @@ const MessageDisplay = React.memo(({ userDetails, isStrangerVerified, onlineCoun
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.3, duration: 0.3 }}
                     >
-                        <span className={styles.connectedLabel}>Connected with</span>
+                        <span className={styles.connectedLabel}>Connected with a</span>
                         <span 
                             className={styles.connectedGender}
                             style={{ color: strangerGender === 'female' ? '#EC407A' : '#4FC3F7' }}
                         >
-                            {strangerGender === 'male' ? 'a boy' : 'a girl'}
+                            {strangerGender === 'male' ? 'Boy' : 'Girl'}
                         </span>
-                        <span 
-                            className={styles.verifiedBadge}
-                            style={{
-                                backgroundColor: isStrangerVerified ? 'transparent' : 'rgba(255, 193, 7, 0.15)',
-                                color: isStrangerVerified ? '#5bab5fff' : '#F57C00'
-                            }}
+                        {!isStrangerVerified && (
+                            <span className={styles.verifiedCheckmark}>
+                                <Image 
+                                    src="/app-icons/icons/verified.png" 
+                                    width={20} 
+                                    height={20} 
+                                    alt="verified"
+                                />
+                            </span>
+                        )}
+                    </motion.div>                    {matchQuality && (
+                        <motion.div 
+                            className={styles.collegeInfo}
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.4, duration: 0.3 }}
                         >
-                            {isStrangerVerified ? (
-                                <>
-                                    <span style={{ marginRight: '0.25rem' }}>✓</span>
-                                    <span>verified</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span style={{ marginRight: '0.25rem' }}>●</span>
-                                    <span>guest</span>
-                                </>
-                            )}
-                        </span>
-                    </motion.div>
-                    <motion.div 
+                            {matchQuality.preferencesMet ? 'from your college' : 'Not from your college'}
+                        </motion.div>
+                    )}                    <motion.div 
                         className={styles.startMessage}
                         initial={{ y: 10, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.5, duration: 0.3 }}
                     >
-                        Say hi and start chatting
+                        Say <span className={styles.highlightedText}>hi</span> and start chatting
                     </motion.div>
                 </motion.div>
             )}

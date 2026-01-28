@@ -60,7 +60,7 @@ const ProtectAnonymityPage = () => {
                     Confessions on Spyll are a safe space for you to share your thoughts, experiences, and secrets anonymously. We understand the importance of privacy, which is why we've implemented measures to ensure your anonymity.
                 </Typography>
                 <Typography variant="body1" paragraph>
-                    When you submit a confession, we don't store any personal information such as email addresses. Instead, only your gender along with the confession content itself is saved. This means that even in the unlikely event of a data breach, your identity remains completely anonymous.
+                    When you submit a confession, we don't store any personal information such as email addresses. The email notifications you receive is key-rotation-based automated server notifications. This means that even in the unlikely event of a data breach, your identity remains completely anonymous.
                 </Typography>
                 <Typography variant="body1" paragraph>
                     Additionally, our platform uses encryption to securely transmit and store confessions, further protecting your privacy. You can share your deepest thoughts with confidence, knowing that your identity is safeguarded every step of the way.
